@@ -40,6 +40,7 @@ public class MenuAction extends AbstractCyAction
 	public void actionPerformed(ActionEvent e)
 	{
 		// Write your own function here.
+		// git test
 		JOptionPane.showMessageDialog(null, "Something differentially :-)");
 	}
 }

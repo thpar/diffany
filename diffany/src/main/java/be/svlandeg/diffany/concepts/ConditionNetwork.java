@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 import java.util.Set;
 
@@ -49,7 +49,7 @@ public class ConditionNetwork extends Network
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * be.svlandeg.cytoscape.diffany.concepts.Network#getStringRepresentation()
+	 * be.svlandeg.diffany.concepts.Network#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation()

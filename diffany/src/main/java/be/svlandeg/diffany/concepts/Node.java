@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 /**
  * Abstract class that represents a node in a network.

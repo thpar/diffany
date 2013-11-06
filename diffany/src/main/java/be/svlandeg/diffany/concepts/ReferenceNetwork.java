@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 
 /**
@@ -25,7 +25,7 @@ public class ReferenceNetwork extends Network
 	}
 
 	/* (non-Javadoc)
-	 * @see be.svlandeg.cytoscape.diffany.concepts.Network#getStringRepresentation()
+	 * @see be.svlandeg.diffany.concepts.Network#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation()

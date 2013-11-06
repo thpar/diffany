@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 import java.util.HashSet;
 import java.util.Set;

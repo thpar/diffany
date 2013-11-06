@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 /**
  * Abstract class that represents an edge in a network: an edge has a source and target node

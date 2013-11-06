@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.concepts;
+package be.svlandeg.diffany.concepts;
 
 import java.util.Collection;
 
@@ -26,6 +26,8 @@ public abstract class Project
 	 * @return the condition-dependent networks in this project (1 or more)
 	 */
 	public abstract Collection<Network> getConditionNetworks();
+	
+	
 	
 	
 

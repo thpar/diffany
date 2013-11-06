@@ -1,4 +1,4 @@
-package be.svlandeg.cytoscape.diffany.internal;
+package be.svlandeg.diffany.internal;
 
 import java.awt.event.ActionEvent;
 

@@ -22,12 +22,18 @@ public class DifferentialNetwork extends Network
 	 * @param name the name of this network
 	 * @param reference the corresponding reference network
 	 * @param conditionNetworks the corresponding condition-specific networks
-	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty
+	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
+	 * or when the reference network is null
 	 */
 	public DifferentialNetwork(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks) 
 			throws IllegalArgumentException
 	{
 		super(name);
+		if (reference == null)
+		{
+			String errormsg = "Please define at least 1 reference network!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.reference = reference;
 		if (conditionNetworks == null || conditionNetworks.isEmpty())
 		{

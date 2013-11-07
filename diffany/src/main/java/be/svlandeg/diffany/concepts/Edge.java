@@ -16,6 +16,7 @@ public abstract class Edge
 	protected boolean symmetrical;
 	
 	protected double weight;	
+	protected boolean negated;
 	
 	/**
 	 * Create a new edge with specified source and target nodes, direction and weight
@@ -24,9 +25,10 @@ public abstract class Edge
 	 * @param target the target node
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 * @param weight the weight or confidence of this edge (should be positive)
+	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
-	public Edge(String type, Node source, Node target, boolean symmetrical, double weight) throws IllegalArgumentException
+	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
 	{
 		checkWeight(weight);
 		this.type = type;
@@ -42,10 +44,23 @@ public abstract class Edge
 	 * @param source the source node
 	 * @param target the target node
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
+	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
+	 */
+	public Edge(String type, Node source, Node target, boolean symmetrical, boolean negated)
+	{
+		this(type, source, target, symmetrical, 1.0, negated);
+	}
+	
+	/**
+	 * Create a new edge with default weight of 1.0 and negation off
+	 * @param type the interaction type of this edge
+	 * @param source the source node
+	 * @param target the target node
+	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical)
 	{
-		this(type, source, target, symmetrical, 1.0);
+		this(type, source, target, symmetrical, 1.0, false);
 	}
 	
 	/**
@@ -87,6 +102,15 @@ public abstract class Edge
 	public boolean isSymmetrical()
 	{
 		return symmetrical;
+	}
+	
+	/**
+	 * Return whether or not this edge is negated (e.g. does NOT bind) 
+	 * @return whether or not this edge is negated
+	 */
+	public boolean isNegated()
+	{
+		return negated;
 	}
 	
 	/**

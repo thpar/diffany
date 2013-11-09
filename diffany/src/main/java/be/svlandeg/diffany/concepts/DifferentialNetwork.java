@@ -16,7 +16,7 @@ public class DifferentialNetwork extends Network
 	protected Set<ConditionNetwork> conditionNetworks;
 	
 	/**
-	 * Create a new differential network, referring to the static reference network
+	 * Create a new differential network, referring to exactly one static reference network
 	 * and 1 or more condition-specific networks
 	 * 
 	 * @param name the name of this network

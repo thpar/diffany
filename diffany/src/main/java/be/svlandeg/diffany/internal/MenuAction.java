@@ -27,7 +27,7 @@ public class MenuAction extends AbstractCyAction
 	{
 
 		super(menuTitle, cyApplicationManager, null, null);
-		setPreferredMenu("Apps");
+		setPreferredMenu("Apps.Diffany");
 	}
 
 	/**

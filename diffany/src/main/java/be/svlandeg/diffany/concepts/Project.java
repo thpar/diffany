@@ -2,17 +2,28 @@ package be.svlandeg.diffany.concepts;
 
 import java.util.Collection;
 
+import be.svlandeg.diffany.semantics.EdgeOntology;
+
 /**
  * A project consists of a selection of networks and all analyses performed on these networks
  * within the current session.
  * It should contain exactly 1 reference network, at least 1 condition-specific network,
  * and it may contain 1 or more differential networks.
  * 
+ * Additionally, a project links to an ontology that defines the semantics of edge types.
+ * 
  * @author Sofie Van Landeghem
  *
  */
 public abstract class Project
 {
+	
+	/**
+	 * Get the ontology of this project, which can translate edge types to categories and assign semantics to the categories
+	 * @return the ontology used in this project (should not be null)
+	 */
+	public abstract EdgeOntology getOntology();
+	
 	/**
 	 * Get the reference network of this project, against which the condition dependent network(s)
 	 * will be compared to.

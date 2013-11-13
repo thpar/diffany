@@ -10,7 +10,7 @@ import java.util.Map;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class Ontology
+public abstract class EdgeOntology
 {
 
 	private Map<String, String> mapEdgeToCategory;
@@ -18,7 +18,7 @@ public abstract class Ontology
 	/**
 	 * Create an empty ontology, with no edge categories or any mapping defined
 	 */
-	public Ontology()
+	public EdgeOntology()
 	{
 		mapEdgeToCategory = new HashMap<String, String>();
 	}

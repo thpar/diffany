@@ -65,6 +65,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 	/**
 	 * Default mapping. In EdgeOntology, upper/lower casing is not taken into
 	 * account, so everything can be lower case.
+	 * TODO: add more default mappings!
 	 */
 	private void insertDefaultMappings()
 	{
@@ -73,6 +74,8 @@ public class DefaultEdgeOntology extends EdgeOntology
 		// PPI category and common synonyms
 		addCategoryMapping("ppi", "ppi", overwrite);
 		addCategoryMapping("protein-protein interaction", "ppi", overwrite);
+		addCategoryMapping("proteinprotein interaction", "ppi", overwrite);
+		addCategoryMapping("proteinproteininteraction", "ppi", overwrite);
 		addCategoryMapping("binds", "ppi", overwrite);
 		addCategoryMapping("bind", "ppi", overwrite);
 		addCategoryMapping("binding", "ppi", overwrite);
@@ -84,23 +87,49 @@ public class DefaultEdgeOntology extends EdgeOntology
 
 		// positive regulation category and common synonyms
 		addCategoryMapping("positive regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positive_regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positive-regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positiveregulation", "pos_regulation", overwrite);
 		addCategoryMapping("positive reg", "pos_regulation", overwrite);
+		addCategoryMapping("positive-reg", "pos_regulation", overwrite);
+		addCategoryMapping("positive_reg", "pos_regulation", overwrite);
+		addCategoryMapping("positivereg", "pos_regulation", overwrite);
 		addCategoryMapping("pos regulation", "pos_regulation", overwrite);
+		addCategoryMapping("pos_regulation", "pos_regulation", overwrite);
+		addCategoryMapping("pos-regulation", "pos_regulation", overwrite);
+		addCategoryMapping("posregulation", "pos_regulation", overwrite);
 		addCategoryMapping("pos reg", "pos_regulation", overwrite);
 		addCategoryMapping("pos-reg", "pos_regulation", overwrite);
+		addCategoryMapping("pos_reg", "pos_regulation", overwrite);
 		addCategoryMapping("posreg", "pos_regulation", overwrite);
 		addCategoryMapping("pos", "pos_regulation", overwrite);
 		addCategoryMapping("positively regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positively_regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positively-regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positivelyregulates", "pos_regulation", overwrite);
 
 		// positive regulation category and common synonyms
 		addCategoryMapping("negative regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negative_regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negative-regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negativeregulation", "neg_regulation", overwrite);
 		addCategoryMapping("negative reg", "neg_regulation", overwrite);
+		addCategoryMapping("negative_reg", "neg_regulation", overwrite);
+		addCategoryMapping("negative-reg", "neg_regulation", overwrite);
+		addCategoryMapping("negativereg", "neg_regulation", overwrite);
 		addCategoryMapping("neg regulation", "neg_regulation", overwrite);
+		addCategoryMapping("neg_regulation", "neg_regulation", overwrite);
+		addCategoryMapping("neg-regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negregulation", "neg_regulation", overwrite);
 		addCategoryMapping("neg reg", "neg_regulation", overwrite);
+		addCategoryMapping("neg_reg", "neg_regulation", overwrite);
 		addCategoryMapping("neg-reg", "neg_regulation", overwrite);
 		addCategoryMapping("negreg", "neg_regulation", overwrite);
 		addCategoryMapping("neg", "neg_regulation", overwrite);
-		addCategoryMapping("negative regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negatively regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negatively_regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negatively-regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negativelyregulates", "neg_regulation", overwrite);
 	}
 
 }

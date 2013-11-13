@@ -6,7 +6,7 @@ package be.svlandeg.diffany.concepts;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class Edge
+public class Edge
 {
 	
 	protected String type;

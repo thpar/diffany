@@ -5,7 +5,7 @@ package be.svlandeg.diffany.concepts;
  * @author Sofie Van Landeghem
  *
  */
-public abstract class Node
+public class Node
 {
 	
 	protected String name;

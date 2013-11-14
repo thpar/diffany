@@ -8,6 +8,8 @@ import java.util.Map;
  * and their corresponding categories. It can define the category of a
  * differential edge from the categories of the two original edges.
  * 
+ * TODO: mapping between categories (is-a).
+ * 
  * @author Sofie Van Landeghem
  */
 public abstract class EdgeOntology
@@ -51,6 +53,14 @@ public abstract class EdgeOntology
 			throw new IllegalArgumentException(errormsg);
 		}
 		mapEdgeToCategory.put(edgeType.toLowerCase(), category.toLowerCase());
+	}
+	
+	/**
+	 * Remove all type-category mappings.
+	 */
+	public void removeAllCategories()
+	{
+		mapEdgeToCategory = new HashMap<String, String>();
 	}
 	
 

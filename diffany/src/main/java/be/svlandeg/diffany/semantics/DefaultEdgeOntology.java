@@ -1,69 +1,44 @@
 package be.svlandeg.diffany.semantics;
 
 /**
- * This class creates a default EdgeOntology that can be used to give initial
+ * This class creates a default TrippleEdgeOntology that can be used to give initial
  * suggestions to the user concerning edge type-to-category mappings.
  * 
  * @author Sofie Van Landeghem
  */
-public class DefaultEdgeOntology extends EdgeOntology
+public class DefaultEdgeOntology extends TrippleEdgeOntology
 {
 
 	/**
-	 * Create a default ontology, with generic edge categories and type-category
+	 * Create a default edge ontology, with generic edge categories and type-category
 	 * mappings.
 	 */
 	public DefaultEdgeOntology()
 	{
 		super();
 		insertDefaultMappings();
+		insertDefaultTripples();
 	}
 
-	@Override
-	// TODO revise current mappings from literature and possibly add more fancy stuff 
-	public String getDifferentialCategory(String referenceCategory, String conditionCategory) throws IllegalArgumentException
+	
+	/**
+	 * Create default tripples, translating the most common edge categories to differential edges
+	 * TODO revise current mappings from literature and possibly add more fancy stuff 
+	 */
+	public void insertDefaultTripples()
 	{
-		referenceCategory = referenceCategory.toLowerCase();
-		conditionCategory = conditionCategory.toLowerCase();
-		if (referenceCategory.equals(conditionCategory))
-		{
-			return null;
-		}
-		if (referenceCategory.equals("pos_regulation"))
-		{
-			if (conditionCategory.equals("neg_regulation"))
-				return "negative";
-		}
-		if (referenceCategory.equals("pos_regulation"))
-		{
-			if (conditionCategory.equals("regulation"))
-				return "negative";
-		}
-		if (referenceCategory.equals("regulation"))
-		{
-			if (conditionCategory.equals("neg_regulation"))
-				return "negative";
-		}
-		if (referenceCategory.equals("regulation"))
-		{
-			if (conditionCategory.equals("pos_regulation"))
-				return "positive";
-		}
-		if (referenceCategory.equals("neg_regulation"))
-		{
-			if (conditionCategory.equals("regulation"))
-				return "positive";
-		}
-		if (referenceCategory.equals("neg_regulation"))
-		{
-			if (conditionCategory.equals("pos_regulation"))
-				return "positive";
-		}
-		return referenceCategory + "_to_" + conditionCategory;
+		addTripple("pos_regulation","neg_regulation", "negative");
+		addTripple("pos_regulation","regulation", "negative");
+		
+		addTripple("regulation","neg_regulation", "negative");
+		addTripple("regulation","pos_regulation", "positive");
+		
+		addTripple("neg_regulation","regulation", "positive");
+		addTripple("neg_regulation","pos_regulation", "positive");
 	}
 
 	/**
-	 * Default mapping. In EdgeOntology, upper/lower casing is not taken into
+	 * Default mapping. In TrippleEdgeOntology, upper/lower casing is not taken into
 	 * account, so everything can be lower case.
 	 * TODO: add more default mappings!
 	 */

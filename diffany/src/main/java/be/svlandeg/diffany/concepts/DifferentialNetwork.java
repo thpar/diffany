@@ -4,10 +4,9 @@ import java.util.Set;
 
 /**
  * A differential network only contains differential edges between 2 (or more) networks,
- * one of which is always a static reference network.
+ * one of which is always a 'static' reference network.
  * 
  * @author Sofie Van Landeghem
- *
  */
 public class DifferentialNetwork extends Network
 {

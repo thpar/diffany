@@ -73,6 +73,30 @@ public abstract class Network
 	{
 		return edges;
 	}
+	/**
+	 * Get all edges in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network, the order of source/target will not be considered for these edges.
+	 * 
+	 * @param source the required source node 
+	 * @param target the required target node
+	 * @return the set of edges between these two nodes
+	 */
+	public Set<Edge> getAllEdges(Node source, Node target)
+	{
+		Set<Edge> resultEdges = new HashSet<Edge>();
+		for (Edge e : edges)
+		{
+			if (e.getSource().equals(source) && e.getTarget().equals(target))
+			{
+				resultEdges.add(e);
+			}
+			else if (e.isSymmetrical() && e.getSource().equals(target) && e.getTarget().equals(source))
+			{
+				resultEdges.add(e);
+			}
+		}
+		return resultEdges;
+	}
 	
 	/**
 	 * Define a (new) set of nodes for this network, overwriting previous data.
@@ -110,4 +134,5 @@ public abstract class Network
 	{
 		nodes.add(node);
 	}
+	
 }

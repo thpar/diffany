@@ -1,17 +1,8 @@
 package be.svlandeg.diffany.algorithms;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.SharedNetwork;
+import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -54,26 +45,38 @@ public class CalculateDiffOfTwo
 		SharedNetwork shared = new SharedNetwork(diff_name + CalculateDiff.overlapnamesuffix, allOriginals);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
+		Set<Node> allNodes = nm.getAllNodes(reference,  condition);
 
-		Set<Node> allNodes = new HashSet<Node>();
-		allNodes.addAll(reference.getNodes());
-		allNodes.addAll(condition.getNodes());
+		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
-		Map<String, Node> allConditionNodes = new HashMap<String, Node>();
-		allNodes.addAll(reference.getNodes());
-		allNodes.addAll(condition.getNodes());
-		
 		for (Node source1 : allNodes) // source node in reference network
 		{
 			// get the equivalent source node in the condition network
-			Set<Node> sources2 = nodeMapping.get(source1);
-			Node source2 = getSingleNode(sources2);
+			Node source2;
+			if (nodeMapping.containsKey(source1))
+			{
+				Set<Node> sources2 = nodeMapping.get(source1);
+				source2 = getSingleNode(sources2);
+			}
+			else
+			// source1 is not actually a part of the reference network
+			{
+				source2 = source1;
+			}
 
 			for (Node target1 : allNodes) // target node in reference network
 			{
 				// get the equivalent target node in the condition network
-				Set<Node> targets2 = nodeMapping.get(target1);
-				Node target2 = getSingleNode(targets2);
+				Node target2;
+				if (nodeMapping.containsKey(target1))
+				{
+					Set<Node> targets2 = nodeMapping.get(target1);
+					target2 = getSingleNode(targets2);
+				}
+				else	// target1 is not actually a part of the reference network
+				{
+					target2 = target1;
+				}
 
 				// get the reference edge
 				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1, true);
@@ -90,19 +93,19 @@ public class CalculateDiffOfTwo
 				String diff_edge_category = eo.getDifferentialCategory(getEdgeCat(edge1, eo), getEdgeCat(edge2, eo));
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
-				if (! allConditionNodes.containsKey(sourceconsensus))
+				if (!allDiffNodes.containsKey(sourceconsensus))
 				{
-					allConditionNodes.put(sourceconsensus, new Node(sourceconsensus));
+					allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
 				}
-				Node sourceresult = allConditionNodes.get(sourceconsensus);
-				
+				Node sourceresult = allDiffNodes.get(sourceconsensus);
+
 				String targetconsensus = nm.getConsensusName(target1, target2);
-				if (! allConditionNodes.containsKey(targetconsensus))
+				if (!allDiffNodes.containsKey(targetconsensus))
 				{
-					allConditionNodes.put(targetconsensus, new Node(targetconsensus));
+					allDiffNodes.put(targetconsensus, new Node(targetconsensus));
 				}
-				Node targetresult = allConditionNodes.get(targetconsensus);
-				
+				Node targetresult = allDiffNodes.get(targetconsensus);
+
 				// overlapping edge: either same category, or both void
 				if (diff_edge_category == EdgeOntology.VOID_EDGE)
 				{
@@ -126,7 +129,7 @@ public class CalculateDiffOfTwo
 		}
 		diff.removeRedundantEdges();
 		shared.removeRedundantEdges();
-		
+
 		diff.setSharedNetwork(shared);
 		return diff;
 	}
@@ -138,13 +141,13 @@ public class CalculateDiffOfTwo
 	 */
 	private Node getSingleNode(Set<Node> nodes)
 	{
+		if (nodes == null || nodes.isEmpty())
+		{
+			return null;
+		}
 		if (nodes.size() > 1)
 		{
 			throw new UnsupportedOperationException("This algorithm currently only supports 1-1 node mappings");
-		}
-		if (nodes.isEmpty())
-		{
-			return null;
 		}
 		return nodes.iterator().next();
 	}

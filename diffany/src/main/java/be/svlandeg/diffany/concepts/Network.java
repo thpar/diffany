@@ -159,6 +159,7 @@ public abstract class Network
 	 */
 	public void removeRedundantEdges()
 	{
+		// remove duplicate symmetrical edges between source-target and target-source
 		for (Node n1 : nodes)
 		{
 			String name1 = n1.getName();

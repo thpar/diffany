@@ -1,9 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
@@ -45,6 +42,30 @@ public class DefaultNodeMapper implements NodeMapper
 	}
 
 	@Override
+	public Set<Node> getAllNodes(Network network1, Network network2)
+	{
+		Set<Node> allNodes = new HashSet<Node>();
+		Map<Node, Set<Node>> allEquals = getAllEquals(network1, network2);
+		allNodes.addAll(allEquals.keySet());
+		for (Node node2 : network2.getNodes())
+		{
+			boolean hasEqual = false;
+			for (Set<Node> set : allEquals.values())
+			{
+				if (set.contains(node2))
+				{
+					hasEqual = true;
+				}
+			}
+			if (! hasEqual)
+			{
+				allNodes.add(node2);
+			}
+		}
+		return allNodes;
+	}
+
+	@Override
 	public String getConsensusName(Node node1, Node node2) throws IllegalArgumentException
 	{
 		if (node1 != null && node2 == null)
@@ -62,8 +83,9 @@ public class DefaultNodeMapper implements NodeMapper
 		}
 		if (node1.getName(false).endsWith(node1.getName(false)))
 		{
-			return node1.getName(false); 	// keep casing information if it is the same
+			return node1.getName(false); // keep casing information if it is the same
 		}
-		return node1.getName(true);			// return lowercase otherwise
+		return node1.getName(true); // return lowercase otherwise
 	}
+
 }

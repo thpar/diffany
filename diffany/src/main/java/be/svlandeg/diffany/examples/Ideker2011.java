@@ -6,76 +6,79 @@ import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.*;
 
+
 /** 
- * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
- * http://www.sciencemag.org/content/330/6009/1385.full.pdf
+ * This class provides examples taken from the Ideker et al, Molecular Systems Biology 2011 paper.
+ * http://www.nature.com/msb/journal/v8/n1/pdf/msb201199.pdf
  * 
  * @author Sofie Van Landeghem
  */
-public class Bandyopadhyay2010 extends GenericExample
+public class Ideker2011 extends GenericExample
 {
 
 	/**
-	 * Get a project with the networks as described in figure 1C of this paper.
+	 * Get a project with the networks as described in figure 3A of this paper.
 	 * @return an example project illustrating figure 1C.
 	 */
-	public Project getProjectFigure1C()
+	public Project getProjectFigure3A()
 	{
-		String name = "Bandyopadhyay2010_fig1C";
-		ReferenceNetwork r = getReferenceFigure1C();
-		Set<ConditionNetwork> c = getConditionFigure1C();
+		String name = "Ideker2011_fig3A";
+		ReferenceNetwork r = getReferenceFigure3A();
+		Set<ConditionNetwork> c = getConditionFigure3A();
 		EdgeOntology eo = new DefaultSymmEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
 
-
 	/**
-	 * Get the reference network depicted in figure 1C.
+	 * Get the reference network depicted in figure 3A.
 	 * @return the reference network
 	 */
-	private ReferenceNetwork getReferenceFigure1C()
+	private ReferenceNetwork getReferenceFigure3A()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		nodes.put("E", new Node("E"));
+		nodes.put("F", new Node("F"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Untreated");
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("F"), true));
 		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true));
 		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true));
-		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true));
+		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("E"), true));
 		return network;
 	}
 
 	/**
-	 * Get the condition-specific network depicted in figure 1C.
+	 * Get the condition-specific network depicted in figure 3A.
 	 * @return the condition-specific network
 	 */
-	private Set<ConditionNetwork> getConditionFigure1C()
+	private Set<ConditionNetwork> getConditionFigure3A()
 	{
 		Set<ConditionNetwork> cnetworks = new HashSet<ConditionNetwork>();
 
-		String description = "treated with MMS";
+		String description = "Unknown condition";
 		Condition c = new Condition(description);
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Treated", conditions);
-
+		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions);
+		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
-		
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true));
+		nodes.put("C", new Node("C"));
+		nodes.put("F", new Node("F"));
 
+		network.addEdge(new Edge("negative", nodes.get("F"), nodes.get("A"), true));
+		network.addEdge(new Edge("positive", nodes.get("B"), nodes.get("A"), true));
+		network.addEdge(new Edge("negative", nodes.get("C"), nodes.get("A"), true));
+		network.addEdge(new Edge("negative", nodes.get("D"), nodes.get("A"), true));
+		
 		cnetworks.add(network);
 		return cnetworks;
 	}
@@ -85,10 +88,10 @@ public class Bandyopadhyay2010 extends GenericExample
 	 */
 	public static void main(String[] args)
 	{
-		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
+		Ideker2011 ex = new Ideker2011();
 		
-		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
-		Project p = ex.getProjectFigure1C();
+		System.out.println("Defining network for Ideker2011 figure 3A");
+		Project p = ex.getProjectFigure3A();
 		
 		System.out.println("Calculating differential networks ");
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p);
@@ -96,5 +99,4 @@ public class Bandyopadhyay2010 extends GenericExample
 		System.out.println("");
 		ex.printAllNetworks(p);
 	}
-	
 }

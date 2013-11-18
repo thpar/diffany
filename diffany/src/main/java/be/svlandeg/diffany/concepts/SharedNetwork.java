@@ -4,9 +4,12 @@ import java.util.Set;
 
 
 /**
- * A shared network is the counterpart of a differential network: containing everything but the differential edges between 2 (or more) networks,
- * a shared network stores the overlap or common edges between them.
+ * A shared network is the counterpart of a differential network: containing everything but the differential edges 
+ * between 2 (or more) networks, a shared network stores the overlap or common edges between them.
  * Such a network may be useful to study 'house-keeping' interactions.
+ * 
+ * In contrast to a differential network, a shared network can also be between two condition-specific networks 
+ * and doesn't necessarily need a reference network.
  * 
  * @author Sofie Van Landeghem
  */

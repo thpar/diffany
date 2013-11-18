@@ -13,6 +13,8 @@ public class DifferentialNetwork extends Network
 	
 	protected ReferenceNetwork reference;
 	protected Set<ConditionNetwork> conditionNetworks;
+	protected SharedNetwork shared;
+	
 	
 	/**
 	 * Create a new differential network, referring to exactly one static reference network
@@ -40,6 +42,24 @@ public class DifferentialNetwork extends Network
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.conditionNetworks = conditionNetworks;
+	}
+	
+	/**
+	 * Set the shared ('house-keeping') network that is associated to this differential network
+	 * @param shared the complementary shared network
+	 */
+	public void setSharedNetwork(SharedNetwork shared)
+	{
+		this.shared = shared;
+	}
+	
+	/**
+	 * Get the shared ('house-keeping') network associated to this differential network
+	 * @return the shared network that complements this differential network (may be null)
+	 */
+	public SharedNetwork getSharedNetwork()
+	{
+		return shared;
 	}
 
 	/* (non-Javadoc)

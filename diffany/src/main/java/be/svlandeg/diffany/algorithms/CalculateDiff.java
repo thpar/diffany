@@ -1,11 +1,7 @@
 package be.svlandeg.diffany.algorithms;
 
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
+import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.semantics.*;
 
 /**
  * This class serves as an abstract layer between a GUI and the actual technical implementations of various algorithms 

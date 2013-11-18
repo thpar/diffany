@@ -1,31 +1,18 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.Condition;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.DefaultSymmEdgeOntology;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
+import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.semantics.*;
+
 
 /** 
  * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
 
  * @author Sofie Van Landeghem
  */
-public class Bandyopadhyay2010
+public class Bandyopadhyay2010 extends GenericExample
 {
 
 	/**
@@ -101,35 +88,15 @@ public class Bandyopadhyay2010
 	public static void main(String[] args)
 	{
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
+		
+		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
 		Project p = ex.getProjectFigure1C();
-
-		System.out.println("Reference network : ");
-		ReferenceNetwork r = p.getReferenceNetwork();
-		printNetwork(r);
-
-		System.out.println("Condition-specific networks : ");
-		Collection<ConditionNetwork> cnetworks = p.getConditionNetworks();
-		for (ConditionNetwork c : cnetworks)
-		{
-			printNetwork(c);
-		}
+		
 		System.out.println("Calculating differential networks ");
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p);
+		
 		System.out.println("");
-
-		System.out.println("Condition-specific networks : ");
-		Collection<DifferentialNetwork> dnetworks = p.getDifferentialNetworks();
-		for (DifferentialNetwork d : dnetworks)
-		{
-			printNetwork(d);
-			printNetwork(d.getSharedNetwork());
-		}
+		ex.printAllNetworks(p);
 	}
-
-	private static void printNetwork(Network n)
-	{
-		System.out.println(n.getStringRepresentation());
-		System.out.println(n.writeEdgesTab());
-		System.out.println("");
-	}
+	
 }

@@ -25,8 +25,8 @@ public class DefaultSymmEdgeOntology extends DefaultEdgeOntology
 		allCategories.put("neg_regulation", true);
 		allCategories.put("regulation", true);
 
-		allCategories.put("negative", true);
-		allCategories.put("positive", true);
+		allCategories.put("increase", true);
+		allCategories.put("decrease", true);
 
 		allCategories.put("ppi", true);
 	}

@@ -46,8 +46,18 @@ public interface NodeMapper
 	 * 
 	 * @param network1 the first network
 	 * @param network2 the second network
-	 * @return all equal nodes, mapping network 1 to network 2.
+	 * @return all equal nodes, mapping network 1 to network 2
 	 */
 	public abstract Map<Node, Set<Node>> getAllEquals(Network network1, Network network2);
+	
+	/**
+	 * Get all nodes, without duplicating equal nodes. Start with all nodes from network 1, 
+	 * then take all nodes from network 2 that do not have an equal counterpart in network 2.
+	 * 
+	 * @param network1 the first network
+	 * @param network2 the second network
+	 * @return all nodes in both network, removing duplicates using the areEqual method
+	 */
+	public abstract Set<Node> getAllNodes(Network network1, Network network2);
 
 }

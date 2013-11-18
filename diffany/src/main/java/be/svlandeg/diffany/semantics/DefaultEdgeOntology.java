@@ -31,8 +31,8 @@ public class DefaultEdgeOntology extends TrippleEdgeOntology
 		allCategories.put("neg_regulation", false);
 		allCategories.put("regulation", false);
 
-		allCategories.put("negative", false);
-		allCategories.put("positive", false);
+		allCategories.put("decrease", false);
+		allCategories.put("increase", false);
 
 		allCategories.put("ppi", true);
 	}
@@ -43,20 +43,21 @@ public class DefaultEdgeOntology extends TrippleEdgeOntology
 	 */
 	private void insertDefaultTripples()
 	{
-		addTripple("pos_regulation", "neg_regulation", "negative");
-		addTripple("pos_regulation", "regulation", "negative");
-		addTripple("pos_regulation", VOID_EDGE, "negative");
-		addTripple(VOID_EDGE, "neg_regulation", "negative");
+		addTripple("pos_regulation", "neg_regulation", "decrease");
+		addTripple("pos_regulation", "regulation", "decrease");
+		addTripple("pos_regulation", VOID_EDGE, "decrease");
+		addTripple(VOID_EDGE, "neg_regulation", "decrease");
 
-		addTripple("regulation", "neg_regulation", "negative");
-		addTripple("regulation", "pos_regulation", "positive");
-		//addTripple("regulation", VOID_EDGE, "??");
-		//addTripple(VOID_EDGE, "regulation", "??");
+		addTripple("regulation", "neg_regulation", "decrease");
+		addTripple("regulation", VOID_EDGE, "decrease");
+		
+		addTripple("regulation", "pos_regulation", "increase");
+		addTripple(VOID_EDGE, "regulation", "increase");
 
-		addTripple("neg_regulation", "regulation", "positive");
-		addTripple("neg_regulation", "pos_regulation", "positive");
-		addTripple("neg_regulation", VOID_EDGE, "positive");
-		addTripple(VOID_EDGE, "pos_regulation", "positive");
+		addTripple("neg_regulation", "regulation", "increase");
+		addTripple("neg_regulation", "pos_regulation", "increase");
+		addTripple("neg_regulation", VOID_EDGE, "increase");
+		addTripple(VOID_EDGE, "pos_regulation", "increase");
 	}
 
 	/**

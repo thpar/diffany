@@ -47,11 +47,23 @@ public class DefaultNodeMapper implements NodeMapper
 	@Override
 	public String getConsensusName(Node node1, Node node2) throws IllegalArgumentException
 	{
-		if (!areEqual(node1, node2))
+		if (node1 != null && node2 == null)
+		{
+			return node1.getName(false);
+		}
+		if (node1 == null && node2 != null)
+		{
+			return node2.getName(false);
+		}
+		if ((node1 == null && node2 == null) || !areEqual(node1, node2))
 		{
 			String errormsg = "A consensus name can only be defined for two equal nodes!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		return node1.getName(true);
+		if (node1.getName(false).endsWith(node1.getName(false)))
+		{
+			return node1.getName(false); 	// keep casing information if it is the same
+		}
+		return node1.getName(true);			// return lowercase otherwise
 	}
 }

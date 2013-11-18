@@ -2,7 +2,6 @@ package be.svlandeg.diffany.semantics;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import be.svlandeg.diffany.concepts.Edge;
 
@@ -18,22 +17,22 @@ import be.svlandeg.diffany.concepts.Edge;
 public abstract class EdgeOntology
 {
 
-	private Map<String, String> mapEdgeToCategory;
-	private Set<String> symmetricalCategories;
+	public static final String VOID_EDGE = "VOID";
+	protected Map<String, String> mapEdgeToCategory;
+	protected Map<String, Boolean> allCategories;
 
 	/**
 	 * Create an empty ontology, with no edge categories or any mapping defined
 	 */
 	public EdgeOntology()
 	{
-		mapEdgeToCategory = new HashMap<String, String>();
+		removeAllCategoriesAndMappings();
 	}
 
 	/**
 	 * Get the semantic category of a certain edge type. Matching is done independent of upper/lower casing.
 	 * 
-	 * @param edgeType
-	 *            the original type of the edge in a network
+	 * @param edgeType the original type of the edge in a network
 	 * @return the semantic category of that edge or null if it is not mapped in this ontology
 	 */
 	public String getCategory(String edgeType)
@@ -46,43 +45,57 @@ public abstract class EdgeOntology
 	 * 
 	 * @param category the semantic category of an edge
 	 * @return whether or not it is symmetrical
+	 * @throws IllegalArgumentException if the category is not defined in this ontology
 	 */
-	public boolean isSymmetrical(String category)
+	public boolean isSymmetrical(String category) throws IllegalArgumentException
 	{
-		if (! mapEdgeToCategory.containsValue(category))
+		if (! allCategories.containsKey(category))
 		{
-			String errormsg = "The provided edge category does not exist in this ontology!";
+			String errormsg = "The provided edge category ('" + category + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		return symmetricalCategories.contains(category);
+		return allCategories.get(category);
 	}
+	
 
 	/**
 	 * Create a new mapping from edge type to category. Matching is done independent of upper/lower casing.
 	 * 
-	 * @param edgeType the original edge type - should not have be defined in this ontology before
+	 * @param edgeType the original edge type - should not have been defined in this ontology before
 	 * @param category the category to be assigned to this edge type
 	 * @param overwrite determines whether or not this function may overwrite previous mappings of the same edge type
-	 * @throws IllegalArgumentException when the edge type was already mapped in this ontology and overwrite is off
+	 * @throws IllegalArgumentException when the edge type was already mapped in this ontology and overwrite is off,
+	 * 	or when the specified category is not part of this ontology
 	 */
-	public void addCategoryMapping(String edgeType, String category, boolean symmetrical, boolean overwrite) throws IllegalArgumentException
+	public void addCategoryMapping(String edgeType, String category, boolean overwrite) throws IllegalArgumentException
 	{
+		if (! allCategories.containsKey(category))
+		{
+			String errormsg = "The provided edge category ('" + category + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		if (!overwrite && mapEdgeToCategory.containsKey(edgeType.toLowerCase()))
 		{
 			String errormsg = "The provided edge type is already mapped to a category!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		mapEdgeToCategory.put(edgeType.toLowerCase(), category.toLowerCase());
-		if (symmetrical)
-		{
-			symmetricalCategories.add(category);
-		}
 	}
 	
 	/**
-	 * Remove all type-category mappings.
+	 * Remove all categories and type-categoryMappings
 	 */
-	public void removeAllCategories()
+	public void removeAllCategoriesAndMappings()
+	{
+		allCategories = new HashMap<String, Boolean>();
+		allCategories.put(VOID_EDGE, true);
+		mapEdgeToCategory = new HashMap<String, String>();
+	}
+	
+	/**
+	 * Remove all type-category mappings (keeping all defined categories).
+	 */
+	public void removeAllCategoryMappings()
 	{
 		mapEdgeToCategory = new HashMap<String, String>();
 	}
@@ -91,29 +104,14 @@ public abstract class EdgeOntology
 	/**
 	 * Method that defines the differential edge category from the corresponding edge categories in the reference and condition-specific networks.
 	 * Category names are treated independent of upper/lower casing.
-	 * Should only return null when the edge should be deleted (i.e. not present in differential network!)
+	 * Returns VOID_EDGE when the edge should be deleted (i.e. not present in differential network).
 	 * 
-	 * @param referenceCategory the category of the edge in the reference network
-	 * @param conditionCategory the category of the edge in the condition-specific network
-	 * @return the category of the edge in the differential network, or null when there should be no such edge
+	 * @param referenceCategory the category of the edge in the reference network (or VOID_EDGE when non-existing)
+	 * @param conditionCategory the category of the edge in the condition-specific network (or VOID_EDGE when non-existing)
+	 * @return the category of the edge in the differential network, or VOID_EDGE when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the category of the reference or condition-specific edge does not exist in this ontology
 	 */
 	public abstract String getDifferentialCategory(String referenceCategory, String conditionCategory) throws IllegalArgumentException;
 	
-	/**
-	 * Method that defines the differential edge category from the corresponding edges in the reference and condition-specific networks.
-	 * Category names are treated independent of upper/lower casing.
-	 * Should only return null when the edge should be deleted (i.e. not present in differential network!)
-	 * 
-	 * @param referenceEdge the edge in the reference network
-	 * @param conditionEdge the edge in the condition-specific network
-	 * @return the category of the edge in the differential network, or null when there should be no such edge
-	 * @throws IllegalArgumentException
-	 */
-	public String getDifferentialCategory(Edge referenceEdge, Edge conditionEdge) throws IllegalArgumentException
-	{
-		return getDifferentialCategory(getCategory(referenceEdge.getType()), getCategory(conditionEdge.getType()));
-	}
 	
-
 }

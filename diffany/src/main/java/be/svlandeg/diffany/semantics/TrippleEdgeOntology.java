@@ -39,6 +39,21 @@ public class TrippleEdgeOntology extends EdgeOntology
 			String errormsg = "None of the categories in the tripple should be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		if (! allCategories.containsKey(referenceCat))
+		{
+			String errormsg = "The provided edge category ('" + referenceCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! allCategories.containsKey(conditionCat))
+		{
+			String errormsg = "The provided edge category ('" + conditionCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! allCategories.containsKey(differentialCat))
+		{
+			String errormsg = "The provided edge category ('" + differentialCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		tripples.add(new EdgeTripple(referenceCat.toLowerCase(), conditionCat.toLowerCase(), differentialCat.toLowerCase()));
 	}
 	
@@ -59,12 +74,22 @@ public class TrippleEdgeOntology extends EdgeOntology
 			String errormsg = "None of the categories should be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		if (! allCategories.containsKey(referenceCat))
+		{
+			String errormsg = "The provided edge category ('" + referenceCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! allCategories.containsKey(conditionCat))
+		{
+			String errormsg = "The provided edge category ('" + conditionCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		referenceCat = referenceCat.toLowerCase();
 		conditionCat = conditionCat.toLowerCase();
 		
 		if (referenceCat.equals(conditionCat))
 		{
-			return null;
+			return VOID_EDGE;
 		}
 		for (EdgeTripple t : tripples)
 		{

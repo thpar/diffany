@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
+
 /**
  * This class creates a default TrippleEdgeOntology that can be used to give initial
  * suggestions to the user concerning edge type-to-category mappings.
@@ -10,31 +11,52 @@ public class DefaultEdgeOntology extends TrippleEdgeOntology
 {
 
 	/**
-	 * Create a default edge ontology, with generic edge categories and type-category
-	 * mappings.
+	 * Create a default edge ontology, with generic edge categories and type-category mappings.
 	 */
 	public DefaultEdgeOntology()
 	{
 		super();
+		removeAllCategoriesAndMappings();
+		defineCategories();
 		insertDefaultMappings();
 		insertDefaultTripples();
 	}
 
-	
+	/**
+	 * Define all the categories that are defined in this ontology.
+	 */
+	protected void defineCategories()
+	{
+		allCategories.put("pos_regulation", false);
+		allCategories.put("neg_regulation", false);
+		allCategories.put("regulation", false);
+
+		allCategories.put("negative", false);
+		allCategories.put("positive", false);
+
+		allCategories.put("ppi", true);
+	}
+
 	/**
 	 * Create default tripples, translating the most common edge categories to differential edges
 	 * TODO revise current mappings from literature and possibly add more fancy stuff 
 	 */
-	public void insertDefaultTripples()
+	private void insertDefaultTripples()
 	{
-		addTripple("pos_regulation","neg_regulation", "negative");
-		addTripple("pos_regulation","regulation", "negative");
-		
-		addTripple("regulation","neg_regulation", "negative");
-		addTripple("regulation","pos_regulation", "positive");
-		
-		addTripple("neg_regulation","regulation", "positive");
-		addTripple("neg_regulation","pos_regulation", "positive");
+		addTripple("pos_regulation", "neg_regulation", "negative");
+		addTripple("pos_regulation", "regulation", "negative");
+		addTripple("pos_regulation", VOID_EDGE, "negative");
+		addTripple(VOID_EDGE, "neg_regulation", "negative");
+
+		addTripple("regulation", "neg_regulation", "negative");
+		addTripple("regulation", "pos_regulation", "positive");
+		//addTripple("regulation", VOID_EDGE, "??");
+		//addTripple(VOID_EDGE, "regulation", "??");
+
+		addTripple("neg_regulation", "regulation", "positive");
+		addTripple("neg_regulation", "pos_regulation", "positive");
+		addTripple("neg_regulation", VOID_EDGE, "positive");
+		addTripple(VOID_EDGE, "pos_regulation", "positive");
 	}
 
 	/**
@@ -47,64 +69,66 @@ public class DefaultEdgeOntology extends TrippleEdgeOntology
 		boolean overwrite = false;
 
 		// PPI category and common synonyms
-		addCategoryMapping("ppi", "ppi", true, overwrite);
-		addCategoryMapping("protein-protein interaction", "ppi", true,  overwrite);
-		addCategoryMapping("proteinprotein interaction", "ppi", true,  overwrite);
-		addCategoryMapping("proteinproteininteraction", "ppi", true,  overwrite);
-		addCategoryMapping("binds", "ppi", true,  overwrite);
-		addCategoryMapping("bind", "ppi", true,  overwrite);
-		addCategoryMapping("binding", "ppi", true,  overwrite);
+		addCategoryMapping("ppi", "ppi", overwrite);
+		addCategoryMapping("protein-protein interaction", "ppi", overwrite);
+		addCategoryMapping("proteinprotein interaction", "ppi", overwrite);
+		addCategoryMapping("proteinproteininteraction", "ppi", overwrite);
+		addCategoryMapping("binds", "ppi", overwrite);
+		addCategoryMapping("bind", "ppi", overwrite);
+		addCategoryMapping("binding", "ppi", overwrite);
 
 		// regulation category and common synonyms
-		addCategoryMapping("regulation", "regulation", false, overwrite);
-		addCategoryMapping("regulates", "regulation", false, overwrite);
-		addCategoryMapping("regulate", "regulation", false, overwrite);
+		addCategoryMapping("regulation", "regulation", overwrite);
+		addCategoryMapping("regulates", "regulation", overwrite);
+		addCategoryMapping("regulate", "regulation", overwrite);
 
 		// positive regulation category and common synonyms
-		addCategoryMapping("positive regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("positive_regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("positive-regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("positiveregulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("positive reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("positive-reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("positive_reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("positivereg", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos_regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos-regulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("posregulation", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos-reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos_reg", "pos_regulation", false, overwrite);
-		addCategoryMapping("posreg", "pos_regulation", false, overwrite);
-		addCategoryMapping("pos", "pos_regulation", false, overwrite);
-		addCategoryMapping("positively regulates", "pos_regulation", false, overwrite);
-		addCategoryMapping("positively_regulates", "pos_regulation", false, overwrite);
-		addCategoryMapping("positively-regulates", "pos_regulation", false, overwrite);
-		addCategoryMapping("positivelyregulates", "pos_regulation", false, overwrite);
+		addCategoryMapping("positive regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positive_regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positive-regulation", "pos_regulation", overwrite);
+		addCategoryMapping("positiveregulation", "pos_regulation", overwrite);
+		addCategoryMapping("positive reg", "pos_regulation", overwrite);
+		addCategoryMapping("positive-reg", "pos_regulation", overwrite);
+		addCategoryMapping("positive_reg", "pos_regulation", overwrite);
+		addCategoryMapping("positivereg", "pos_regulation", overwrite);
+		addCategoryMapping("pos regulation", "pos_regulation", overwrite);
+		addCategoryMapping("pos_regulation", "pos_regulation", overwrite);
+		addCategoryMapping("pos-regulation", "pos_regulation", overwrite);
+		addCategoryMapping("posregulation", "pos_regulation", overwrite);
+		addCategoryMapping("pos reg", "pos_regulation", overwrite);
+		addCategoryMapping("pos-reg", "pos_regulation", overwrite);
+		addCategoryMapping("pos_reg", "pos_regulation", overwrite);
+		addCategoryMapping("posreg", "pos_regulation", overwrite);
+		addCategoryMapping("pos", "pos_regulation", overwrite);
+		addCategoryMapping("positive", "pos_regulation", overwrite);
+		addCategoryMapping("positively regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positively_regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positively-regulates", "pos_regulation", overwrite);
+		addCategoryMapping("positivelyregulates", "pos_regulation", overwrite);
 
 		// positive regulation category and common synonyms
-		addCategoryMapping("negative regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("negative_regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("negative-regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("negativeregulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("negative reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("negative_reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("negative-reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("negativereg", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg_regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg-regulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("negregulation", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg_reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg-reg", "neg_regulation", false, overwrite);
-		addCategoryMapping("negreg", "neg_regulation", false, overwrite);
-		addCategoryMapping("neg", "neg_regulation", false, overwrite);
-		addCategoryMapping("negatively regulates", "neg_regulation", false, overwrite);
-		addCategoryMapping("negatively_regulates", "neg_regulation", false, overwrite);
-		addCategoryMapping("negatively-regulates", "neg_regulation", false, overwrite);
-		addCategoryMapping("negativelyregulates", "neg_regulation", false, overwrite);
+		addCategoryMapping("negative regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negative_regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negative-regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negativeregulation", "neg_regulation", overwrite);
+		addCategoryMapping("negative reg", "neg_regulation", overwrite);
+		addCategoryMapping("negative_reg", "neg_regulation", overwrite);
+		addCategoryMapping("negative-reg", "neg_regulation", overwrite);
+		addCategoryMapping("negativereg", "neg_regulation", overwrite);
+		addCategoryMapping("neg regulation", "neg_regulation", overwrite);
+		addCategoryMapping("neg_regulation", "neg_regulation", overwrite);
+		addCategoryMapping("neg-regulation", "neg_regulation", overwrite);
+		addCategoryMapping("negregulation", "neg_regulation", overwrite);
+		addCategoryMapping("neg reg", "neg_regulation", overwrite);
+		addCategoryMapping("neg_reg", "neg_regulation", overwrite);
+		addCategoryMapping("neg-reg", "neg_regulation", overwrite);
+		addCategoryMapping("negreg", "neg_regulation", overwrite);
+		addCategoryMapping("neg", "neg_regulation", overwrite);
+		addCategoryMapping("negative", "neg_regulation", overwrite);
+		addCategoryMapping("negatively regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negatively_regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negatively-regulates", "neg_regulation", overwrite);
+		addCategoryMapping("negativelyregulates", "neg_regulation", overwrite);
 	}
 
 }

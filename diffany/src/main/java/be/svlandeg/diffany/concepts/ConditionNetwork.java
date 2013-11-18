@@ -58,7 +58,6 @@ public class ConditionNetwork extends Network
 		String result = name + ": "; 
 		if (conditions != null && ! conditions.isEmpty())
 		{
-			result = "";
 			for (Condition c : conditions)
 			{
 				result += c.getDescription() + " / ";

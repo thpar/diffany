@@ -18,8 +18,10 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class Project
+public class Project
 {
+	
+	protected String name;
 
 	protected EdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
@@ -32,6 +34,7 @@ public abstract class Project
 	 * Create a new project with a reference network, set of condition-specific networks, 
 	 * differential networks, a node mapper and an edge ontology that can interpret the differential edges.
 	 * 
+	 * @param name the name of this project (not null!)
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param differentials the differential networks (not null!)
@@ -40,8 +43,15 @@ public abstract class Project
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public Project(ReferenceNetwork reference, Set<ConditionNetwork> conditions, Set<DifferentialNetwork> differentials, EdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
+	public Project(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditions, Set<DifferentialNetwork> differentials, EdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
 	{
+		if (name == null)
+		{
+			String errormsg = "The name of a project should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		this.name = name;
+		
 		setReference(reference);
 		setConditions(conditions);
 		setDifferentials(differentials);
@@ -54,6 +64,7 @@ public abstract class Project
 	 * a node mapper and  and an edge ontology that can interpret the differential edges. 
 	 * The set of differential networks will be empty but can be calculated with the CalculateDiff class.
 	 * 
+	 * @param name the name of this project (not null!)
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param edgeOntology the edge ontology (not null!)
@@ -61,9 +72,9 @@ public abstract class Project
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public Project(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology edgeOntology, NodeMapper nodeMapper)
+	public Project(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology edgeOntology, NodeMapper nodeMapper)
 	{
-		this(reference, conditions, new HashSet<DifferentialNetwork>(), edgeOntology, nodeMapper);
+		this(name, reference, conditions, new HashSet<DifferentialNetwork>(), edgeOntology, nodeMapper);
 	}
 
 	/**
@@ -75,13 +86,25 @@ public abstract class Project
 	{
 		loadFromFile(location);
 	}
+	
+	/**
+	 * Return the name of this project
+	 * @return the name of this project
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
 	/**
 	 * Save the project data to a specific file location
 	 * 
 	 * @param fileLocation the location where the project should be saved
 	 */
-	public abstract void saveProject(String fileLocation);
+	public void saveProject(String fileLocation)
+	{
+		throw new UnsupportedOperationException("Saving of project not yet implemented");
+	}
 
 	/**
 	 * Load the project data from a specific file location. 
@@ -89,7 +112,10 @@ public abstract class Project
 	 * 
 	 * @param fileLocation the location from where the project should be loaded
 	 */
-	public abstract void loadFromFile(String fileLocation);
+	public void loadFromFile(String fileLocation)
+	{
+		throw new UnsupportedOperationException("Loading of project not yet implemented");
+	}
 
 	/**
 	 * Set the edge ontology for this project.

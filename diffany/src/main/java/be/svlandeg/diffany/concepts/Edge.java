@@ -147,5 +147,16 @@ public class Edge
 			throw new IllegalArgumentException(errormsg);
 		}
 	}
+	
+	/**
+	 * Get a string representation of this edge.
+	 * More specifically, print it as: source.name - target.name - edge.type - symmetrical - weight - negated.
+	 * @return a string representation of this edge, ready for printing
+	 */
+	public String writeToTab()
+	{
+		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		return result;
+	}
 
 }

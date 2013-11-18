@@ -11,8 +11,6 @@ package be.svlandeg.diffany.concepts;
 public class ReferenceNetwork extends Network
 {
 	
-	protected String name;
-	
 	/**
 	 * Create a new static reference network.
 	 * 

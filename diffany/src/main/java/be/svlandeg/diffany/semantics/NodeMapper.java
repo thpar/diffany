@@ -29,7 +29,8 @@ public interface NodeMapper
 	public abstract boolean areEqual(Node node1, Node node2);
 	
 	/**
-	 * Return a 'consensus' name for two nodes that are equal
+	 * Return a 'consensus' name for two nodes that are equal. 
+	 * If either of the two nodes is null, the other's name will be given.
 	 * 
 	 * @param node1
 	 *            a node in the first network

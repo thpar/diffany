@@ -12,7 +12,7 @@ public class Node
 	
 	/**
 	 * Create a new node with a specific name
-	 * @param name the name of this node
+	 * @param name the name of this node - should be unique within a network!
 	 */
 	public Node(String name) throws IllegalArgumentException
 	{

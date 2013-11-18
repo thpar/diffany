@@ -62,21 +62,20 @@ public class CalculateDiff
 	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'
 	 * The name of the corresponding shared network will get an additional appendix '_overlap'.
 	 * 
+	 * All calculated differential networks are added to the project directly.
+	 * 
 	 * @param p the project which stores the reference and condition-specific networks.
-	 * @return the set of differential networks, 1 for each condition-specific network
 	 */
-	public Set<DifferentialNetwork> calculateAllPairwiseDifferentialNetworks(Project p)
+	public void calculateAllPairwiseDifferentialNetworks(Project p)
 	{
-		Set<DifferentialNetwork> diffs = new HashSet<DifferentialNetwork>();
 		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		for (ConditionNetwork c : p.getConditionNetworks())
 		{
 			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm);
-			diffs.add(diff);
+			p.addDifferential(diff);
 		}
-		return diffs;
 	}
 
 }

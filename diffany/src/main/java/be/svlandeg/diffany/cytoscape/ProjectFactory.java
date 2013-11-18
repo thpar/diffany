@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.cytoscape.bridge;
+package be.svlandeg.diffany.cytoscape;
 
 
 /**

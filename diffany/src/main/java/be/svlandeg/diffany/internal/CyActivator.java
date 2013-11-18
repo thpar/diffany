@@ -25,17 +25,18 @@ public class CyActivator extends AbstractCyActivator
 {
 
 	@Override
-	public void start(BundleContext context) throws Exception
-	{
+	public void start(BundleContext context) throws Exception{
 
-		CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);
-		CyNetworkManager cyNetworkManager = getService(context, CyNetworkManager.class);
-		CyNetworkViewManager cyNetworkViewManager = getService(context, CyNetworkViewManager.class);
-		CyNetworkFactory cyNetworkFactory = getService(context, CyNetworkFactory.class);
-		CyNetworkViewFactory cyNetworkViewFactory = getService(context, CyNetworkViewFactory.class);
+		//load all needed services
+		Services services = new Services();
+		services.setCyApplicationManager(getService(context, CyApplicationManager.class));
+		services.setCyNetworkFactory(getService(context, CyNetworkFactory.class));
+		services.setCyNetworkViewFactory(getService(context, CyNetworkViewFactory.class));
+		services.setCyNetworkManager(getService(context, CyNetworkManager.class));
+		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		
 		//create and register testing menu
-		MenuAction action = new MenuAction(cyApplicationManager, "Diffany");
+		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
 		Properties properties = new Properties();
 		registerAllServices(context, action, properties);
 		
@@ -58,10 +59,8 @@ public class CyActivator extends AbstractCyActivator
 		testNetwork.addEdge(ad);
 		//------
 		
-		//convert network to CyNetwork and register it
-		NetworkBridgeAction networkAction = new NetworkBridgeAction(cyApplicationManager,
-				cyNetworkFactory, cyNetworkManager, cyNetworkViewManager, cyNetworkViewFactory,"Network test", testNetwork);
-		
+		//convert network to CyNetwork and register it and add it to the menu as well
+		NetworkBridgeAction networkAction = new NetworkBridgeAction(services,"Network test", testNetwork);
 		registerAllServices(context, networkAction, new Properties());
 	}
 

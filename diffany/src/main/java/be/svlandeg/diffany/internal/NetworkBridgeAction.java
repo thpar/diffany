@@ -2,37 +2,22 @@ package be.svlandeg.diffany.internal;
 
 import java.awt.event.ActionEvent;
 
-import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNetworkFactory;
-import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.model.CyNetworkViewFactory;
-import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.cytoscape.bridge.CyNetworkBridge;
+import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 
 public class NetworkBridgeAction extends AbstractCyAction {
 
-	private CyNetworkFactory cyNetworkFactory;
 	private Network network;
-	private CyNetworkManager cyNetworkManager;
-	private CyNetworkViewFactory cyNetworkViewFactory;
-	private CyNetworkViewManager cyNetworkViewManager;
+	private Services services;
 
-	public NetworkBridgeAction(CyApplicationManager applicationManager, CyNetworkFactory cyNetworkFactory, 
-			CyNetworkManager cyNetworkManager, CyNetworkViewManager cyNetworkViewManager, 
-			CyNetworkViewFactory cyNetworkViewFactory, 
-			String menuTitle, Network network) {
-		super(menuTitle, applicationManager, null, null);
+	public NetworkBridgeAction(Services services, String menuTitle, Network network) {
+		super(menuTitle, services.getCyApplicationManager(), null, null);
 		setPreferredMenu("Apps.Diffany");
-		this.cyNetworkFactory = cyNetworkFactory;
-		this.cyNetworkViewFactory = cyNetworkViewFactory;
-		this.cyNetworkManager = cyNetworkManager;
-		this.cyNetworkViewManager = cyNetworkViewManager;
-		
+		this.services = services;
 		this.network = network;
 	}
 
@@ -43,12 +28,11 @@ public class NetworkBridgeAction extends AbstractCyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		CyNetwork cyNetwork = cyNetworkFactory.createNetwork();
-		CyNetworkBridge bridge = new CyNetworkBridge();
-		bridge.convertToCyNetwork(cyNetwork, network);
-		cyNetworkManager.addNetwork(cyNetwork);
-		CyNetworkView cyView = cyNetworkViewFactory.createNetworkView(cyNetwork);
-		cyNetworkViewManager.addNetworkView(cyView);
+		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());
+		CyNetwork cyNetwork = bridge.createCyNetwork(network);
+		services.getCyNetworkManager().addNetwork(cyNetwork);
+		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);
+		services.getCyNetworkViewManager().addNetworkView(cyView);
 	}
 
 }

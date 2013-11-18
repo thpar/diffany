@@ -8,12 +8,15 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.work.TaskManager;
 import org.osgi.framework.BundleContext;
 
 import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.cytoscape.actions.MenuAction;
+import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
 
 /**
  * Defines a MenuAction and registers it as an OSGi service to the Cytoscape
@@ -34,6 +37,7 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkViewFactory(getService(context, CyNetworkViewFactory.class));
 		services.setCyNetworkManager(getService(context, CyNetworkManager.class));
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
+		services.setTaskManager(getService(context, TaskManager.class));
 		
 		//create and register testing menu
 		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");

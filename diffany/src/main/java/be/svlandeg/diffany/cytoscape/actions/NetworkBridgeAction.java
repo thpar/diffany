@@ -1,13 +1,14 @@
-package be.svlandeg.diffany.internal;
+package be.svlandeg.diffany.cytoscape.actions;
 
 import java.awt.event.ActionEvent;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.model.CyNetwork;
-import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 
 import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
+import be.svlandeg.diffany.cytoscape.tasks.TestTaskFactory;
+import be.svlandeg.diffany.internal.Services;
 
 public class NetworkBridgeAction extends AbstractCyAction {
 
@@ -28,11 +29,12 @@ public class NetworkBridgeAction extends AbstractCyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());
-		CyNetwork cyNetwork = bridge.createCyNetwork(network);
-		services.getCyNetworkManager().addNetwork(cyNetwork);
-		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);
-		services.getCyNetworkViewManager().addNetworkView(cyView);
+		TestTaskFactory tf = new TestTaskFactory(network, services);
+		if (tf.isReady()){
+			TaskManager<?, ?> tm = services.getTaskManager();
+			TaskIterator it = tf.createTaskIterator();
+			tm.execute(it);
+		}
 	}
 
 }

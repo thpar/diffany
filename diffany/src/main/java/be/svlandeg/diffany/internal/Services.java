@@ -5,6 +5,7 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.work.TaskManager;
 
 public class Services {
 	private CyApplicationManager cyApplicationManager;
@@ -12,6 +13,7 @@ public class Services {
 	private CyNetworkManager cyNetworkManager;
 	private CyNetworkViewFactory cyNetworkViewFactory;
 	private CyNetworkViewManager cyNetworkViewManager;
+	private TaskManager taskManager;
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -62,6 +64,19 @@ public class Services {
 	public void setCyNetworkViewManager(CyNetworkViewManager cyNetworkViewManager) {
 		this.cyNetworkViewManager = cyNetworkViewManager;
 	}
+
+
+	public void setTaskManager(TaskManager taskManager) {
+		this.taskManager = taskManager;
+		
+	}
+
+
+	public TaskManager getTaskManager() {
+		return taskManager;
+	}
+	
+	
 	
 	
 	

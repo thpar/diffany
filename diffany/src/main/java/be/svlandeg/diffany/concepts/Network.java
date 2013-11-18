@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.concepts;
 
-import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -149,7 +148,7 @@ public abstract class Network
 		for (Edge e : edges)
 		{
 			result += e.writeToTab();
-			result += System.lineSeparator();
+			result += System.getProperty("line.separator");
 		}
 		return result;
 	}

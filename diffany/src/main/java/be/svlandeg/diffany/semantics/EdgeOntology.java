@@ -3,8 +3,6 @@ package be.svlandeg.diffany.semantics;
 import java.util.HashMap;
 import java.util.Map;
 
-import be.svlandeg.diffany.concepts.Edge;
-
 /**
  * This class takes care of the semantic interpretation of different edge types
  * and their corresponding categories. It can define the category of a

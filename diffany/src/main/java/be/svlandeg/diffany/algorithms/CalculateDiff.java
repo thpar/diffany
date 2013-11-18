@@ -1,8 +1,5 @@
 package be.svlandeg.diffany.algorithms;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Project;

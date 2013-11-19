@@ -24,7 +24,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		String name = "Bandyopadhyay2010_fig1C";
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
-		EdgeOntology eo = new DefaultSymmEdgeOntology();
+		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;

@@ -25,7 +25,7 @@ public class Ideker2011 extends GenericExample
 		String name = "Ideker2011_fig3A";
 		ReferenceNetwork r = getReferenceFigure3A();
 		Set<ConditionNetwork> c = getConditionFigure3A();
-		EdgeOntology eo = new DefaultSymmEdgeOntology();
+		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;

@@ -81,11 +81,14 @@ public abstract class Network
 	 * @param source the required source node 
 	 * @param target the required target node
 	 * @param addSyms defined whether or not to also include symmetrical target-source edges
-	 * @return the set of edges between these two nodes
+	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
 	public Set<Edge> getAllEdges(Node source, Node target, boolean addSyms)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
+		if (source == null || target == null)
+			return resultEdges;
+		
 		for (Edge e : edges)
 		{
 			if (e.getSource().equals(source) && e.getTarget().equals(target))

@@ -1,7 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
 /**
- * Abstract class that represents a node in a network.
+ * Class that represents a node in a network.
  * 
  * @author Sofie Van Landeghem
  */

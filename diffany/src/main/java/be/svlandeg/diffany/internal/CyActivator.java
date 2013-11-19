@@ -3,6 +3,7 @@ package be.svlandeg.diffany.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
@@ -15,8 +16,10 @@ import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.MenuAction;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
+import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
  * Defines a MenuAction and registers it as an OSGi service to the Cytoscape
@@ -38,6 +41,8 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkManager(getService(context, CyNetworkManager.class));
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
+		
+		Model model = new Model(services);
 		
 		//create and register testing menu
 		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
@@ -64,8 +69,13 @@ public class CyActivator extends AbstractCyActivator
 		//------
 		
 		//convert network to CyNetwork and register it and add it to the menu as well
-		NetworkBridgeAction networkAction = new NetworkBridgeAction(services,"Network test", testNetwork);
+		NetworkBridgeAction networkAction = new NetworkBridgeAction(model,"Network test", testNetwork);
 		registerAllServices(context, networkAction, new Properties());
+		
+		
+		TabPane sidePane = new TabPane(model);
+		//   Register it as a service:
+		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 	}
 
 }

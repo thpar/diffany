@@ -28,7 +28,7 @@ public class TestTask implements Task {
 
 	@Override
 	public void run(TaskMonitor arg0) throws Exception {
-		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());
+		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());		
 		CyNetwork cyNetwork = bridge.createCyNetwork(network);
 		services.getCyNetworkManager().addNetwork(cyNetwork);
 		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);

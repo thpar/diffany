@@ -54,72 +54,141 @@ public abstract class UpDownEdgeOntology extends EdgeOntology
 	protected abstract void insertDefaultMappings();
 
 	@Override
-	public EdgeDefinition getSharedEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge) throws IllegalArgumentException
+	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition shared_edge = new EdgeDefinition();
 
-		String refCat = getCategory(referenceEdge.getType());
-		String conCat = getCategory(conditionEdge.getType());
+		String refCat = getCategory(refEdge.getType());
+		String conCat = getCategory(conEdge.getType());
 
 		if (refCat.equals(conCat))
 		{
-			shared_edge.setType(referenceEdge.getType());
-			shared_edge.setWeight(referenceEdge.getWeight());
-			shared_edge.makeSymmetrical(referenceEdge.isSymmetrical());
-			shared_edge.makeNegated(referenceEdge.isNegated());
+			// the shared weight is the minimum between the two
+			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
+
+			if (sharedWeight < cutoff)
+			{
+				return EdgeDefinition.getVoidEdge();
+			}
+
+			// the shared edge is only symmetrical if both original edges are
+			boolean refSymm = refEdge.isSymmetrical();
+			boolean conSymm = conEdge.isSymmetrical();
+			boolean sharedSymm = refSymm && conSymm;
+
+			// the shared edge is only negated if both original edges are
+			boolean refNeg = refEdge.isNegated();
+			boolean conNeg = conEdge.isNegated();
+			boolean sharedNeg = refNeg && conNeg;
+
+			shared_edge.setType(refEdge.getType());
+			shared_edge.setWeight(sharedWeight);
+			shared_edge.makeSymmetrical(sharedSymm);
+			shared_edge.makeNegated(sharedNeg);
 			return shared_edge;
 		}
 		return EdgeDefinition.getVoidEdge();
 	}
 
 	@Override
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();
 
-		String refCat = getCategory(referenceEdge.getType());
-		String conCat = getCategory(conditionEdge.getType());
-		
+		String refCat = getCategory(refEdge.getType());
+		String conCat = getCategory(conEdge.getType());
+
+		boolean equalCats = refCat.equals(conCat);
+
 		Boolean up = null;
+
+		if (posCats.contains(refCat) && posCats.contains(conCat))
+		{
+			equalCats = true;
+			up = true;
+		}
+
+		if (negCats.contains(refCat) && negCats.contains(conCat))
+		{
+			equalCats = true;
+			up = false;
+		}
 
 		if (posCats.contains(refCat) && negCats.contains(conCat))
 		{
 			up = false;
+			equalCats = false;
 		}
 		if (posCats.contains(refCat) && conCat.equals(VOID_TYPE))
 		{
 			up = false;
+			equalCats = false;
 		}
 		if (refCat.equals(VOID_TYPE) && negCats.contains(conCat))
 		{
 			up = false;
+			equalCats = false;
 		}
 
 		if (negCats.contains(refCat) && posCats.contains(conCat))
 		{
 			up = true;
+			equalCats = false;
 		}
 		if (negCats.contains(refCat) && conCat.equals(VOID_TYPE))
 		{
 			up = true;
+			equalCats = false;
 		}
 		if (refCat.equals(VOID_TYPE) && posCats.contains(conCat))
 		{
 			up = true;
+			equalCats = false;
 		}
 
-		if (up != null)
+		double diffWeight = 0;
+		if (equalCats)
 		{
-			if (up)
-				diff_edge.setType(pos_diff_cat);
-			if (!up)
-				diff_edge.setType(neg_diff_cat);
-			diff_edge.setWeight(referenceEdge.getWeight());
-			diff_edge.makeSymmetrical(referenceEdge.isSymmetrical());
-			diff_edge.makeNegated(referenceEdge.isNegated());
-			return diff_edge;
+			diffWeight = conEdge.getWeight() - refEdge.getWeight();
+
+			// the weight has decreased within equal categories, which means the up/down direction changes
+			if (diffWeight < 0)
+			{
+				diffWeight *= -1;
+				up = !up;
+			}
+		}
+		else
+		{
+			diffWeight = conEdge.getWeight() + refEdge.getWeight();
 		}
 
-		return EdgeDefinition.getVoidEdge();
+		if (up == null || diffWeight < cutoff)
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+
+		if (up)
+			diff_edge.setType(pos_diff_cat);
+		if (!up)
+			diff_edge.setType(neg_diff_cat);
+
+		// the differential edge is only symmetrical if both original edges are
+		// TODO is this correct?
+		boolean refSymm = refEdge.isSymmetrical();
+		boolean conSymm = conEdge.isSymmetrical();
+		boolean diffSymm = refSymm && conSymm;
+
+		// the differential edge is only negated if both original edges are
+		// TODO is this correct?
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
+		boolean diffNeg = refNeg && conNeg;
+
+		diff_edge.setWeight(diffWeight);
+		diff_edge.makeSymmetrical(diffSymm);
+		diff_edge.makeNegated(diffNeg);
+		return diff_edge;
+
 	}
 }

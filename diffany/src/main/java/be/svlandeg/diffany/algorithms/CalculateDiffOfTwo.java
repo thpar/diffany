@@ -32,7 +32,8 @@ public class CalculateDiffOfTwo
 	 * in the original networks (v.1.0)
 	 * TODO: properly test influence of symmetric edges etc.
 	 */
-	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, NodeMapper nm, String diff_name)
+	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
+			NodeMapper nm, String diff_name, double cutoff)
 	{
 		Set<ConditionNetwork> conditions = new HashSet<ConditionNetwork>();
 		conditions.add(condition);
@@ -91,8 +92,8 @@ public class CalculateDiffOfTwo
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
 
-				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedef2);
-				EdgeDefinition overlap_edge_def = eo.getSharedEdge(edgedef1, edgedef2);
+				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedef2, cutoff);
+				EdgeDefinition overlap_edge_def = eo.getSharedEdge(edgedef1, edgedef2, cutoff);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))

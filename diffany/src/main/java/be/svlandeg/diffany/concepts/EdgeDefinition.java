@@ -48,7 +48,7 @@ public class EdgeDefinition
 	 */
 	public static EdgeDefinition getVoidEdge()
 	{
-		return new EdgeDefinition("*voidedge*" , true, 0, false);
+		return new EdgeDefinition("*notype*" , true, 0, false);
 	}
 	
 	/**

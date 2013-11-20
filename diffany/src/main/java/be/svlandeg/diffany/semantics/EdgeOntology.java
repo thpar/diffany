@@ -33,10 +33,12 @@ public abstract class EdgeOntology
 	 * 
 	 * @param referenceEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param conditionEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential network
+	 * 
 	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge) throws IllegalArgumentException;
+	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException;
 
 	/**
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
@@ -44,10 +46,12 @@ public abstract class EdgeOntology
 	 * 
 	 * @param referenceEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param conditionEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
+	 * 
 	 * @return the edge definition in the shaerd network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getSharedEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge) throws IllegalArgumentException;
+	public abstract EdgeDefinition getSharedEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException;
 
 	/**
 	 * Get the semantic category of a certain edge type. Matching is done independent of upper/lower casing.

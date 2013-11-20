@@ -45,10 +45,10 @@ public class Ideker2011 extends GenericExample
 		nodes.put("F", new Node("F"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("F"), true));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("E"), true));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("F"), true, 1.1, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3, false));
+		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("E"), true, 0.8, false));
 		return network;
 	}
 
@@ -74,10 +74,10 @@ public class Ideker2011 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("F", new Node("F"));
 
-		network.addEdge(new Edge("negative", nodes.get("F"), nodes.get("A"), true));
-		network.addEdge(new Edge("positive", nodes.get("B"), nodes.get("A"), true));
-		network.addEdge(new Edge("negative", nodes.get("C"), nodes.get("A"), true));
-		network.addEdge(new Edge("negative", nodes.get("D"), nodes.get("A"), true));
+		network.addEdge(new Edge("negative", nodes.get("F"), nodes.get("A"), true, 1.0, false));
+		network.addEdge(new Edge("positive", nodes.get("B"), nodes.get("A"), true, 0.4, false));
+		network.addEdge(new Edge("negative", nodes.get("C"), nodes.get("A"), true, 1.2, false));
+		network.addEdge(new Edge("negative", nodes.get("D"), nodes.get("A"), true, 0.7, false));
 		
 		cnetworks.add(network);
 		return cnetworks;
@@ -89,12 +89,13 @@ public class Ideker2011 extends GenericExample
 	public static void main(String[] args)
 	{
 		Ideker2011 ex = new Ideker2011();
+		double cutoff = 0.25;
 		
 		System.out.println("Defining network for Ideker2011 figure 3A");
 		Project p = ex.getProjectFigure3A();
 		
-		System.out.println("Calculating differential networks ");
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p);
+		System.out.println("Calculating differential networks at cutoff " + cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
 		
 		System.out.println("");
 		ex.printAllNetworks(p);

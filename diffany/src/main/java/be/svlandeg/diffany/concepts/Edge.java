@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
+import java.text.DecimalFormat;
+
 /**
  * Class that represents an edge in a network: an edge has a source and target node
  * and can have a certain weight. It is symmetrical or not, and may or may not be negated.
@@ -8,10 +10,10 @@ package be.svlandeg.diffany.concepts;
  */
 public class Edge extends EdgeDefinition
 {
-	
+
 	protected Node source;
 	protected Node target;
-	
+
 	/**
 	 * Create a new edge with specified source and target nodes, direction and weight
 	 * @param type the interaction type of this edge
@@ -28,7 +30,7 @@ public class Edge extends EdgeDefinition
 		this.source = source;
 		this.target = target;
 	}
-	
+
 	/**
 	 * Create a new edge with default weight of 1.0
 	 * @param type the interaction type of this edge
@@ -41,7 +43,7 @@ public class Edge extends EdgeDefinition
 	{
 		this(type, source, target, symmetrical, 1.0, negated);
 	}
-	
+
 	/**
 	 * Create a new edge with default weight of 1.0 and negation off
 	 * @param type the interaction type of this edge
@@ -53,7 +55,7 @@ public class Edge extends EdgeDefinition
 	{
 		this(type, source, target, symmetrical, 1.0, false);
 	}
-	
+
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
 	 * @param source the source node
@@ -64,7 +66,7 @@ public class Edge extends EdgeDefinition
 	{
 		this(def.type, source, target, def.symmetrical, def.weight, def.negated);
 	}
-	
+
 	/**
 	 * Get the source node of this edge
 	 * When the edge is symmetrical, source and target will be defined consistently, 
@@ -75,7 +77,7 @@ public class Edge extends EdgeDefinition
 	{
 		return source;
 	}
-	
+
 	/**
 	 * Get the target node of this edge
 	 * When the edge is symmetrical, source and target will be defined consistently, 
@@ -86,7 +88,7 @@ public class Edge extends EdgeDefinition
 	{
 		return target;
 	}
-	
+
 	/**
 	 * Get a string representation of this edge.
 	 * More specifically, print it as: source.name - target.name - edge.type - symmetrical - weight - negated.
@@ -94,8 +96,11 @@ public class Edge extends EdgeDefinition
 	 */
 	public String writeToTab()
 	{
-		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		DecimalFormat df = new DecimalFormat("#.##");
+		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + df.format(weight) + '\t' + negated;
+		//String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		
 		return result;
 	}
-	
+
 }

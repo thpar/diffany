@@ -13,6 +13,7 @@ import be.svlandeg.diffany.semantics.*;
 public class CalculateDiff
 {
 	
+	protected double default_cutoff = 0.0;
 	protected static String diffnamesuffix = "_diff";
 	protected static String overlapnamesuffix = "_overlap";
 
@@ -73,8 +74,7 @@ public class CalculateDiff
 			NodeMapper nm)
 	{
 		String diff_name = condition.getName() + diffnamesuffix;
-		double cutoff = 0.0;
-		return new CalculateDiffOfTwo().calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
+		return new CalculateDiffOfTwo().calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff);
 	}
 
 	/**
@@ -89,14 +89,7 @@ public class CalculateDiff
 	 */
 	public void calculateAllPairwiseDifferentialNetworks(Project p)
 	{
-		ReferenceNetwork r = p.getReferenceNetwork();
-		EdgeOntology eo = p.getEdgeOntology();
-		NodeMapper nm = p.getNodeMapper();
-		for (ConditionNetwork c : p.getConditionNetworks())
-		{
-			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm);
-			p.addDifferential(diff);
-		}
+		calculateAllPairwiseDifferentialNetworks(p, default_cutoff);
 	}
 	
 	/**

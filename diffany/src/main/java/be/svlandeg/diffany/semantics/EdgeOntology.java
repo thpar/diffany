@@ -14,7 +14,7 @@ import be.svlandeg.diffany.concepts.EdgeDefinition;
 public abstract class EdgeOntology
 {
 
-	public static final String VOID_TYPE = EdgeDefinition.getVoidEdge().getType();
+	public static final String VOID_TYPE = EdgeDefinition.getVoidEdge().getType().toLowerCase();
 
 	private Map<String, String> mapEdgeToCategory;
 	private Set<String> allCategories;

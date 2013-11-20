@@ -79,7 +79,7 @@ public abstract class UpDownEdgeOntology extends EdgeOntology
 
 		String refCat = getCategory(referenceEdge.getType());
 		String conCat = getCategory(conditionEdge.getType());
-
+		
 		Boolean up = null;
 
 		if (posCats.contains(refCat) && negCats.contains(conCat))

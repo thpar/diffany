@@ -1,23 +1,19 @@
 package be.svlandeg.diffany.concepts;
 
+import java.text.DecimalFormat;
+
 /**
- * Abstract class that represents an edge in a network: an edge has a source and target node
- * and can have a certain weight.
+ * Class that represents an edge in a network: an edge has a source and target node
+ * and can have a certain weight. It is symmetrical or not, and may or may not be negated.
  * 
  * @author Sofie Van Landeghem
  */
-public class Edge
+public class Edge extends EdgeDefinition
 {
-	
-	protected String type;
-	
+
 	protected Node source;
 	protected Node target;
-	protected boolean symmetrical;
-	
-	protected double weight;	
-	protected boolean negated;
-	
+
 	/**
 	 * Create a new edge with specified source and target nodes, direction and weight
 	 * @param type the interaction type of this edge
@@ -30,14 +26,11 @@ public class Edge
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
 	{
-		checkWeight(weight);
-		this.type = type;
+		super(type, symmetrical, weight, negated);
 		this.source = source;
 		this.target = target;
-		this.symmetrical = symmetrical;
-		this.weight = weight;
 	}
-	
+
 	/**
 	 * Create a new edge with default weight of 1.0
 	 * @param type the interaction type of this edge
@@ -50,7 +43,7 @@ public class Edge
 	{
 		this(type, source, target, symmetrical, 1.0, negated);
 	}
-	
+
 	/**
 	 * Create a new edge with default weight of 1.0 and negation off
 	 * @param type the interaction type of this edge
@@ -62,16 +55,18 @@ public class Edge
 	{
 		this(type, source, target, symmetrical, 1.0, false);
 	}
-	
+
 	/**
-	 * Get the type of this edge
-	 * @return the edge type
+	 * Create a new node from a certain definition and specifying source and target nodes.
+	 * @param source the source node
+	 * @param target the target node
+	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
 	 */
-	public String getType()
+	public Edge(Node source, Node target, EdgeDefinition def)
 	{
-		return type;
+		this(def.type, source, target, def.symmetrical, def.weight, def.negated);
 	}
-	
+
 	/**
 	 * Get the source node of this edge
 	 * When the edge is symmetrical, source and target will be defined consistently, 
@@ -82,7 +77,7 @@ public class Edge
 	{
 		return source;
 	}
-	
+
 	/**
 	 * Get the target node of this edge
 	 * When the edge is symmetrical, source and target will be defined consistently, 
@@ -93,61 +88,7 @@ public class Edge
 	{
 		return target;
 	}
-	
-	/**
-	 * Return whether or not this edge is symmetrical 
-	 * (if not, it goes specifically from source to target, otherwise there is no real direction)
-	 * @return whether or not this edge is symmetrical
-	 */
-	public boolean isSymmetrical()
-	{
-		return symmetrical;
-	}
-	
-	/**
-	 * Return whether or not this edge is negated (e.g. does NOT bind) 
-	 * @return whether or not this edge is negated
-	 */
-	public boolean isNegated()
-	{
-		return negated;
-	}
-	
-	/**
-	 * Get the weight of this edge.
-	 * When it never has been set, it is 1.0 by default.
-	 * The edge weight should always be positive. When it is 0, the edge can be ignored.
-	 * @return the edge weight
-	 */
-	public double getWeight()
-	{
-		return weight;
-	}
-	
-	/**
-	 * Set the weight of this edge (only when the value is appropriate).
-	 * @param weight the ne weight of the edge
-	 * @throws IllegalArgumentException when the specified weight is a negative number
-	 */
-	public void setWeight(double weight) throws IllegalArgumentException
-	{
-		checkWeight(weight);
-		this.weight = weight;
-	}
-	
-	/**
-	 * Internal method to check whether the weight value is appropriate.
-	 * @throws IllegalArgumentException when the specified weight is a negative number
-	 */
-	private void checkWeight(double weight) throws IllegalArgumentException
-	{
-		if (weight < 0.0)
-		{
-			String errormsg = "The edge weight should be positive!";
-			throw new IllegalArgumentException(errormsg);
-		}
-	}
-	
+
 	/**
 	 * Get a string representation of this edge.
 	 * More specifically, print it as: source.name - target.name - edge.type - symmetrical - weight - negated.
@@ -155,7 +96,10 @@ public class Edge
 	 */
 	public String writeToTab()
 	{
-		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		DecimalFormat df = new DecimalFormat("#.##");
+		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + df.format(weight) + '\t' + negated;
+		//String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		
 		return result;
 	}
 

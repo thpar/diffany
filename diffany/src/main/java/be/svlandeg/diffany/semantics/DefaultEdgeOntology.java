@@ -1,71 +1,58 @@
 package be.svlandeg.diffany.semantics;
 
+import java.util.HashSet;
 
 /**
- * This class creates a default TrippleEdgeOntology that can be used to give initial
+ * This class creates a default UpDownEdgeOntology that can be used to give initial
  * suggestions to the user concerning edge type-to-category mappings.
  * 
  * @author Sofie Van Landeghem
  */
-public class DefaultEdgeOntology extends TrippleEdgeOntology
+public class DefaultEdgeOntology extends UpDownEdgeOntology
 {
 
 	/**
-	 * Create a default edge ontology, with generic edge categories and type-category mappings.
+	 * Create a default edge ontology, with generic up/down edge categories and type-category mappings.
 	 */
 	public DefaultEdgeOntology()
 	{
-		super();
-		removeAllCategoriesAndMappings();
-		defineCategories();
-		insertDefaultMappings();
-		insertDefaultTripples();
+		super("increase", "decrease");
 	}
 
-	/**
-	 * Define all the categories that are defined in this ontology.
-	 */
-	protected void defineCategories()
+	@Override
+	protected void definePosCategories()
 	{
-		allCategories.put("pos_regulation", false);
-		allCategories.put("neg_regulation", false);
-		allCategories.put("regulation", false);
+		posCats = new HashSet<String>();
 
-		allCategories.put("decrease", false);
-		allCategories.put("increase", false);
+		posCats.add("pos_regulation");
+		posCats.add(pos_diff_cat);
 
-		allCategories.put("ppi", true);
+		addCategories(posCats);
 	}
 
-	/**
-	 * Create default tripples, translating the most common edge categories to differential edges
-	 * TODO revise current mappings from literature and possibly add more fancy stuff 
-	 */
-	private void insertDefaultTripples()
+	@Override
+	protected void defineNegCategories()
 	{
-		addTripple("pos_regulation", "neg_regulation", "decrease");
-		addTripple("pos_regulation", "regulation", "decrease");
-		addTripple("pos_regulation", VOID_EDGE, "decrease");
-		addTripple(VOID_EDGE, "neg_regulation", "decrease");
+		negCats = new HashSet<String>();
 
-		addTripple("regulation", "neg_regulation", "decrease");
-		addTripple("regulation", VOID_EDGE, "decrease");
-		
-		addTripple("regulation", "pos_regulation", "increase");
-		addTripple(VOID_EDGE, "regulation", "increase");
+		negCats.add("neg_regulation");
+		negCats.add(neg_diff_cat);
 
-		addTripple("neg_regulation", "regulation", "increase");
-		addTripple("neg_regulation", "pos_regulation", "increase");
-		addTripple("neg_regulation", VOID_EDGE, "increase");
-		addTripple(VOID_EDGE, "pos_regulation", "increase");
+		addCategories(negCats);
 	}
 
-	/**
-	 * Default mapping. In TrippleEdgeOntology, upper/lower casing is not taken into
-	 * account, so everything can be lower case.
-	 * TODO: add more default mappings!
-	 */
-	private void insertDefaultMappings()
+	@Override
+	protected void defineNeutralCategories()
+	{
+		neutralCats = new HashSet<String>();
+		neutralCats.add("regulation");
+		neutralCats.add("ppi");
+
+		addCategories(neutralCats);
+	}
+
+	@Override
+	protected void insertDefaultMappings()
 	{
 		boolean overwrite = false;
 

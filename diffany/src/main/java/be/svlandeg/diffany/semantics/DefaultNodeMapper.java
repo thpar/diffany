@@ -19,6 +19,10 @@ public class DefaultNodeMapper implements NodeMapper
 	@Override
 	public boolean areEqual(Node node1, Node node2)
 	{
+		if (node1 == null && node2 != null)
+			return false;
+		if (node1 == null && node2 == null)
+			return true;
 		return node1.getName(true).equals(node2.getName(true));
 	}
 
@@ -57,7 +61,7 @@ public class DefaultNodeMapper implements NodeMapper
 					hasEqual = true;
 				}
 			}
-			if (! hasEqual)
+			if (!hasEqual)
 			{
 				allNodes.add(node2);
 			}

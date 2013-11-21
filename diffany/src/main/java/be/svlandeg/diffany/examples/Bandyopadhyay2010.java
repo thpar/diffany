@@ -24,7 +24,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		String name = "Bandyopadhyay2010_fig1C";
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
-		EdgeOntology eo = new DefaultSymmEdgeOntology();
+		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
@@ -45,9 +45,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("E", new Node("E"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Untreated");
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true));
-		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 1.1, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3, false));
+		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true, 0.8, false));
 		return network;
 	}
 
@@ -72,9 +72,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9, false));
+		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 0.4, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true, 0.7, false));
 
 		cnetworks.add(network);
 		return cnetworks;
@@ -86,12 +86,13 @@ public class Bandyopadhyay2010 extends GenericExample
 	public static void main(String[] args)
 	{
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
+		double cutoff = 0.25;
 		
 		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
 		Project p = ex.getProjectFigure1C();
 		
-		System.out.println("Calculating differential networks ");
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p);
+		System.out.println("Calculating differential networks at cutoff " + cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
 		
 		System.out.println("");
 		ex.printAllNetworks(p);

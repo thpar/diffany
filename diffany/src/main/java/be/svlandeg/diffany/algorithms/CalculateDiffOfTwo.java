@@ -32,7 +32,8 @@ public class CalculateDiffOfTwo
 	 * in the original networks (v.1.0)
 	 * TODO: properly test influence of symmetric edges etc.
 	 */
-	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, NodeMapper nm, String diff_name)
+	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
+			NodeMapper nm, String diff_name, double cutoff)
 	{
 		Set<ConditionNetwork> conditions = new HashSet<ConditionNetwork>();
 		conditions.add(condition);
@@ -45,7 +46,7 @@ public class CalculateDiffOfTwo
 		SharedNetwork shared = new SharedNetwork(diff_name + CalculateDiff.overlapnamesuffix, allOriginals);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
-		Set<Node> allNodes = nm.getAllNodes(reference,  condition);
+		Set<Node> allNodes = nm.getAllNodes(reference, condition);
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
@@ -73,14 +74,15 @@ public class CalculateDiffOfTwo
 					Set<Node> targets2 = nodeMapping.get(target1);
 					target2 = getSingleNode(targets2);
 				}
-				else	// target1 is not actually a part of the reference network
+				else
+				// target1 is not actually a part of the reference network
 				{
 					target2 = target1;
 				}
 
 				// get the reference edge
 				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1, true);
-				Edge edge1 = getSingleEdge(referenceEdges);
+				EdgeDefinition edgedef1 = getSingleEdge(referenceEdges);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
@@ -88,9 +90,10 @@ public class CalculateDiffOfTwo
 				{
 					conditionEdges = condition.getAllEdges(source2, target2, true);
 				}
-				Edge edge2 = getSingleEdge(conditionEdges);
+				EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
 
-				String diff_edge_category = eo.getDifferentialCategory(getEdgeCat(edge1, eo), getEdgeCat(edge2, eo));
+				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedef2, cutoff);
+				EdgeDefinition overlap_edge_def = eo.getSharedEdge(edgedef1, edgedef2, cutoff);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))
@@ -106,24 +109,18 @@ public class CalculateDiffOfTwo
 				}
 				Node targetresult = allDiffNodes.get(targetconsensus);
 
-				// overlapping edge: either same category, or both void
-				if (diff_edge_category == EdgeOntology.VOID_EDGE)
+				// non-void differential edge
+				if (diff_edge_def.getType() != EdgeOntology.VOID_TYPE)
 				{
-					String edge_cat = getEdgeCat(edge1, eo);
-
-					// only add to the network if there was in fact an edge in the reference network
-					if (edge_cat != EdgeOntology.VOID_EDGE)
-					{
-						boolean symmetrical = edge1.isSymmetrical();
-						Edge edgeoverlap = new Edge(edge_cat, sourceresult, targetresult, symmetrical);
-						shared.addEdge(edgeoverlap);
-					}
-				}
-				else
-				{
-					boolean symmetrical = eo.isSymmetrical(diff_edge_category);
-					Edge edgediff = new Edge(diff_edge_category, sourceresult, targetresult, symmetrical);
+					Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 					diff.addEdge(edgediff);
+				}
+
+				// non-void shared edge
+				if (overlap_edge_def.getType() != EdgeOntology.VOID_TYPE)
+				{
+					Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
+					shared.addEdge(overlapdiff);
 				}
 			}
 		}
@@ -155,9 +152,9 @@ public class CalculateDiffOfTwo
 	/**
 	 * Return one single edge from a collection, assuming that there will only be 1
 	 * @param edges the set of edges
-	 * @return the one edge in the set, or throw an UnsupportedOperationException if there are more than 1
+	 * @return the one edge in the set, a void one if the set is empty, or throw an UnsupportedOperationException if there are more than 1
 	 */
-	private Edge getSingleEdge(Set<Edge> edges)
+	private EdgeDefinition getSingleEdge(Set<Edge> edges)
 	{
 		if (edges.size() > 1)
 		{
@@ -165,22 +162,9 @@ public class CalculateDiffOfTwo
 		}
 		if (edges.isEmpty())
 		{
-			return null;
+			return EdgeDefinition.getVoidEdge();
 		}
 		return edges.iterator().next();
 	}
 
-	/**
-	 * Return the edge type of an edge, or EdgeOntology.VOID_EDGE when there is no edge (input parameter is null)
-	 * @param edge the edge (may be null)
-	 * @return the type of the edge (or EdgeOntology.VOID_EDGE)
-	 */
-	private String getEdgeCat(Edge edge, EdgeOntology eo)
-	{
-		if (edge == null)
-		{
-			return EdgeOntology.VOID_EDGE;
-		}
-		return eo.getCategory(edge.getType());
-	}
 }

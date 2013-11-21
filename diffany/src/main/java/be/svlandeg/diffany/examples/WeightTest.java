@@ -6,57 +6,58 @@ import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.*;
 
-
-/** 
- * This class provides examples taken from the Ideker et al, Molecular Systems Biology 2011 paper.
- * http://www.nature.com/msb/journal/v8/n1/pdf/msb201199.pdf
+/**
+ * Testing class to experiment with edge weights for custom networks
  * 
  * @author Sofie Van Landeghem
  */
-public class Ideker2011 extends GenericExample
+public class WeightTest extends GenericExample
 {
-
+	
 	/**
 	 * Get a project with the networks as described in figure 3A of this paper.
 	 * @return an example project illustrating figure 1C.
 	 */
-	public Project getProjectFigure3A()
+	public Project getTestProject()
 	{
-		String name = "Ideker2011_fig3A";
-		ReferenceNetwork r = getReferenceFigure3A();
-		Set<ConditionNetwork> c = getConditionFigure3A();
+		String name = "Weight_test";
+		ReferenceNetwork r = getTestReference();
+		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
-
+	
 	/**
 	 * Get the reference network depicted in figure 3A.
 	 * @return the reference network
 	 */
-	private ReferenceNetwork getReferenceFigure3A()
+	private ReferenceNetwork getTestReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("E", new Node("E"));
-		nodes.put("F", new Node("F"));
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("S", new Node("S"));
+		nodes.put("T", new Node("T"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("F"), true, 1.1, false));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9, false));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3, false));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("E"), true, 0.8, false));
+		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 2, false));
+		network.addEdge(new Edge("positive", nodes.get("M"), nodes.get("N"), true, 2, false));
+		network.addEdge(new Edge("positive", nodes.get("S"), nodes.get("T"), true, 3, false));
+		network.addEdge(new Edge("negative", nodes.get("X"), nodes.get("Y"), true, 3, false));
 		return network;
 	}
-
+	
 	/**
 	 * Get the condition-specific network depicted in figure 3A.
 	 * @return the condition-specific network
 	 */
-	private Set<ConditionNetwork> getConditionFigure3A()
+	private Set<ConditionNetwork> getTestCondition()
 	{
 		Set<ConditionNetwork> cnetworks = new HashSet<ConditionNetwork>();
 
@@ -70,29 +71,32 @@ public class Ideker2011 extends GenericExample
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("C", new Node("C"));
-		nodes.put("F", new Node("F"));
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("S", new Node("S"));
+		nodes.put("T", new Node("T"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 
-		network.addEdge(new Edge("negative", nodes.get("F"), nodes.get("A"), true, 1.0, false));
-		network.addEdge(new Edge("positive", nodes.get("B"), nodes.get("A"), true, 0.4, false));
-		network.addEdge(new Edge("negative", nodes.get("C"), nodes.get("A"), true, 1.2, false));
-		network.addEdge(new Edge("negative", nodes.get("D"), nodes.get("A"), true, 0.7, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 3, false));
+		network.addEdge(new Edge("positive", nodes.get("M"), nodes.get("N"), true, 3, false));
+		network.addEdge(new Edge("positive", nodes.get("S"), nodes.get("T"), true, 2, false));
+		network.addEdge(new Edge("negative", nodes.get("X"), nodes.get("Y"), true, 2, false));
 		
 		cnetworks.add(network);
 		return cnetworks;
 	}
-
+	
 	/**
 	 * Testing the example
 	 */
 	public static void main(String[] args)
 	{
-		Ideker2011 ex = new Ideker2011();
-		double cutoff = 0.25;
+		WeightTest ex = new WeightTest();
+		double cutoff = 0.0;
 		
-		System.out.println("Defining network for Ideker2011 figure 3A");
-		Project p = ex.getProjectFigure3A();
+		System.out.println("Defining network for weight test");
+		Project p = ex.getTestProject();
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
@@ -100,4 +104,5 @@ public class Ideker2011 extends GenericExample
 		System.out.println("");
 		ex.printAllNetworks(p);
 	}
+
 }

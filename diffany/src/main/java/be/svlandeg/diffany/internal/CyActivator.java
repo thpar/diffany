@@ -42,6 +42,7 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
 		
+		
 		Model model = new Model(services);
 		
 		//create and register testing menu

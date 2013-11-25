@@ -6,6 +6,7 @@ import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
@@ -19,6 +20,7 @@ import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.MenuAction;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
+import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
@@ -39,11 +41,13 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkFactory(getService(context, CyNetworkFactory.class));
 		services.setCyNetworkViewFactory(getService(context, CyNetworkViewFactory.class));
 		services.setCyNetworkManager(getService(context, CyNetworkManager.class));
+		services.setCyRootNetworkManager(getService(context, CyRootNetworkManager.class));
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
 		
 		
 		Model model = new Model(services);
+		GUIModel guiModel = new GUIModel();
 		
 		//create and register testing menu
 		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
@@ -74,7 +78,7 @@ public class CyActivator extends AbstractCyActivator
 		registerAllServices(context, networkAction, new Properties());
 		
 		
-		TabPane sidePane = new TabPane(model);
+		TabPane sidePane = new TabPane(model, guiModel);
 		//   Register it as a service:
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 	}

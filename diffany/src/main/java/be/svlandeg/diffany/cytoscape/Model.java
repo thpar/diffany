@@ -1,6 +1,12 @@
 package be.svlandeg.diffany.cytoscape;
 
+import java.util.HashSet;
 import java.util.Observable;
+import java.util.Set;
+
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
@@ -29,7 +35,22 @@ public class Model extends Observable{
 	public void runAlgorithm(){
 		
 	}
+	
+		
 
+	public Set<CyRootNetwork> getNetworkCollections(){
+		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
+		CyRootNetworkManager rootNetManager = services.getCyRootNetworkManager();
+		
+		Set<CyRootNetwork> set = new HashSet<CyRootNetwork>();
+		
+		for (CyNetwork net : allNetworks){
+			set.add(rootNetManager.getRootNetwork(net));
+		}
+		
+		return set;
+	}
+	
 	public Services getServices() {
 		return services;
 	}

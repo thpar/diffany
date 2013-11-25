@@ -3,6 +3,7 @@ package be.svlandeg.diffany.internal;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
@@ -14,6 +15,7 @@ public class Services {
 	private CyNetworkViewFactory cyNetworkViewFactory;
 	private CyNetworkViewManager cyNetworkViewManager;
 	private TaskManager taskManager;
+	private CyRootNetworkManager cyRootNetworkManager;
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -74,6 +76,16 @@ public class Services {
 
 	public TaskManager getTaskManager() {
 		return taskManager;
+	}
+
+
+	public void setCyRootNetworkManager(CyRootNetworkManager cyRootNetworkManager) {
+		this.cyRootNetworkManager = cyRootNetworkManager;
+	}
+
+
+	public CyRootNetworkManager getCyRootNetworkManager() {
+		return cyRootNetworkManager;
 	}
 	
 	

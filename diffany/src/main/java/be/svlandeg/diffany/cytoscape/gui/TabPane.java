@@ -18,8 +18,8 @@ import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 
-import be.svlandeg.diffany.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
 public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener{
 

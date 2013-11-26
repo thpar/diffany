@@ -8,7 +8,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
-import be.svlandeg.diffany.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
 public class GUIModel extends Observable{
 
@@ -39,11 +39,14 @@ public class GUIModel extends Observable{
 			entry.setNetwork(subNet);
 			entry.setSelected(false);
 			entry.setReference(false);
+			networkEntries.add(entry);
 		}
 		if (networkEntries.size() > 0){
 			networkEntries.get(0).setReference(true);
 			this.referenceNetwork = networkEntries.get(0).getNetwork();
 		}
+		setChanged();
+		notifyObservers();
 	}
 
 	public CyNetwork getReferenceNetwork() {

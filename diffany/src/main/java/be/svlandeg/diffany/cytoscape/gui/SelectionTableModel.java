@@ -1,10 +1,13 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.table.AbstractTableModel;
 
-import be.svlandeg.diffany.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
-public class SelectionTableModel extends AbstractTableModel{
+public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	private static final long serialVersionUID = 1L;
 
@@ -14,6 +17,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	
 	public SelectionTableModel(GUIModel guiModel) {
 		this.guiModel = guiModel;
+		this.guiModel.addObserver(this);
 	}
 	
 	
@@ -84,6 +88,12 @@ public class SelectionTableModel extends AbstractTableModel{
 			entry.setReference(check);
 			break;
 		}
+	}
+
+
+	@Override
+	public void update(Observable o, Object arg) {
+		this.fireTableDataChanged();
 	}
 
 

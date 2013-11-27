@@ -80,7 +80,6 @@ public class WeightTest extends GenericExample
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 3, false));
 		network.addEdge(new Edge("ppi", nodes.get("M"), nodes.get("N"), true, 3, false));
 		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 4, false));
 		
 		cnetworks.add(network);
 		return cnetworks;

@@ -88,17 +88,20 @@ public class ProcessEdgeOntology extends EdgeOntology
 				up = false;
 			}
 		}
+		
+		String baseType = conCat;
 
-		if (refCat.equals(VOID_TYPE))
+		if (refCat.equals(VOID_TYPE) && ! conCat.equals(VOID_TYPE))
 		{
 			up = true;
 			diffWeight = conEdge.getWeight();
 		}
 
-		if (conCat.equals(VOID_TYPE))
+		if (conCat.equals(VOID_TYPE) && ! refCat.equals(VOID_TYPE))
 		{
 			up = false;
 			diffWeight = refEdge.getWeight();
+			baseType = refCat;
 		}
 
 		if (up == null || diffWeight <= cutoff)
@@ -114,7 +117,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			type = negPrefix;
 		}
-		type += conCat;
+		type += baseType;
 
 		diff_edge.setType(type);
 

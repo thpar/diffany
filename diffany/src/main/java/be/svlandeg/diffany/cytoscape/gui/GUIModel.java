@@ -25,6 +25,8 @@ public class GUIModel extends Observable{
 	public void setSelectedCollection(CyNetwork selectedCollection) {
 		this.selectedCollection = selectedCollection;
 		refreshNetworkEntries();
+		setChanged();
+		notifyObservers();
 	}
 
 	public List<NetworkEntry> getNetworkEntries(){
@@ -45,8 +47,6 @@ public class GUIModel extends Observable{
 			networkEntries.get(0).setReference(true);
 			this.referenceNetwork = networkEntries.get(0).getNetwork();
 		}
-		setChanged();
-		notifyObservers();
 	}
 
 	public CyNetwork getReferenceNetwork() {

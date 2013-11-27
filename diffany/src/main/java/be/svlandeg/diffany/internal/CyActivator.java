@@ -6,6 +6,7 @@ import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
@@ -21,7 +22,6 @@ import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.MenuAction;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
-import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
@@ -74,14 +74,17 @@ public class CyActivator extends AbstractCyActivator
 		testNetwork.addEdge(ad);
 		//------
 		
-		//convert network to CyNetwork and register it and add it to the menu as well
+		//register action to convert network to CyNetwork (calls TestTask)
 		NetworkBridgeAction networkAction = new NetworkBridgeAction(model,"Network test", testNetwork);
 		registerAllServices(context, networkAction, new Properties());
 		
 		
+		//Create and register the control panel
 		TabPane sidePane = new TabPane(model);
-		//   Register it as a service:
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
+		
+		//Register control panel as network listener
+		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
 	}
 
 }

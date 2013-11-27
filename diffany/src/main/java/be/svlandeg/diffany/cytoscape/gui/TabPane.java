@@ -16,15 +16,19 @@ import javax.swing.JTable;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.events.NetworkAddedEvent;
+import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
-public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener{
+public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, NetworkAddedListener{
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
+	private JComboBox collectionDropDown;
 
 	public TabPane(Model model){
 		this.model = model;
@@ -39,15 +43,34 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private Component createCollectionSelectionPanel() {
 		JPanel panel = new JPanel();
-		JComboBox dropDown = new JComboBox();
-		repopulate(dropDown);
-		panel.add(dropDown);
+		collectionDropDown = new JComboBox();
+		panel.add(collectionDropDown);
+		repopulateCollectionDropdown();
 		
-		dropDown.addActionListener(this);
-		if (dropDown.getItemCount()>0){
-			dropDown.setSelectedIndex(0);			
-		}
+		collectionDropDown.addActionListener(this);
+		
 		return panel;
+	}
+	
+	private void repopulateCollectionDropdown() {
+		collectionDropDown.removeAllItems();
+		Set<CyRootNetwork> rootNets = model.getNetworkCollections();
+		for (CyRootNetwork root : rootNets){
+			NetworkEntry entry = new NetworkEntry(root);
+			collectionDropDown.addItem(entry);
+		}
+		if (collectionDropDown.getItemCount()>0){
+			collectionDropDown.setEnabled(true);
+			
+			
+			collectionDropDown.setSelectedIndex(0);
+			
+			CyNetwork firstCollection = ((NetworkEntry)collectionDropDown.getItemAt(0)).getNetwork();
+			model.getGuiModel().setSelectedCollection(firstCollection);
+		} else {
+			collectionDropDown.addItem("No collections");
+			collectionDropDown.setEnabled(false);
+		}
 	}
 
 	private Component createNetworkSelectionPanel(){
@@ -57,16 +80,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		table.setFillsViewportHeight(true);
 		panel.add(scrollPane);
 		return panel;
-	}
-	
-	
-	
-	private void repopulate(JComboBox dropDown) {
-		Set<CyRootNetwork> rootNets = model.getNetworkCollections();
-		for (CyRootNetwork root : rootNets){
-			NetworkEntry entry = new NetworkEntry(root);
-			dropDown.addItem(entry);
-		}
 	}
 
 	@Override
@@ -102,6 +115,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 		model.getGuiModel().setSelectedCollection(entry.getNetwork());
 	}
-	
+
+	@Override
+	public void handleEvent(NetworkAddedEvent e) {
+		System.out.println("Network added");
+//		repopulateCollectionDropdown();
+	}
 	
 }

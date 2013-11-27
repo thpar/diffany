@@ -31,27 +31,27 @@ public abstract class EdgeOntology
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
 	 * 
-	 * @param referenceEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
-	 * @param conditionEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param refEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param conEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential network
 	 * 
 	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException;
+	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException;
 
 	/**
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in the shared network).
 	 * 
-	 * @param referenceEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
-	 * @param conditionEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param refEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
+	 * @param conEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
 	 * 
 	 * @return the edge definition in the shaerd network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getSharedEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException;
+	public abstract EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException;
 
 	/**
 	 * Get the semantic category of a certain edge type. Matching is done independent of upper/lower casing.
@@ -62,6 +62,21 @@ public abstract class EdgeOntology
 	protected String getCategory(String edgeType)
 	{
 		return mapEdgeToCategory.get(edgeType.toLowerCase());
+	}
+	
+	/**
+	 * Check whether a certain edge type is present in this ontology. Matching is done independent of upper/lower casing.
+	 * 
+	 * @param edgeType the original type of the edge in a network
+	 * @return whether or not this edge type is present in this ontology
+	 */
+	protected boolean isDefined(String edgeType)
+	{
+		if (edgeType == null)
+		{
+			return false;
+		}
+		return mapEdgeToCategory.containsKey(edgeType.toLowerCase());
 	}
 
 	/**

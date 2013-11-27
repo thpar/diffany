@@ -46,10 +46,9 @@ public class WeightTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 2, false));
-		network.addEdge(new Edge("positive", nodes.get("M"), nodes.get("N"), true, 2, false));
-		network.addEdge(new Edge("positive", nodes.get("S"), nodes.get("T"), true, 3, false));
-		network.addEdge(new Edge("negative", nodes.get("X"), nodes.get("Y"), true, 3, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 3, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 4, false));
 		return network;
 	}
 	
@@ -78,10 +77,10 @@ public class WeightTest extends GenericExample
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 3, false));
-		network.addEdge(new Edge("positive", nodes.get("M"), nodes.get("N"), true, 3, false));
-		network.addEdge(new Edge("positive", nodes.get("S"), nodes.get("T"), true, 2, false));
-		network.addEdge(new Edge("negative", nodes.get("X"), nodes.get("Y"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 3, false));
+		network.addEdge(new Edge("ppi", nodes.get("M"), nodes.get("N"), true, 3, false));
+		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 4, false));
 		
 		cnetworks.add(network);
 		return cnetworks;

@@ -78,7 +78,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			// the shared weight is the minimum between the two
 			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
 
-			if (sharedWeight < cutoff)
+			if (sharedWeight <= cutoff)
 			{
 				return EdgeDefinition.getVoidEdge();
 			}
@@ -175,7 +175,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			diffWeight = conEdge.getWeight() + refEdge.getWeight();
 		}
 
-		if (up == null || diffWeight < cutoff)
+		if (up == null || diffWeight <= cutoff)
 		{
 			return EdgeDefinition.getVoidEdge();
 		}
@@ -186,13 +186,13 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			diff_edge.setType(neg_diff_cat);
 
 		// the differential edge is only symmetrical if both original edges are
-		// TODO is this correct?
+		// TODO is this correct, also for void types?
 		boolean refSymm = refEdge.isSymmetrical();
 		boolean conSymm = conEdge.isSymmetrical();
 		boolean diffSymm = refSymm && conSymm;
 
 		// the differential edge is only negated if both original edges are
-		// TODO is this correct?
+		// TODO is this correct, also for void types?
 		boolean refNeg = refEdge.isNegated();
 		boolean conNeg = conEdge.isNegated();
 		boolean diffNeg = refNeg && conNeg;
@@ -201,6 +201,5 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		diff_edge.makeSymmetrical(diffSymm);
 		diff_edge.makeNegated(diffNeg);
 		return diff_edge;
-
 	}
 }

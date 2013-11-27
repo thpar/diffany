@@ -1,15 +1,17 @@
 package be.svlandeg.diffany.semantics;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
 
 /**
- * The up/down edge ontology can deal with up/down regulation and according differences in weight.
+ * This edge ontology deals with general flow activity as up/down regulation and their corresponding weights.
+ * TODO: deal with neutral/undefined flow?
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class UpDownEdgeOntology extends EdgeOntology
+public class ActivityFlowEdgeOntology extends EdgeOntology
 {
 
 	protected String neg_diff_cat;
@@ -17,41 +19,51 @@ public abstract class UpDownEdgeOntology extends EdgeOntology
 
 	public Set<String> posCats;
 	public Set<String> negCats;
-	public Set<String> neutralCats;
 
 	/**
-	 * Create a new ontology, defining pos/neg/neutral categories and inserting default edge-category mappings.
+	 * Create a new ontology, defining pos/neg categories. and inserting
+	 * After the constructor is called, default edge-category mappings should be inserted using addCategoryMapping!
 	 */
-	public UpDownEdgeOntology(String pos_diff_cat, String neg_diff_cat)
+	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Set<String> other_pos_cats, Set<String> other_neg_cats)
 	{
+		super();
 		this.neg_diff_cat = neg_diff_cat;
 		this.pos_diff_cat = pos_diff_cat;
-		removeAllCategoriesAndMappings();
-		definePosCategories();
-		defineNegCategories();
-		defineNeutralCategories();
-		insertDefaultMappings();
+		definePosCategories(other_pos_cats);
+		defineNegCategories(other_neg_cats);
 	}
 
 	/**
 	 * Define all the positive categories that are defined in this ontology.
 	 */
-	protected abstract void definePosCategories();
+	protected void definePosCategories(Set<String> other_pos_cats)
+	{
+		posCats = new HashSet<String>();
+		posCats.add(pos_diff_cat);
+
+		for (String p : other_pos_cats)
+		{
+			posCats.add(p);
+		}
+		addCategories(posCats);
+	}
 
 	/**
 	 * Define all the negative categories that are defined in this ontology.
 	 */
-	protected abstract void defineNegCategories();
+	protected void defineNegCategories(Set<String> other_neg_cats)
+	{
+		negCats = new HashSet<String>();
+		negCats.add(neg_diff_cat);
 
-	/**
-	 * Define all the neutral categories that are defined in this ontology.
-	 */
-	protected abstract void defineNeutralCategories();
+		for (String p : other_neg_cats)
+		{
+			negCats.add(p);
+		}
+		addCategories(negCats);
+	}
 
-	/**
-	 * Provide a default mapping edge type to category mapping. 
-	 */
-	protected abstract void insertDefaultMappings();
+
 
 	@Override
 	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
@@ -151,14 +163,14 @@ public abstract class UpDownEdgeOntology extends EdgeOntology
 		{
 			diffWeight = conEdge.getWeight() - refEdge.getWeight();
 
-			// the weight has decreased within equal categories, which means the up/down direction changes
+			// the weight has decreased within equal categories, which means the
+			// up/down direction changes
 			if (diffWeight < 0)
 			{
 				diffWeight *= -1;
 				up = !up;
 			}
-		}
-		else
+		} else
 		{
 			diffWeight = conEdge.getWeight() + refEdge.getWeight();
 		}

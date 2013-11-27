@@ -84,7 +84,7 @@ public class Ideker2011 extends GenericExample
 	}
 
 	/**
-	 * Testing the example
+	 * Testing the example using console output (use TestExamples for the JUnit version!)
 	 */
 	public static void main(String[] args)
 	{

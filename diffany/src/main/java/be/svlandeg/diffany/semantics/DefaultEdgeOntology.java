@@ -1,122 +1,164 @@
 package be.svlandeg.diffany.semantics;
 
 import java.util.HashSet;
+import java.util.Set;
+
+import be.svlandeg.diffany.concepts.EdgeDefinition;
 
 /**
- * This class creates a default UpDownEdgeOntology that can be used to give initial
+ * This class creates a default ActivityFlowEdgeOntology that can be used to give initial
  * suggestions to the user concerning edge type-to-category mappings.
  * 
  * @author Sofie Van Landeghem
  */
-public class DefaultEdgeOntology extends UpDownEdgeOntology
+public class DefaultEdgeOntology extends EdgeOntology
 {
+	
+	private ActivityFlowEdgeOntology afOntology;
+	private ProcessEdgeOntology prOntology;
 
 	/**
 	 * Create a default edge ontology, with generic up/down edge categories and type-category mappings.
 	 */
 	public DefaultEdgeOntology()
 	{
-		super("increase", "decrease");
+		String pos_cat = "increase";
+		Set<String> other_pos_cats = definePosCategories();
+		
+		String neg_cat = "decrease";
+		Set<String> other_neg_cats = defineNegCategories();
+		
+		Set<String> process_cats = defineProcessCategories();
+		
+		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, other_pos_cats, other_neg_cats);
+		prOntology = new ProcessEdgeOntology(process_cats);
+		
+		insertDefaultMappings();
+		
+		
 	}
-
-	@Override
-	protected void definePosCategories()
+	
+	/**
+	 * Define the process categories to be used in the ProcessEdgeOntology
+	 * @return the defined process categories 
+	 */
+	protected Set<String> defineProcessCategories()
 	{
-		posCats = new HashSet<String>();
-
-		posCats.add("pos_regulation");
-		posCats.add(pos_diff_cat);
-
-		addCategories(posCats);
+		Set<String> cats = new HashSet<String>();
+		cats.add("ppi");
+		return cats;
 	}
 
-	@Override
-	protected void defineNegCategories()
+
+	/**
+	 * Define the positive categories to be used in the ActivityFlowEdgeOntology
+	 * @return the defined positive categories 
+	 */
+	protected Set<String> definePosCategories()
 	{
-		negCats = new HashSet<String>();
-
-		negCats.add("neg_regulation");
-		negCats.add(neg_diff_cat);
-
-		addCategories(negCats);
+		Set<String> other_pos_cats = new HashSet<String>();
+		other_pos_cats.add("pos_regulation");
+		return other_pos_cats;
 	}
 
-	@Override
-	protected void defineNeutralCategories()
+	/**
+	 * Define the negative categories to be used in the ActivityFlowEdgeOntology
+	 * @return the defined negative categories 
+	 */
+	protected Set<String> defineNegCategories()
 	{
-		neutralCats = new HashSet<String>();
-		neutralCats.add("regulation");
-		neutralCats.add("ppi");
-
-		addCategories(neutralCats);
+		Set<String> other_neg_cats = new HashSet<String>();
+		other_neg_cats.add("neg_regulation");
+		return other_neg_cats;
+	}
+	
+	@Override
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException
+	{
+		return afOntology.getDifferentialEdge(referenceEdge, conditionEdge, cutoff);
 	}
 
+
 	@Override
+	public EdgeDefinition getSharedEdge(EdgeDefinition referenceEdge, EdgeDefinition conditionEdge, double cutoff) throws IllegalArgumentException
+	{
+		return afOntology.getSharedEdge(referenceEdge, conditionEdge, cutoff);
+	}
+
+
+	/**
+	 * Provide a default mapping edge type to category mapping.
+	 */
 	protected void insertDefaultMappings()
 	{
 		boolean overwrite = false;
 
 		// PPI category and common synonyms
-		addCategoryMapping("ppi", "ppi", overwrite);
-		addCategoryMapping("protein-protein interaction", "ppi", overwrite);
-		addCategoryMapping("proteinprotein interaction", "ppi", overwrite);
-		addCategoryMapping("proteinproteininteraction", "ppi", overwrite);
-		addCategoryMapping("binds", "ppi", overwrite);
-		addCategoryMapping("bind", "ppi", overwrite);
-		addCategoryMapping("binding", "ppi", overwrite);
+		
+		prOntology.addCategoryMapping("ppi", "ppi", overwrite);
+		prOntology.addCategoryMapping("protein-protein interaction", "ppi", overwrite);
+		prOntology.addCategoryMapping("proteinprotein interaction", "ppi", overwrite);
+		prOntology.addCategoryMapping("proteinproteininteraction", "ppi", overwrite);
+		prOntology.addCategoryMapping("binds", "ppi", overwrite);
+		prOntology.addCategoryMapping("bind", "ppi", overwrite);
+		prOntology.addCategoryMapping("binding", "ppi", overwrite);
+		
 
 		// regulation category and common synonyms
-		addCategoryMapping("regulation", "regulation", overwrite);
-		addCategoryMapping("regulates", "regulation", overwrite);
-		addCategoryMapping("regulate", "regulation", overwrite);
+		//addCategoryMapping("regulation", "regulation", overwrite);
+		//addCategoryMapping("regulates", "regulation", overwrite);
+		//addCategoryMapping("regulate", "regulation", overwrite);
 
 		// positive regulation category and common synonyms
-		addCategoryMapping("positive regulation", "pos_regulation", overwrite);
-		addCategoryMapping("positive_regulation", "pos_regulation", overwrite);
-		addCategoryMapping("positive-regulation", "pos_regulation", overwrite);
-		addCategoryMapping("positiveregulation", "pos_regulation", overwrite);
-		addCategoryMapping("positive reg", "pos_regulation", overwrite);
-		addCategoryMapping("positive-reg", "pos_regulation", overwrite);
-		addCategoryMapping("positive_reg", "pos_regulation", overwrite);
-		addCategoryMapping("positivereg", "pos_regulation", overwrite);
-		addCategoryMapping("pos regulation", "pos_regulation", overwrite);
-		addCategoryMapping("pos_regulation", "pos_regulation", overwrite);
-		addCategoryMapping("pos-regulation", "pos_regulation", overwrite);
-		addCategoryMapping("posregulation", "pos_regulation", overwrite);
-		addCategoryMapping("pos reg", "pos_regulation", overwrite);
-		addCategoryMapping("pos-reg", "pos_regulation", overwrite);
-		addCategoryMapping("pos_reg", "pos_regulation", overwrite);
-		addCategoryMapping("posreg", "pos_regulation", overwrite);
-		addCategoryMapping("pos", "pos_regulation", overwrite);
-		addCategoryMapping("positive", "pos_regulation", overwrite);
-		addCategoryMapping("positively regulates", "pos_regulation", overwrite);
-		addCategoryMapping("positively_regulates", "pos_regulation", overwrite);
-		addCategoryMapping("positively-regulates", "pos_regulation", overwrite);
-		addCategoryMapping("positivelyregulates", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive_regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive-regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positiveregulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive-reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive_reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positivereg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos_regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos-regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("posregulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos-reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos_reg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("posreg", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("pos", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positive", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positively regulates", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positively_regulates", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positively-regulates", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("positivelyregulates", "pos_regulation", overwrite);
 
 		// positive regulation category and common synonyms
-		addCategoryMapping("negative regulation", "neg_regulation", overwrite);
-		addCategoryMapping("negative_regulation", "neg_regulation", overwrite);
-		addCategoryMapping("negative-regulation", "neg_regulation", overwrite);
-		addCategoryMapping("negativeregulation", "neg_regulation", overwrite);
-		addCategoryMapping("negative reg", "neg_regulation", overwrite);
-		addCategoryMapping("negative_reg", "neg_regulation", overwrite);
-		addCategoryMapping("negative-reg", "neg_regulation", overwrite);
-		addCategoryMapping("negativereg", "neg_regulation", overwrite);
-		addCategoryMapping("neg regulation", "neg_regulation", overwrite);
-		addCategoryMapping("neg_regulation", "neg_regulation", overwrite);
-		addCategoryMapping("neg-regulation", "neg_regulation", overwrite);
-		addCategoryMapping("negregulation", "neg_regulation", overwrite);
-		addCategoryMapping("neg reg", "neg_regulation", overwrite);
-		addCategoryMapping("neg_reg", "neg_regulation", overwrite);
-		addCategoryMapping("neg-reg", "neg_regulation", overwrite);
-		addCategoryMapping("negreg", "neg_regulation", overwrite);
-		addCategoryMapping("neg", "neg_regulation", overwrite);
-		addCategoryMapping("negative", "neg_regulation", overwrite);
-		addCategoryMapping("negatively regulates", "neg_regulation", overwrite);
-		addCategoryMapping("negatively_regulates", "neg_regulation", overwrite);
-		addCategoryMapping("negatively-regulates", "neg_regulation", overwrite);
-		addCategoryMapping("negativelyregulates", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative_regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative-regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negativeregulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative_reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative-reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negativereg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg_regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg-regulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negregulation", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg_reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg-reg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negreg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("neg", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negative", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negatively regulates", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negatively_regulates", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negatively-regulates", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("negativelyregulates", "neg_regulation", overwrite);
 	}
+
+
+	
 
 }

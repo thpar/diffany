@@ -7,7 +7,7 @@ import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.*;
 
 /**
- * Testing class to experiment with edge weights for custom networks
+ * Toy testing class to experiment with edge weights for custom networks.
  * 
  * @author Sofie Van Landeghem
  */

@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.cytoscape.Model;
@@ -32,9 +33,10 @@ public class NetworkBridgeAction extends AbstractCyAction {
 	public void actionPerformed(ActionEvent e) {
 		TestTaskFactory tf = new TestTaskFactory(network, services);
 		if (tf.isReady()){
-			TaskManager<?, ?> tm = services.getTaskManager();
-			TaskIterator it = tf.createTaskIterator();
-			tm.execute(it);
+
+			TaskIterator it = tf.createTaskIterator();			
+			DialogTaskManager dtm = services.getDialogTaskManager();
+			dtm.execute(it);
 		}
 	}
 

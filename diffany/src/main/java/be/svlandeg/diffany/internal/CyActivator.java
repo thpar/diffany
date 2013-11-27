@@ -11,6 +11,7 @@ import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
 import be.svlandeg.diffany.concepts.Edge;
@@ -44,10 +45,10 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyRootNetworkManager(getService(context, CyRootNetworkManager.class));
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
+		services.setDialogTaskManager(getService(context, DialogTaskManager.class));
 		
 		
 		Model model = new Model(services);
-		GUIModel guiModel = new GUIModel();
 		
 		//create and register testing menu
 		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
@@ -78,7 +79,7 @@ public class CyActivator extends AbstractCyActivator
 		registerAllServices(context, networkAction, new Properties());
 		
 		
-		TabPane sidePane = new TabPane(model, guiModel);
+		TabPane sidePane = new TabPane(model);
 		//   Register it as a service:
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 	}

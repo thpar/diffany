@@ -23,16 +23,23 @@ public class TestTask implements Task {
 	@Override
 	public void cancel() {
 		// TODO Auto-generated method stub
-
+		System.out.println("Task cancelled");
 	}
 
 	@Override
-	public void run(TaskMonitor arg0) throws Exception {
+	public void run(TaskMonitor taskMonitor) throws Exception {
+		taskMonitor.setTitle("Test Task");
+		taskMonitor.setProgress(0.1);
+		Thread.sleep(3000);
+		taskMonitor.setProgress(0.6);
+		Thread.sleep(3000);
+		
 		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());		
 		CyNetwork cyNetwork = bridge.createCyNetwork(network);
 		services.getCyNetworkManager().addNetwork(cyNetwork);
 		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);
 		services.getCyNetworkViewManager().addNetworkView(cyView);
+		taskMonitor.setProgress(1.0);
 	}
 
 }

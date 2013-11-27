@@ -5,6 +5,7 @@ import java.util.Observer;
 
 import javax.swing.table.AbstractTableModel;
 
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
 public class SelectionTableModel extends AbstractTableModel implements Observer{
@@ -15,8 +16,8 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	String[] columns = {"Include", "Network", "Reference"};
 	
-	public SelectionTableModel(GUIModel guiModel) {
-		this.guiModel = guiModel;
+	public SelectionTableModel(Model model) {
+		this.guiModel = model.getGuiModel();
 		this.guiModel.addObserver(this);
 	}
 	

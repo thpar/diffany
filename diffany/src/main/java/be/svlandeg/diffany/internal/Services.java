@@ -7,6 +7,7 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 public class Services {
 	private CyApplicationManager cyApplicationManager;
@@ -16,6 +17,7 @@ public class Services {
 	private CyNetworkViewManager cyNetworkViewManager;
 	private TaskManager taskManager;
 	private CyRootNetworkManager cyRootNetworkManager;
+	private DialogTaskManager dialogTaskManager;
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -86,6 +88,17 @@ public class Services {
 
 	public CyRootNetworkManager getCyRootNetworkManager() {
 		return cyRootNetworkManager;
+	}
+
+
+	public void setDialogTaskManager(DialogTaskManager dialogTaskManager) {
+		this.dialogTaskManager = dialogTaskManager;
+		
+	}
+
+
+	public DialogTaskManager getDialogTaskManager() {
+		return dialogTaskManager;
 	}
 	
 	

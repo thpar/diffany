@@ -7,6 +7,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -15,7 +16,6 @@ import javax.swing.JTable;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 
 import be.svlandeg.diffany.cytoscape.Model;
@@ -25,17 +25,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
-	private GUIModel guiModel;
 
-	public TabPane(Model model, GUIModel guiModel){
+	public TabPane(Model model){
 		this.model = model;
-		this.guiModel = guiModel;
-		model.addObserver(this);
-		guiModel.addObserver(this);
-			
+		model.addObserver(this);			
+		model.getGuiModel().addObserver(this);
+		
+		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		this.add(createCollectionSelectionPanel());
-
 		this.add(createNetworkSelectionPanel());
 	}
 	
@@ -46,13 +44,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.add(dropDown);
 		
 		dropDown.addActionListener(this);
-		
+		if (dropDown.getItemCount()>0){
+			dropDown.setSelectedIndex(0);			
+		}
 		return panel;
 	}
 
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
-		JTable table = new JTable(new SelectionTableModel(guiModel));
+		JTable table = new JTable(new SelectionTableModel(model));
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 		panel.add(scrollPane);
@@ -100,7 +100,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void actionPerformed(ActionEvent e) {
 		JComboBox source = (JComboBox)e.getSource();
 		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-		guiModel.setSelectedCollection(entry.getNetwork());
+		model.getGuiModel().setSelectedCollection(entry.getNetwork());
 	}
 	
 	

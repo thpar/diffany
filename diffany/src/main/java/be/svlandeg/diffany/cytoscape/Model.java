@@ -10,6 +10,7 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.internal.Services;
 
 /**
@@ -23,9 +24,15 @@ import be.svlandeg.diffany.internal.Services;
 public class Model extends Observable{
 
 	Services services;
+	private GUIModel guiModel;
 	
 	public Model(Services services){
 		this.services = services;
+		this.guiModel = new GUIModel();
+	}
+	
+	public GUIModel getGuiModel(){
+		return this.guiModel;
 	}
 	
 	/** 

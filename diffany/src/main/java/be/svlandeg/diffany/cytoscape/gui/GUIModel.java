@@ -53,10 +53,5 @@ public class GUIModel extends Observable{
 		return referenceNetwork;
 	}
 	
-	
-	
-	
-		
-	
 		
 }

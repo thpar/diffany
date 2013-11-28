@@ -35,7 +35,9 @@ public class CollectionDropDownModel extends DefaultComboBoxModel {
 	
 	@Override
 	public int getSize() {
-		return collectionEntries.size();
+		int size = collectionEntries.size();
+		System.out.println("Collections: "+size);
+		return size;
 	}
 
 	@Override

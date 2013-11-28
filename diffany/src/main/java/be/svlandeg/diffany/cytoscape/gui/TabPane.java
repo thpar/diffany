@@ -41,7 +41,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		this.add(createCollectionSelectionPanel());
-		this.add(createNetworkSelectionPanel());
+//		this.add(createNetworkSelectionPanel());
 	}
 	
 	private Component createCollectionSelectionPanel() {
@@ -50,19 +50,19 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		collectionDropDown = new JComboBox();
 		panel.add(collectionDropDown);
 		
-		collectionDropDown.addActionListener(this);
+//		collectionDropDown.addActionListener(this);
 		return panel;
 	}
 	
 
-	private Component createNetworkSelectionPanel(){
-		JPanel panel = new JPanel();
-		JTable table = new JTable(new SelectionTableModel(model));
-		JScrollPane scrollPane = new JScrollPane(table);
-		table.setFillsViewportHeight(true);
-		panel.add(scrollPane);
-		return panel;
-	}
+//	private Component createNetworkSelectionPanel(){
+//		JPanel panel = new JPanel();
+//		JTable table = new JTable(new SelectionTableModel(model));
+//		JScrollPane scrollPane = new JScrollPane(table);
+//		table.setFillsViewportHeight(true);
+//		panel.add(scrollPane);
+//		return panel;
+//	}
 
 	@Override
 	public Component getComponent() {
@@ -93,16 +93,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JComboBox source = (JComboBox)e.getSource();
-		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-		model.getGuiModel().setSelectedCollection(entry.getNetwork());
+//		JComboBox source = (JComboBox)e.getSource();
+//		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
+//		model.getGuiModel().setSelectedCollection(entry.getNetwork());
 	}
 
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
 		System.out.println(">>>Network was added!!!");
 		comboModel.refresh();
-		collectionDropDown.updateUI();
+		//FIXME how to refresh the GUI???
 		System.out.println("Network was added!!!<<<");
 	}
 	

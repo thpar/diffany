@@ -9,6 +9,12 @@ import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.internal.Services;
 
+/**
+ * Temporary task to experiment.
+ * 
+ * @author thpar
+ *
+ */
 public class TestTask implements Task {
 
 	private Network network;
@@ -22,7 +28,6 @@ public class TestTask implements Task {
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
 		System.out.println("Task cancelled");
 	}
 

@@ -11,6 +11,7 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.gui.GUIModel;
+import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
 
 /**
@@ -31,6 +32,10 @@ public class Model extends Observable{
 		this.guiModel = new GUIModel();
 	}
 	
+	/**
+	 * 
+	 * @return the guiModel for this app.
+	 */
 	public GUIModel getGuiModel(){
 		return this.guiModel;
 	}
@@ -44,7 +49,11 @@ public class Model extends Observable{
 	}
 	
 		
-
+	/**
+	 * Iterates over all networks in the current cytoscape session and returns the set of network collections.
+	 * 
+	 * @return the set of network collections.
+	 */
 	public Set<CyRootNetwork> getNetworkCollections(){
 		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
 		CyRootNetworkManager rootNetManager = services.getCyRootNetworkManager();
@@ -58,6 +67,11 @@ public class Model extends Observable{
 		return set;
 	}
 	
+	/**
+	 * Gives access to a subset of the services offered in this context, as loaded in the {@link CyActivator}
+	 * 
+	 * @return
+	 */
 	public Services getServices() {
 		return services;
 	}

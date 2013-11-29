@@ -6,6 +6,12 @@ import org.cytoscape.work.TaskIterator;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.internal.Services;
 
+/**
+ * Temporary {@link TaskFactory} to execute the {@link TestTask}.
+ * 
+ * @author thpar
+ *
+ */
 public class TestTaskFactory implements TaskFactory {
 
 	private Network network;

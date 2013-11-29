@@ -8,14 +8,28 @@ import javax.swing.table.AbstractTableModel;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
+/**
+ * The model for the list of available networks in the selected collection.
+ * 
+ * @author thpar
+ *
+ */
 public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	private static final long serialVersionUID = 1L;
 
 	private GUIModel guiModel;
 
+	/**
+	 * Column headers
+	 */
 	String[] columns = {"Include", "Network", "Reference"};
 	
+	/**
+	 * Create a new model based on the general {@link Model} and add it as an {@link Observer} the contained
+	 * {@link GUIModel}.
+	 * @param model
+	 */
 	public SelectionTableModel(Model model) {
 		this.guiModel = model.getGuiModel();
 		this.guiModel.addObserver(this);

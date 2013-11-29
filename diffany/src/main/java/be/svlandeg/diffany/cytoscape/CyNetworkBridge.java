@@ -24,6 +24,9 @@ public class CyNetworkBridge {
 	
 	private CyNetworkFactory cyNetworkFactory;
 	
+	/**
+	 * Column name of an extra field to be used to map nodes from different networks onto each other.
+	 */
 	private final String NORMALIZED_NAME = "normalized_name";
 
 	public CyNetworkBridge(CyNetworkFactory cyNetworkFactory){
@@ -64,7 +67,7 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * 
+	 * Takes a {@link Node} and converts it to a {@link CyNode}, using the normalized_name column.
 	 * 
 	 * @param node
 	 * @param cyNetwork

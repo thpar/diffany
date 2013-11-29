@@ -20,15 +20,13 @@ import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.Model;
-import be.svlandeg.diffany.cytoscape.actions.MenuAction;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
- * Defines a MenuAction and registers it as an OSGi service to the Cytoscape
- * application manager.
- * 
- * Generated from the cyaction-app Archetype.
+ * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
+ * {@link Model} to be used throughout the app. The services this app offers are created here and registered
+ * within the {@link BundleContext}.
  */
 public class CyActivator extends AbstractCyActivator
 {
@@ -49,11 +47,6 @@ public class CyActivator extends AbstractCyActivator
 		
 		
 		Model model = new Model(services);
-		
-		//create and register testing menu
-		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
-		Properties properties = new Properties();
-		registerAllServices(context, action, properties);
 		
 		//create a testing network
 		//------

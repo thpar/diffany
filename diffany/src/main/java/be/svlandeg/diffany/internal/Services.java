@@ -8,7 +8,14 @@ import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
+import org.osgi.framework.BundleContext;
 
+/**
+ * Class used to gather all services from the {@link BundleContext} as loaded in the {@link CyActivator}
+ * 
+ * @author thpar
+ *
+ */
 public class Services {
 	private CyApplicationManager cyApplicationManager;
 	private CyNetworkFactory cyNetworkFactory;

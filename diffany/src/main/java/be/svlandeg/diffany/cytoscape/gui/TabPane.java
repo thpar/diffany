@@ -26,6 +26,12 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
+/**
+ * The Control Panel for Diffany (left Cytoscape tab).
+ *  
+ * @author thpar
+ *
+ */
 public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, NetworkAddedListener{
 
 	private static final long serialVersionUID = 1L;
@@ -33,6 +39,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private JComboBox collectionDropDown;
 	private CollectionDropDownModel comboModel;
 
+	/**
+	 * Create {@link JPanel} and register as {@link Observer} for the models.
+	 * @param model
+	 */
 	public TabPane(Model model){
 		this.model = model;
 		model.addObserver(this);			
@@ -41,9 +51,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		this.add(createCollectionSelectionPanel());
-//		this.add(createNetworkSelectionPanel());
+		this.add(createNetworkSelectionPanel());
 	}
 	
+	/**
+	 * Creates the panel containing the drop down list to select a network collection. 
+	 * @return {@link JPanel} containing the dropdown list.
+	 */
 	private Component createCollectionSelectionPanel() {
 		JPanel panel = new JPanel();
 		comboModel = new CollectionDropDownModel(model);
@@ -54,7 +68,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		return panel;
 	}
 	
-
+	/**
+	 * Creates the panel containing the network list
+	 * @return {@link JPanel} containing the network list.
+	 */
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
 		JTable table = new JTable(new SelectionTableModel(model));
@@ -87,11 +104,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void update(Observable o, Object arg) {
-		System.out.println("Boom: "+(String)arg);
+		//triggered on model or guiModel change
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//triggered on collection dropdown action
 		JComboBox source = (JComboBox)e.getSource();
 		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 		model.getGuiModel().setSelectedCollection(entry.getNetwork());
@@ -99,9 +117,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
-		System.out.println(">>>>");
+		//triggered on Cytoscape NetworkAdded
 		comboModel.refresh();
-		System.out.println("<<<<<");
 	}
 	
 }

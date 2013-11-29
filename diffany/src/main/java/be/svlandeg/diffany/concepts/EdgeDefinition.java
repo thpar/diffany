@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
+import java.text.DecimalFormat;
+
 /**
  * An edge definition holds all information of an edge, except its actual source and target nodes.
  * It is thus a virtual definition of an edge, free from any network context.
@@ -140,5 +142,29 @@ public class EdgeDefinition
 			throw new IllegalArgumentException(errormsg);
 		}
 	}
+	
+	/**
+	 * Get a string representation of this edge definition.
+	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
+	 * @return a string representation of this edge, ready for printing
+	 */
+	public String writeToTab()
+	{
+		DecimalFormat df = new DecimalFormat("#.##");
+		String symm = "symmetrical";
+		if (! symmetrical)
+		{
+			symm = "directed";
+		}
+		String neg = "negated";
+		if (! negated)
+		{
+			neg = "not negated";
+		}
+		String result = type + '\t' + symm + '\t' + df.format(weight) + '\t' + neg;
+		
+		return result;
+	}
+
 
 }

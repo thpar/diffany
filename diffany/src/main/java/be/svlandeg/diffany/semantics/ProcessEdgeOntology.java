@@ -68,6 +68,15 @@ public class ProcessEdgeOntology extends EdgeOntology
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();
+		
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
+		
+		if (refNeg)
+			refEdge = EdgeDefinition.getVoidEdge();
+		
+		if (conNeg)
+			conEdge = EdgeDefinition.getVoidEdge();
 
 		String refCat = getCategory(refEdge.getType());
 		String conCat = getCategory(conEdge.getType());
@@ -119,21 +128,13 @@ public class ProcessEdgeOntology extends EdgeOntology
 
 		diff_edge.setType(type);
 
-		// the differential edge is only symmetrical if both original edges are
-		// TODO is this correct, also for void types?
 		boolean refSymm = refEdge.isSymmetrical();
 		boolean conSymm = conEdge.isSymmetrical();
 		boolean diffSymm = refSymm && conSymm;
 
-		// the differential edge is only negated if both original edges are
-		// TODO is this correct, also for void types?
-		boolean refNeg = refEdge.isNegated();
-		boolean conNeg = conEdge.isNegated();
-		boolean diffNeg = refNeg && conNeg;
-
 		diff_edge.setWeight(diffWeight);
 		diff_edge.makeSymmetrical(diffSymm);
-		diff_edge.makeNegated(diffNeg);
+		diff_edge.makeNegated(false);	// a differential edge is never negated 
 		return diff_edge;
 	}
 

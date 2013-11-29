@@ -75,15 +75,14 @@ public abstract class Network
 	}
 
 	/**
-	 * Get all edges in this network between two specific nodes. 
-	 * In case there are symmetrical edges in this network between target-source, these will also be added if addSyms is true.
+	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network between target-source, these will be added too.
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
-	 * @param addSyms defined whether or not to also include symmetrical target-source edges
 	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
-	public Set<Edge> getAllEdges(Node source, Node target, boolean addSyms)
+	public Set<Edge> getAllEdges(Node source, Node target)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		if (source == null || target == null)
@@ -95,7 +94,7 @@ public abstract class Network
 			{
 				resultEdges.add(e);
 			}
-			else if (addSyms && e.isSymmetrical() && e.getSource().equals(target) && e.getTarget().equals(source))
+			else if (e.isSymmetrical() && e.getSource().equals(target) && e.getTarget().equals(source))
 			{
 				resultEdges.add(e);
 			}
@@ -160,6 +159,15 @@ public abstract class Network
 		nodes.add(edge.getSource());
 		nodes.add(edge.getTarget());
 	}
+	
+	/**
+	 * Remove an edge from this network, leaving its source and target nodes otherwise untouched.
+	 * @param edge the edge that should be removed from the network
+	 */
+	public void removeEdge(Edge edge)
+	{
+		edges.remove(edge);
+	}
 
 	/**
 	 * Add a new (unconnected) node to this network. If it was already present, nothing happens.
@@ -186,41 +194,5 @@ public abstract class Network
 		return result;
 	}
 
-	/**
-	 * Remove edges in the network that are symmetrical and are represented twice (source-target and target-source).
-	 * One of the two is removed only then when the type, weight and negation are all equal.
-	 */
-	public void removeRedundantEdges()
-	{
-		// remove duplicate symmetrical edges between source-target and target-source
-		for (Node n1 : nodes)
-		{
-			String name1 = n1.getName();
-			for (Node n2 : nodes)
-			{
-				String name2 = n2.getName();
-				if (name1.compareTo(name2) < 0)
-				{
-					Set<Edge> edges_to = getAllEdges(n1, n2, false);
-					Set<Edge> edges_back = getAllEdges(n2, n1, false);
-					for (Edge et : edges_to)
-					{
-						for (Edge eb : edges_back)
-						{
-							if (!et.equals(eb))
-							{
-								if ((et.symmetrical && eb.symmetrical) && (et.getType().equals(eb.getType())))
-								{
-									if ((et.getWeight() == eb.getWeight()) && (et.isNegated() == eb.isNegated()))
-									{
-										edges.remove(eb);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+
 }

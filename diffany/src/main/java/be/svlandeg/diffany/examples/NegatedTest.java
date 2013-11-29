@@ -56,10 +56,14 @@ public class NegatedTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		//network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
 		
-		//network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 5, false));
+		network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), false, 5, false));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 5, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), true, 4, true));
 		return network;
 	}
 	
@@ -88,8 +92,14 @@ public class NegatedTest extends GenericExample
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 
-		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 3, true));
-		//network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), true, 4, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 7, false));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 1, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 2, true));
 		
 		cnetworks.add(network);
 		return cnetworks;

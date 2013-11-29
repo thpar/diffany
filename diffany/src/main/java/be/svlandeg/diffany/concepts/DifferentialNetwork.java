@@ -61,6 +61,24 @@ public class DifferentialNetwork extends Network
 	{
 		return shared;
 	}
+	
+	/**
+	 * Get the reference network associated to this differential network
+	 * @return the reference network 
+	 */
+	public ReferenceNetwork getReferenceNetwork()
+	{
+		return reference;
+	}
+	
+	/**
+	 * Get the (set of) condition-specific networks associated to this differential network
+	 * @return the (set of) condition-specific networks
+	 */
+	public Set<ConditionNetwork> getConditionNetworks()
+	{
+		return conditionNetworks;
+	}
 
 	/* (non-Javadoc)
 	 * @see be.svlandeg.diffany.concepts.Network#getStringRepresentation()

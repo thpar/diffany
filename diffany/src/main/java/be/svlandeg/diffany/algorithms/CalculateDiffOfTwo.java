@@ -14,6 +14,16 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  */
 public class CalculateDiffOfTwo
 {
+	
+	protected NetworkCleaning cleaning;
+	
+	/**
+	 * Constructor, which initializes the functionality for cleaning a network.
+	 */
+	public CalculateDiffOfTwo()
+	{
+		cleaning = new NetworkCleaning();
+	}
 
 	/**
 	 * Calculate the differential network between the reference and condition-specific network. 
@@ -81,14 +91,14 @@ public class CalculateDiffOfTwo
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1, true);
+				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
 				EdgeDefinition edgedef1 = getSingleEdge(referenceEdges);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
 				if (source2 != null && target2 != null)
 				{
-					conditionEdges = condition.getAllEdges(source2, target2, true);
+					conditionEdges = condition.getAllEdges(source2, target2);
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
 
@@ -124,12 +134,15 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		diff.removeRedundantEdges();
-		shared.removeRedundantEdges();
+		cleaning.removeRedundantEdges(diff);
+		cleaning.directSymmetricalWhenOverlapping(diff);
+		
+		cleaning.removeRedundantEdges(shared);
 
 		diff.setSharedNetwork(shared);
 		return diff;
 	}
+	
 
 	/**
 	 * Return one single node from a collection, assuming that there will only be 1

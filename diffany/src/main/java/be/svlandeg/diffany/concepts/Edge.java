@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.concepts;
 
-import java.text.DecimalFormat;
 
 /**
  * Class that represents an edge in a network: an edge has a source and target node
@@ -109,19 +108,8 @@ public class Edge extends EdgeDefinition
 	 */
 	public String writeToTab()
 	{
-		DecimalFormat df = new DecimalFormat("#.##");
-		String symm = "symmetrical";
-		if (! symmetrical)
-		{
-			symm = "directed";
-		}
-		String neg = "negated";
-		if (! negated)
-		{
-			neg = "not negated";
-		}
-		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symm + '\t' + df.format(weight) + '\t' + neg;
-		//String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
+		String defResult = super.writeToTab();
+		String result = source.getName() + '\t' + target.getName() + '\t' + defResult;
 		
 		return result;
 	}

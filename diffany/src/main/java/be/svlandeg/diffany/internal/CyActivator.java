@@ -3,26 +3,30 @@ package be.svlandeg.diffany.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
 import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.cytoscape.actions.MenuAction;
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
+import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
- * Defines a MenuAction and registers it as an OSGi service to the Cytoscape
- * application manager.
- * 
- * Generated from the cyaction-app Archetype.
+ * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
+ * {@link Model} to be used throughout the app. The services this app offers are created here and registered
+ * within the {@link BundleContext}.
  */
 public class CyActivator extends AbstractCyActivator
 {
@@ -36,13 +40,13 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkFactory(getService(context, CyNetworkFactory.class));
 		services.setCyNetworkViewFactory(getService(context, CyNetworkViewFactory.class));
 		services.setCyNetworkManager(getService(context, CyNetworkManager.class));
+		services.setCyRootNetworkManager(getService(context, CyRootNetworkManager.class));
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
+		services.setDialogTaskManager(getService(context, DialogTaskManager.class));
 		
-		//create and register testing menu
-		MenuAction action = new MenuAction(services.getCyApplicationManager(), "Diffany");
-		Properties properties = new Properties();
-		registerAllServices(context, action, properties);
+		
+		Model model = new Model(services);
 		
 		//create a testing network
 		//------
@@ -63,9 +67,17 @@ public class CyActivator extends AbstractCyActivator
 		testNetwork.addEdge(ad);
 		//------
 		
-		//convert network to CyNetwork and register it and add it to the menu as well
-		NetworkBridgeAction networkAction = new NetworkBridgeAction(services,"Network test", testNetwork);
+		//register action to convert network to CyNetwork (calls TestTask)
+		NetworkBridgeAction networkAction = new NetworkBridgeAction(model,"Network test", testNetwork);
 		registerAllServices(context, networkAction, new Properties());
+		
+		
+		//Create and register the control panel
+		TabPane sidePane = new TabPane(model);
+		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
+		
+		//Register control panel as network listener
+		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
 	}
 
 }

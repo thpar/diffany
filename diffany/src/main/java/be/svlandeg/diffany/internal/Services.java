@@ -3,10 +3,19 @@ package be.svlandeg.diffany.internal;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
+import org.osgi.framework.BundleContext;
 
+/**
+ * Class used to gather all services from the {@link BundleContext} as loaded in the {@link CyActivator}
+ * 
+ * @author thpar
+ *
+ */
 public class Services {
 	private CyApplicationManager cyApplicationManager;
 	private CyNetworkFactory cyNetworkFactory;
@@ -14,6 +23,8 @@ public class Services {
 	private CyNetworkViewFactory cyNetworkViewFactory;
 	private CyNetworkViewManager cyNetworkViewManager;
 	private TaskManager taskManager;
+	private CyRootNetworkManager cyRootNetworkManager;
+	private DialogTaskManager dialogTaskManager;
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -74,6 +85,27 @@ public class Services {
 
 	public TaskManager getTaskManager() {
 		return taskManager;
+	}
+
+
+	public void setCyRootNetworkManager(CyRootNetworkManager cyRootNetworkManager) {
+		this.cyRootNetworkManager = cyRootNetworkManager;
+	}
+
+
+	public CyRootNetworkManager getCyRootNetworkManager() {
+		return cyRootNetworkManager;
+	}
+
+
+	public void setDialogTaskManager(DialogTaskManager dialogTaskManager) {
+		this.dialogTaskManager = dialogTaskManager;
+		
+	}
+
+
+	public DialogTaskManager getDialogTaskManager() {
+		return dialogTaskManager;
 	}
 	
 	

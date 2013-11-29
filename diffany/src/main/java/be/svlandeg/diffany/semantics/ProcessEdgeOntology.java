@@ -36,8 +36,11 @@ public class ProcessEdgeOntology extends EdgeOntology
 
 		String refCat = getCategory(refEdge.getType());
 		String conCat = getCategory(conEdge.getType());
+		
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
 
-		if (refCat.equals(conCat))
+		if (refCat.equals(conCat) && refNeg == conNeg)
 		{
 			// the shared weight is the minimum between the two
 			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
@@ -52,15 +55,10 @@ public class ProcessEdgeOntology extends EdgeOntology
 			boolean conSymm = conEdge.isSymmetrical();
 			boolean sharedSymm = refSymm && conSymm;
 
-			// the shared edge is only negated if both original edges are
-			boolean refNeg = refEdge.isNegated();
-			boolean conNeg = conEdge.isNegated();
-			boolean sharedNeg = refNeg && conNeg;
-
 			shared_edge.setType(refEdge.getType());
 			shared_edge.setWeight(sharedWeight);
 			shared_edge.makeSymmetrical(sharedSymm);
-			shared_edge.makeNegated(sharedNeg);
+			shared_edge.makeNegated(refNeg);
 			return shared_edge;
 		}
 		return EdgeDefinition.getVoidEdge();
@@ -78,7 +76,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		Boolean up = null;
 		double diffWeight = 0;
 
-		if (equalCats)
+		if (equalCats) // TODO negation
 		{
 			diffWeight = conEdge.getWeight() - refEdge.getWeight();
 			up = true; // assume an increase

@@ -73,7 +73,10 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		String refCat = getCategory(refEdge.getType());
 		String conCat = getCategory(conEdge.getType());
 
-		if (refCat.equals(conCat))
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
+
+		if (refCat.equals(conCat) && refNeg == conNeg)
 		{
 			// the shared weight is the minimum between the two
 			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
@@ -88,15 +91,10 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			boolean conSymm = conEdge.isSymmetrical();
 			boolean sharedSymm = refSymm && conSymm;
 
-			// the shared edge is only negated if both original edges are
-			boolean refNeg = refEdge.isNegated();
-			boolean conNeg = conEdge.isNegated();
-			boolean sharedNeg = refNeg && conNeg;
-
 			shared_edge.setType(refEdge.getType());
 			shared_edge.setWeight(sharedWeight);
 			shared_edge.makeSymmetrical(sharedSymm);
-			shared_edge.makeNegated(sharedNeg);
+			shared_edge.makeNegated(refNeg);
 			return shared_edge;
 		}
 		return EdgeDefinition.getVoidEdge();
@@ -109,6 +107,9 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 		String refCat = getCategory(refEdge.getType());
 		String conCat = getCategory(conEdge.getType());
+		
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
 
 		boolean equalCats = refCat.equals(conCat);
 
@@ -131,12 +132,12 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			up = false;
 			equalCats = false;
 		}
-		if (posCats.contains(refCat) && conCat.equals(VOID_TYPE))
+		if (posCats.contains(refCat) && (conCat.equals(VOID_TYPE) || !conNeg))
 		{
 			up = false;
 			equalCats = false;
 		}
-		if (refCat.equals(VOID_TYPE) && negCats.contains(conCat))
+		if ((refCat.equals(VOID_TYPE) || !refNeg) && negCats.contains(conCat))
 		{
 			up = false;
 			equalCats = false;
@@ -147,12 +148,12 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			up = true;
 			equalCats = false;
 		}
-		if (negCats.contains(refCat) && conCat.equals(VOID_TYPE))
+		if (negCats.contains(refCat) && (conCat.equals(VOID_TYPE) || !conNeg))
 		{
 			up = true;
 			equalCats = false;
 		}
-		if (refCat.equals(VOID_TYPE) && posCats.contains(conCat))
+		if ((refCat.equals(VOID_TYPE) || !refNeg) && posCats.contains(conCat))
 		{
 			up = true;
 			equalCats = false;
@@ -191,15 +192,9 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		boolean conSymm = conEdge.isSymmetrical();
 		boolean diffSymm = refSymm && conSymm;
 
-		// the differential edge is only negated if both original edges are
-		// TODO is this correct, also for void types?
-		boolean refNeg = refEdge.isNegated();
-		boolean conNeg = conEdge.isNegated();
-		boolean diffNeg = refNeg && conNeg;
-
 		diff_edge.setWeight(diffWeight);
 		diff_edge.makeSymmetrical(diffSymm);
-		diff_edge.makeNegated(diffNeg);
+		diff_edge.makeNegated(false);	// a differential edge is never negated 
 		return diff_edge;
 	}
 }

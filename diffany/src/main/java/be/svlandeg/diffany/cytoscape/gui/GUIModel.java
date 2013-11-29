@@ -26,7 +26,7 @@ public class GUIModel extends Observable{
 		this.selectedCollection = selectedCollection;
 		refreshNetworkEntries();
 		setChanged();
-		notifyObservers();
+		notifyObservers("Boom!!!");
 	}
 
 	public List<NetworkEntry> getNetworkEntries(){

@@ -47,22 +47,22 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private Component createCollectionSelectionPanel() {
 		JPanel panel = new JPanel();
 		comboModel = new CollectionDropDownModel(model);
-		collectionDropDown = new JComboBox();
+		collectionDropDown = new JComboBox(comboModel);
 		panel.add(collectionDropDown);
 		
-//		collectionDropDown.addActionListener(this);
+		collectionDropDown.addActionListener(this);
 		return panel;
 	}
 	
 
-//	private Component createNetworkSelectionPanel(){
-//		JPanel panel = new JPanel();
-//		JTable table = new JTable(new SelectionTableModel(model));
-//		JScrollPane scrollPane = new JScrollPane(table);
-//		table.setFillsViewportHeight(true);
-//		panel.add(scrollPane);
-//		return panel;
-//	}
+	private Component createNetworkSelectionPanel(){
+		JPanel panel = new JPanel();
+		JTable table = new JTable(new SelectionTableModel(model));
+		JScrollPane scrollPane = new JScrollPane(table);
+		table.setFillsViewportHeight(true);
+		panel.add(scrollPane);
+		return panel;
+	}
 
 	@Override
 	public Component getComponent() {
@@ -87,23 +87,21 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Boom: "+(String)arg);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-//		JComboBox source = (JComboBox)e.getSource();
-//		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-//		model.getGuiModel().setSelectedCollection(entry.getNetwork());
+		JComboBox source = (JComboBox)e.getSource();
+		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
+		model.getGuiModel().setSelectedCollection(entry.getNetwork());
 	}
 
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
-		System.out.println(">>>Network was added!!!");
+		System.out.println(">>>>");
 		comboModel.refresh();
-		//FIXME how to refresh the GUI???
-		System.out.println("Network was added!!!<<<");
+		System.out.println("<<<<<");
 	}
 	
 }

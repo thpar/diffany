@@ -6,15 +6,24 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.concepts.Condition;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * Toy testing class to experiment with edge symmetry in custom networks.
+ * Testing class that tries to simulate a range of possibilities in activity flow networks
+ * and is able to produce differential networks for them.
  * 
  * @author Sofie Van Landeghem
  */
-public class SymmetryTest extends GenericExample
+public class ActivityFlowTest extends GenericExample
 {
 	/**
 	 * Get a project with some custom-defined networks.
@@ -22,7 +31,7 @@ public class SymmetryTest extends GenericExample
 	 */
 	public Project getTestProject()
 	{
-		String name = "Symmetry_test";
+		String name = "Negation_test";
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();
@@ -48,10 +57,14 @@ public class SymmetryTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2));
-		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1));
+		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 5));
+		network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), false, 5, false));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 5, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), true, 4, true));
 		return network;
 	}
 	
@@ -80,8 +93,14 @@ public class SymmetryTest extends GenericExample
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 
-		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 3));
-		network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), true, 4));
+		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 7, false));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 1, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 2, true));
 		
 		cnetworks.add(network);
 		return cnetworks;
@@ -92,10 +111,10 @@ public class SymmetryTest extends GenericExample
 	 */
 	public static void main(String[] args)
 	{
-		SymmetryTest ex = new SymmetryTest();
+		ActivityFlowTest ex = new ActivityFlowTest();
 		double cutoff = 0.0;
 		
-		System.out.println("Defining network for symmetry test");
+		System.out.println("Defining network for negation test");
 		Project p = ex.getTestProject();
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
@@ -104,5 +123,4 @@ public class SymmetryTest extends GenericExample
 		System.out.println("");
 		ex.printAllNetworks(p);
 	}
-
 }

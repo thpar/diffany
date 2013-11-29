@@ -102,6 +102,36 @@ public abstract class Network
 		}
 		return resultEdges;
 	}
+	
+	/**
+	 * Get all edges in this network between two nodes with a specific name, assuming these names are unique. 
+	 * In case there are symmetrical edges in this network between target-source, these will also be added if addSyms is true.
+	 * 
+	 * @param source the name of the required source node (normalized version in case that option is chosen)
+	 * @param target the name of the required target node (normalized version in case that option is chosen)
+	 * @param addSyms defined whether or not to also include symmetrical target-source edges
+	 * @param normalized wehther or not the names of the nodes should be normalized before comparison to the given strings
+	 * @return the set of edges between these two nodes (can be empty, but not null)
+	 */
+	public Set<Edge> getAllEdgesByName(String source, String target, boolean addSyms, boolean normalized)
+	{
+		Set<Edge> resultEdges = new HashSet<Edge>();
+		if (source == null || target == null)
+			return resultEdges;
+		
+		for (Edge e : edges)
+		{
+			if (e.getSource().getName(normalized).equals(source) && e.getTarget().getName(normalized).equals(target))
+			{
+				resultEdges.add(e);
+			}
+			else if (addSyms && e.isSymmetrical() && e.getSource().getName(normalized).equals(target) && e.getTarget().getName(normalized).equals(source))
+			{
+				resultEdges.add(e);
+			}
+		}
+		return resultEdges;
+	}
 
 	/**
 	 * Define a (new) set of nodes for this network, overwriting previous data.

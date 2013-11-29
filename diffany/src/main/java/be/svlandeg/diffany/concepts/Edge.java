@@ -43,6 +43,19 @@ public class Edge extends EdgeDefinition
 	{
 		this(type, source, target, symmetrical, 1.0, negated);
 	}
+	
+	/**
+	 * Create a new edge with default weight of 1.0
+	 * @param type the interaction type of this edge
+	 * @param source the source node
+	 * @param target the target node
+	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
+	 * @param weight the weight or confidence of this edge (should be positive)
+	 */
+	public Edge(String type, Node source, Node target, boolean symmetrical, double weight)
+	{
+		this(type, source, target, symmetrical, weight, false);
+	}
 
 	/**
 	 * Create a new edge with default weight of 1.0 and negation off
@@ -97,7 +110,17 @@ public class Edge extends EdgeDefinition
 	public String writeToTab()
 	{
 		DecimalFormat df = new DecimalFormat("#.##");
-		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + df.format(weight) + '\t' + negated;
+		String symm = "symmetrical";
+		if (! symmetrical)
+		{
+			symm = "directed";
+		}
+		String neg = "negated";
+		if (! negated)
+		{
+			neg = "not negated";
+		}
+		String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symm + '\t' + df.format(weight) + '\t' + neg;
 		//String result = source.getName() + '\t' + target.getName() + '\t' + type + '\t' + symmetrical + '\t' + weight + '\t' + negated;
 		
 		return result;

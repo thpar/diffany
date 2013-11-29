@@ -8,8 +8,7 @@ import be.svlandeg.diffany.semantics.*;
 
 /** 
  * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
- * http://www.sciencemag.org/content/330/6009/1385.full.pdf
- * 
+ * http://www.sciencemag.org/content/330/6009/1385.full.pdf  
  * @author Sofie Van Landeghem
  */
 public class Bandyopadhyay2010 extends GenericExample
@@ -45,9 +44,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("E", new Node("E"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Untreated");
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 1.1, false));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3, false));
-		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true, 0.8, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 1.1));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3));
+		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true, 0.8));
 		return network;
 	}
 
@@ -72,16 +71,16 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9, false));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 0.4, false));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true, 0.7, false));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9));
+		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 0.4));
+		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true, 0.7));
 
 		cnetworks.add(network);
 		return cnetworks;
 	}
 
 	/**
-	 * Testing the example
+	 * Testing the example using console output (use TestExamples for the JUnit version!)
 	 */
 	public static void main(String[] args)
 	{

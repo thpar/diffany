@@ -1,26 +1,36 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.concepts.Condition;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * Toy testing class to experiment with edge weights for custom networks.
+ * Toy testing class to experiment with edge negation in custom networks.
  * 
  * @author Sofie Van Landeghem
  */
-public class WeightTest extends GenericExample
+public class NegatedTest extends GenericExample
 {
-	
 	/**
 	 * Get a project with some custom-defined networks.
 	 * @return an example project.
 	 */
 	public Project getTestProject()
 	{
-		String name = "Weight_test";
+		String name = "Negation_test";
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();
@@ -46,9 +56,10 @@ public class WeightTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 3, false));
-		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 4, false));
+		//network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
+		
+		//network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 5, false));
 		return network;
 	}
 	
@@ -77,9 +88,8 @@ public class WeightTest extends GenericExample
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 3, false));
-		network.addEdge(new Edge("ppi", nodes.get("M"), nodes.get("N"), true, 3, false));
-		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 2, false));
+		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 3, true));
+		//network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), true, 4, false));
 		
 		cnetworks.add(network);
 		return cnetworks;
@@ -90,10 +100,10 @@ public class WeightTest extends GenericExample
 	 */
 	public static void main(String[] args)
 	{
-		WeightTest ex = new WeightTest();
+		NegatedTest ex = new NegatedTest();
 		double cutoff = 0.0;
 		
-		System.out.println("Defining network for weight test");
+		System.out.println("Defining network for negation test");
 		Project p = ex.getTestProject();
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
@@ -102,5 +112,4 @@ public class WeightTest extends GenericExample
 		System.out.println("");
 		ex.printAllNetworks(p);
 	}
-
 }

@@ -62,6 +62,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		JPanel panel = new JPanel();
 		comboModel = new CollectionDropDownModel(model);
 		collectionDropDown = new JComboBox(comboModel);
+		collectionDropDown.setEnabled(comboModel.hasEntries());
 		panel.add(collectionDropDown);
 		
 		collectionDropDown.addActionListener(this);
@@ -119,6 +120,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on Cytoscape NetworkAdded
 		comboModel.refresh();
+		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 	
 }

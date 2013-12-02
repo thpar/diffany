@@ -21,7 +21,7 @@ public class ProcessTest extends GenericExample
 	 */
 	public Project getTestProject()
 	{
-		String name = "Weight_test";
+		String name = "Process_test";
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();

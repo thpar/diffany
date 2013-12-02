@@ -88,6 +88,8 @@ public class NetworkCleaning
 	 **/
 	public void removeRedundantEdges(Network net)
 	{
+		Set<Edge> removed_edges = new HashSet<Edge>();
+		
 		// remove duplicate symmetrical edges between source-target and
 		// target-source
 		for (Node n1 : net.getNodes())
@@ -103,13 +105,14 @@ public class NetworkCleaning
 					{
 						for (Edge eb : all_edges)
 						{
-							if (!et.equals(eb))
+							if (!et.equals(eb) && !removed_edges.contains(et))
 							{
 								if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.getType().equals(eb.getType())))
 								{
 									if ((et.getWeight() == eb.getWeight()) && (et.isNegated() == eb.isNegated()))
 									{
 										net.removeEdge(eb);
+										removed_edges.add(eb);
 									}
 								}
 							}

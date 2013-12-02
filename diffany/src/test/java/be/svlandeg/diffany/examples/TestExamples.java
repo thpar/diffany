@@ -50,7 +50,7 @@ public class TestExamples
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(1, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "D", true, false, "negative", false, 0.9);
+		assertOneEdge(sNetwork, "A", "D", true, false, "negative_regulation", false, 0.9);
 	}
 	
 	/**
@@ -83,8 +83,8 @@ public class TestExamples
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "D", true, false, "negative", false, 0.7);
-		assertOneEdge(sNetwork, "A", "F", true, false, "negative", false, 1);
+		assertOneEdge(sNetwork, "A", "D", true, false, "negative_regulation", false, 0.7);
+		assertOneEdge(sNetwork, "A", "F", true, false, "negative_regulation", false, 1);
 	}
 	
 	/**

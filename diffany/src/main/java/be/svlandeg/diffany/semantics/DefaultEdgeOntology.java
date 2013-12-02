@@ -29,14 +29,17 @@ public class DefaultEdgeOntology extends EdgeOntology
 
 		String neg_cat = "decrease";
 		Set<String> other_neg_cats = defineNegCategories();
+		
+		Set<String> neutral_cats = defineNeutralCategories();
+		
+		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, other_pos_cats, other_neg_cats, neutral_cats);
 
 		Set<String> process_cats = defineProcessCategories();
 
-		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, other_pos_cats, other_neg_cats);
 		prOntology = new ProcessEdgeOntology(pos_cat + "_", neg_cat + "_", process_cats);
 
+		insertDefaultParents();
 		insertDefaultMappings();
-
 	}
 
 	/**
@@ -74,6 +77,18 @@ public class DefaultEdgeOntology extends EdgeOntology
 		other_neg_cats.add("neg_regulation");
 		return other_neg_cats;
 	}
+	
+	/**
+	 * Define the neutral categories to be used in the ActivityFlowEdgeOntology
+	 * 
+	 * @return the defined negative categories
+	 */
+	protected Set<String> defineNeutralCategories()
+	{
+		Set<String> neutral_cats = new HashSet<String>();
+		neutral_cats.add("regulation");
+		return neutral_cats;
+	}
 
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
@@ -108,6 +123,15 @@ public class DefaultEdgeOntology extends EdgeOntology
 		String errormsg = "The two types '" + refType + "' and '" + conType + "' can not be compared in this edge ontology!";
 		throw new IllegalArgumentException(errormsg);
 	}
+	
+	/**
+	 * Provide a default mapping edge type to category mapping.
+	 */
+	protected void insertDefaultParents()
+	{
+		afOntology.putParent("pos_regulation", "regulation");
+		afOntology.putParent("neg_regulation", "regulation");
+	}
 
 	/**
 	 * Provide a default mapping edge type to category mapping.
@@ -127,9 +151,13 @@ public class DefaultEdgeOntology extends EdgeOntology
 		prOntology.addCategoryMapping("binding", "ppi", overwrite);
 
 		// regulation category and common synonyms
-		// addCategoryMapping("regulation", "regulation", overwrite);
-		// addCategoryMapping("regulates", "regulation", overwrite);
-		// addCategoryMapping("regulate", "regulation", overwrite);
+		afOntology.addCategoryMapping("regulation", "regulation", overwrite);
+		afOntology.addCategoryMapping("regulates", "regulation", overwrite);
+		afOntology.addCategoryMapping("regulate", "regulation", overwrite);
+		afOntology.addCategoryMapping("influence", "regulation", overwrite);
+		afOntology.addCategoryMapping("influences", "regulation", overwrite);
+		afOntology.addCategoryMapping("effect", "regulation", overwrite);
+		afOntology.addCategoryMapping("effects", "regulation", overwrite);
 
 		// positive regulation category and common synonyms
 		afOntology.addCategoryMapping("positive regulation", "pos_regulation", overwrite);
@@ -154,6 +182,9 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addCategoryMapping("positively_regulates", "pos_regulation", overwrite);
 		afOntology.addCategoryMapping("positively-regulates", "pos_regulation", overwrite);
 		afOntology.addCategoryMapping("positivelyregulates", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("upregulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("up-regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("up regulation", "pos_regulation", overwrite);
 
 		// positive regulation category and common synonyms
 		afOntology.addCategoryMapping("negative regulation", "neg_regulation", overwrite);
@@ -178,6 +209,12 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addCategoryMapping("negatively_regulates", "neg_regulation", overwrite);
 		afOntology.addCategoryMapping("negatively-regulates", "neg_regulation", overwrite);
 		afOntology.addCategoryMapping("negativelyregulates", "neg_regulation", overwrite);
+		afOntology.addCategoryMapping("downregulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("down-regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("down regulation", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("inhibits", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("inhibit", "pos_regulation", overwrite);
+		afOntology.addCategoryMapping("inhibition", "pos_regulation", overwrite);
 	}
 
 }

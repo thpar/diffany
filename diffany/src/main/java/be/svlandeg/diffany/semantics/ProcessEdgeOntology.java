@@ -50,7 +50,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		Boolean up = null;
 		double diffWeight = 0;
 
-		if (equalCats) // TODO negation
+		if (equalCats) 
 		{
 			diffWeight = conEdge.getWeight() - refEdge.getWeight();
 			up = true; // assume an increase
@@ -76,22 +76,32 @@ public class ProcessEdgeOntology extends EdgeOntology
 			baseType = refCat;
 		}
 
-		if (up == null || diffWeight <= cutoff)
+		
+		
+		String type = "";
+		if (up == null)
+		{
+			type = refCat + "_to_" + conCat;
+			diffWeight = conEdge.getWeight() + refEdge.getWeight();
+		}
+		else 
+		{
+			if (up)
+			{
+				type = posPrefix;
+			} 
+			else
+			{
+				type = negPrefix;
+			}
+			type += baseType;
+		}
+		diff_edge.setType(type);
+		
+		if (diffWeight <= cutoff)
 		{
 			return EdgeDefinition.getVoidEdge();
 		}
-
-		String type = "";
-		if (up)
-		{
-			type = posPrefix;
-		} else
-		{
-			type = negPrefix;
-		}
-		type += baseType;
-
-		diff_edge.setType(type);
 
 		boolean refSymm = refEdge.isSymmetrical();
 		boolean conSymm = conEdge.isSymmetrical();

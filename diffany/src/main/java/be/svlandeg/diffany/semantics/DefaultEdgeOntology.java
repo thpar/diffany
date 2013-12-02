@@ -51,6 +51,9 @@ public class DefaultEdgeOntology extends EdgeOntology
 	{
 		Set<String> cats = new HashSet<String>();
 		cats.add("ppi");
+		cats.add("ptm");
+		cats.add("phosphorylation");
+		cats.add("ubiquitination");
 		return cats;
 	}
 
@@ -131,6 +134,9 @@ public class DefaultEdgeOntology extends EdgeOntology
 	{
 		afOntology.putParent("pos_regulation", "regulation");
 		afOntology.putParent("neg_regulation", "regulation");
+		
+		prOntology.putParent("phosphorylation", "ptm");
+		prOntology.putParent("ubiquitination", "ptm");
 	}
 
 	/**
@@ -141,6 +147,16 @@ public class DefaultEdgeOntology extends EdgeOntology
 		boolean overwrite = false;
 
 		// PPI category and common synonyms
+		
+		prOntology.addCategoryMapping("phosphorylation", "phosphorylation", overwrite);
+		prOntology.addCategoryMapping("phosphorylates", "phosphorylation", overwrite);
+		prOntology.addCategoryMapping("phosphorylate", "phosphorylation", overwrite);
+		
+		prOntology.addCategoryMapping("ubiquitination", "ubiquitination", overwrite);
+		prOntology.addCategoryMapping("ubiquitinates", "ubiquitination", overwrite);
+		prOntology.addCategoryMapping("ubiquitinate", "ubiquitination", overwrite);
+		
+		prOntology.addCategoryMapping("ptm", "ptm", overwrite);
 
 		prOntology.addCategoryMapping("ppi", "ppi", overwrite);
 		prOntology.addCategoryMapping("protein-protein interaction", "ppi", overwrite);

@@ -87,19 +87,19 @@ public abstract class EdgeOntology
 
 		if (refCat.equals(conCat))
 		{
-			shared_edge.setType(refEdge.getType());
+			shared_edge.setType(refCat);
 			return shared_edge;
 		}
 		if (isChildOf(refCat,conCat))	// conCat is superclass
 		{
 			if (conNeg)	// there is negation -> shared edge is negated of type subclass
 			{
-				shared_edge.setType(refEdge.getType());
+				shared_edge.setType(refCat);
 				return shared_edge;
 			}
 			else	// there is no negation -> shared edge is of type superclass
 			{
-				shared_edge.setType(conEdge.getType());
+				shared_edge.setType(conCat);
 				return shared_edge;
 			}
 		}
@@ -107,12 +107,12 @@ public abstract class EdgeOntology
 		{
 			if (refNeg)	// there is negation -> shared edge is negated of type subclass
 			{
-				shared_edge.setType(conEdge.getType());
+				shared_edge.setType(conCat);
 				return shared_edge;
 			}
 			else	// there is no negation -> shared edge is of type superclass
 			{
-				shared_edge.setType(refEdge.getType());
+				shared_edge.setType(refCat);
 				return shared_edge;
 			}
 		}

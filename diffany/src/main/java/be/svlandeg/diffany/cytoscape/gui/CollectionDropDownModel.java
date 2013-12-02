@@ -23,11 +23,15 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Object EMPTY_MESSAGE = "No Collections";
+
 	private Model model;
 	
 	private List<NetworkEntry> collectionEntries = new ArrayList<NetworkEntry>();
 	
 	private NetworkEntry selectedEntry;
+	
+	private boolean empty = true;
 	
 	/**
 	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and refreshes the 
@@ -47,7 +51,7 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	 * The refresh will make the combo box GUI redraw.
 	 */
 	public void refresh(){
-		int oldSize = collectionEntries.size();
+		int oldSize = this.getSize();
 		collectionEntries = new ArrayList<NetworkEntry>();
 		for (CyRootNetwork collection : model.getNetworkCollections()){
 			NetworkEntry collectionEntry = new NetworkEntry(collection);
@@ -55,7 +59,10 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 		}
 		//select the first entry if available
 		if (collectionEntries.size() > 0){
+			this.empty = false;
 			this.selectedEntry = collectionEntries.get(0);
+		} else {
+			empty = true;
 		}
 		//let the gui know all entries might have changed
 		this.fireContentsChanged(this, 0, oldSize);
@@ -63,13 +70,20 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	
 	@Override
 	public int getSize() {
-		int size = collectionEntries.size();
-		return size;
+		if (empty){
+			return 1;
+		} else {
+			return collectionEntries.size();
+		}
 	}
 
 	@Override
 	public Object getElementAt(int index) {
-		return collectionEntries.get(index);
+		if (empty){
+			return EMPTY_MESSAGE;
+		} else {
+			return collectionEntries.get(index);			
+		}
 	}
 
 	@Override
@@ -79,7 +93,18 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 
 	@Override
 	public Object getSelectedItem() {
+		if (empty){
+			return EMPTY_MESSAGE;
+		}
 		return this.selectedEntry;
+	}
+	
+	/**
+	 * Checks if there are any collections in the list
+	 * @return
+	 */
+	public boolean hasEntries(){
+		return !empty;
 	}
 
 

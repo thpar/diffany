@@ -1,27 +1,26 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
-import org.cytoscape.model.subnetwork.CyRootNetwork;
-import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
@@ -48,10 +47,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		model.addObserver(this);			
 		model.getGuiModel().addObserver(this);
 		
-		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		
-		this.add(createCollectionSelectionPanel());
-		this.add(createNetworkSelectionPanel());
+		this.setLayout(new BorderLayout());
+		this.add(createCollectionSelectionPanel(), BorderLayout.NORTH);
+		this.add(createNetworkSelectionPanel(), BorderLayout.CENTER);
 	}
 	
 	/**
@@ -59,13 +57,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the dropdown list.
 	 */
 	private Component createCollectionSelectionPanel() {
-		JPanel panel = new JPanel();
 		comboModel = new CollectionDropDownModel(model);
 		collectionDropDown = new JComboBox(comboModel);
-		panel.add(collectionDropDown);
+		collectionDropDown.setEnabled(comboModel.hasEntries());
+		
+		JPanel collPanel = new JPanel();
+		collPanel.add(new JLabel("Network collection: "));
+		collPanel.add(collectionDropDown);
 		
 		collectionDropDown.addActionListener(this);
-		return panel;
+		return collPanel;
 	}
 	
 	/**
@@ -75,8 +76,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
 		JTable table = new JTable(new SelectionTableModel(model));
-		JScrollPane scrollPane = new JScrollPane(table);
+		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
+		
+		table.getColumnModel().getColumn(0).setPreferredWidth(20);
+		table.getColumnModel().getColumn(2).setPreferredWidth(20);
 		table.setFillsViewportHeight(true);
+		JScrollPane scrollPane = new JScrollPane(table);
 		panel.add(scrollPane);
 		return panel;
 	}
@@ -119,6 +124,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on Cytoscape NetworkAdded
 		comboModel.refresh();
+		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 	
 }

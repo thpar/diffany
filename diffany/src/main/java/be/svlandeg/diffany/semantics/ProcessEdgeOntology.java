@@ -30,41 +30,6 @@ public class ProcessEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
-	{
-		EdgeDefinition shared_edge = new EdgeDefinition();
-
-		String refCat = getCategory(refEdge.getType());
-		String conCat = getCategory(conEdge.getType());
-		
-		boolean refNeg = refEdge.isNegated();
-		boolean conNeg = conEdge.isNegated();
-
-		if (refCat.equals(conCat) && refNeg == conNeg)
-		{
-			// the shared weight is the minimum between the two
-			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
-
-			if (sharedWeight <= cutoff)
-			{
-				return EdgeDefinition.getVoidEdge();
-			}
-
-			// the shared edge is only symmetrical if both original edges are
-			boolean refSymm = refEdge.isSymmetrical();
-			boolean conSymm = conEdge.isSymmetrical();
-			boolean sharedSymm = refSymm && conSymm;
-
-			shared_edge.setType(refEdge.getType());
-			shared_edge.setWeight(sharedWeight);
-			shared_edge.makeSymmetrical(sharedSymm);
-			shared_edge.makeNegated(refNeg);
-			return shared_edge;
-		}
-		return EdgeDefinition.getVoidEdge();
-	}
-
-	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();

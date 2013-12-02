@@ -15,6 +15,8 @@ public abstract class EdgeOntology
 {
 
 	public static final String VOID_TYPE = EdgeDefinition.getVoidEdge().getType().toLowerCase();
+	
+	private Map<String, String> catHierarchy;
 
 	private Map<String, String> mapEdgeToCategory;
 	private Set<String> allCategories;
@@ -25,6 +27,7 @@ public abstract class EdgeOntology
 	public EdgeOntology()
 	{
 		removeAllCategoriesAndMappings();
+		catHierarchy = new HashMap<String, String>();
 	}
 
 	/**
@@ -48,11 +51,76 @@ public abstract class EdgeOntology
 	 * @param conEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
 	 * 
-	 * @return the edge definition in the shaerd network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
+	 * @return the edge definition in the shared network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException;
+	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	{
+		EdgeDefinition shared_edge = new EdgeDefinition();
 
+		String refCat = getCategory(refEdge.getType());
+		String conCat = getCategory(conEdge.getType());
+		
+		boolean refNeg = refEdge.isNegated();
+		boolean conNeg = conEdge.isNegated();
+
+		if (refNeg != conNeg)
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		
+		shared_edge.makeNegated(refNeg);
+			
+		// the shared weight is the minimum between the two
+		double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
+		if (sharedWeight <= cutoff)
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		shared_edge.setWeight(sharedWeight);
+
+		// the shared edge is only symmetrical if both original edges are
+		boolean refSymm = refEdge.isSymmetrical();
+		boolean conSymm = conEdge.isSymmetrical();
+		boolean sharedSymm = refSymm && conSymm;
+		shared_edge.makeSymmetrical(sharedSymm);
+
+		if (refCat.equals(conCat))
+		{
+			shared_edge.setType(refEdge.getType());
+			return shared_edge;
+		}
+		if (isChildOf(refCat,conCat))	// conCat is superclass
+		{
+			if (conNeg)	// there is negation -> shared edge is negated of type subclass
+			{
+				shared_edge.setType(refEdge.getType());
+				return shared_edge;
+			}
+			else	// there is no negation -> shared edge is of type superclass
+			{
+				shared_edge.setType(conEdge.getType());
+				return shared_edge;
+			}
+		}
+		if (isChildOf(conCat,refCat))	// refCat is superclass
+		{
+			if (refNeg)	// there is negation -> shared edge is negated of type subclass
+			{
+				shared_edge.setType(conEdge.getType());
+				return shared_edge;
+			}
+			else	// there is no negation -> shared edge is of type superclass
+			{
+				shared_edge.setType(refEdge.getType());
+				return shared_edge;
+			}
+		}
+		
+		return EdgeDefinition.getVoidEdge();
+		
+	}
+	
 	/**
 	 * Get the semantic category of a certain edge type. Matching is done independent of upper/lower casing.
 	 * 
@@ -104,6 +172,47 @@ public abstract class EdgeOntology
 		{
 			allCategories.add(c.toLowerCase());
 		}
+	}
+	
+	/**
+	 * Define a child category and its parent category. The child should not have received a parent before.
+	 * @param childCat the child category (subclass)
+	 * @param parentCat the parent category (superclass)
+	 * @throws IllegalArgumentException when the childCat was already previously attached to a parent or if either of the two categories are not defined in this ontology
+	 */
+	protected void putParent(String childCat, String parentCat) throws IllegalArgumentException
+	{
+		if (catHierarchy.containsKey(childCat))
+		{
+			String errormsg = "The provided child category ('" + childCat + "') already has a parent category!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (!allCategories.contains(childCat.toLowerCase()))
+		{
+			String errormsg = "The provided child category ('" + childCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (!allCategories.contains(parentCat.toLowerCase()))
+		{
+			String errormsg = "The provided parent category ('" + parentCat + "') does not exist in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		catHierarchy.put(childCat, parentCat);
+	}
+	
+	/**
+	 * Determine whether or not two categories are related to eachother as child (sub) - parent (super)
+	 * @param childCat the subclass category
+	 * @param parentCat the superclass category
+	 * @return whether or not the parent relationship holds
+	 */
+	protected boolean isChildOf(String childCat, String parentCat)
+	{
+		if (! catHierarchy.containsKey(childCat))
+		{
+			return false;
+		}
+		return catHierarchy.get(childCat).equals(parentCat);
 	}
 
 	/**

@@ -7,7 +7,6 @@ import be.svlandeg.diffany.concepts.EdgeDefinition;
 
 /**
  * This edge ontology deals with general flow activity as up/down regulation and their corresponding weights.
- * TODO: deal with neutral/undefined flow?
  * 
  * @author Sofie Van Landeghem
  */
@@ -19,22 +18,31 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 	public Set<String> posCats;
 	public Set<String> negCats;
+	public Set<String> neutralCats;
 
 	/**
 	 * Create a new ontology, defining pos/neg categories. and inserting
 	 * After the constructor is called, default edge-category mappings should be inserted using addCategoryMapping!
+	 * 
+	 * @param pos_diff_cat the string representing an increase in a differential network
+	 * @param neg_diff_cat the string representing an decrease in a differential network
+	 * @param other_pos_cats positive categories (e.g. upregulation)
+	 * @param other_neg_cats negative categories (e.g. inhibition)
+	 * @param neutral_cats neutral categories (e.g. regulation)
 	 */
-	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Set<String> other_pos_cats, Set<String> other_neg_cats)
+	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Set<String> other_pos_cats, Set<String> other_neg_cats, Set<String> other_neutral_cats)
 	{
 		super();
 		this.neg_diff_cat = neg_diff_cat;
 		this.pos_diff_cat = pos_diff_cat;
 		definePosCategories(other_pos_cats);
 		defineNegCategories(other_neg_cats);
+		defineNeutralCategories(other_neutral_cats);
 	}
 
 	/**
 	 * Define all the positive categories that are defined in this ontology.
+	 * @param other_pos_cats the positive categories
 	 */
 	protected void definePosCategories(Set<String> other_pos_cats)
 	{
@@ -50,6 +58,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 	/**
 	 * Define all the negative categories that are defined in this ontology.
+	 * @param other_neg_cats the negative categories
 	 */
 	protected void defineNegCategories(Set<String> other_neg_cats)
 	{
@@ -62,43 +71,22 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		}
 		addCategories(negCats);
 	}
-
-
-
-	@Override
-	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	
+	/**
+	 * Define all the neutral categories that are defined in this ontology.
+	 * @param neutral_cats the neutral categories
+	 */
+	protected void defineNeutralCategories(Set<String> all_neutral_cats)
 	{
-		EdgeDefinition shared_edge = new EdgeDefinition();
+		neutralCats = new HashSet<String>();
 
-		String refCat = getCategory(refEdge.getType());
-		String conCat = getCategory(conEdge.getType());
-
-		boolean refNeg = refEdge.isNegated();
-		boolean conNeg = conEdge.isNegated();
-
-		if (refCat.equals(conCat) && refNeg == conNeg)
+		for (String p : all_neutral_cats)
 		{
-			// the shared weight is the minimum between the two
-			double sharedWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
-
-			if (sharedWeight <= cutoff)
-			{
-				return EdgeDefinition.getVoidEdge();
-			}
-
-			// the shared edge is only symmetrical if both original edges are
-			boolean refSymm = refEdge.isSymmetrical();
-			boolean conSymm = conEdge.isSymmetrical();
-			boolean sharedSymm = refSymm && conSymm;
-
-			shared_edge.setType(refEdge.getType());
-			shared_edge.setWeight(sharedWeight);
-			shared_edge.makeSymmetrical(sharedSymm);
-			shared_edge.makeNegated(refNeg);
-			return shared_edge;
+			neutralCats.add(p);
 		}
-		return EdgeDefinition.getVoidEdge();
+		addCategories(neutralCats);
 	}
+
 
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
@@ -116,6 +104,13 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			
 		String refCat = getCategory(refEdge.getType());
 		String conCat = getCategory(conEdge.getType());
+		
+		// the differential edge can not be calculated if either of the two is a neutral edge
+		if (neutralCats.contains(refCat) || neutralCats.contains(conCat))
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		
 
 		boolean equalCats = refCat.equals(conCat);
 

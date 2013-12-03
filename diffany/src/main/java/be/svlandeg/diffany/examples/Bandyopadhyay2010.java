@@ -9,6 +9,7 @@ import be.svlandeg.diffany.semantics.*;
 /** 
  * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
  * http://www.sciencemag.org/content/330/6009/1385.full.pdf  
+ * 
  * @author Sofie Van Landeghem
  */
 public class Bandyopadhyay2010 extends GenericExample

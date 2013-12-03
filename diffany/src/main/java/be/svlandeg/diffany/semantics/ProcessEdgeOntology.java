@@ -83,6 +83,14 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			type = refCat + "_to_" + conCat;
 			diffWeight = conEdge.getWeight() + refEdge.getWeight();
+			if (isChildOf(refCat, conCat))	// the conditional edge is less specific, i.e. not actually differential!
+			{
+				return EdgeDefinition.getVoidEdge();
+			}
+			if (isChildOf(conCat, refCat))	// the conditional edge is more specific, i.e. not actually differential!
+			{
+				return EdgeDefinition.getVoidEdge();
+			}
 		}
 		else 
 		{

@@ -11,6 +11,9 @@ import be.svlandeg.diffany.semantics.*;
  * This class provides examples taken from the Ideker et al, Molecular Systems Biology 2011 paper.
  * http://www.nature.com/msb/journal/v8/n1/pdf/msb201199.pdf
  * 
+ * In contrast to the original picture, the Diffany algorithm will also create a neutral
+ * 'regulation' edge when positive regulation turns into negative regulation or vice versa.
+ * 
  * @author Sofie Van Landeghem
  */
 public class Ideker2011 extends GenericExample

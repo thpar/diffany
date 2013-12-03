@@ -48,9 +48,10 @@ public class TestExamples
 		// Testing the edges in the corresponding shared network
 		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
-		assertEquals(1, sEdges.size());
+		assertEquals(2, sEdges.size());
 		
 		assertOneEdge(sNetwork, "A", "D", true, false, "negative_regulation", false, 0.9);
+		assertOneEdge(sNetwork, "A", "B", true, false, "regulation", false, 0.3);
 	}
 	
 	/**
@@ -72,6 +73,7 @@ public class TestExamples
 		// Testing the edges in the differential network
 		DifferentialNetwork dNetwork = dNetworks.iterator().next();
 		Set<Edge> dEdges =  dNetwork.getEdges();
+		
 		assertEquals(3, dEdges.size());
 		
 		assertOneEdge(dNetwork, "A", "B", true, false, "increase", false, 0.7);
@@ -81,10 +83,86 @@ public class TestExamples
 		// Testing the edges in the corresponding shared network
 		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
-		assertEquals(2, sEdges.size());
+		assertEquals(3, sEdges.size());
 		
 		assertOneEdge(sNetwork, "A", "D", true, false, "negative_regulation", false, 0.7);
 		assertOneEdge(sNetwork, "A", "F", true, false, "negative_regulation", false, 1);
+		assertOneEdge(sNetwork, "A", "B", true, false, "regulation", false, 0.3);
+	}
+	
+	/**
+	 * Test whether the example activity flow network produces correct results.
+	 */
+	@Test
+	public void testActivityFlowNetwork()
+	{
+		ActivityFlowTest ex = new ActivityFlowTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		
+		// Testing that there is exactly one differential network created
+		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		assertEquals(1, dNetworks.size());
+		
+		// Testing the edges in the differential network
+		DifferentialNetwork dNetwork = dNetworks.iterator().next();
+		Set<Edge> dEdges =  dNetwork.getEdges();
+		assertEquals(6, dEdges.size());
+		
+		assertOneEdge(dNetwork, "S", "T", false, false, "increase", false, 1);
+		assertOneEdge(dNetwork, "K", "J", true, false, "increase", false, 2);
+		assertOneEdge(dNetwork, "A", "B", false, false, "increase", false, 1);
+		assertOneEdge(dNetwork, "B", "A", false, false, "decrease", false, 1);
+		assertOneEdge(dNetwork, "M", "N", false, false, "increase", false, 12);
+		assertOneEdge(dNetwork, "N", "M", false, false, "increase", false, 7);
+		
+		
+		// Testing the edges in the corresponding shared network
+		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		Set<Edge> sEdges =  sNetwork.getEdges();
+		assertEquals(4, sEdges.size());
+		
+		assertOneEdge(sNetwork, "A", "B", false, false, "positive_regulation", false, 2);
+		assertOneEdge(sNetwork, "G", "H", true, false, "negative_regulation", true, 3);
+		assertOneEdge(sNetwork, "X", "Y", false, false, "positive_regulation", true, 2);
+		assertOneEdge(sNetwork, "M", "N", false, false, "regulation", false, 5);
+	}
+	
+	/**
+	 * Test whether the example process network produces correct results.
+	 */
+	@Test
+	public void testProcessNetwork()
+	{
+		ProcessTest ex = new ProcessTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		
+		// Testing that there is exactly one differential network created
+		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		assertEquals(1, dNetworks.size());
+		
+		// Testing the edges in the differential network
+		DifferentialNetwork dNetwork = dNetworks.iterator().next();
+		Set<Edge> dEdges =  dNetwork.getEdges();
+		assertEquals(5, dEdges.size());
+		
+		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 2);
+		assertOneEdge(dNetwork, "G", "H", false, false, "ubiquitination_to_phosphorylation", false, 6);
+		assertOneEdge(dNetwork, "H", "G", false, false, "decrease_ubiquitination", false, 1);
+		assertOneEdge(dNetwork, "M", "N", true, false, "increase_ppi", false, 3);
+		assertOneEdge(dNetwork, "S", "T", true, false, "ppi_to_phosphorylation", false, 5);
+		
+		// Testing the edges in the corresponding shared network
+		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		Set<Edge> sEdges =  sNetwork.getEdges();
+		assertEquals(3, sEdges.size());
+		
+		assertOneEdge(sNetwork, "X", "Y", true, false, "ptm", false, 3);
+		assertOneEdge(sNetwork, "G", "H", false, false, "ptm", false, 1);
+		assertOneEdge(sNetwork, "K", "J", true, false, "phosphorylation", true, 4);
 	}
 	
 	/**

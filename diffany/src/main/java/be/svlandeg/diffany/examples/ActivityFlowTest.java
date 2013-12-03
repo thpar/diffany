@@ -57,19 +57,21 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
+		nodes.put("J", new Node("K"));
+		nodes.put("K", new Node("J"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		/*
+		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
 		
 		network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), false, 5, false));
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 5, true));
-		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), true, 4, true));
-		*/
+		
 		network.addEdge(new Edge("negative regulation", nodes.get("G"), nodes.get("H"), true, 3, true));
+		
+		network.addEdge(new Edge("negative regulation", nodes.get("J"), nodes.get("K"), true, 2, false));
 		return network;
 	}
 	
@@ -99,18 +101,22 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
+		nodes.put("J", new Node("K"));
+		nodes.put("K", new Node("J"));
 
-		/*
+		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("M"), nodes.get("N"), true, 7, false));
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 1, true));
+		network.addEdge(new Edge("positive regulation", nodes.get("S"), nodes.get("T"), false, 1, false));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 2, true));
-		*/
+		
 		network.addEdge(new Edge("regulation", nodes.get("H"), nodes.get("G"), true, 7, true));
+		
+		network.addEdge(new Edge("positive regulation", nodes.get("K"), nodes.get("J"), false, 2, true));
 		
 		cnetworks.add(network);
 		return cnetworks;

@@ -82,6 +82,16 @@ public class GUIModel extends Observable{
 		return referenceEntry.getNetwork();
 	}
 	
+	public List<CyNetwork> getDifferentialEntries(){
+		List<CyNetwork> differentials = new ArrayList<CyNetwork>();
+		for (NetworkEntry entry : this.networkEntries){
+			if (entry.isSelected() && !entry.isReference()){
+				differentials.add(entry.getNetwork());
+			}
+		}
+		return differentials;
+	}
+	
 	public NetworkEntry getReferenceEntry(){
 		return referenceEntry;
 	}

@@ -65,14 +65,14 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
 		switch(columnIndex){
 		case 1:
 			return false;
 		case 0:
-			return true;
+			return !entry.isReference();
 		case 2:
-			NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
-			return entry.isSelected();
+			return entry.isSelected() && !entry.isReference();
 		}
 		return false;
 	}
@@ -100,7 +100,10 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 			entry.setSelected(check);
 			break;
 		case 2:
-			entry.setReference(check);
+			if (!entry.isReference()){
+				guiModel.setReferenceEntry(entry);
+				this.fireTableDataChanged();
+			} 
 			break;
 		}
 	}

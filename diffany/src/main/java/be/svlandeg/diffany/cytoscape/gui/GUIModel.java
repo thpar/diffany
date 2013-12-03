@@ -19,8 +19,8 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
 public class GUIModel extends Observable{
 
 	private CyNetwork selectedCollection;
+	private NetworkEntry referenceEntry;
 	
-	private CyNetwork referenceNetwork;
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
 	
 	/**
@@ -64,13 +64,13 @@ public class GUIModel extends Observable{
 		networkEntries = new ArrayList<NetworkEntry>();
 		for (CySubNetwork subNet : subNets){
 			NetworkEntry entry = new NetworkEntry(subNet);
-			entry.setSelected(false);
+			entry.setSelected(true);
 			entry.setReference(false);
 			networkEntries.add(entry);
 		}
 		if (networkEntries.size() > 0){
 			networkEntries.get(0).setReference(true);
-			this.referenceNetwork = networkEntries.get(0).getNetwork();
+			this.referenceEntry = networkEntries.get(0);
 		}
 	}
 
@@ -79,7 +79,17 @@ public class GUIModel extends Observable{
 	 * @return
 	 */
 	public CyNetwork getReferenceNetwork() {
-		return referenceNetwork;
+		return referenceEntry.getNetwork();
+	}
+	
+	public NetworkEntry getReferenceEntry(){
+		return referenceEntry;
+	}
+	
+	public void setReferenceEntry(NetworkEntry entry){
+		this.referenceEntry.setReference(false);
+		this.referenceEntry = entry;
+		entry.setReference(true);
 	}
 	
 		

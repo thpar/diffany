@@ -27,6 +27,8 @@ public class Model extends Observable{
 	Services services;
 	private GUIModel guiModel;
 	
+	private Project currentProject;
+	
 	public Model(Services services){
 		this.services = services;
 		this.guiModel = new GUIModel();
@@ -45,7 +47,12 @@ public class Model extends Observable{
 	 * {@link Network}s to run the actual algorithm. 
 	 */
 	public void runAlgorithm(){
+		CyNetwork ref = guiModel.getReferenceNetwork();
+		Set<CyNetwork> diffs = guiModel.getDifferentialEntries();
 		
+		
+		
+//		currentProject = new Project("Default Project", ref);
 	}
 	
 		
@@ -68,6 +75,24 @@ public class Model extends Observable{
 	}
 	
 	/**
+	 * Returns the {@link CyNetwork} with given name.
+	 * Returns null if no such network exists.
+	 * 
+	 * @param id the network name
+	 * @return 
+	 */
+	public CyNetwork getNetworkByName(String id){
+		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
+		for (CyNetwork net : allNetworks){
+			String name = net.getRow(net).get(CyNetwork.NAME, String.class);
+			if (name.equals(id)){
+				return net;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Gives access to a subset of the services offered in this context, as loaded in the {@link CyActivator}
 	 * 
 	 * @return
@@ -75,4 +100,7 @@ public class Model extends Observable{
 	public Services getServices() {
 		return services;
 	}
+	
+	
+	
 }

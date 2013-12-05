@@ -39,7 +39,7 @@ public class TestTask implements Task {
 		taskMonitor.setProgress(0.6);
 		Thread.sleep(3000);
 		
-		CyNetworkBridge bridge = new CyNetworkBridge(services.getCyNetworkFactory());		
+		CyNetworkBridge bridge = new CyNetworkBridge(services);		
 		CyNetwork cyNetwork = bridge.createCyNetwork(network);
 		services.getCyNetworkManager().addNetwork(cyNetwork);
 		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);

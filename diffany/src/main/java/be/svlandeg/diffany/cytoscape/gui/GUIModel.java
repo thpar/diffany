@@ -1,8 +1,10 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
@@ -82,8 +84,8 @@ public class GUIModel extends Observable{
 		return referenceEntry.getNetwork();
 	}
 	
-	public List<CyNetwork> getDifferentialEntries(){
-		List<CyNetwork> differentials = new ArrayList<CyNetwork>();
+	public Set<CyNetwork> getDifferentialEntries(){
+		Set<CyNetwork> differentials = new HashSet<CyNetwork>();
 		for (NetworkEntry entry : this.networkEntries){
 			if (entry.isSelected() && !entry.isReference()){
 				differentials.add(entry.getNetwork());

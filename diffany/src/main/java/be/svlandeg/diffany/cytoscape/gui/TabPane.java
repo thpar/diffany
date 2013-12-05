@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -9,8 +8,8 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,9 +46,17 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		model.addObserver(this);			
 		model.getGuiModel().addObserver(this);
 		
+		createTabPaneContent();
+	}
+	
+	private void createTabPaneContent(){
 		this.setLayout(new BorderLayout());
 		this.add(createCollectionSelectionPanel(), BorderLayout.NORTH);
 		this.add(createNetworkSelectionPanel(), BorderLayout.CENTER);
+		
+		JButton runAlgorithm = new JButton("Start");
+		runAlgorithm.addActionListener(this);
+		this.add(runAlgorithm);
 	}
 	
 	/**
@@ -114,10 +121,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//triggered on collection dropdown action
-		JComboBox source = (JComboBox)e.getSource();
-		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-		model.getGuiModel().setSelectedCollection(entry.getNetwork());
+		String action = e.getActionCommand();
+		if (action.equals("collection")){
+			//triggered on collection dropdown action
+			JComboBox source = (JComboBox)e.getSource();
+			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
+			model.getGuiModel().setSelectedCollection(entry.getNetwork());			
+		} else if (action.equals("run")){
+			
+		}
 	}
 
 	@Override

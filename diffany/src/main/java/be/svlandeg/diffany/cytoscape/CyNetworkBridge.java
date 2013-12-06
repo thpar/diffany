@@ -40,6 +40,7 @@ public class CyNetworkBridge {
 	 * Column name of an extra field to be used to map nodes from different networks onto each other.
 	 */
 	private final String NORMALIZED_NAME = "normalized_name";
+	private final String WEIGHT = "weight";
 
 	private Services services;
 
@@ -176,6 +177,7 @@ public class CyNetworkBridge {
 			
 			EdgeDefinition def = new EdgeDefinition();
 			def.setType(this.getInteraction(cyNetwork, cyEdge));
+			def.setWeight(this.getWeight(cyNetwork, cyEdge));
 			Edge edge = new Edge(fromNode, toNode, def);
 			edgeSet.add(edge);
 		}
@@ -205,5 +207,14 @@ public class CyNetworkBridge {
 	private String getInteraction(CyNetwork cyNetwork, CyEdge cyEdge){
 		return cyNetwork.getRow(cyEdge).get(CyEdge.INTERACTION, String.class);
 	}
-	
+	/**
+	 * Get the value of the WEIGHT column
+	 * 
+	 * @param cyNetwork
+	 * @param cyEdge
+	 * @return
+	 */
+	private Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
+		return cyNetwork.getRow(cyEdge).get(this.WEIGHT, Double.class);
+	}
 }

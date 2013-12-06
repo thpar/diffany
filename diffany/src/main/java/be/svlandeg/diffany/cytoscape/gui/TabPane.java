@@ -76,6 +76,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		collPanel.add(new JLabel("Network collection: "));
 		collPanel.add(collectionDropDown);
 		
+		collectionDropDown.setActionCommand("collection");
 		collectionDropDown.addActionListener(this);
 		return collPanel;
 	}
@@ -132,6 +133,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.getGuiModel().setSelectedCollection(entry.getNetwork());			
 		} else if (action.equals("run")){
+			//triggered on Start button click
+			System.out.println("Run project");
 			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
 			if (tf.isReady()){

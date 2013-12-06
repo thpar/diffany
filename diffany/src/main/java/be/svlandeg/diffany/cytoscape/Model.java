@@ -8,6 +8,7 @@ import java.util.Set;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.view.model.CyNetworkView;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
@@ -58,27 +59,43 @@ public class Model extends Observable{
 		CyNetwork cyRefNetwork = guiModel.getReferenceNetwork();
 		ReferenceNetwork refNet = bridge.getReferenceNetwork(cyRefNetwork);
 		
+		System.out.println("Refnet");
+		System.out.println(refNet.getStringRepresentation());
+		System.out.println(refNet.writeEdgesTab());
+		
 		Set<CyNetwork> cyCondNetworks = guiModel.getConditionEntries();
 		
+		System.out.println("Condnets");
 		Set<ConditionNetwork> condSet = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyNet : cyCondNetworks){
 			ConditionNetwork condNet = bridge.getConditionNetwork(cyNet);
 			condSet.add(condNet);			
+			System.out.println(condNet.getStringRepresentation());
+			System.out.println(condNet.writeEdgesTab());
+			System.out.println("---");
 		}
+		
+		
+		
 		currentProject = new Project("Default Project", refNet, condSet, new DefaultEdgeOntology(), new DefaultNodeMapper());
 		
 		double cutoff = 0.25;
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(currentProject, cutoff);
 		
-		createDifferentialNetworks(currentProject.getDifferentialNetworks());
+		addDifferentialNetworks(currentProject.getDifferentialNetworks());
 	}
 	
 		
-	private void createDifferentialNetworks(
-			Collection<DifferentialNetwork> differentialNetworks) {
+	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks) {
+		System.out.println("Diffnets");
 		CyNetworkBridge bridge = new CyNetworkBridge(this);
 		for (Network network : differentialNetworks){
-			bridge.createCyNetwork(network);		
+			System.out.println(network.getStringRepresentation());
+			System.out.println(network.writeEdgesTab());
+			CyNetwork cyNet = bridge.createCyNetwork(network);
+			services.getCyNetworkManager().addNetwork(cyNet);
+			CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNet);
+			services.getCyNetworkViewManager().addNetworkView(cyView);
 		}
 	}
 

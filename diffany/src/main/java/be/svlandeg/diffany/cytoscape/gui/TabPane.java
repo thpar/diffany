@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -9,8 +8,8 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,9 +20,12 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
 
 /**
  * The Control Panel for Diffany (left Cytoscape tab).
@@ -47,9 +49,18 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		model.addObserver(this);			
 		model.getGuiModel().addObserver(this);
 		
+		createTabPaneContent();
+	}
+	
+	private void createTabPaneContent(){
 		this.setLayout(new BorderLayout());
 		this.add(createCollectionSelectionPanel(), BorderLayout.NORTH);
 		this.add(createNetworkSelectionPanel(), BorderLayout.CENTER);
+		
+		JButton runButton = new JButton("Start");
+		runButton.setActionCommand("run");
+		runButton.addActionListener(this);
+		this.add(runButton, BorderLayout.SOUTH);
 	}
 	
 	/**
@@ -65,6 +76,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		collPanel.add(new JLabel("Network collection: "));
 		collPanel.add(collectionDropDown);
 		
+		collectionDropDown.setActionCommand("collection");
 		collectionDropDown.addActionListener(this);
 		return collPanel;
 	}
@@ -114,10 +126,23 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		//triggered on collection dropdown action
-		JComboBox source = (JComboBox)e.getSource();
-		NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-		model.getGuiModel().setSelectedCollection(entry.getNetwork());
+		String action = e.getActionCommand();
+		if (action.equals("collection")){
+			//triggered on collection dropdown action
+			JComboBox source = (JComboBox)e.getSource();
+			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
+			model.getGuiModel().setSelectedCollection(entry.getNetwork());			
+		} else if (action.equals("run")){
+			//triggered on Start button click
+			System.out.println("Run project");
+			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
+			
+			if (tf.isReady()){
+				TaskIterator it = tf.createTaskIterator();			
+				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+				dtm.execute(it);
+			}
+		}
 	}
 
 	@Override

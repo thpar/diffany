@@ -1,8 +1,10 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
@@ -19,8 +21,8 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
 public class GUIModel extends Observable{
 
 	private CyNetwork selectedCollection;
+	private NetworkEntry referenceEntry;
 	
-	private CyNetwork referenceNetwork;
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
 	
 	/**
@@ -64,13 +66,13 @@ public class GUIModel extends Observable{
 		networkEntries = new ArrayList<NetworkEntry>();
 		for (CySubNetwork subNet : subNets){
 			NetworkEntry entry = new NetworkEntry(subNet);
-			entry.setSelected(false);
+			entry.setSelected(true);
 			entry.setReference(false);
 			networkEntries.add(entry);
 		}
 		if (networkEntries.size() > 0){
 			networkEntries.get(0).setReference(true);
-			this.referenceNetwork = networkEntries.get(0).getNetwork();
+			this.referenceEntry = networkEntries.get(0);
 		}
 	}
 
@@ -79,7 +81,27 @@ public class GUIModel extends Observable{
 	 * @return
 	 */
 	public CyNetwork getReferenceNetwork() {
-		return referenceNetwork;
+		return referenceEntry.getNetwork();
+	}
+	
+	public Set<CyNetwork> getConditionEntries(){
+		Set<CyNetwork> conditionals = new HashSet<CyNetwork>();
+		for (NetworkEntry entry : this.networkEntries){
+			if (entry.isSelected() && !entry.isReference()){
+				conditionals.add(entry.getNetwork());
+			}
+		}
+		return conditionals;
+	}
+	
+	public NetworkEntry getReferenceEntry(){
+		return referenceEntry;
+	}
+	
+	public void setReferenceEntry(NetworkEntry entry){
+		this.referenceEntry.setReference(false);
+		this.referenceEntry = entry;
+		entry.setReference(true);
 	}
 	
 		

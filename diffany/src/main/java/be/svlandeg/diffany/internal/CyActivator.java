@@ -21,6 +21,7 @@ import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
+import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
 /**
@@ -70,6 +71,10 @@ public class CyActivator extends AbstractCyActivator
 		//register action to convert network to CyNetwork (calls TestTask)
 		NetworkBridgeAction networkAction = new NetworkBridgeAction(model,"Network test", testNetwork);
 		registerAllServices(context, networkAction, new Properties());
+		
+		//register action to run  the current Diffany project
+		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
+		registerAllServices(context, runProjectAction, new Properties());
 		
 		
 		//Create and register the control panel

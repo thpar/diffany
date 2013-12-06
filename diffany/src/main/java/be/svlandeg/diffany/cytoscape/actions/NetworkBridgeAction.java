@@ -15,12 +15,12 @@ import be.svlandeg.diffany.internal.Services;
 public class NetworkBridgeAction extends AbstractCyAction {
 
 	private Network network;
-	private Services services;
+	private Model model;
 
 	public NetworkBridgeAction(Model model, String menuTitle, Network network) {
 		super(menuTitle, model.getServices().getCyApplicationManager(), null, null);
 		setPreferredMenu("Apps.Diffany");
-		this.services = model.getServices();
+		this.model = model;
 		this.network = network;
 	}
 
@@ -31,11 +31,11 @@ public class NetworkBridgeAction extends AbstractCyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		TestTaskFactory tf = new TestTaskFactory(network, services);
+		TestTaskFactory tf = new TestTaskFactory(network, model);
 		if (tf.isReady()){
 
 			TaskIterator it = tf.createTaskIterator();			
-			DialogTaskManager dtm = services.getDialogTaskManager();
+			DialogTaskManager dtm = model.getServices().getDialogTaskManager();
 			dtm.execute(it);
 		}
 	}

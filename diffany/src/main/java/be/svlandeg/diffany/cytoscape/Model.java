@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.cytoscape;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
@@ -8,11 +9,17 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
+import be.svlandeg.diffany.algorithms.CalculateDiff;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 /**
  * Model that keeps track of all settings and selections within the Cytoscape App.
@@ -47,15 +54,34 @@ public class Model extends Observable{
 	 * {@link Network}s to run the actual algorithm. 
 	 */
 	public void runAlgorithm(){
-		CyNetwork ref = guiModel.getReferenceNetwork();
-		Set<CyNetwork> diffs = guiModel.getDifferentialEntries();
+		CyNetworkBridge bridge = new CyNetworkBridge(this);
+		CyNetwork cyRefNetwork = guiModel.getReferenceNetwork();
+		ReferenceNetwork refNet = bridge.getReferenceNetwork(cyRefNetwork);
 		
+		Set<CyNetwork> cyCondNetworks = guiModel.getConditionEntries();
 		
+		Set<ConditionNetwork> condSet = new HashSet<ConditionNetwork>();
+		for (CyNetwork cyNet : cyCondNetworks){
+			ConditionNetwork condNet = bridge.getConditionNetwork(cyNet);
+			condSet.add(condNet);			
+		}
+		currentProject = new Project("Default Project", refNet, condSet, new DefaultEdgeOntology(), new DefaultNodeMapper());
 		
-//		currentProject = new Project("Default Project", ref);
+		double cutoff = 0.25;
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(currentProject, cutoff);
+		
+		createDifferentialNetworks(currentProject.getDifferentialNetworks());
 	}
 	
 		
+	private void createDifferentialNetworks(
+			Collection<DifferentialNetwork> differentialNetworks) {
+		CyNetworkBridge bridge = new CyNetworkBridge(this);
+		for (Network network : differentialNetworks){
+			bridge.createCyNetwork(network);		
+		}
+	}
+
 	/**
 	 * Iterates over all networks in the current cytoscape session and returns the set of network collections.
 	 * 
@@ -100,6 +126,7 @@ public class Model extends Observable{
 	public Services getServices() {
 		return services;
 	}
+
 	
 	
 	

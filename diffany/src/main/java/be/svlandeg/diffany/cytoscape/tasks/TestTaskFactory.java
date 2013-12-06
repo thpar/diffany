@@ -4,7 +4,7 @@ import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 
 import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.cytoscape.Model;
 
 /**
  * Temporary {@link TaskFactory} to execute the {@link TestTask}.
@@ -15,16 +15,16 @@ import be.svlandeg.diffany.internal.Services;
 public class TestTaskFactory implements TaskFactory {
 
 	private Network network;
-	private Services services;
+	private Model model;
 	
-	public TestTaskFactory(Network network, Services services) {
+	public TestTaskFactory(Network network, Model model) {
 		this.network = network;
-		this.services = services;
+		this.model = model;
 	}
 
 	@Override
 	public TaskIterator createTaskIterator() {
-		TaskIterator it = new TaskIterator(new TestTask(network, services));
+		TaskIterator it = new TaskIterator(new TestTask(network, model));
 		return it;
 	}
 

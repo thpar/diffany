@@ -20,9 +20,12 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
 
 /**
  * The Control Panel for Diffany (left Cytoscape tab).
@@ -54,9 +57,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.add(createCollectionSelectionPanel(), BorderLayout.NORTH);
 		this.add(createNetworkSelectionPanel(), BorderLayout.CENTER);
 		
-		JButton runAlgorithm = new JButton("Start");
-		runAlgorithm.addActionListener(this);
-		this.add(runAlgorithm);
+		JButton runButton = new JButton("Start");
+		runButton.setActionCommand("run");
+		runButton.addActionListener(this);
+		this.add(runButton, BorderLayout.SOUTH);
 	}
 	
 	/**
@@ -128,7 +132,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.getGuiModel().setSelectedCollection(entry.getNetwork());			
 		} else if (action.equals("run")){
+			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
+			if (tf.isReady()){
+				TaskIterator it = tf.createTaskIterator();			
+				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+				dtm.execute(it);
+			}
 		}
 	}
 

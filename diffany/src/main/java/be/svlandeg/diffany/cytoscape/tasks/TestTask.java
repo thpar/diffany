@@ -7,6 +7,7 @@ import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.internal.Services;
 
 /**
@@ -18,12 +19,12 @@ import be.svlandeg.diffany.internal.Services;
 public class TestTask implements Task {
 
 	private Network network;
-	private Services services;
+	private Model model;
 	
 	
-	public TestTask(Network network, Services services) {
+	public TestTask(Network network, Model model) {
 		this.network = network;
-		this.services = services;
+		this.model = model;
 	}
 
 	@Override
@@ -39,7 +40,9 @@ public class TestTask implements Task {
 		taskMonitor.setProgress(0.6);
 		Thread.sleep(3000);
 		
-		CyNetworkBridge bridge = new CyNetworkBridge(services);		
+		Services services = model.getServices();
+		
+		CyNetworkBridge bridge = new CyNetworkBridge(model);		
 		CyNetwork cyNetwork = bridge.createCyNetwork(network);
 		services.getCyNetworkManager().addNetwork(cyNetwork);
 		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNetwork);

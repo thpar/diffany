@@ -27,7 +27,8 @@ public class CalculateDiffOfTwo
 
 	/**
 	 * Calculate the differential network between the reference and condition-specific network. 
-	 * The differential network will also store theshared/overlap/'house-keeping' interactions.
+	 * The differential network will also store the shared/overlap/'house-keeping' interactions.
+	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * @param reference the reference network
 	 * @param condition a condition-specific network
@@ -40,9 +41,8 @@ public class CalculateDiffOfTwo
 	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
 	 * TODO: expand this algorithm to be able to deal with more than 1 edge between two nodes 
 	 * in the original networks (v.1.0)
-	 * TODO: properly test influence of symmetric edges etc.
 	 */
-	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, String diff_name, double cutoff)
 	{
 		Set<ConditionNetwork> conditions = new HashSet<ConditionNetwork>();

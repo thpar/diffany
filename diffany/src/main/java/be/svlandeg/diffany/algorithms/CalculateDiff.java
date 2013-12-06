@@ -1,7 +1,13 @@
 package be.svlandeg.diffany.algorithms;
 
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.semantics.*;
+import java.util.Set;
+
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * This class serves as an abstract layer between a GUI and the actual technical implementations of various algorithms 
@@ -17,6 +23,8 @@ public class CalculateDiff
 	protected static String diffnamesuffix = "_diff";
 	protected static String overlapnamesuffix = "_overlap";
 
+	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND 1 CONDITION-SPECIFIC NETWORK  //////////////
+	
 	/**
 	 * Calculate the differential network between the reference and
 	 * condition-specific network.
@@ -30,10 +38,16 @@ public class CalculateDiff
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
 	 * 
 	 * @return the differential network between the two
+	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, String diff_name, double cutoff)
+			NodeMapper nm, String diff_name, double cutoff) throws IllegalArgumentException
 	{
+		if (reference == null || condition == null || eo == null || nm == null || diff_name == null)
+		{
+			String errormsg = "The edge weight should be positive!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		return new CalculateDiffOfTwo().calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
 	}
 	
@@ -49,12 +63,13 @@ public class CalculateDiff
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
 	 * 
 	 * @return the differential network between the two
+	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, double cutoff)
+			NodeMapper nm, double cutoff) throws IllegalArgumentException
 	{
 		String diff_name = condition.getName() + diffnamesuffix;
-		return new CalculateDiffOfTwo().calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
+		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
 	}
 	
 	/**
@@ -69,12 +84,13 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * 
 	 * @return the differential network between the two
+	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm)
+			NodeMapper nm) throws IllegalArgumentException
 	{
 		String diff_name = condition.getName() + diffnamesuffix;
-		return new CalculateDiffOfTwo().calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff);
+		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff);
 	}
 
 	/**
@@ -85,9 +101,10 @@ public class CalculateDiff
 	 * 
 	 * All calculated differential networks are added to the project directly.
 	 * 
-	 * @param p the project which stores the reference and condition-specific networks.
+	 * @param p the project which stores the reference and condition-specific networks
+	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p)
+	public void calculateAllPairwiseDifferentialNetworks(Project p) throws IllegalArgumentException
 	{
 		calculateAllPairwiseDifferentialNetworks(p, default_cutoff);
 	}
@@ -99,10 +116,11 @@ public class CalculateDiff
 	 * 
 	 * All calculated differential networks are added to the project directly.
 	 * 
-	 * @param p the project which stores the reference and condition-specific networks.
+	 * @param p the project which stores the reference and condition-specific networks
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
+	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, double cutoff)
+	public void calculateAllPairwiseDifferentialNetworks(Project p, double cutoff) throws IllegalArgumentException
 	{
 		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
@@ -112,6 +130,38 @@ public class CalculateDiff
 			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm, cutoff);
 			p.addDifferential(diff);
 		}
+	}
+	
+	
+	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND MULTIPLE CONDITION-SPECIFIC NETWORKS  //////////////
+	
+	/**
+	 * Calculate the differential network between the reference and a set of condition-specific networks.
+	 * 
+	 * @param reference the reference network
+	 * @param conditions a set of condition-specific networks (at least 1)
+	 * @param eo the edge ontology that provides meaning to the edge types
+	 * @param nm the node mapper that allows to map nodes from the one network to the other
+	 * @param diff_name the name to give to the differential network. 
+	 * 	The shared network will get this name + the appendix '_overlap'.
+	 * @param cutoff the minimal value of a resulting edge for it to be included in the shared network
+	 * 
+	 * @return the differential network between the two
+	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
+	 */
+	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
+			NodeMapper nm, String diff_name, double cutoff) throws IllegalArgumentException
+	{
+		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
+		{
+			String errormsg = "The edge weight should be positive!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (conditions.size() == 1)
+		{
+			return new CalculateDiffOfTwo().calculateDiffNetwork(reference, conditions.iterator().next(), eo, nm, diff_name, cutoff);
+		}
+		return new CalculateDiffOfMore().calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
 	}
 
 }

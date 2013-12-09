@@ -11,6 +11,9 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
@@ -18,6 +21,7 @@ import org.osgi.framework.BundleContext;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffanyStyleFactory;
 
 /**
  * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
@@ -40,22 +44,28 @@ public class CyActivator extends AbstractCyActivator
 		services.setCyNetworkViewManager(getService(context, CyNetworkViewManager.class));
 		services.setTaskManager(getService(context, TaskManager.class));
 		services.setDialogTaskManager(getService(context, DialogTaskManager.class));
-		
+		services.setVisualStyleFactory(getService(context, VisualStyleFactory.class));
+		services.setVisualMappingManager(getService(context, VisualMappingManager.class));
+		services.setVisualMappingFunctionFactory(getService(context, VisualMappingFunctionFactory.class));
 		
 		Model model = new Model(services);
-		
-		
-		//register action to run  the current Diffany project
-		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
-		registerAllServices(context, runProjectAction, new Properties());
-		
 		
 		//Create and register the control panel
 		TabPane sidePane = new TabPane(model);
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
+		//Create and register the Diffany visual styles
+		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.SOURCE, services);
+		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.DIFF, services);
+		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.OVERLAP, services);
+		
+		//register action to run  the current Diffany project
+		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
+		registerAllServices(context, runProjectAction, new Properties());
+		
 		//Register control panel as network listener
 		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
+		
 	}
 
 }

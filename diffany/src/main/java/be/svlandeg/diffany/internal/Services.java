@@ -6,6 +6,9 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
@@ -25,6 +28,9 @@ public class Services {
 	private TaskManager taskManager;
 	private CyRootNetworkManager cyRootNetworkManager;
 	private DialogTaskManager dialogTaskManager;
+	private VisualMappingManager visualMappingManager;
+	private VisualStyleFactory visualStyleFactory;
+	private VisualMappingFunctionFactory visualMappingFunctionFactory;
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -106,6 +112,37 @@ public class Services {
 
 	public DialogTaskManager getDialogTaskManager() {
 		return dialogTaskManager;
+	}
+
+
+	public VisualMappingManager getVisualMappingManager() {
+		return visualMappingManager;
+	}
+
+
+	public void setVisualMappingManager(VisualMappingManager visualMappingManager) {
+		this.visualMappingManager = visualMappingManager;
+	}
+
+
+	public VisualStyleFactory getVisualStyleFactory() {
+		return visualStyleFactory;
+	}
+
+
+	public void setVisualStyleFactory(VisualStyleFactory visualStyleFactory) {
+		this.visualStyleFactory = visualStyleFactory;
+	}
+
+
+	public VisualMappingFunctionFactory getVisualMappingFunctionFactory() {
+		return visualMappingFunctionFactory;
+	}
+
+
+	public void setVisualMappingFunctionFactory(
+			VisualMappingFunctionFactory visualMappingFunctionFactory) {
+		this.visualMappingFunctionFactory = visualMappingFunctionFactory;
 	}
 	
 	

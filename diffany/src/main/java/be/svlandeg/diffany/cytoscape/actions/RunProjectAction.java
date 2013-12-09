@@ -8,7 +8,6 @@ import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
-import be.svlandeg.diffany.cytoscape.tasks.TestTaskFactory;
 
 public class RunProjectAction extends AbstractCyAction {
 

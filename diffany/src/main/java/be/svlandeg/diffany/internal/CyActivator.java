@@ -15,12 +15,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.Model;
-import be.svlandeg.diffany.cytoscape.actions.NetworkBridgeAction;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 
@@ -49,28 +44,6 @@ public class CyActivator extends AbstractCyActivator
 		
 		Model model = new Model(services);
 		
-		//create a testing network
-		//------
-		Network testNetwork = new ReferenceNetwork("My testing network");
-		Node a = new Node("A");
-		Node b = new Node("B");
-		Node c = new Node("C");
-		Node d = new Node("D");
-		Edge ab = new Edge("binds", a,b,true);
-		Edge bc = new Edge("binds", b,c,true);
-		Edge ad = new Edge("binds", a,d,true);
-		testNetwork.addNode(a);
-		testNetwork.addNode(b);
-		testNetwork.addNode(c);
-		testNetwork.addNode(d);
-		testNetwork.addEdge(ab);
-		testNetwork.addEdge(bc);
-		testNetwork.addEdge(ad);
-		//------
-		
-		//register action to convert network to CyNetwork (calls TestTask)
-		NetworkBridgeAction networkAction = new NetworkBridgeAction(model,"Network test", testNetwork);
-		registerAllServices(context, networkAction, new Properties());
 		
 		//register action to run  the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");

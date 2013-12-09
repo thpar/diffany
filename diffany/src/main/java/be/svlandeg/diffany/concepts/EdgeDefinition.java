@@ -121,7 +121,7 @@ public class EdgeDefinition
 	
 	/**
 	 * Set the weight of this edge (only when the value is appropriate).
-	 * @param weight the ne weight of the edge
+	 * @param weight the weight of the edge
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
 	public void setWeight(double weight) throws IllegalArgumentException

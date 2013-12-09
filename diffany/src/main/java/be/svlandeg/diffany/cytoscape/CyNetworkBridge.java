@@ -175,10 +175,11 @@ public class CyNetworkBridge {
 			Node fromNode = nodeMap.get(nodeFromID);
 			Node toNode = nodeMap.get(nodeToID);
 			
-			EdgeDefinition def = new EdgeDefinition();
-			def.setType(this.getInteraction(cyNetwork, cyEdge));
-			def.setWeight(this.getWeight(cyNetwork, cyEdge));
-			Edge edge = new Edge(fromNode, toNode, def);
+			//TODO take edge direction into account.
+			Edge edge = new Edge(this.getInteraction(cyNetwork, cyEdge), fromNode, toNode, true);
+			if (this.getWeight(cyNetwork, cyEdge) !=null){
+				edge.setWeight(this.getWeight(cyNetwork, cyEdge));				
+			}
 			edgeSet.add(edge);
 		}
 		
@@ -212,7 +213,7 @@ public class CyNetworkBridge {
 	 * 
 	 * @param cyNetwork
 	 * @param cyEdge
-	 * @return
+	 * @return the value of the weight column, or null if the column doesn't exist.
 	 */
 	private Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
 		return cyNetwork.getRow(cyEdge).get(this.WEIGHT, Double.class);

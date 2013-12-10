@@ -25,6 +25,18 @@ public class Bandyopadhyay2010 extends GenericExample
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
 		EdgeOntology eo = new DefaultEdgeOntology();
+		Set<String> allSource = eo.getAllSourceCategories();
+		System.out.println("sources");
+		for (String s : allSource)
+		{
+			System.out.println(s);
+		}
+		Set<String> allDiffs = eo.getAllDiffCategories();
+		System.out.println("diffs");
+		for (String s : allDiffs)
+		{
+			System.out.println(s);
+		}
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;

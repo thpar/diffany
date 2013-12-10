@@ -12,6 +12,17 @@ public class Edge extends EdgeDefinition
 
 	protected Node source;
 	protected Node target;
+	
+	/**
+	 * Create a new node from a certain definition and specifying source and target nodes.
+	 * @param source the source node
+	 * @param target the target node
+	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
+	 */
+	public Edge(Node source, Node target, EdgeDefinition def)
+	{
+		this(def.type, source, target, def.symmetrical, def.weight, def.negated);
+	}
 
 	/**
 	 * Create a new edge with specified source and target nodes, direction and weight
@@ -40,11 +51,11 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, boolean negated)
 	{
-		this(type, source, target, symmetrical, 1.0, negated);
+		this(type, source, target, symmetrical, DEFAULT_WEIGHT, negated);
 	}
 	
 	/**
-	 * Create a new edge with default weight of 1.0
+	 * Create a new edge, which will be defined as not negated.
 	 * @param type the interaction type of this edge
 	 * @param source the source node
 	 * @param target the target node
@@ -53,7 +64,7 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, double weight)
 	{
-		this(type, source, target, symmetrical, weight, false);
+		this(type, source, target, symmetrical, weight, DEFAULT_NEG);
 	}
 
 	/**
@@ -65,19 +76,10 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical)
 	{
-		this(type, source, target, symmetrical, 1.0, false);
+		this(type, source, target, symmetrical, DEFAULT_WEIGHT, DEFAULT_NEG);
 	}
 
-	/**
-	 * Create a new node from a certain definition and specifying source and target nodes.
-	 * @param source the source node
-	 * @param target the target node
-	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
-	 */
-	public Edge(Node source, Node target, EdgeDefinition def)
-	{
-		this(def.type, source, target, def.symmetrical, def.weight, def.negated);
-	}
+	
 
 	/**
 	 * Get the source node of this edge

@@ -13,20 +13,17 @@ import java.text.DecimalFormat;
 public class EdgeDefinition
 {
 	
+	protected static String DEFAULT_TYPE = "unspecified_connection";
+	protected static double DEFAULT_WEIGHT = 1.0;
+	protected static boolean DEFAULT_SYMM = true;
+	protected static boolean DEFAULT_NEG = false;
+	
 	protected String type;
 	
 	protected boolean symmetrical;
 	
 	protected double weight;	
 	protected boolean negated;
-	
-	/**
-	 * Create a new edge definition. It will be initalized to void (i.e. weight = 0).
-	 */
-	public EdgeDefinition()
-	{
-		this("*NOTYPE*" , true, 0, false);
-	}
 	
 	/**
 	 * Create a new edge definition with a certain type, direction, weight and directionality
@@ -44,13 +41,24 @@ public class EdgeDefinition
 		makeNegated(negated);
 	}
 	
+	
+	/**
+	 * Create a new edge definition. It will be initalized to default values 
+	 * ("unspecified_connection", weight 1, symmetrical, not negated).
+	 */
+	public EdgeDefinition()
+	{
+		this(DEFAULT_TYPE , DEFAULT_SYMM, DEFAULT_WEIGHT, DEFAULT_NEG);
+	}
+	
+	
 	/**
 	 * Obtain a void edge, for the purpose of being able to compare it to existing edges.
 	 * @return a void edge (weight == 0, symmetrical == true)
 	 */
 	public static EdgeDefinition getVoidEdge()
 	{
-		return new EdgeDefinition("*notype*" , true, 0, false);
+		return new EdgeDefinition("*notype*" , DEFAULT_SYMM, 0, DEFAULT_NEG);
 	}
 	
 	/**

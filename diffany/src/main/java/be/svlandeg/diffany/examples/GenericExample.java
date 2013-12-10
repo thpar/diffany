@@ -44,7 +44,7 @@ public abstract class GenericExample
 		for (DifferentialNetwork d : dnetworks)
 		{
 			printNetwork(d);
-			printNetwork(d.getSharedNetwork());
+			printNetwork(d.getOverlappingNetwork());
 		}
 	}
 

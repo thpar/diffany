@@ -13,7 +13,7 @@ public class DifferentialNetwork extends Network
 	
 	protected ReferenceNetwork reference;
 	protected Set<ConditionNetwork> conditionNetworks;
-	protected SharedNetwork shared;
+	protected OverlappingNetwork overlap;
 	
 	
 	/**
@@ -45,21 +45,21 @@ public class DifferentialNetwork extends Network
 	}
 	
 	/**
-	 * Set the shared ('house-keeping') network that is associated to this differential network
-	 * @param shared the complementary shared network
+	 * Set the overlappping ('house-keeping') network that is associated to this differential network
+	 * @param overlap the complementary overlappping network
 	 */
-	public void setSharedNetwork(SharedNetwork shared)
+	public void setOverlappingNetwork(OverlappingNetwork overlap)
 	{
-		this.shared = shared;
+		this.overlap = overlap;
 	}
 	
 	/**
-	 * Get the shared ('house-keeping') network associated to this differential network
-	 * @return the shared network that complements this differential network (may be null)
+	 * Get the overlapping ('house-keeping') network associated to this differential network
+	 * @return the overlapping network that complements this differential network (may be null)
 	 */
-	public SharedNetwork getSharedNetwork()
+	public OverlappingNetwork getOverlappingNetwork()
 	{
-		return shared;
+		return overlap;
 	}
 	
 	/**

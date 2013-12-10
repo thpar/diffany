@@ -45,8 +45,8 @@ public class TestExamples
 		assertOneEdge(dNetwork, "A", "C", true, false, "decrease", false, 0.7);
 		assertOneEdge(dNetwork, "C", "E", true, false, "decrease", false, 0.8);
 		
-		// Testing the edges in the corresponding shared network
-		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
 		
@@ -80,8 +80,8 @@ public class TestExamples
 		assertOneEdge(dNetwork, "A", "C", true, false, "decrease", false, 1.2);
 		assertOneEdge(dNetwork, "A", "E", true, false, "decrease", false, 0.8);
 		
-		// Testing the edges in the corresponding shared network
-		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 		
@@ -118,8 +118,8 @@ public class TestExamples
 		assertOneEdge(dNetwork, "N", "M", false, false, "increase", false, 7);
 		
 		
-		// Testing the edges in the corresponding shared network
-		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(4, sEdges.size());
 		
@@ -155,8 +155,8 @@ public class TestExamples
 		assertOneEdge(dNetwork, "M", "N", true, false, "increase_ppi", false, 3);
 		assertOneEdge(dNetwork, "S", "T", true, false, "ppi_to_phosphorylation", false, 5);
 		
-		// Testing the edges in the corresponding shared network
-		SharedNetwork sNetwork = dNetwork.getSharedNetwork();
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 		

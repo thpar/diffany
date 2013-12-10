@@ -151,17 +151,17 @@ public class DefaultEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public EdgeDefinition getSharedEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
 	{
 		String refType = refEdge.getType();
 		String conType = conEdge.getType();
 		if (afOntology.isDefined(refType) && afOntology.isDefined(conType))
 		{
-			return afOntology.getSharedEdge(refEdge, conEdge, cutoff);
+			return afOntology.getOverlapEdge(refEdge, conEdge, cutoff);
 		}
 		if (prOntology.isDefined(refType) && prOntology.isDefined(conType))
 		{
-			return prOntology.getSharedEdge(refEdge, conEdge, cutoff);
+			return prOntology.getOverlapEdge(refEdge, conEdge, cutoff);
 		}
 		String errormsg = "The two types '" + refType + "' and '" + conType + "' can not be compared in this edge ontology!";
 		throw new IllegalArgumentException(errormsg);

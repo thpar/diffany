@@ -5,7 +5,7 @@ import be.svlandeg.diffany.internal.Services;
 public class VisualDiffanyStyleFactory {
 	
 	public enum Type{
-		SOURCE, DIFF, OVERLAP;
+		SOURCE, DIFF;
 	}
 	
 	static public VisualDiffanyStyle registerNewVisualStyle(Type type, Services services){
@@ -16,9 +16,6 @@ public class VisualDiffanyStyleFactory {
 			break;
 		case DIFF:
 			style = new VisualDiffStyle(services);
-			break;
-		case OVERLAP:
-			style = new VisualOverlapStyle(services);
 			break;
 		}
 		return style;

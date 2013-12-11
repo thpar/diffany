@@ -28,7 +28,7 @@ public class CalculateDiffOfTwo
 	
 	/**
 	 * Calculate the differential network between the reference and condition-specific network. 
-	 * The shared network should be calculated independently!
+	 * The overlapping network should be calculated independently!
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * @param reference the reference network
@@ -132,28 +132,28 @@ public class CalculateDiffOfTwo
 	}
 	
 	/**
-	 * Calculate the shared network between two networks.
+	 * Calculate the overlapping network between two networks.
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * @param n1 the first network
 	 * @param n2 the second network
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the shared network
-	 * @return the shared network between the two
+	 * @param overlap_name the name to give to the overlapping network
+	 * @return the overlapping network between the two
 	 *         
 	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
 	 * TODO: expand this algorithm to be able to deal with more than 1 edge between two nodes 
 	 * in the original networks (v.1.0)
 	 */
-	protected SharedNetwork calculateSharedNetwork(Network n1, Network n2, EdgeOntology eo, 
-			NodeMapper nm, String shared_name, double cutoff)
+	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, 
+			NodeMapper nm, String overlap_name, double cutoff)
 	{
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.add(n1);
 		allOriginals.add(n2);
 
-		SharedNetwork shared = new SharedNetwork(shared_name, allOriginals);
+		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, allOriginals);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(n1, n2);
 		Set<Node> allNodes = nm.getAllNodes(n1, n2);
@@ -202,7 +202,7 @@ public class CalculateDiffOfTwo
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(n2Edges);
 
-				EdgeDefinition overlap_edge_def = eo.getSharedEdge(edgedef1, edgedef2, cutoff);
+				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edgedef1, edgedef2, cutoff);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))
@@ -219,16 +219,16 @@ public class CalculateDiffOfTwo
 				Node targetresult = allDiffNodes.get(targetconsensus);
 
 
-				// non-void shared edge
+				// non-void overlapping edge
 				if (overlap_edge_def.getType() != EdgeOntology.VOID_TYPE)
 				{
 					Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
-					shared.addEdge(overlapdiff);
+					overlap.addEdge(overlapdiff);
 				}
 			}
 		}
-		cleaning.removeRedundantEdges(shared);
-		return shared;
+		cleaning.removeRedundantEdges(overlap);
+		return overlap;
 	}
 	
 

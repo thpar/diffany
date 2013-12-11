@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 public class EdgeDefinition
 {
 	
+	protected static String VOID_TYPE = "*notype*";
 	protected static String DEFAULT_TYPE = "unspecified_connection";
 	protected static double DEFAULT_WEIGHT = 1.0;
 	protected static boolean DEFAULT_SYMM = true;
@@ -58,7 +59,16 @@ public class EdgeDefinition
 	 */
 	public static EdgeDefinition getVoidEdge()
 	{
-		return new EdgeDefinition("*notype*" , DEFAULT_SYMM, 0, DEFAULT_NEG);
+		return new EdgeDefinition(VOID_TYPE , DEFAULT_SYMM, 0, DEFAULT_NEG);
+	}
+	
+	/**
+	 * Obtain a default edge, equal to the one assigned when calling an empty constructor.
+	 * @return a void edge (weight == 1, symmetrical == true)
+	 */
+	public static EdgeDefinition getDefaultEdge()
+	{
+		return new EdgeDefinition(DEFAULT_TYPE , DEFAULT_SYMM, DEFAULT_WEIGHT, DEFAULT_NEG);
 	}
 	
 	/**

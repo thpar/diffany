@@ -21,12 +21,12 @@ public class ProcessEdgeOntology extends EdgeOntology
 	 * After the constructor is called, default edge-category mappings should be
 	 * inserted using addCategoryMapping!
 	 */
-	public ProcessEdgeOntology(String posPrefix, String negPrefix, Set<String> cats)
+	public ProcessEdgeOntology(String posPrefix, String negPrefix, Set<String> sourceCats)
 	{
 		super();
 		this.negPrefix = negPrefix;
 		this.posPrefix = posPrefix;
-		addCategories(cats);
+		addSourceCategories(sourceCats);
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class ProcessEdgeOntology extends EdgeOntology
 		if (conNeg)
 			conEdge = EdgeDefinition.getVoidEdge();
 
-		String refCat = getCategory(refEdge.getType());
-		String conCat = getCategory(conEdge.getType());
+		String refCat = getSourceCategory(refEdge.getType());
+		String conCat = getSourceCategory(conEdge.getType());
 
 		boolean equalCats = refCat.equals(conCat);
 		Boolean up = null;
@@ -83,11 +83,11 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			type = refCat + "_to_" + conCat;
 			diffWeight = conEdge.getWeight() + refEdge.getWeight();
-			if (isChildOf(refCat, conCat))	// the conditional edge is less specific, i.e. not actually differential!
+			if (isSourceChildOf(refCat, conCat))	// the conditional edge is less specific, i.e. not actually differential!
 			{
 				return EdgeDefinition.getVoidEdge();
 			}
-			if (isChildOf(conCat, refCat))	// the conditional edge is more specific, i.e. not actually differential!
+			if (isSourceChildOf(conCat, refCat))	// the conditional edge is more specific, i.e. not actually differential!
 			{
 				return EdgeDefinition.getVoidEdge();
 			}

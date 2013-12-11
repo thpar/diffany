@@ -20,6 +20,7 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -131,7 +132,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			//triggered on collection dropdown action
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-			model.getGuiModel().setSelectedCollection(entry.getNetwork());			
+			model.getGuiModel().setSelectedCollection((CyRootNetwork)entry.getNetwork());			
 		} else if (action.equals("run")){
 			//triggered on Start button click
 			System.out.println("Run project");

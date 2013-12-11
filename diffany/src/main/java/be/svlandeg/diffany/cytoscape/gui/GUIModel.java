@@ -21,7 +21,7 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
  */
 public class GUIModel extends Observable{
 
-	private CyNetwork selectedCollection;
+	private CyRootNetwork selectedCollection;
 	private NetworkEntry referenceEntry;
 	
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
@@ -34,7 +34,7 @@ public class GUIModel extends Observable{
 	 * used for the algorithm.
 	 * @return
 	 */
-	public CyNetwork getSelectedCollection() {
+	public CyRootNetwork getSelectedCollection() {
 		return selectedCollection;
 	}
 
@@ -46,7 +46,7 @@ public class GUIModel extends Observable{
 	 * 
 	 * @param selectedCollection
 	 */
-	public void setSelectedCollection(CyNetwork selectedCollection) {
+	public void setSelectedCollection(CyRootNetwork selectedCollection) {
 		this.selectedCollection = selectedCollection;
 		refreshNetworkEntries();
 		setChanged();

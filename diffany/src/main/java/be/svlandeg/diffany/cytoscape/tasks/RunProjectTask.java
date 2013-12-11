@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.work.Task;
@@ -96,20 +97,22 @@ public class RunProjectTask implements Task {
 			
 			//add the diffnet
 			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network);
-			sourceStyle.apply(cyDiffView);
+			diffStyle.apply(cyDiffView);
 			cyDiffView.updateView();
 			
 			//add the overlap
 			OverlappingNetwork overlap = network.getOverlappingNetwork();
 			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
-			diffStyle.apply(cyOverlapView);
+			sourceStyle.apply(cyOverlapView);
 			cyOverlapView.updateView();
 			
 		}
 	}
 	
 	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network){
-		CyNetwork cyNet = bridge.createCyNetwork(network);
+		CyRootNetwork collection = model.getGuiModel().getSelectedCollection();
+		
+		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
 		model.getServices().getCyNetworkManager().addNetwork(cyNet);
 		CyNetworkView cyView = model.getServices().getCyNetworkViewFactory().createNetworkView(cyNet);
 		model.getServices().getCyNetworkViewManager().addNetworkView(cyView);

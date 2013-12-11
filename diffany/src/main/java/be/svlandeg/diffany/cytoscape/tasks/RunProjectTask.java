@@ -14,9 +14,9 @@ import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Network;
+import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.SharedNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
@@ -100,7 +100,7 @@ public class RunProjectTask implements Task {
 			cyDiffView.updateView();
 			
 			//add the overlap
-			SharedNetwork overlap = network.getSharedNetwork();
+			OverlappingNetwork overlap = network.getOverlappingNetwork();
 			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
 			diffStyle.apply(cyOverlapView);
 			cyOverlapView.updateView();

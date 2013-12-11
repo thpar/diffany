@@ -29,9 +29,20 @@ public abstract class VisualDiffanyStyle {
 		this.init();
 	}
 
-	
+	/**
+	 * Initialize this visual style
+	 */
 	abstract protected void init();
 	
+	/**
+	 * Re-initialize mappings according to the content of selected networks. 
+	 */
+	abstract public void refresh(); 
+	
+	/**
+	 * 
+	 * @return the actual {@link VisualStyle} object.
+	 */
 	public VisualStyle getVisualStyle(){
 		return this.vis;
 	}

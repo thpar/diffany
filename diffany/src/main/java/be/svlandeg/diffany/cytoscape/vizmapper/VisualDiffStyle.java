@@ -14,4 +14,10 @@ public class VisualDiffStyle extends VisualDiffanyStyle {
 		
 	}
 
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -33,4 +33,10 @@ public class VisualSourceStyle extends VisualDiffanyStyle {
 		
 	}
 
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

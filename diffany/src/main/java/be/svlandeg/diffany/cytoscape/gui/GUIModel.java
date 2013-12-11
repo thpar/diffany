@@ -9,6 +9,7 @@ import java.util.Set;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.view.vizmap.VisualStyle;
 
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
@@ -24,6 +25,9 @@ public class GUIModel extends Observable{
 	private NetworkEntry referenceEntry;
 	
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
+	
+	private VisualStyle sourceStyle;
+	private VisualStyle diffStyle;
 	
 	/**
 	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
@@ -103,6 +107,23 @@ public class GUIModel extends Observable{
 		this.referenceEntry = entry;
 		entry.setReference(true);
 	}
+
+	public VisualStyle getSourceStyle() {
+		return sourceStyle;
+	}
+
+	public void setSourceStyle(VisualStyle sourceStyle) {
+		this.sourceStyle = sourceStyle;
+	}
+
+	public VisualStyle getDiffStyle() {
+		return diffStyle;
+	}
+
+	public void setDiffStyle(VisualStyle diffStyle) {
+		this.diffStyle = diffStyle;
+	}
+	
 	
 		
 }

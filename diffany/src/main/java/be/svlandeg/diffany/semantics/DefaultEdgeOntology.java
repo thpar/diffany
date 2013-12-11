@@ -53,6 +53,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		cats.add("ptm");
 		cats.add("phosphorylation");
 		cats.add("ubiquitination");
+		cats.add("methylation");
 		return cats;
 	}
 
@@ -151,17 +152,17 @@ public class DefaultEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		String refType = refEdge.getType();
 		String conType = conEdge.getType();
 		if (afOntology.isDefined(refType) && afOntology.isDefined(conType))
 		{
-			return afOntology.getOverlapEdge(refEdge, conEdge, cutoff);
+			return afOntology.getOverlapEdge(refEdge, conEdge, cutoff, minOperator);
 		}
 		if (prOntology.isDefined(refType) && prOntology.isDefined(conType))
 		{
-			return prOntology.getOverlapEdge(refEdge, conEdge, cutoff);
+			return prOntology.getOverlapEdge(refEdge, conEdge, cutoff, minOperator);
 		}
 		String errormsg = "The two types '" + refType + "' and '" + conType + "' can not be compared in this edge ontology!";
 		throw new IllegalArgumentException(errormsg);
@@ -177,6 +178,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		
 		prOntology.putSourceParent("phosphorylation", "ptm");
 		prOntology.putSourceParent("ubiquitination", "ptm");
+		prOntology.putSourceParent("methylation", "ptm");
 	}
 
 	/**
@@ -187,6 +189,10 @@ public class DefaultEdgeOntology extends EdgeOntology
 		boolean overwrite = false;
 
 		// PPI category and common synonyms
+		
+		prOntology.addSourceCategoryMapping("methylation", "methylation", overwrite);
+		prOntology.addSourceCategoryMapping("methylates", "methylation", overwrite);
+		prOntology.addSourceCategoryMapping("methylate", "methylation", overwrite);
 		
 		prOntology.addSourceCategoryMapping("phosphorylation", "phosphorylation", overwrite);
 		prOntology.addSourceCategoryMapping("phosphorylates", "phosphorylation", overwrite);

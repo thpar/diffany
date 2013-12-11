@@ -48,6 +48,7 @@ public abstract class EdgeOntology
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
 	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException;
+	
 
 	/**
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
@@ -56,11 +57,12 @@ public abstract class EdgeOntology
 	 * @param refEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param conEdge the edge definition in the condition-specific network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
 	 * @return the edge definition in the overlapping network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		EdgeDefinition overlap_edge = new EdgeDefinition();
 
@@ -76,9 +78,13 @@ public abstract class EdgeOntology
 		}
 		
 		overlap_edge.makeNegated(refNeg);
-			
+		
 		// the overlapping weight is the minimum between the two
 		double overlapWeight = Math.min(refEdge.getWeight(), conEdge.getWeight());
+		if (! minOperator)
+		{
+			overlapWeight = Math.max(refEdge.getWeight(), conEdge.getWeight());
+		}
 		if (overlapWeight <= cutoff)
 		{
 			return EdgeDefinition.getVoidEdge();
@@ -128,9 +134,7 @@ public abstract class EdgeOntology
 			overlap_edge.setType(parent);
 			return overlap_edge;
 		}
-		
 		return EdgeDefinition.getVoidEdge();
-		
 	}
 	
 	/**

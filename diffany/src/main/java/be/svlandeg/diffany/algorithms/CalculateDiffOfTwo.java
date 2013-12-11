@@ -140,14 +140,16 @@ public class CalculateDiffOfTwo
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlap_name the name to give to the overlapping network
+	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
+	 * 
 	 * @return the overlapping network between the two
-	 *         
+	 *      
 	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
 	 * TODO: expand this algorithm to be able to deal with more than 1 edge between two nodes 
 	 * in the original networks (v.1.0)
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, 
-			NodeMapper nm, String overlap_name, double cutoff)
+			NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
 	{
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.add(n1);
@@ -202,7 +204,7 @@ public class CalculateDiffOfTwo
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(n2Edges);
 
-				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edgedef1, edgedef2, cutoff);
+				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edgedef1, edgedef2, cutoff, minOperator);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))

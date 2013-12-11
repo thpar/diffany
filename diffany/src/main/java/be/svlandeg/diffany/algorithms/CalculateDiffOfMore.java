@@ -23,10 +23,19 @@ import be.svlandeg.diffany.semantics.NodeMapper;
 public class CalculateDiffOfMore
 {
 	
+	protected CalculateDiffOfTwo twoProcessor;
+	
+	/**
+	 * Constructor initializes the algorithm suites.
+	 */
+	public CalculateDiffOfMore()
+	{
+		twoProcessor = new CalculateDiffOfTwo();
+	}
 	
 	/**
 	 * Calculate the differential network between the reference and condition-specific networks. 
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
+	 * The overlapping network should be calculated independently!
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * @param reference the reference network
@@ -42,21 +51,14 @@ public class CalculateDiffOfMore
 	{
 		Set<Network> networks = new HashSet<Network>();
 		networks.addAll(conditionNetworks);
-		OverlappingNetwork sn = calculateOverlappingNetwork(networks, eo, nm, diff_name + "_overlap", cutoff);
-		
-		Set<Condition> conditions = new HashSet<Condition>();
-		for (ConditionNetwork c : conditionNetworks)
-		{
-			conditions.addAll(c.getConditions());
-		}
-		ConditionNetwork cn = new ConditionNetwork("All_conditions", conditions);
-		cn.setNodesAndEdges(sn.getNodes(), sn.getEdges());
-		
-		DifferentialNetwork dn = new CalculateDiff().calculateDiffNetwork(reference, cn, eo, nm, diff_name, cutoff);
-		dn.setOverlappingNetwork(sn);
-		
-		return dn;
+		OverlappingNetwork onMIN = calculateOverlappingNetwork(networks, eo, nm, diff_name + "_overlap", cutoff, true);
+
+		OverlappingNetwork onMAX = calculateOverlappingNetwork(networks, eo, nm, diff_name + "_overlap", cutoff, false);
+
+		// TODO
+		return null;
 	}
+	
 	
 	/**
 	 * Calculate the overlapping network between a set of networks. 
@@ -66,11 +68,12 @@ public class CalculateDiffOfMore
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlapping_name the name to give to the overlapping network. 
+	 * @param minOperator whether or not to take the minimum of the edge weights for the overlapping edges - if false, the maximum is taken
 	 * 
 	 * @return the differential network between the two
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, 
-			NodeMapper nm, String overlapping_name, double cutoff)
+			NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
 	{
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
@@ -82,13 +85,13 @@ public class CalculateDiffOfMore
 		
 		Network firstN = listedNetworks.get(first);
 		Network secondN = listedNetworks.get(second);
-		OverlappingNetwork overlapTmp = new CalculateDiff().calculateOverlappingNetwork(firstN, secondN, eo, nm, overlapping_name, cutoff);
+		OverlappingNetwork overlapTmp = twoProcessor.calculateOverlappingNetwork(firstN, secondN, eo, nm, overlapping_name, cutoff, minOperator);
 		second++;
 		
 		while (second < numberOfNetworks)
 		{	
 			secondN = listedNetworks.get(second);
-			overlapTmp = new CalculateDiff().calculateOverlappingNetwork(overlapTmp, secondN, eo, nm, overlapping_name, cutoff);
+			overlapTmp = twoProcessor.calculateOverlappingNetwork(overlapTmp, secondN, eo, nm, overlapping_name, cutoff, minOperator);
 			second++;
 		}
 		

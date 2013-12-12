@@ -50,8 +50,14 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 	
 	@Override
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
+		if (conEdges.size() > 1)
+		{
+			throw new UnsupportedOperationException("This algorithm currently only supports 1 condition-specific edge");
+		}
+		EdgeDefinition conEdge = conEdges.iterator().next();
+		
 		EdgeDefinition diff_edge = new EdgeDefinition();
 
 		boolean refNeg = refEdge.isNegated();

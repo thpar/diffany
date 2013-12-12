@@ -52,7 +52,6 @@ public class CalculateDiffOfMore
 		Set<Network> networks = new HashSet<Network>();
 		networks.addAll(conditionNetworks);
 		OverlappingNetwork onMIN = calculateOverlappingNetwork(networks, eo, nm, diff_name + "_overlap", cutoff, true);
-
 		OverlappingNetwork onMAX = calculateOverlappingNetwork(networks, eo, nm, diff_name + "_overlap", cutoff, false);
 
 		// TODO

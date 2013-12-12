@@ -100,8 +100,10 @@ public class CalculateDiffOfTwo
 					conditionEdges = condition.getAllEdges(source2, target2);
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
+				Set<EdgeDefinition> edgedefs2 = new HashSet<EdgeDefinition>();
+				edgedefs2.add(edgedef2);
 
-				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedef2, cutoff);
+				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedefs2, cutoff);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))
@@ -204,7 +206,10 @@ public class CalculateDiffOfTwo
 				}
 				EdgeDefinition edgedef2 = getSingleEdge(n2Edges);
 
-				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edgedef1, edgedef2, cutoff, minOperator);
+				Set<EdgeDefinition> edges = new HashSet<EdgeDefinition>();
+				edges.add(edgedef1);
+				edges.add(edgedef2);
+				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edges, cutoff, minOperator);
 
 				String sourceconsensus = nm.getConsensusName(source1, source2);
 				if (!allDiffNodes.containsKey(sourceconsensus))

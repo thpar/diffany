@@ -118,7 +118,6 @@ public class TestExamples
 		assertOneEdge(dNetwork, "M", "N", false, false, "increase", false, 12);
 		assertOneEdge(dNetwork, "N", "M", false, false, "increase", false, 7);
 		
-		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();

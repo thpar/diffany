@@ -76,6 +76,11 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			}
 		}
 		
+		if (conEdges.isEmpty())
+		{
+			conEdges2.add(EdgeDefinition.getVoidEdge());
+		}
+		
 		boolean refNeg = refEdge.isNegated();
 		if (refNeg)
 			refEdge = EdgeDefinition.getVoidEdge();

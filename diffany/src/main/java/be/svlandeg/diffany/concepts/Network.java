@@ -3,6 +3,9 @@ package be.svlandeg.diffany.concepts;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.NodeMapper;
+
 /**
  * Abstract class that represents a network: a collection of edges and nodes
  * All source and target nodes of the edges are present in the collection of nodes,
@@ -77,6 +80,7 @@ public abstract class Network
 	/**
 	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between target-source, these will be added too.
+	 * Nodes are matched by defining equals with the DefaultNodeMapper.
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
@@ -84,19 +88,33 @@ public abstract class Network
 	 */
 	public Set<Edge> getAllEdges(Node source, Node target)
 	{
+		return getAllEdges(source, target, new DefaultNodeMapper());
+	}
+	
+	/**
+	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network between target-source, these will be added too.
+	 * 
+	 * @param source the required source node 
+	 * @param target the required target node
+	 * @param nm the node mapper object that defines equality between nodes for comparison purposes
+	 * @return the set of edges between these two nodes (can be empty, but not null)
+	 */
+	public Set<Edge> getAllEdges(Node source, Node target, NodeMapper nm)
+	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
-		if (source == null || target == null)
-			return resultEdges;
-		
-		for (Edge e : edges)
+		if (source != null && target != null)
 		{
-			if (e.getSource().equals(source) && e.getTarget().equals(target))
+			for (Edge e : edges)
 			{
-				resultEdges.add(e);
-			}
-			else if (e.isSymmetrical() && e.getSource().equals(target) && e.getTarget().equals(source))
-			{
-				resultEdges.add(e);
+				if (nm.areEqual(e.getSource(), source) && nm.areEqual(e.getTarget(), target))
+				{
+					resultEdges.add(e);
+				}
+				else if (e.isSymmetrical() && nm.areEqual(e.getSource(), target) && nm.areEqual(e.getTarget(), source))
+				{
+					resultEdges.add(e);
+				}
 			}
 		}
 		return resultEdges;

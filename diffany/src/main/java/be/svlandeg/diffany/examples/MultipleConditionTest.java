@@ -47,24 +47,24 @@ public class MultipleConditionTest extends GenericExample
 	private ReferenceNetwork getTestReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		/*
+		
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
 		nodes.put("C", new Node("C"));
 		nodes.put("W", new Node("W"));
-		nodes.put("Z", new Node("Z"));*/
+		nodes.put("Z", new Node("Z"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference");
-		/*
+		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("Z"), nodes.get("W"), true, 2, false));
-		*/
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
-		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), true, 2, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 2, false));
+
 		return network;
 	}
 	
@@ -94,7 +94,7 @@ public class MultipleConditionTest extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition 1", conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		/*
+		
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
 		nodes.put("C", new Node("C"));
@@ -108,7 +108,6 @@ public class MultipleConditionTest extends GenericExample
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("F"), true, 2, false));
-		*/
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
@@ -131,7 +130,7 @@ public class MultipleConditionTest extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		/*
+		
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
 		nodes.put("C", new Node("C"));
@@ -144,11 +143,10 @@ public class MultipleConditionTest extends GenericExample
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("E"), true, 2, false));
-		*/
-		
+				
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
-		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), true, 8, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 8, false));
 
 		return network;
 	}

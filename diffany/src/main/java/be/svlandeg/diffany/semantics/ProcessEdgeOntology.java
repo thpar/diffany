@@ -90,7 +90,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 					diffWeight *= -1;
 					countDown++;
 				}
-				else	// increase
+				else if (diffWeight > 0)	// increase
 				{
 					countUp++;
 				}

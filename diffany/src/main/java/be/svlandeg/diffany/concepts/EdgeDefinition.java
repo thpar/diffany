@@ -183,6 +183,12 @@ public class EdgeDefinition
 		
 		return result;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return writeToTab();
+	}
 
 
 }

@@ -56,10 +56,10 @@ public class MultipleConditionTest extends GenericExample
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference");
 		
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("Z"), nodes.get("W"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.7, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.8, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 0.9, false));
+		network.addEdge(new Edge("ppi", nodes.get("Z"), nodes.get("W"), true, 0.5, false));
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
@@ -103,11 +103,11 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("F"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.4, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.6, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("Z"), true, 0.1, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 0.9, false));
+		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("F"), true, 0.3, false));
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
@@ -139,10 +139,10 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 2, false));
-		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("E"), true, 2, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.3, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 1.2, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("D"), true, 0.75, false));
+		network.addEdge(new Edge("ppi", nodes.get("D"), nodes.get("E"), true, 0.2, false));
 				
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));

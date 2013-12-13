@@ -57,6 +57,11 @@ public class ProcessEdgeOntology extends EdgeOntology
 			}
 		}
 		
+		if (conEdges.isEmpty())
+		{
+			conEdges2.add(EdgeDefinition.getVoidEdge());
+		}
+		
 		boolean refNeg = refEdge.isNegated();
 		if (refNeg)
 			refEdge = EdgeDefinition.getVoidEdge();
@@ -176,7 +181,6 @@ public class ProcessEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge();
 		}
 		diff_edge.setWeight(diffWeight);
-		
 		return diff_edge;
 	}
 

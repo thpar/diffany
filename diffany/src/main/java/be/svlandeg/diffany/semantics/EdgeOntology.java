@@ -223,7 +223,7 @@ public abstract class EdgeOntology
 	
 	/**
 	 * For a set of EdgeDefinition objects, determine their most specific common parents/ancestors.
-	 * Most specific is seen as a minimal maximum distance up to that ancestors across the whole edge set.
+	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole edge set.
 	 * @param edges the original set of edges
 	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges.
 	 */
@@ -232,7 +232,7 @@ public abstract class EdgeOntology
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonParents = new HashMap<String, Integer>();
 		
-		if (edges.size() == 1)
+		if (countEdges == 1)
 		{
 			String cat = getSourceCategory(edges.iterator().next().getType());
 			allCommonParents.put(cat, 0);
@@ -244,25 +244,40 @@ public abstract class EdgeOntology
 				
 		// count the depth (up) in the ontology tree
 		Map<String, Integer> parentByDepth = new HashMap<String, Integer>();
+		
+		int countEmpty = 0;
 
 		for (EdgeDefinition e : edges)
 		{
 			int depth = 0;
 			String cat = getSourceCategory(e.getType());
-			// each cat is its own parent of depth 0
-			addOne(parentCatsByCount, cat);			
-			recordMaxDepth(parentByDepth, cat, depth);
-					
-			// record all parents up in the hierarchy
-			String parentCat = retrieveParent(cat);
-			while (parentCat != null)
+			if (cat.equals(VOID_TYPE))
 			{
-				depth++;
-				addOne(parentCatsByCount, parentCat);
-				recordMaxDepth(parentByDepth, parentCat, depth);
-				parentCat = retrieveParent(parentCat);
+				countEmpty++;
+			}
+			else
+			{
+				// each cat is its own parent of depth 0
+				addOne(parentCatsByCount, cat);			
+				recordMaxDepth(parentByDepth, cat, depth);
+					
+				// record all parents up in the hierarchy
+				String parentCat = retrieveParent(cat);
+				while (parentCat != null)
+				{
+					depth++;
+					addOne(parentCatsByCount, parentCat);
+					recordMaxDepth(parentByDepth, parentCat, depth);
+					parentCat = retrieveParent(parentCat);
+				}
 			}
 		}
+		if (countEmpty == countEdges)
+		{
+			allCommonParents.put(VOID_TYPE, 0);
+			return allCommonParents;
+		}
+		countEdges = countEdges - countEmpty;
 		
 		for (String cat : parentCatsByCount.keySet())
 		{

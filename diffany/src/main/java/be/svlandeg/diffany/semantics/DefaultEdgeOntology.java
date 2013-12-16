@@ -242,7 +242,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("up-regulation", "positive_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("up regulation", "positive_regulation", overwrite);
 
-		// positive regulation category and common synonyms
+		// negative regulation category and common synonyms
 		afOntology.addSourceCategoryMapping("negative regulation", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("negative_regulation", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("negative-regulation", "negative_regulation", overwrite);

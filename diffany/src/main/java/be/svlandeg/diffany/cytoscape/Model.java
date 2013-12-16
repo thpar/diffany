@@ -1,26 +1,19 @@
 package be.svlandeg.diffany.cytoscape;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.events.NetworkAddedEvent;
+import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
-import org.cytoscape.view.model.CyNetworkView;
 
-import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
-import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 /**
  * Model that keeps track of all settings and selections within the Cytoscape App.
@@ -30,7 +23,7 @@ import be.svlandeg.diffany.semantics.DefaultNodeMapper;
  * @author thpar
  *
  */
-public class Model extends Observable{
+public class Model extends Observable implements NetworkAddedListener{
 
 	Services services;
 	private GUIModel guiModel;
@@ -100,6 +93,13 @@ public class Model extends Observable{
 	
 	public Project getCurrentProject(){
 		return currentProject;
+	}
+
+	@Override
+	public void handleEvent(NetworkAddedEvent e) {
+		//triggered on Cytoscape NetworkAdded
+		
+		
 	}
 	
 	

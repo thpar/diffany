@@ -67,8 +67,9 @@ public class CyActivator extends AbstractCyActivator
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
 		registerAllServices(context, runProjectAction, new Properties());
 		
-		//Register control panel as network listener
+		//Register network listeners
 		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
+		registerService(context,model, NetworkAddedListener.class, new Properties());
 		
 	}
 

@@ -9,7 +9,7 @@ import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
 
 import be.svlandeg.diffany.internal.Services;
 
-public class VisualSourceStyle extends VisualDiffanyStyle {
+public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	
 	static final String INTERACTION = "interaction";
 	
@@ -20,9 +20,10 @@ public class VisualSourceStyle extends VisualDiffanyStyle {
 
 	@Override
 	protected void init() {
+		System.out.println("Added vis source specific mappings");
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");
 		
-		PassthroughMapping<String, ?> mapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction("interaction", String.class, BasicVisualLexicon.EDGE_LABEL);
+		PassthroughMapping<String, ?> mapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
 		
 		vis.addVisualMappingFunction(mapping);
 		
@@ -30,6 +31,7 @@ public class VisualSourceStyle extends VisualDiffanyStyle {
 		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
 		
 		VisualMappingFunction<String, Paint> edgeColorFunction = vmffD.createVisualMappingFunction(INTERACTION, String.class, BasicVisualLexicon.EDGE_PAINT);
+		
 		
 	}
 

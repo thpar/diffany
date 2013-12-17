@@ -2,7 +2,7 @@ package be.svlandeg.diffany.cytoscape.vizmapper;
 
 import be.svlandeg.diffany.internal.Services;
 
-public class VisualDiffStyle extends VisualDiffanyStyle {
+public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 
 	public VisualDiffStyle(Services services) {
 		super("Diffany - Differential", services);

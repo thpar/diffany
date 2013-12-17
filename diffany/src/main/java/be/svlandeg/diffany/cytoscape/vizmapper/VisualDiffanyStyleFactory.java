@@ -10,7 +10,7 @@ public class VisualDiffanyStyleFactory {
 	}
 	
 	static public void registerNewVisualStyle(Type type, Model model){
-		VisualDiffanyStyle style = null;
+		AbstractVisualDiffanyStyle style = null;
 		Services services = model.getServices();
 		switch(type){
 		case SOURCE:	

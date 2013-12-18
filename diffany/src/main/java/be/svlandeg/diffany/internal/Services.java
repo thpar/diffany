@@ -1,5 +1,8 @@
 package be.svlandeg.diffany.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -30,7 +33,8 @@ public class Services {
 	private DialogTaskManager dialogTaskManager;
 	private VisualMappingManager visualMappingManager;
 	private VisualStyleFactory visualStyleFactory;
-	private VisualMappingFunctionFactory visualMappingFunctionFactory;
+	private Map<String,VisualMappingFunctionFactory> visualMappingFunctionFactories =  
+			new HashMap<String,VisualMappingFunctionFactory>();
 	
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
@@ -135,14 +139,14 @@ public class Services {
 	}
 
 
-	public VisualMappingFunctionFactory getVisualMappingFunctionFactory() {
-		return visualMappingFunctionFactory;
+	public VisualMappingFunctionFactory getVisualMappingFunctionFactory(String type) {
+		return visualMappingFunctionFactories.get(type);
 	}
 
 
-	public void setVisualMappingFunctionFactory(
+	public void putVisualMappingFunctionFactory(String type,
 			VisualMappingFunctionFactory visualMappingFunctionFactory) {
-		this.visualMappingFunctionFactory = visualMappingFunctionFactory;
+		this.visualMappingFunctionFactories.put(type, visualMappingFunctionFactory);
 	}
 	
 	

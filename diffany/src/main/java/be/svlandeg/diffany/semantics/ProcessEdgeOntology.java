@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.semantics;
 
+import java.awt.Color;
+import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,27 @@ public class ProcessEdgeOntology extends EdgeOntology
 		this.posPrefix = posPrefix;
 		addSourceCategories(sourceCats);
 	}
+	
+	@Override
+	public Paint getDifferentialEdgeStyle(String category)
+	{
+		if (category.startsWith("posPrefix"))
+		{
+			return Color.YELLOW;
+		}
+		if (category.startsWith("negPrefix"))
+		{
+			return Color.ORANGE;
+		}
+		return Color.MAGENTA;
+	}
+
+	@Override
+	public Paint getSourceEdgeStyle(String edgeType)
+	{
+		return Color.CYAN;
+	}
+
 
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
@@ -184,4 +207,5 @@ public class ProcessEdgeOntology extends EdgeOntology
 		return diff_edge;
 	}
 
+	
 }

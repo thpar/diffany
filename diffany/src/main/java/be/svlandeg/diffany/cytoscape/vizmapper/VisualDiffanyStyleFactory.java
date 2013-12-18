@@ -1,26 +1,26 @@
 package be.svlandeg.diffany.cytoscape.vizmapper;
 
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.internal.Services;
 
 public class VisualDiffanyStyleFactory {
 	
 	public enum Type{
-		SOURCE, DIFF, OVERLAP;
+		SOURCE, DIFF;
 	}
 	
-	static public VisualDiffanyStyle registerNewVisualStyle(Type type, Services services){
-		VisualDiffanyStyle style = null;
+	static public void registerNewVisualStyle(Type type, Model model){
+		AbstractVisualDiffanyStyle style = null;
+		Services services = model.getServices();
 		switch(type){
 		case SOURCE:	
 			style = new VisualSourceStyle(services);
+			model.getGuiModel().setSourceStyle(style.getVisualStyle());
 			break;
 		case DIFF:
 			style = new VisualDiffStyle(services);
-			break;
-		case OVERLAP:
-			style = new VisualOverlapStyle(services);
+			model.getGuiModel().setDiffStyle(style.getVisualStyle());
 			break;
 		}
-		return style;
 	}
 }

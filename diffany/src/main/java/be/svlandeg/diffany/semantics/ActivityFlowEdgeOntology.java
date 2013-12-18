@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.semantics;
 
+import java.awt.Color;
+import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,6 +49,36 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		addSourceCategories(source_pos_cats);
 		addSourceCategories(source_neg_cats);
 		addSourceCategories(source_neutral_cats);
+	}
+	
+	@Override
+	public Paint getDifferentialEdgeStyle(String category)
+	{
+		if (category.equals("pos_diff_cat"))
+		{
+			return Color.GREEN;
+		}
+		if (category.equals("neg_diff_cat"))
+		{
+			return Color.RED;
+		}
+		return Color.GRAY;
+	}
+
+
+	@Override
+	public Paint getSourceEdgeStyle(String edgeType)
+	{
+		String cat = getSourceCategory(edgeType);
+		if (cat != null && source_pos_cats.contains(cat))
+		{
+			return Color.GREEN;
+		}
+		if (cat != null && source_neg_cats.contains(cat))
+		{
+			return Color.RED;
+		}
+		return Color.GRAY;
 	}
 
 	
@@ -226,4 +258,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		
 		return diff_edge;
 	}
+
+
+	
 }

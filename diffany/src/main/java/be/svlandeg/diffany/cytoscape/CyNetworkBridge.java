@@ -43,8 +43,8 @@ public class CyNetworkBridge {
 	private final String WEIGHT = "weight";
 
 	private Services services;
-
 	private Model model;
+
 
 	public CyNetworkBridge(Model model){
 		this.services = model.getServices();
@@ -62,14 +62,14 @@ public class CyNetworkBridge {
 		CyNetwork cyNetwork = cyNetworkFactory.createNetwork();
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
 		cyNetwork.getDefaultNodeTable().createColumn(NORMALIZED_NAME, String.class, false);
-		
+		cyNetwork.getDefaultEdgeTable().createColumn(WEIGHT, Double.class, false);
+		cyNetwork.getDefaultEdgeTable().createColumn(CyEdge.INTERACTION, String.class, false);
 		
 		for (Node node: network.getNodes()){
 			CyNode cyNode = cyNetwork.addNode();
 			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getName());
 			cyNetwork.getRow(cyNode).set(NORMALIZED_NAME, node.getName(true));
 		}
-		
 		
 		for (Edge edge : network.getEdges()){
 			Node from = edge.getSource();
@@ -80,7 +80,10 @@ public class CyNetworkBridge {
 			CyNode fromNode = nodeToCyNode(from, cyNetwork, table, pk);
 			CyNode toNode = nodeToCyNode(to, cyNetwork, table, pk);
 			
-			cyNetwork.addEdge(fromNode, toNode, !edge.isSymmetrical());
+			CyEdge newEdge = cyNetwork.addEdge(fromNode, toNode, !edge.isSymmetrical());
+			cyNetwork.getRow(newEdge).set(WEIGHT, edge.getWeight());
+			cyNetwork.getRow(newEdge).set(CyEdge.INTERACTION, edge.getType());
+			
 		}
 		return cyNetwork;
 	}

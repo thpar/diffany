@@ -17,11 +17,19 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 	protected String neg_diff_cat;
 	protected String pos_diff_cat;
+	
+	protected static Paint neg_diff_paint = Color.RED;
+	protected static Paint pos_diff_paint = Color.GREEN;
+	protected static Paint neutral_diff_paint = Color.GRAY;
 
 	public Set<String> source_pos_cats;
 	public Set<String> source_neg_cats;
 	public Set<String> source_neutral_cats;
 
+	protected static Paint neg_source_paint = Color.RED;
+	protected static Paint pos_source_paint = Color.GREEN;
+	protected static Paint neutral_source_paint = Color.LIGHT_GRAY;
+	
 	/**
 	 * Create a new ontology, defining pos/neg categories. and inserting
 	 * After the constructor is called, default edge-category mappings should be inserted using addCategoryMapping!
@@ -56,17 +64,17 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	{
 		if (category == null)
 		{
-			return Color.GRAY;
+			return neutral_diff_paint;
 		}
 		if (category.equals("pos_diff_cat"))
 		{
-			return Color.GREEN;
+			return pos_diff_paint;
 		}
 		if (category.equals("neg_diff_cat"))
 		{
-			return Color.RED;
+			return neg_diff_paint;
 		}
-		return Color.GRAY;
+		return neutral_diff_paint;
 	}
 
 
@@ -76,13 +84,13 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		String cat = getSourceCategory(edgeType);
 		if (cat != null && source_pos_cats.contains(cat))
 		{
-			return Color.GREEN;
+			return pos_source_paint;
 		}
 		if (cat != null && source_neg_cats.contains(cat))
 		{
-			return Color.RED;
+			return neg_source_paint;
 		}
-		return Color.LIGHT_GRAY;
+		return neutral_source_paint;
 	}
 
 	

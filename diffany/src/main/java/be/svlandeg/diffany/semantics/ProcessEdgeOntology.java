@@ -21,6 +21,13 @@ public class ProcessEdgeOntology extends EdgeOntology
 	private String negPrefix;
 	private String posPrefix;
 	
+	protected static Paint neg_diff_paint = Color.ORANGE;
+	protected static Paint pos_diff_paint = Color.YELLOW;
+	protected static Paint default_diff_paint = Color.CYAN;
+	protected static Paint neutral_diff_paint = Color.GRAY;
+	
+	protected static Paint neutral_source_paint = Color.LIGHT_GRAY;
+	
 	protected Map<String, Paint> parentSourceCatToPaint;
 
 	/**
@@ -70,17 +77,17 @@ public class ProcessEdgeOntology extends EdgeOntology
 	{
 		if (category == null)
 		{
-			return Color.GRAY;
+			return neutral_diff_paint;
 		}
 		if (category.startsWith(posPrefix))
 		{
-			return Color.YELLOW;
+			return pos_diff_paint;
 		}
 		if (category.startsWith(negPrefix))
 		{
-			return Color.ORANGE;
+			return neg_diff_paint;
 		}
-		return Color.GRAY;
+		return neutral_diff_paint;
 	}
 
 	@Override
@@ -100,9 +107,9 @@ public class ProcessEdgeOntology extends EdgeOntology
 			{
 				return foundPaint;
 			}
-			return Color.CYAN;
+			return default_diff_paint;
 		}
-		return Color.LIGHT_GRAY;
+		return neutral_source_paint;
 	}
 
 

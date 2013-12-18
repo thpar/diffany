@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Paint;
 
 /** 
- * This class defines the visual style of a network, and will be tightly linked to an edge ontology
+ * This class defines the visual style of a network, and is tightly linked to an edge ontology
  * as the colors/shapes are dependent on the underlying semantics of the nodes/edges. 
  * 
  * @author Sofie Van Landeghem
@@ -32,7 +32,7 @@ public class VisualMapper
 	 * @param type the type of the edge interaction
 	 * @return a Paint object which specifies how the edge should be drawn
 	 */
-	public Paint getStaticEdgeStyle(EdgeOntology eo, String type)
+	public Paint getSourceEdgeStyle(EdgeOntology eo, String type)
 	{
 		return Color.ORANGE;
 	}

@@ -22,6 +22,8 @@ import be.svlandeg.diffany.semantics.NodeMapper;
 public class CalculateDiff
 {
 	
+	protected boolean default_MIN = true;
+	
 	protected double default_cutoff = 0.0;
 	protected static String diffnamesuffix = "_diff";
 	protected static String overlapnamesuffix = "_overlap";
@@ -29,6 +31,9 @@ public class CalculateDiff
 	protected CalculateDiffOfTwo twoProcessor;
 	protected CalculateDiffOfMore moreProcessor;
 	
+	/**
+	 * Constructor initializes the algorithm suites.
+	 */
 	public CalculateDiff()
 	{
 		twoProcessor = new CalculateDiffOfTwo();
@@ -61,7 +66,7 @@ public class CalculateDiff
 			throw new IllegalArgumentException(errormsg);
 		}
 		DifferentialNetwork dn =  twoProcessor.calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
-		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff);
+		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -87,7 +92,7 @@ public class CalculateDiff
 			String errormsg = "Found null parameter in calculateDiffNetwork!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, overlap_name, cutoff);
+		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, overlap_name, cutoff, default_MIN);
 		return sn;
 	}
 	
@@ -227,10 +232,11 @@ public class CalculateDiff
 		}
 		if (networks.size() == 2)
 		{
-			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(networks.iterator().next(), networks.iterator().next(), eo, nm, overlapping_name, cutoff);
+			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(networks.iterator().next(), networks.iterator().next(), eo, 
+					nm, overlapping_name, cutoff, default_MIN);
 			return sn;
 		}
-		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(networks, eo, nm, overlapping_name, cutoff);
+		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(networks, eo, nm, overlapping_name, cutoff, default_MIN);
 		return sn;
 	}
 	
@@ -260,7 +266,8 @@ public class CalculateDiff
 		if (conditions.size() == 1)
 		{
 			DifferentialNetwork dn = twoProcessor.calculateDiffNetwork(reference, conditions.iterator().next(), eo, nm, diff_name, cutoff);
-			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, nm, diff_name + overlapnamesuffix, cutoff);
+			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, 
+					nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 			dn.setOverlappingNetwork(sn);
 			return dn;
 		}
@@ -268,7 +275,7 @@ public class CalculateDiff
 		Set<Network> allNetworks = new HashSet<Network>();
 		allNetworks.add(reference);
 		allNetworks.addAll(conditions);
-		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(allNetworks, eo, nm, diff_name + overlapnamesuffix, cutoff);
+		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(allNetworks, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -342,8 +349,8 @@ public class CalculateDiff
 	}
 	
 	/**
-	 * Calculate the differential network between the reference and all condition-specific networks in the project.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object for each differential network.
+	 * Calculate the differential network between the reference and a set of condition-specific networks.
+	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
 	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
@@ -360,9 +367,11 @@ public class CalculateDiff
 	}
 	
 	/**
-	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
-	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
+	 * Calculate the differential network between the reference and a set of condition-specific networks.
+	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
+	 * 
+	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
+	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
 	 * 
 	 * The calculated differential networks is added to the project directly.
 	 * 

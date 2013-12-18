@@ -103,7 +103,6 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("H", new Node("H"));
 		nodes.put("J", new Node("K"));
 		nodes.put("K", new Node("J"));
-
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));

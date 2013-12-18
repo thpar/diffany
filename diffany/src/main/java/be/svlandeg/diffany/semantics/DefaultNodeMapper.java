@@ -46,50 +46,64 @@ public class DefaultNodeMapper implements NodeMapper
 	}
 
 	@Override
-	public Set<Node> getAllNodes(Network network1, Network network2)
+	public Set<Node> getAllNodes(Set<Network> networks)
 	{
 		Set<Node> allNodes = new HashSet<Node>();
-		Map<Node, Set<Node>> allEquals = getAllEquals(network1, network2);
-		allNodes.addAll(allEquals.keySet());
-		for (Node node2 : network2.getNodes())
+		for (Network network : networks)
 		{
-			boolean hasEqual = false;
-			for (Set<Node> set : allEquals.values())
+			for (Node node : network.getNodes())
 			{
-				if (set.contains(node2))
+				boolean hasEqual = false;
+				for (Node compNode : allNodes)
 				{
-					hasEqual = true;
+					if (areEqual(node, compNode))
+					{
+						hasEqual = true;
+					}
 				}
-			}
-			if (!hasEqual)
-			{
-				allNodes.add(node2);
+				if (!hasEqual)
+				{
+					allNodes.add(node);
+				}
 			}
 		}
 		return allNodes;
 	}
 
 	@Override
-	public String getConsensusName(Node node1, Node node2) throws IllegalArgumentException
+	public String getConsensusName(Set<Node> nodes) throws IllegalArgumentException
 	{
-		if (node1 != null && node2 == null)
+		Set<String> normalized_names = new HashSet<String>();
+		Set<String> original_names = new HashSet<String>();
+		for (Node n : nodes)
 		{
-			return node1.getName(false);
+			if (n != null)
+			{
+				original_names.add(n.getName(false));
+				normalized_names.add(n.getName(true));
+			}
 		}
-		if (node1 == null && node2 != null)
+		if (original_names.isEmpty())
 		{
-			return node2.getName(false);
+			return null;
 		}
-		if ((node1 == null && node2 == null) || !areEqual(node1, node2))
+		if (normalized_names.size() > 1)
 		{
-			String errormsg = "A consensus name can only be defined for two equal nodes!";
+			String found = "";
+			for (String s : normalized_names)
+			{
+				found += s + " / ";
+			}
+			String errormsg = "A consensus name can only be defined for two equal nodes, found: " + found;
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (node1.getName(false).endsWith(node1.getName(false)))
+		if (original_names.size() == 1)
 		{
-			return node1.getName(false); // keep casing information if it is the same
+			// keep casing information if it is the same
+			return original_names.iterator().next();
 		}
-		return node1.getName(true); // return lowercase otherwise
+		// return lowercase otherwise
+		return normalized_names.iterator().next();
 	}
 
 }

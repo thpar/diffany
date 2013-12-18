@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.semantics;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
@@ -30,67 +32,129 @@ public class ProcessEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();
+		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
+		
+		//////////// DEAL WITH SYMMETRY AND NEGATION ////////////////
+		boolean conSymm = true;
+		for (EdgeDefinition e : conEdges)
+		{
+			// negated edges are set to void
+			if (e.isNegated())
+			{
+				conEdges2.add(EdgeDefinition.getVoidEdge());
+			}
+			else
+			{
+				conEdges2.add(e);
+			}
+			if (! e.isSymmetrical())
+			{
+				// the set of condition-specific edges is only symmetrical when all edges are
+				conSymm = false;
+			}
+		}
+		
+		if (conEdges.isEmpty())
+		{
+			conEdges2.add(EdgeDefinition.getVoidEdge());
+		}
 		
 		boolean refNeg = refEdge.isNegated();
-		boolean conNeg = conEdge.isNegated();
-		
 		if (refNeg)
 			refEdge = EdgeDefinition.getVoidEdge();
 		
-		if (conNeg)
-			conEdge = EdgeDefinition.getVoidEdge();
-
+		diff_edge.makeNegated(false);	// a differential edge is never negated 
+		
+		boolean refSymm = refEdge.isSymmetrical();
+		boolean diffSymm = refSymm && conSymm;
+		diff_edge.makeSymmetrical(diffSymm);
+		
+		//////////// DETERMINE TYPE AND WEIGHT ////////////////
+		
 		String refCat = getSourceCategory(refEdge.getType());
-		String conCat = getSourceCategory(conEdge.getType());
-
-		boolean equalCats = refCat.equals(conCat);
-		Boolean up = null;
-		double diffWeight = 0;
-
-		if (equalCats) 
+		
+		int countUp = 0;
+		int countDown = 0;
+		double minDiffWeight = Double.MAX_VALUE;
+		double minCumulWeight = Double.MAX_VALUE;
+		
+		for (EdgeDefinition conEdge : conEdges2)
 		{
-			diffWeight = conEdge.getWeight() - refEdge.getWeight();
-			up = true; // assume an increase
-			if (diffWeight < 0) // it was a decrease!
+			String conCat = getSourceCategory(conEdge.getType());
+			double diffWeight = 0;
+			double cumWeight = conEdge.getWeight() + refEdge.getWeight();
+			
+			if (refCat.equals(conCat)) 
 			{
-				diffWeight *= -1;
-				up = false;
+				diffWeight = conEdge.getWeight() - refEdge.getWeight();
+				if (diffWeight < 0) // decrease
+				{
+					diffWeight *= -1;
+					countDown++;
+				}
+				else if (diffWeight > 0)	// increase
+				{
+					countUp++;
+				}
 			}
+			else if (refCat.equals(VOID_TYPE) && ! conCat.equals(VOID_TYPE))
+			{
+				countUp++;
+				diffWeight = conEdge.getWeight();
+			}
+
+			else if (conCat.equals(VOID_TYPE) && ! refCat.equals(VOID_TYPE))
+			{
+				countDown++;
+				diffWeight = refEdge.getWeight();
+			}
+			minDiffWeight = Math.min(minDiffWeight, diffWeight);
+			minCumulWeight = Math.min(minCumulWeight, cumWeight);
+		}
+		// some are up, some are down -> no general differential edge
+		if (countUp > 0 && countDown > 0)
+		{
+			return EdgeDefinition.getVoidEdge();
 		}
 		
-		String baseType = conCat;
-
-		if (refCat.equals(VOID_TYPE) && ! conCat.equals(VOID_TYPE))
+		Boolean up = null;
+		if (countUp == 0 && countDown == conEdges2.size())
 		{
-			up = true;
-			diffWeight = conEdge.getWeight();
-		}
-
-		if (conCat.equals(VOID_TYPE) && ! refCat.equals(VOID_TYPE))
-		{
+			// all differential edges are down
 			up = false;
-			diffWeight = refEdge.getWeight();
-			baseType = refCat;
 		}
-
+		if (countDown == 0 && countUp == conEdges2.size())
+		{
+			// all differential edges are up
+			up = true;
+		}
 		
+		Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2);
+		if (conParents.isEmpty()) 	
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		String conParent = conParents.keySet().iterator().next();
 		
 		String type = "";
+		double diffWeight = 0.0;
 		if (up == null)
 		{
-			type = refCat + "_to_" + conCat;
-			diffWeight = conEdge.getWeight() + refEdge.getWeight();
-			if (isSourceChildOf(refCat, conCat))	// the conditional edge is less specific, i.e. not actually differential!
+			// fully changed category: take common parent of conEdges, if there is one
+			// however, only do this when the two categories are not directly related (unspecified)
+			
+			int related1 = isSourceChildOf(refCat, conParent);
+			int related2 = isSourceChildOf(conParent, refCat);
+			
+			if (related1 >= 0 || related2 >= 0)
 			{
 				return EdgeDefinition.getVoidEdge();
 			}
-			if (isSourceChildOf(conCat, refCat))	// the conditional edge is more specific, i.e. not actually differential!
-			{
-				return EdgeDefinition.getVoidEdge();
-			}
+			type = refCat + "_to_" + conParent;
+			diffWeight = minCumulWeight;
 		}
 		else 
 		{
@@ -102,7 +166,13 @@ public class ProcessEdgeOntology extends EdgeOntology
 			{
 				type = negPrefix;
 			}
+			String baseType = refCat;
+			if (refCat.equals(VOID_TYPE))
+			{
+				baseType = conParent;
+			}
 			type += baseType;
+			diffWeight = minDiffWeight;
 		}
 		diff_edge.setType(type);
 		
@@ -110,14 +180,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			return EdgeDefinition.getVoidEdge();
 		}
-
-		boolean refSymm = refEdge.isSymmetrical();
-		boolean conSymm = conEdge.isSymmetrical();
-		boolean diffSymm = refSymm && conSymm;
-
 		diff_edge.setWeight(diffWeight);
-		diff_edge.makeSymmetrical(diffSymm);
-		diff_edge.makeNegated(false);	// a differential edge is never negated 
 		return diff_edge;
 	}
 

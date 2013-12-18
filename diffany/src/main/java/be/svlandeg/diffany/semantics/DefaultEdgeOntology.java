@@ -53,6 +53,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		cats.add("ptm");
 		cats.add("phosphorylation");
 		cats.add("ubiquitination");
+		cats.add("methylation");
 		return cats;
 	}
 
@@ -134,36 +135,60 @@ public class DefaultEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
 		String refType = refEdge.getType();
-		String conType = conEdge.getType();
-		if (afOntology.isDefined(refType) && afOntology.isDefined(conType))
+		
+		int conCount = conEdges.size();
+		int afCount = 0;
+		int prCount = 0;
+		
+		for (EdgeDefinition conEdge : conEdges)
 		{
-			return afOntology.getDifferentialEdge(refEdge, conEdge, cutoff);
+			String conType = conEdge.getType();
+			if (afOntology.isDefined(conType))
+				afCount++;
+			if (prOntology.isDefined(conType))
+				prCount++;
 		}
-		if (prOntology.isDefined(refType) && prOntology.isDefined(conType))
+		
+		if (afOntology.isDefined(refType) && afCount == conCount)
 		{
-			return prOntology.getDifferentialEdge(refEdge, conEdge, cutoff);
+			return afOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
 		}
-		String errormsg = "The two types '" + refType + "' and '" + conType + "' can not be compared in this edge ontology!";
+		if (prOntology.isDefined(refType) && prCount == conCount)
+		{
+			return prOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
+		}
+		String errormsg = "The types '" + refType + "' and '" + conEdges.size() + "' conditional types could not be compared in this edge ontology!";
 		throw new IllegalArgumentException(errormsg);
 	}
 
 	@Override
-	public EdgeDefinition getOverlapEdge(EdgeDefinition refEdge, EdgeDefinition conEdge, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(Set<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException
 	{
-		String refType = refEdge.getType();
-		String conType = conEdge.getType();
-		if (afOntology.isDefined(refType) && afOntology.isDefined(conType))
+		int conCount = edges.size();
+		int afCount = 0;
+		int prCount = 0;
+		
+		for (EdgeDefinition conEdge : edges)
 		{
-			return afOntology.getOverlapEdge(refEdge, conEdge, cutoff);
+			String conType = conEdge.getType();
+			if (afOntology.isDefined(conType))
+				afCount++;
+			if (prOntology.isDefined(conType))
+				prCount++;
 		}
-		if (prOntology.isDefined(refType) && prOntology.isDefined(conType))
+		
+		if (afCount == conCount)
 		{
-			return prOntology.getOverlapEdge(refEdge, conEdge, cutoff);
+			return afOntology.getOverlapEdge(edges, cutoff, minOperator);
 		}
-		String errormsg = "The two types '" + refType + "' and '" + conType + "' can not be compared in this edge ontology!";
+		if (prCount == conCount)
+		{
+			return prOntology.getOverlapEdge(edges, cutoff, minOperator);
+		}
+		String errormsg = "The edge types could not be compared in this edge ontology!";
 		throw new IllegalArgumentException(errormsg);
 	}
 	
@@ -177,6 +202,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		
 		prOntology.putSourceParent("phosphorylation", "ptm");
 		prOntology.putSourceParent("ubiquitination", "ptm");
+		prOntology.putSourceParent("methylation", "ptm");
 	}
 
 	/**
@@ -187,6 +213,10 @@ public class DefaultEdgeOntology extends EdgeOntology
 		boolean overwrite = false;
 
 		// PPI category and common synonyms
+		
+		prOntology.addSourceCategoryMapping("methylation", "methylation", overwrite);
+		prOntology.addSourceCategoryMapping("methylates", "methylation", overwrite);
+		prOntology.addSourceCategoryMapping("methylate", "methylation", overwrite);
 		
 		prOntology.addSourceCategoryMapping("phosphorylation", "phosphorylation", overwrite);
 		prOntology.addSourceCategoryMapping("phosphorylates", "phosphorylation", overwrite);

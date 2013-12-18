@@ -108,15 +108,15 @@ public class TestExamples
 		// Testing the edges in the differential network
 		DifferentialNetwork dNetwork = dNetworks.iterator().next();
 		Set<Edge> dEdges =  dNetwork.getEdges();
-		assertEquals(6, dEdges.size());
+		assertEquals(7, dEdges.size());
 		
 		assertOneEdge(dNetwork, "S", "T", false, false, "increase", false, 1);
-		assertOneEdge(dNetwork, "K", "J", true, false, "increase", false, 2);
+		assertOneEdge(dNetwork, "K", "J", false, false, "increase", false, 2);
+		assertOneEdge(dNetwork, "J", "K", false, false, "increase", false, 2);
 		assertOneEdge(dNetwork, "A", "B", false, false, "increase", false, 1);
 		assertOneEdge(dNetwork, "B", "A", false, false, "decrease", false, 1);
 		assertOneEdge(dNetwork, "M", "N", false, false, "increase", false, 12);
 		assertOneEdge(dNetwork, "N", "M", false, false, "increase", false, 7);
-		
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
@@ -166,6 +166,42 @@ public class TestExamples
 	}
 	
 	/**
+	 * Test whether the example network with multiple conditions produces correct results.
+	 */
+	@Test
+	public void testMultipleConditions()
+	{
+		MultipleConditionTest ex = new MultipleConditionTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		new CalculateDiff().calculateOneDifferentialNetwork(p, cutoff);
+		
+		// Testing that there is exactly one differential network created
+		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		assertEquals(1, dNetworks.size());
+		
+		// Testing the edges in the differential network
+		DifferentialNetwork dNetwork = dNetworks.iterator().next();
+		Set<Edge> dEdges = dNetwork.getEdges();
+		assertEquals(5, dEdges.size());
+		
+		assertOneEdge(dNetwork, "W", "Z", true, false, "decrease_ppi", false, 0.5);
+		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 0.3);
+		assertOneEdge(dNetwork, "A", "D", true, false, "increase_ppi", false, 0.75);
+		assertOneEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
+		assertOneEdge(dNetwork, "M", "N", true, false, "increase_phosphorylation", false, 4);
+		
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
+		Set<Edge> sEdges =  sNetwork.getEdges();
+		assertEquals(3, sEdges.size());
+		
+		assertOneEdge(sNetwork, "A", "B", true, false, "ppi", false, 0.3);
+		assertOneEdge(sNetwork, "A", "C", true, false, "ppi", false, 0.6);
+		assertOneEdge(sNetwork, "M", "N", true, false, "phosphorylation", false, 2);
+	}
+	
+	/**
 	 * Private method that asserts whether a certain edge is present in a network.
 	 * This method will fail during JUnit testing when there is no edge or more than one edge between the specified node names.
 	 * This method will also fail if the found edge has the wrong symmetry, weight, negation, or interaction type.
@@ -187,6 +223,6 @@ public class TestExamples
 		assertEquals(edge.getType(), type);
 		assertEquals(edge.isSymmetrical(), symm);
 		assertEquals(edge.isNegated(), negated);
-		assertEquals(edge.getWeight(), weight, 0);
+		assertEquals(edge.getWeight(), weight, 0.00000005);
 	}
 }

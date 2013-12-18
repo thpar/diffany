@@ -26,6 +26,8 @@ public class TestVisual
 	{
 		EdgeOntology eo = new DefaultEdgeOntology();
 		
+		// ****** SOURCE NETWORK ****** //
+		
 		// process types
 		assertColorInSource("ppi" , Color.CYAN, eo);
 		assertColorInSource("ptm" , Color.BLUE, eo);
@@ -50,7 +52,7 @@ public class TestVisual
 		assertColorInSource("neutral", Color.LIGHT_GRAY, eo);
 		assertColorInSource(null, Color.LIGHT_GRAY, eo);
 		
-		// ****** DIFFERNETIAL NETWORK ****** //
+		// ****** DIFFERENTIAL NETWORK ****** //
 		
 		// process types
 		assertColorInDifferential("increase_ppi", Color.YELLOW, eo);
@@ -101,7 +103,5 @@ public class TestVisual
 		Paint p = eo.getDifferentialEdgeStyle(cat);
 		assertEquals(c, p);
 	}
-	
-
 	
 }

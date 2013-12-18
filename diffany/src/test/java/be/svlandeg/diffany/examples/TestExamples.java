@@ -183,13 +183,16 @@ public class TestExamples
 		// Testing the edges in the differential network
 		DifferentialNetwork dNetwork = dNetworks.iterator().next();
 		Set<Edge> dEdges = dNetwork.getEdges();
-		assertEquals(5, dEdges.size());
+		assertEquals(7, dEdges.size());
 		
 		assertOneEdge(dNetwork, "W", "Z", true, false, "decrease_ppi", false, 0.5);
 		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 0.3);
 		assertOneEdge(dNetwork, "A", "D", true, false, "increase_ppi", false, 0.75);
 		assertOneEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
-		assertOneEdge(dNetwork, "M", "N", true, false, "increase_phosphorylation", false, 4);
+		
+		assertOneEdge(dNetwork, "M", "N", false, false, "increase_phosphorylation", false, 4);
+		assertOneEdge(dNetwork, "P", "M", false, false, "increase_phosphorylation", false, 2);
+		assertOneEdge(dNetwork, "N", "P", false, false, "decrease_phosphorylation", false, 3);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
@@ -198,7 +201,7 @@ public class TestExamples
 		
 		assertOneEdge(sNetwork, "A", "B", true, false, "ppi", false, 0.3);
 		assertOneEdge(sNetwork, "A", "C", true, false, "ppi", false, 0.6);
-		assertOneEdge(sNetwork, "M", "N", true, false, "phosphorylation", false, 2);
+		assertOneEdge(sNetwork, "M", "N", false, false, "phosphorylation", false, 2);
 	}
 	
 	/**

@@ -214,17 +214,19 @@ public class ProcessEdgeOntology extends EdgeOntology
 			up = true;
 		}
 		
-		Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2);
-		if (conParents.isEmpty()) 	
-		{
-			return EdgeDefinition.getVoidEdge();
-		}
-		String conParent = conParents.keySet().iterator().next();
+		
 		
 		String type = "";
 		double diffWeight = 0.0;
 		if (up == null)
 		{
+			Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2, false);
+			if (conParents.isEmpty()) 	
+			{
+				return EdgeDefinition.getVoidEdge();
+			}
+			String conParent = conParents.keySet().iterator().next();
+			
 			// fully changed category: take common parent of conEdges, if there is one
 			// however, only do this when the two categories are not directly related (unspecified)
 			
@@ -251,6 +253,13 @@ public class ProcessEdgeOntology extends EdgeOntology
 			String baseType = refCat;
 			if (refCat.equals(VOID_TYPE))
 			{
+				Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2, true);
+				if (conParents.isEmpty()) 	
+				{
+					return EdgeDefinition.getVoidEdge();
+				}
+				String conParent = conParents.keySet().iterator().next();
+				
 				baseType = conParent;
 			}
 			type += baseType;

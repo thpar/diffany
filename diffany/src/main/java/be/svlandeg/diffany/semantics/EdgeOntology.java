@@ -122,8 +122,7 @@ public abstract class EdgeOntology
 		
 		//////////// DEFINE TYPE BY INSPECTING CHILDREN AND PARENTS ////////////////
 
-		
-		Map<String, Integer> allCommonParents = retrieveFirstCommonParents(edges);
+		Map<String, Integer> allCommonParents = retrieveFirstCommonParents(edges, false);
 		if (allCommonParents.isEmpty()) 
 		{
 			// no category covers all of the edges
@@ -232,7 +231,7 @@ public abstract class EdgeOntology
 	 * @param edges the original set of edges
 	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges.
 	 */
-	protected Map<String, Integer> retrieveFirstCommonParents(Set<EdgeDefinition> edges)
+	protected Map<String, Integer> retrieveFirstCommonParents(Set<EdgeDefinition> edges, boolean excludeEmpty)
 	{
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonParents = new HashMap<String, Integer>();
@@ -263,7 +262,7 @@ public abstract class EdgeOntology
 			else
 			{
 				// each cat is its own parent of depth 0
-				addOne(parentCatsByCount, cat);			
+				addOne(parentCatsByCount, cat);	
 				recordMaxDepth(parentByDepth, cat, depth);
 					
 				// record all parents up in the hierarchy
@@ -282,7 +281,8 @@ public abstract class EdgeOntology
 			allCommonParents.put(VOID_TYPE, 0);
 			return allCommonParents;
 		}
-		countEdges = countEdges - countEmpty;
+		if (excludeEmpty)
+			countEdges = countEdges - countEmpty;
 		
 		for (String cat : parentCatsByCount.keySet())
 		{

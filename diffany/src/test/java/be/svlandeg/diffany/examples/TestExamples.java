@@ -191,7 +191,7 @@ public class TestExamples
 		assertOneEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
 		
 		assertOneEdge(dNetwork, "M", "N", false, false, "increase_phosphorylation", false, 4);
-		assertOneEdge(dNetwork, "P", "M", false, false, "increase_phosphorylation", false, 2);
+		assertOneEdge(dNetwork, "P", "M", false, false, "increase_ptm", false, 2);
 		assertOneEdge(dNetwork, "N", "P", false, false, "decrease_phosphorylation", false, 3);
 		
 		// Testing the edges in the corresponding overlapping network

@@ -46,7 +46,12 @@ public class CyActivator extends AbstractCyActivator
 		services.setDialogTaskManager(getService(context, DialogTaskManager.class));
 		services.setVisualStyleFactory(getService(context, VisualStyleFactory.class));
 		services.setVisualMappingManager(getService(context, VisualMappingManager.class));
-		services.setVisualMappingFunctionFactory(getService(context, VisualMappingFunctionFactory.class));
+		services.putVisualMappingFunctionFactory("continuous", 
+				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=continuous)"));
+		services.putVisualMappingFunctionFactory("discrete", 
+				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=discrete)"));
+		services.putVisualMappingFunctionFactory("passthrough", 
+				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
 		
 		Model model = new Model(services);
 		
@@ -55,16 +60,16 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
 		//Create and register the Diffany visual styles
-		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.SOURCE, services);
-		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.DIFF, services);
-		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.OVERLAP, services);
+		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.SOURCE, model);
+		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.DIFF, model);
 		
 		//register action to run  the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
 		registerAllServices(context, runProjectAction, new Properties());
 		
-		//Register control panel as network listener
+		//Register network listeners
 		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
+		registerService(context,model, NetworkAddedListener.class, new Properties());
 		
 	}
 

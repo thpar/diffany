@@ -63,7 +63,14 @@ public class MultipleConditionTest extends GenericExample
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
 		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 2, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("O"), false, 8, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("P"), true, 4, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("N"), nodes.get("P"), true, 3, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("N"), nodes.get("O"), true, 1, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("O"), nodes.get("P"), false, 8, true));
 
 		return network;
 	}
@@ -111,7 +118,13 @@ public class MultipleConditionTest extends GenericExample
 		
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
-		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 6, false));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), false, 8, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("O"), nodes.get("N"), true, 5, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("O"), nodes.get("P"), true, 4, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("P"), nodes.get("M"), false, 2, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("O"), true, 1, true));
 
 		return network;
 	}
@@ -146,7 +159,14 @@ public class MultipleConditionTest extends GenericExample
 				
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
-		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 8, false));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), true, 6, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("N"), nodes.get("P"), false, 4, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("N"), nodes.get("O"), false, 5, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("P"), nodes.get("O"), true, 6, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("P"), nodes.get("M"), true, 7, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("P"), nodes.get("N"), false, 8, false));
 
 		return network;
 	}

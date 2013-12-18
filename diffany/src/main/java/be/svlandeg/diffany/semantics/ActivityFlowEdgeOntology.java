@@ -52,7 +52,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	}
 	
 	@Override
-	public Paint getDifferentialEdgeStyle(EdgeOntology eo, String category)
+	public Paint getDifferentialEdgeStyle(String category)
 	{
 		if (category.equals("pos_diff_cat"))
 		{
@@ -67,7 +67,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 
 	@Override
-	public Paint getSourceEdgeStyle(EdgeOntology eo, String edgeType)
+	public Paint getSourceEdgeStyle(String edgeType)
 	{
 		String cat = getSourceCategory(edgeType);
 		if (cat != null && source_pos_cats.contains(cat))

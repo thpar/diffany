@@ -390,20 +390,18 @@ public abstract class EdgeOntology
 	/**
 	 * Define the visual style of an edge in a differential network, by edge category.
 	 * 
-	 * @param eo the edge ontology which can interpret the semantics of the edge
 	 * @param category the category of the edge interaction
 	 * @return a Paint object which specifies how the edge should be drawn
 	 */
-	public abstract Paint getDifferentialEdgeStyle(EdgeOntology eo, String category);
+	public abstract Paint getDifferentialEdgeStyle(String category);
 	
 	/**
 	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
 	 * 
-	 * @param eo the edge ontology which can interpret the semantics of the edge
 	 * @param edgeType the type of the edge interaction
 	 * @return a Paint object which specifies how the edge should be drawn
 	 */
-	public abstract Paint getSourceEdgeStyle(EdgeOntology eo, String edgeType);
+	public abstract Paint getSourceEdgeStyle(String edgeType);
 
 
 	/**

@@ -34,7 +34,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 	}
 	
 	@Override
-	public Paint getDifferentialEdgeStyle(EdgeOntology eo, String category)
+	public Paint getDifferentialEdgeStyle(String category)
 	{
 		if (category.startsWith("posPrefix"))
 		{
@@ -48,7 +48,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 	}
 
 	@Override
-	public Paint getSourceEdgeStyle(EdgeOntology eo, String edgeType)
+	public Paint getSourceEdgeStyle(String edgeType)
 	{
 		return Color.CYAN;
 	}

@@ -5,12 +5,16 @@ import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.DiscreteRange;
 import org.cytoscape.view.model.Range;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.presentation.property.PaintVisualProperty;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualStyle;
+import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
 
 import be.svlandeg.diffany.internal.Services;
 
@@ -33,34 +37,32 @@ public abstract class AbstractVisualDiffanyStyle {
 		this.vis = services.getVisualStyleFactory().createVisualStyle(name);
 		
 		this.defaultStyle();
-		this.init();
+		this.specificMappings();
 		
 		services.getVisualMappingManager().addVisualStyle(this.vis);
 	}
 
-	private void defaultStyle() {
-		System.out.println("Added vis defaults");
+	private void defaultStyle() {		
+		//network default style
+		vis.setDefaultValue(BasicVisualLexicon.NETWORK_BACKGROUND_PAINT, Color.GRAY);
 		
-		NodeShapeVisualProperty nodeShape = 
-				new NodeShapeVisualProperty(NodeShapeVisualProperty.HEXAGON, "shape", "shaaaape", CyNode.class);
-		vis.setDefaultValue(nodeShape, NodeShapeVisualProperty.HEXAGON);
+		//node default style
+		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, Color.YELLOW);
 		
-		Set<Paint> colorSet = new HashSet<Paint>();
-		colorSet.add(Color.GREEN);
-		colorSet.add(Color.YELLOW);
-		Range<Paint> range = new DiscreteRange<Paint>(Paint.class, colorSet);
+		//node basic mappings
+		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");
+		PassthroughMapping<String, ?> mapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyNetwork.NAME, String.class, BasicVisualLexicon.NODE_LABEL);
+		vis.addVisualMappingFunction(mapping);	
 		
-		PaintVisualProperty nodePaint = 
-				new PaintVisualProperty(Color.GREEN, range, "color", "colooooor", CyNode.class);
-		vis.setDefaultValue(nodePaint, Color.GREEN);
-		
+		//edge style
 		
 	}
 
 	/**
 	 * Initialize this visual style
 	 */
-	abstract protected void init();
+	abstract protected void specificMappings();
 	
 	/**
 	 * Re-initialize mappings according to the content of selected networks. 

@@ -19,7 +19,7 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	}
 
 	@Override
-	protected void init() {
+	protected void specificMappings() {
 		System.out.println("Added vis source specific mappings");
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");
 		

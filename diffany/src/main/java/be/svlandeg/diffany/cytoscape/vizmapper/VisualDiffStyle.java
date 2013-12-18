@@ -9,7 +9,7 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 	}
 
 	@Override
-	protected void init() {
+	protected void specificMappings() {
 		// TODO Auto-generated method stub
 		
 	}

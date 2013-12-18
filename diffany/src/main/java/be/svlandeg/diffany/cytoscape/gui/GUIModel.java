@@ -9,9 +9,11 @@ import java.util.Set;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
-import org.cytoscape.view.vizmap.VisualStyle;
 
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.vizmapper.AbstractVisualDiffanyStyle;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 
 /**
  * The GUIModel keeps track of the status of the different side panel components.
@@ -26,8 +28,8 @@ public class GUIModel extends Observable{
 	
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
 	
-	private VisualStyle sourceStyle;
-	private VisualStyle diffStyle;
+	private VisualSourceStyle sourceStyle;
+	private VisualDiffStyle diffStyle;
 	
 	/**
 	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
@@ -108,19 +110,19 @@ public class GUIModel extends Observable{
 		entry.setReference(true);
 	}
 
-	public VisualStyle getSourceStyle() {
+	public VisualSourceStyle getSourceStyle() {
 		return sourceStyle;
 	}
 
-	public void setSourceStyle(VisualStyle sourceStyle) {
+	public void setSourceStyle(VisualSourceStyle sourceStyle) {
 		this.sourceStyle = sourceStyle;
 	}
 
-	public VisualStyle getDiffStyle() {
+	public VisualDiffStyle getDiffStyle() {
 		return diffStyle;
 	}
 
-	public void setDiffStyle(VisualStyle diffStyle) {
+	public void setDiffStyle(VisualDiffStyle diffStyle) {
 		this.diffStyle = diffStyle;
 	}
 	

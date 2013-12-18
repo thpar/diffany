@@ -2,16 +2,15 @@ package be.svlandeg.diffany.cytoscape.vizmapper;
 
 import java.awt.Paint;
 
-import org.cytoscape.view.presentation.property.BasicVisualLexicon;
-import org.cytoscape.view.vizmap.VisualMappingFunction;
-import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
-import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
+import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
 import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.semantics.EdgeOntology;
 
 public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	
-	static final String INTERACTION = "interaction";
 	
 	
 	public VisualSourceStyle(Services services) {
@@ -19,26 +18,14 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	}
 
 	@Override
-	protected void specificMappings() {
-		System.out.println("Added vis source specific mappings");
-		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");
-		
-		PassthroughMapping<String, ?> mapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
-		
-		vis.addVisualMappingFunction(mapping);
-		
-		
-		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
-		
-		VisualMappingFunction<String, Paint> edgeColorFunction = vmffD.createVisualMappingFunction(INTERACTION, String.class, BasicVisualLexicon.EDGE_PAINT);
-		
-		
+	protected void addInteractionMappings(CyNetwork cyNetwork, EdgeOntology edgeOntology, DiscreteMapping<String, Paint> edgeColorFunction) {
+		for (CyEdge cyEdge : cyNetwork.getEdgeList()) {
+			String interaction = cyNetwork.getRow(cyEdge).get(cyEdge.INTERACTION, String.class);
+			Paint paint = edgeOntology.getSourceEdgeStyle(interaction);
+			edgeColorFunction.putMapValue(interaction, paint);
+		}
 	}
 
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }

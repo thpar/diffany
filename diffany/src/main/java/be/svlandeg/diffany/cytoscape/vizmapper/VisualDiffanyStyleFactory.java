@@ -10,16 +10,15 @@ public class VisualDiffanyStyleFactory {
 	}
 	
 	static public void registerNewVisualStyle(Type type, Model model){
-		AbstractVisualDiffanyStyle style = null;
 		Services services = model.getServices();
 		switch(type){
 		case SOURCE:	
-			style = new VisualSourceStyle(services);
-			model.getGuiModel().setSourceStyle(style.getVisualStyle());
+			VisualSourceStyle sourceStyle = new VisualSourceStyle(services);
+			model.getGuiModel().setSourceStyle(sourceStyle);
 			break;
 		case DIFF:
-			style = new VisualDiffStyle(services);
-			model.getGuiModel().setDiffStyle(style.getVisualStyle());
+			VisualDiffStyle diffStyle = new VisualDiffStyle(services);
+			model.getGuiModel().setDiffStyle(diffStyle);
 			break;
 		}
 	}

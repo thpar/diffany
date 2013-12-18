@@ -64,16 +64,16 @@ public class CyNetworkBridge {
 		CySubNetwork cyNetwork = collection.addSubNetwork();
 		
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
-
-		cyNetwork.getDefaultNodeTable().createColumn(NORMALIZED_NAME, String.class, false);
 		
 		CyTable nodeTable = cyNetwork.getDefaultNodeTable();
 		CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
 
 		if (nodeTable.getColumn(NORMALIZED_NAME)==null){
 			nodeTable.createColumn(NORMALIZED_NAME, String.class, false);			
-			edgeTable.createColumn(WEIGHT, Double.class, false);
-			edgeTable.createColumn(CyEdge.INTERACTION, String.class, false);
+		}
+
+		if (edgeTable.getColumn(WEIGHT)==null){
+			edgeTable.createColumn(WEIGHT, Double.class, false);			
 		}
 
 		

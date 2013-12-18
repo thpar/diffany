@@ -82,12 +82,15 @@ public class RunProjectTask implements Task {
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(newProject, cutoff);
 		
 		addDifferentialNetworks(newProject.getDifferentialNetworks());
+		
+		model.getGuiModel().getSourceStyle().updateInteractionMappings(model);
+		model.getGuiModel().getDiffStyle().updateInteractionMappings(model);
 	}
 
 	
 	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks) {
-		VisualStyle sourceStyle = model.getGuiModel().getSourceStyle();
-		VisualStyle diffStyle = model.getGuiModel().getDiffStyle();
+		VisualStyle sourceStyle = model.getGuiModel().getSourceStyle().getVisualStyle();
+		VisualStyle diffStyle = model.getGuiModel().getDiffStyle().getVisualStyle();
 		
 		System.out.println("Diffnets");
 		CyNetworkBridge bridge = new CyNetworkBridge(model);
@@ -107,6 +110,7 @@ public class RunProjectTask implements Task {
 			cyOverlapView.updateView();
 			
 		}
+		
 	}
 	
 	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network){

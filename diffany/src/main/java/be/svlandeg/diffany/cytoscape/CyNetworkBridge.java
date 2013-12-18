@@ -15,11 +15,12 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import be.svlandeg.diffany.concepts.Condition;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.EdgeDefinition;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
@@ -39,7 +40,7 @@ public class CyNetworkBridge {
 	/**
 	 * Column name of an extra field to be used to map nodes from different networks onto each other.
 	 */
-	private final String NORMALIZED_NAME = "normalized_name";
+	private final String NORMALIZED_NAME = "normalized_name.SUID";
 	private final String WEIGHT = "weight";
 
 	private Services services;
@@ -55,13 +56,23 @@ public class CyNetworkBridge {
 	 * Converts a {@link Network} to a {@link CyNetwork}
 	 * 
 	 * @param network input {@link Network} 
+	 * @param collection 
 	 * @return {@link CyNetwork} that can be added to Cytoscape using a {@link CyNetworkManager}
 	 */
-	public CyNetwork createCyNetwork(Network network){
-		CyNetworkFactory cyNetworkFactory = services.getCyNetworkFactory();
-		CyNetwork cyNetwork = cyNetworkFactory.createNetwork();
+	public CyNetwork createCyNetwork(Network network, CyRootNetwork collection){
+		
+		CySubNetwork cyNetwork = collection.addSubNetwork();
+		
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
-		cyNetwork.getDefaultNodeTable().createColumn(NORMALIZED_NAME, String.class, false);
+		
+		CyTable nodeTable = cyNetwork.getDefaultNodeTable();
+		
+//		nodeTable.
+		
+		if (nodeTable.getColumn(NORMALIZED_NAME)==null){
+			nodeTable.createColumn(NORMALIZED_NAME, String.class, false);			
+		}
+
 		
 		
 		for (Node node: network.getNodes()){

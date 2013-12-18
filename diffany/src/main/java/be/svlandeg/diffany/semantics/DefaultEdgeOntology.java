@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
+import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -146,17 +147,17 @@ public class DefaultEdgeOntology extends EdgeOntology
 		for (EdgeDefinition conEdge : conEdges)
 		{
 			String conType = conEdge.getType();
-			if (afOntology.isDefined(conType))
+			if (afOntology.isDefinedSource(conType))
 				afCount++;
-			if (prOntology.isDefined(conType))
+			if (prOntology.isDefinedSource(conType))
 				prCount++;
 		}
 		
-		if (afOntology.isDefined(refType) && afCount == conCount)
+		if (afOntology.isDefinedSource(refType) && afCount == conCount)
 		{
 			return afOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
 		}
-		if (prOntology.isDefined(refType) && prCount == conCount)
+		if (prOntology.isDefinedSource(refType) && prCount == conCount)
 		{
 			return prOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
 		}
@@ -174,9 +175,9 @@ public class DefaultEdgeOntology extends EdgeOntology
 		for (EdgeDefinition conEdge : edges)
 		{
 			String conType = conEdge.getType();
-			if (afOntology.isDefined(conType))
+			if (afOntology.isDefinedSource(conType))
 				afCount++;
-			if (prOntology.isDefined(conType))
+			if (prOntology.isDefinedSource(conType))
 				prCount++;
 		}
 		
@@ -301,6 +302,22 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("inhibits", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("inhibit", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("inhibition", "negative_regulation", overwrite);
+	}
+
+	@Override
+	public Paint getDifferentialEdgeStyle(EdgeOntology eo, String category)
+	{
+		if (afOntology.isDefinedCategory(category))
+			return afOntology.getDifferentialEdgeStyle(eo, category);
+		return prOntology.getDifferentialEdgeStyle(eo, category);
+	}
+
+	@Override
+	public Paint getSourceEdgeStyle(EdgeOntology eo, String edgeType)
+	{
+		if (afOntology.isDefinedSource(edgeType))
+			return afOntology.getSourceEdgeStyle(eo, edgeType);
+		return prOntology.getSourceEdgeStyle(eo, edgeType);
 	}
 
 }

@@ -1,6 +1,10 @@
 package be.svlandeg.diffany.semantics;
 
-import java.util.*;
+import java.awt.Paint;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
 
@@ -33,7 +37,8 @@ public abstract class EdgeOntology
 		removeAllCategoriesAndMappings();
 		sourceCatHierarchy = new HashMap<String, String>();
 	}
-
+	
+	
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
@@ -357,7 +362,7 @@ public abstract class EdgeOntology
 	 * @param edgeType the original type of the edge in a network
 	 * @return whether or not this edge type is present in this ontology
 	 */
-	protected boolean isDefined(String edgeType)
+	protected boolean isDefinedSource(String edgeType)
 	{
 		if (edgeType == null)
 		{
@@ -365,6 +370,41 @@ public abstract class EdgeOntology
 		}
 		return mapSourceEdgeToCategory.containsKey(edgeType.toLowerCase());
 	}
+	
+	/**
+	 * Check whether a certain edge category is present in this ontology.
+	 * Matching is done independent of upper/lower casing.
+	 * 
+	 * @param category the category of the edge in a (differential) network
+	 * @return whether or not this edge category is present in this ontology
+	 */
+	protected boolean isDefinedCategory(String category)
+	{
+		if (category == null)
+		{
+			return false;
+		}
+		return mapSourceEdgeToCategory.containsValue(category.toLowerCase());
+	}
+	
+	/**
+	 * Define the visual style of an edge in a differential network, by edge category.
+	 * 
+	 * @param eo the edge ontology which can interpret the semantics of the edge
+	 * @param category the category of the edge interaction
+	 * @return a Paint object which specifies how the edge should be drawn
+	 */
+	public abstract Paint getDifferentialEdgeStyle(EdgeOntology eo, String category);
+	
+	/**
+	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
+	 * 
+	 * @param eo the edge ontology which can interpret the semantics of the edge
+	 * @param edgeType the type of the edge interaction
+	 * @return a Paint object which specifies how the edge should be drawn
+	 */
+	public abstract Paint getSourceEdgeStyle(EdgeOntology eo, String edgeType);
+
 
 	/**
 	 * Return all source (input) categories present in this ontology.

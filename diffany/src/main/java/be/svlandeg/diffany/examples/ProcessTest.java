@@ -54,7 +54,7 @@ public class ProcessTest extends GenericExample
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 3, false));
 		network.addEdge(new Edge("ptm", nodes.get("X"), nodes.get("Y"), true, 4, false));
-		network.addEdge(new Edge("ubiquitination", nodes.get("H"), nodes.get("G"), true, 1, false));
+		network.addEdge(new Edge("ubiquitinates", nodes.get("H"), nodes.get("G"), true, 1, false));
 		network.addEdge(new Edge("ptm", nodes.get("J"), nodes.get("K"), true, 5, true));
 		return network;
 	}

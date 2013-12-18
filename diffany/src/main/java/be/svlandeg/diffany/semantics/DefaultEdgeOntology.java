@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +41,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 
 		insertDefaultParents();
 		insertDefaultMappings();
+		addDefaultPaintedParents();
 	}
 
 	/**
@@ -147,17 +149,17 @@ public class DefaultEdgeOntology extends EdgeOntology
 		for (EdgeDefinition conEdge : conEdges)
 		{
 			String conType = conEdge.getType();
-			if (afOntology.isDefinedSource(conType))
+			if (afOntology.isDefinedSourceType(conType))
 				afCount++;
-			if (prOntology.isDefinedSource(conType))
+			if (prOntology.isDefinedSourceType(conType))
 				prCount++;
 		}
 		
-		if (afOntology.isDefinedSource(refType) && afCount == conCount)
+		if (afOntology.isDefinedSourceType(refType) && afCount == conCount)
 		{
 			return afOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
 		}
-		if (prOntology.isDefinedSource(refType) && prCount == conCount)
+		if (prOntology.isDefinedSourceType(refType) && prCount == conCount)
 		{
 			return prOntology.getDifferentialEdge(refEdge, conEdges, cutoff);
 		}
@@ -175,9 +177,9 @@ public class DefaultEdgeOntology extends EdgeOntology
 		for (EdgeDefinition conEdge : edges)
 		{
 			String conType = conEdge.getType();
-			if (afOntology.isDefinedSource(conType))
+			if (afOntology.isDefinedSourceType(conType))
 				afCount++;
-			if (prOntology.isDefinedSource(conType))
+			if (prOntology.isDefinedSourceType(conType))
 				prCount++;
 		}
 		
@@ -193,8 +195,25 @@ public class DefaultEdgeOntology extends EdgeOntology
 		throw new IllegalArgumentException(errormsg);
 	}
 	
+
+	@Override
+	public Paint getDifferentialEdgeStyle(String category)
+	{
+		if (afOntology.isDefinedDiffCategory(category))
+			return afOntology.getDifferentialEdgeStyle(category);
+		return prOntology.getDifferentialEdgeStyle(category);
+	}
+
+	@Override
+	public Paint getSourceEdgeStyle(String edgeType)
+	{
+		if (afOntology.isDefinedSourceType(edgeType))
+			return afOntology.getSourceEdgeStyle(edgeType);
+		return prOntology.getSourceEdgeStyle(edgeType);
+	}
+	
 	/**
-	 * Provide a default mapping edge type to category mapping.
+	 * Provide a default child-parent mapping between source categories.
 	 */
 	protected void insertDefaultParents()
 	{
@@ -204,6 +223,14 @@ public class DefaultEdgeOntology extends EdgeOntology
 		prOntology.putSourceParent("phosphorylation", "ptm");
 		prOntology.putSourceParent("ubiquitination", "ptm");
 		prOntology.putSourceParent("methylation", "ptm");
+	}
+	
+	/**
+	 * Provide a default mapping edge type to category mapping.
+	 */
+	protected void addDefaultPaintedParents()
+	{
+		prOntology.addPaint("ptm", Color.BLUE);
 	}
 
 	/**
@@ -304,20 +331,5 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("inhibition", "negative_regulation", overwrite);
 	}
 
-	@Override
-	public Paint getDifferentialEdgeStyle(String category)
-	{
-		if (afOntology.isDefinedCategory(category))
-			return afOntology.getDifferentialEdgeStyle(category);
-		return prOntology.getDifferentialEdgeStyle(category);
-	}
-
-	@Override
-	public Paint getSourceEdgeStyle(String edgeType)
-	{
-		if (afOntology.isDefinedSource(edgeType))
-			return afOntology.getSourceEdgeStyle(edgeType);
-		return prOntology.getSourceEdgeStyle(edgeType);
-	}
 
 }

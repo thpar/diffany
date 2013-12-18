@@ -2,6 +2,7 @@ package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,8 @@ public class ProcessEdgeOntology extends EdgeOntology
 
 	private String negPrefix;
 	private String posPrefix;
+	
+	protected Map<String, Paint> parentSourceCatToPaint;
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
@@ -30,27 +33,76 @@ public class ProcessEdgeOntology extends EdgeOntology
 		super();
 		this.negPrefix = negPrefix;
 		this.posPrefix = posPrefix;
+		parentSourceCatToPaint = new HashMap<String, Paint>();
 		addSourceCategories(sourceCats);
+	}
+	
+	/**
+	 * Assign a specific paint object to a source category (and its children)
+	 * 
+	 * @param parentCat a category (also representing its children)
+	 * @param p the paint object specifying its visual properties
+	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, 
+	 * or when the type is not defined in this ontology
+	 */
+	protected void addPaint(String parentCat, Paint p)
+	{
+		if (parentCat == null || p == null)
+		{
+			String errormsg = "The provided parent category or the paint object should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (parentSourceCatToPaint.containsKey(parentCat))
+		{
+			String errormsg = "The provided parent category ('" + parentCat + "') already has a mapped paint object!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! isDefinedSourceCat(parentCat))
+		{
+			String errormsg = "The provided parent category ('" + parentCat + "') is not defined in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		parentSourceCatToPaint.put(parentCat, p);
 	}
 	
 	@Override
 	public Paint getDifferentialEdgeStyle(String category)
 	{
-		if (category.startsWith("posPrefix"))
+		if (category == null)
+		{
+			return Color.GRAY;
+		}
+		if (category.startsWith(posPrefix))
 		{
 			return Color.YELLOW;
 		}
-		if (category.startsWith("negPrefix"))
+		if (category.startsWith(negPrefix))
 		{
 			return Color.ORANGE;
 		}
-		return Color.MAGENTA;
+		return Color.GRAY;
 	}
 
 	@Override
 	public Paint getSourceEdgeStyle(String edgeType)
 	{
-		return Color.CYAN;
+		if (isDefinedSourceType(edgeType))
+		{
+			String childCat = getSourceCategory(edgeType);
+			Paint foundPaint = parentSourceCatToPaint.get(edgeType);
+			while (foundPaint == null && childCat != null)
+			{
+				String parentCat = retrieveParent(childCat);
+				foundPaint = parentSourceCatToPaint.get(parentCat);
+				childCat = parentCat;
+			}
+			if (foundPaint != null)
+			{
+				return foundPaint;
+			}
+			return Color.CYAN;
+		}
+		return Color.LIGHT_GRAY;
 	}
 
 

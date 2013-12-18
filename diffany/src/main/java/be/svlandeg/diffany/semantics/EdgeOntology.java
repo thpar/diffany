@@ -24,7 +24,7 @@ public abstract class EdgeOntology
 
 	private Map<String, String> sourceCatHierarchy;
 
-	private Map<String, String> mapSourceEdgeToCategory;
+	private Map<String, String> mapSourceTypeToCategory;
 	private Set<String> allSourceCategories;
 
 	private Set<String> allDiffCategories;
@@ -352,7 +352,7 @@ public abstract class EdgeOntology
 	 */
 	public String getSourceCategory(String edgeType)
 	{
-		return mapSourceEdgeToCategory.get(edgeType.toLowerCase());
+		return mapSourceTypeToCategory.get(edgeType.toLowerCase());
 	}
 
 	/**
@@ -362,13 +362,28 @@ public abstract class EdgeOntology
 	 * @param edgeType the original type of the edge in a network
 	 * @return whether or not this edge type is present in this ontology
 	 */
-	protected boolean isDefinedSource(String edgeType)
+	protected boolean isDefinedSourceType(String edgeType)
 	{
 		if (edgeType == null)
 		{
 			return false;
 		}
-		return mapSourceEdgeToCategory.containsKey(edgeType.toLowerCase());
+		String cat = getSourceCategory(edgeType);
+		return isDefinedSourceCat(cat);
+	}
+	
+	/**
+	 * Check whether a certain edge category is present in this ontology.
+	 * Matching is done independent of upper/lower casing.
+	 * 
+	 * @param category the original category of the edge in a network
+	 * @return whether or not this edge category is present in this ontology
+	 */
+	protected boolean isDefinedSourceCat(String category)
+	{
+		if (category == null)
+			 return false;
+		return allSourceCategories.contains(category);
 	}
 	
 	/**
@@ -378,13 +393,13 @@ public abstract class EdgeOntology
 	 * @param category the category of the edge in a (differential) network
 	 * @return whether or not this edge category is present in this ontology
 	 */
-	protected boolean isDefinedCategory(String category)
+	protected boolean isDefinedDiffCategory(String category)
 	{
 		if (category == null)
 		{
 			return false;
 		}
-		return mapSourceEdgeToCategory.containsValue(category.toLowerCase());
+		return allDiffCategories.contains(category);
 	}
 	
 	/**
@@ -595,12 +610,12 @@ public abstract class EdgeOntology
 			String errormsg = "The provided edge category ('" + category + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!overwrite && mapSourceEdgeToCategory.containsKey(edgeType.toLowerCase()))
+		if (!overwrite && mapSourceTypeToCategory.containsKey(edgeType.toLowerCase()))
 		{
 			String errormsg = "The provided edge type is already mapped to a category!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		mapSourceEdgeToCategory.put(edgeType.toLowerCase(), category.toLowerCase());
+		mapSourceTypeToCategory.put(edgeType.toLowerCase(), category.toLowerCase());
 	}
 
 	/**
@@ -614,7 +629,7 @@ public abstract class EdgeOntology
 		allDiffCategories = new HashSet<String>();
 		allDiffCategories.add(VOID_TYPE);
 
-		mapSourceEdgeToCategory = new HashMap<String, String>();
+		mapSourceTypeToCategory = new HashMap<String, String>();
 		addSourceCategoryMapping(VOID_TYPE, VOID_TYPE, false);
 	}
 
@@ -623,7 +638,7 @@ public abstract class EdgeOntology
 	 */
 	protected void removeAllSourceCategoryMappings()
 	{
-		mapSourceEdgeToCategory = new HashMap<String, String>();
+		mapSourceTypeToCategory = new HashMap<String, String>();
 	}
 
 }

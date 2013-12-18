@@ -54,6 +54,10 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	@Override
 	public Paint getDifferentialEdgeStyle(String category)
 	{
+		if (category == null)
+		{
+			return Color.GRAY;
+		}
 		if (category.equals("pos_diff_cat"))
 		{
 			return Color.GREEN;
@@ -78,7 +82,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		{
 			return Color.RED;
 		}
-		return Color.GRAY;
+		return Color.LIGHT_GRAY;
 	}
 
 	

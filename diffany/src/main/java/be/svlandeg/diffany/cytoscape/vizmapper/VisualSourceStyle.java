@@ -19,10 +19,12 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 
 	@Override
 	protected void addInteractionMappings(CyNetwork cyNetwork, EdgeOntology edgeOntology, DiscreteMapping<String, Paint> edgeColorFunction) {
+		System.out.println("Updating Source Visual Style");
 		for (CyEdge cyEdge : cyNetwork.getEdgeList()) {
 			String interaction = cyNetwork.getRow(cyEdge).get(cyEdge.INTERACTION, String.class);
 			Paint paint = edgeOntology.getSourceEdgeStyle(interaction);
 			edgeColorFunction.putMapValue(interaction, paint);
+			System.out.println("Mapped "+interaction+" to "+paint);
 		}
 	}
 

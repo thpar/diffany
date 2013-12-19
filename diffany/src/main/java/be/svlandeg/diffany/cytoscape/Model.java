@@ -94,7 +94,10 @@ public class Model extends Observable implements NetworkAddedListener{
 	public Project getCurrentProject(){
 		return currentProject;
 	}
-
+	public void setCurrentProject(Project project){
+		this.currentProject = project;
+	}
+	
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on Cytoscape NetworkAdded

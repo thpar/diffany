@@ -24,7 +24,8 @@ import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 /**
- * Temporary task to experiment.
+ * This Task gathers information from the model and creates and runs a new {@link Project}
+ * 
  * 
  * @author thpar
  *
@@ -53,6 +54,8 @@ public class RunProjectTask implements Task {
 		taskMonitor.setProgress(1.0);
 	}
 	
+	
+	
 	private void runAlgorithm(){
 		CyNetworkBridge bridge = new CyNetworkBridge(model);
 		CyNetwork cyRefNetwork = model.getGuiModel().getReferenceNetwork();
@@ -77,6 +80,7 @@ public class RunProjectTask implements Task {
 		
 		
 		Project newProject = new Project("Default Project", refNet, condSet, new DefaultEdgeOntology(), new DefaultNodeMapper());
+		this.model.setCurrentProject(newProject);
 		
 		double cutoff = 0.25;
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(newProject, cutoff);

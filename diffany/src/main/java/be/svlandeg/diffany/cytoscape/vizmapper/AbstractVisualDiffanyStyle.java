@@ -93,6 +93,14 @@ public abstract class AbstractVisualDiffanyStyle {
 		
 	}
 	
+	/**
+	 * Add mappings to the VizMapper according to the edges used in the project. All found edge interaction types
+	 * are mapped to a visual style using the given {@link EdgeOntology}
+	 * 
+	 * @param refNet
+	 * @param edgeOntology
+	 * @param edgeColorFunction
+	 */
 	protected abstract void addInteractionMappings(CyNetwork refNet, EdgeOntology edgeOntology, DiscreteMapping<String, Paint> edgeColorFunction);
 
 	/**

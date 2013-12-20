@@ -21,7 +21,8 @@ import org.osgi.framework.BundleContext;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffanyStyleFactory;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 
 /**
  * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
@@ -60,8 +61,8 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
 		//Create and register the Diffany visual styles
-		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.SOURCE, model);
-		VisualDiffanyStyleFactory.registerNewVisualStyle(VisualDiffanyStyleFactory.Type.DIFF, model);
+		model.getGuiModel().setSourceStyle(new VisualSourceStyle(services));
+		model.getGuiModel().setDiffStyle(new VisualDiffStyle(services));
 		
 		//register action to run  the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");

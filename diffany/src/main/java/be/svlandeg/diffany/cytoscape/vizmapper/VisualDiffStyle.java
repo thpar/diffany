@@ -17,11 +17,14 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 
 	
 	@Override
-	protected void addInteractionMappings(CyNetwork cyNetwork, EdgeOntology edgeOntology, DiscreteMapping<String, Paint> edgeColorFunction) {
+	protected void addInteractionMappings(CyNetwork cyNetwork, EdgeOntology edgeOntology, 
+			DiscreteMapping<String, Paint> edgeColorFunction, DiscreteMapping<String, Paint> edgeSelectedColorFunction) {
+		System.out.println("Updating Differential Visual Style");
 		for (CyEdge cyEdge : cyNetwork.getEdgeList()) {
 			String interaction = cyNetwork.getRow(cyEdge).get(cyEdge.INTERACTION, String.class);
 			Paint paint = edgeOntology.getDifferentialEdgeStyle(interaction);
 			edgeColorFunction.putMapValue(interaction, paint);
+			System.out.println("Mapped "+interaction+" to "+paint);
 		}
 	}
 	

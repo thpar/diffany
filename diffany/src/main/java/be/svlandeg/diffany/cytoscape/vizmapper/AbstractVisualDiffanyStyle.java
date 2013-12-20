@@ -75,21 +75,24 @@ public abstract class AbstractVisualDiffanyStyle {
 	public void updateInteractionMappings(Model model) {
 		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
 		DiscreteMapping<String, Paint> edgeColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
-				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_PAINT);
+				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT);
+		DiscreteMapping<String, Paint> edgeSelectedColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
+				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_SELECTED_PAINT);
 		
 		Project project = model.getCurrentProject();
 		EdgeOntology edgeOntology = project.getEdgeOntology();
-		
+				
 		CyNetwork refNet = model.getGuiModel().getReferenceNetwork();
 		Set<CyNetwork> conditionNetworks = model.getGuiModel().getConditionEntries();
 		
-		this.addInteractionMappings(refNet, edgeOntology, edgeColorFunction);
+		this.addInteractionMappings(refNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
 		
 		for (CyNetwork condNet : conditionNetworks){
-			this.addInteractionMappings(condNet, edgeOntology, edgeColorFunction);			
+			this.addInteractionMappings(condNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);			
 		}
 		
 		vis.addVisualMappingFunction(edgeColorFunction);
+		vis.addVisualMappingFunction(edgeSelectedColorFunction);
 		
 	}
 	
@@ -101,7 +104,8 @@ public abstract class AbstractVisualDiffanyStyle {
 	 * @param edgeOntology
 	 * @param edgeColorFunction
 	 */
-	protected abstract void addInteractionMappings(CyNetwork refNet, EdgeOntology edgeOntology, DiscreteMapping<String, Paint> edgeColorFunction);
+	protected abstract void addInteractionMappings(CyNetwork refNet, EdgeOntology edgeOntology, 
+			DiscreteMapping<String, Paint> edgeColorFunction, DiscreteMapping<String, Paint> edgeSelectedColorFunction);
 
 	/**
 	 * 

@@ -35,7 +35,7 @@ public class Model extends Observable implements NetworkAddedListener{
 	
 	public Model(Services services){
 		this.services = services;
-		this.guiModel = new GUIModel();
+		this.guiModel = new GUIModel(this);
 	}
 	
 	/**
@@ -95,6 +95,15 @@ public class Model extends Observable implements NetworkAddedListener{
 
 	
 	public CyProject getCurrentProject() {
+		return currentProject;
+	}
+	
+	/**
+	 * Erases all project settings and creates a fresh one.
+	 * @return the newly created project
+	 */
+	public CyProject resetProject(){
+		this.currentProject = new CyProject(this);
 		return currentProject;
 	}
 

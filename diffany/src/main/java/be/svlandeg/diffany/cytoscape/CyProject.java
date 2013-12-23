@@ -5,7 +5,10 @@ import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.vizmap.VisualStyle;
 
+import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
@@ -70,7 +73,7 @@ public class CyProject{
 		this.conditionalNetworks.add(conditionalNetwork);
 		Collection<CyNetworkView> networkViews = services.getCyNetworkViewManager().getNetworkViews(conditionalNetwork);
 		for (CyNetworkView view : networkViews){
-			model.getGuiModel().getSourceStyle().getVisualStyle().apply(view);
+			visualSourceStyle.getVisualStyle().apply(view);
 		}
 	}
 
@@ -113,7 +116,30 @@ public class CyProject{
 		return visualDiffStyle;
 	}
 
-
+	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks) {
+		VisualStyle sourceStyle = model.getGuiModel().getSourceStyle().getVisualStyle();
+		VisualStyle diffStyle = model.getGuiModel().getDiffStyle().getVisualStyle();
+		
+		System.out.println("Diffnets");
+		CyNetworkBridge bridge = new CyNetworkBridge(model);
+		for (DifferentialNetwork network : differentialNetworks){
+			System.out.println(network.getStringRepresentation());
+			System.out.println(network.writeEdgesTab());
+			
+			//add the diffnet
+			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network);
+			diffStyle.apply(cyDiffView);
+			cyDiffView.updateView();
+			
+			//add the overlap
+			OverlappingNetwork overlap = network.getOverlappingNetwork();
+			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
+			sourceStyle.apply(cyOverlapView);
+			cyOverlapView.updateView();
+			
+		}
+		
+	}
 
 	/**
 	 * Checks if all necessary parameters are set to execute the algorithm.
@@ -123,6 +149,16 @@ public class CyProject{
 	public boolean canExecute(){
 		//TODO actual check 
 		return true;
+	}
+
+
+	/**
+	 * Iterates all resulting networks (differential and overlap) and creates {@link CyNetwork}s and {@link CyView}s
+	 * where needed.
+	 */
+	public void updateResultNetworks() {
+		// TODO Auto-generated method stub
+		
 	}
 		
 

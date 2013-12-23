@@ -10,8 +10,9 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
+import be.svlandeg.diffany.cytoscape.CyProject;
+import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
-import be.svlandeg.diffany.cytoscape.vizmapper.AbstractVisualDiffanyStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 
@@ -23,10 +24,20 @@ import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
  */
 public class GUIModel extends Observable{
 
+	private Model model;
+	
+	public GUIModel(Model model){
+		this.model = model;
+	}
+	
+	
 	private CyRootNetwork selectedCollection;
 	
+	/**
+	 * Networks to be listed in the selection list
+	 */
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
-		
+	
 	/**
 	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
 	 * used for the algorithm.
@@ -48,7 +59,7 @@ public class GUIModel extends Observable{
 		this.selectedCollection = selectedCollection;
 		refreshNetworkEntries();
 		setChanged();
-		notifyObservers("Boom!!!");
+		notifyObservers();
 	}
 
 	/**
@@ -66,62 +77,30 @@ public class GUIModel extends Observable{
 	private void refreshNetworkEntries() {
 		List<CySubNetwork> subNets = ((CyRootNetwork)selectedCollection).getSubNetworkList();
 		networkEntries = new ArrayList<NetworkEntry>();
+		
+		//for now, we simply create a whole new CyProject
+		//should become more flexible
+		CyProject newProject = model.resetProject();
+		
+		
 		for (CySubNetwork subNet : subNets){
 			NetworkEntry entry = new NetworkEntry(subNet);
-			entry.setSelected(true);
+			entry.setSelected(false);
 			entry.setReference(false);
 			networkEntries.add(entry);
 		}
 		if (networkEntries.size() > 0){
+			//set the table
 			networkEntries.get(0).setReference(true);
-			this.referenceEntry = networkEntries.get(0);
+			newProject.setReferenceNetwork(networkEntries.get(0).getNetwork());
+			
 		}
 	}
 
-	/**
-	 * The currently selected reference network.
-	 * @return
-	 */
-	public CyNetwork getReferenceNetwork() {
-		return referenceEntry.getNetwork();
-	}
-	
-	public Set<CyNetwork> getConditionEntries(){
-		Set<CyNetwork> conditionals = new HashSet<CyNetwork>();
-		for (NetworkEntry entry : this.networkEntries){
-			if (entry.isSelected() && !entry.isReference()){
-				conditionals.add(entry.getNetwork());
-			}
-		}
-		return conditionals;
-	}
-	
-	public NetworkEntry getReferenceEntry(){
-		return referenceEntry;
-	}
-	
-	public void setReferenceEntry(NetworkEntry entry){
-		this.referenceEntry.setReference(false);
-		this.referenceEntry = entry;
-		entry.setReference(true);
-	}
 
-	public VisualSourceStyle getSourceStyle() {
-		return sourceStyle;
+	public Model getModel() {
+		return model;
 	}
-
-	public void setSourceStyle(VisualSourceStyle sourceStyle) {
-		this.sourceStyle = sourceStyle;
-	}
-
-	public VisualDiffStyle getDiffStyle() {
-		return diffStyle;
-	}
-
-	public void setDiffStyle(VisualDiffStyle diffStyle) {
-		this.diffStyle = diffStyle;
-	}
-	
-	
+		
 		
 }

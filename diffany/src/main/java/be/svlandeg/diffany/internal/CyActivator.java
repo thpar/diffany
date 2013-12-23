@@ -62,8 +62,9 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
 		//Create and register the Diffany visual styles
-		model.getGuiModel().setSourceStyle(new VisualSourceStyle(services));
-		model.getGuiModel().setDiffStyle(new VisualDiffStyle(services));
+		//TODO dependent on Project
+//		model.getGuiModel().setSourceStyle(new VisualSourceStyle(services));
+//		model.getGuiModel().setDiffStyle(new VisualDiffStyle(services));
 		
 		//register action to run  the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");

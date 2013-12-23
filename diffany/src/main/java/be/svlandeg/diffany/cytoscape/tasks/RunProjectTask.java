@@ -19,6 +19,7 @@ import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
+import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidProjectException;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
@@ -58,62 +59,15 @@ public class RunProjectTask implements Task {
 	
 	
 	private void runAlgorithm() throws InvalidProjectException{
-		CyNetworkBridge bridge = new CyNetworkBridge(model);
-		CyNetwork cyRefNetwork = model.getGuiModel().getReferenceNetwork();
-		ReferenceNetwork refNet = bridge.getReferenceNetwork(cyRefNetwork);
-		
-		System.out.println("Refnet");
-		System.out.println(refNet.getStringRepresentation());
-		System.out.println(refNet.writeEdgesTab());
-		
-		Set<CyNetwork> cyCondNetworks = model.getGuiModel().getConditionEntries();
-		
-		System.out.println("Condnets");
-		Set<ConditionNetwork> condSet = new HashSet<ConditionNetwork>();
-		for (CyNetwork cyNet : cyCondNetworks){
-			ConditionNetwork condNet = bridge.getConditionNetwork(cyNet);
-			condSet.add(condNet);			
-			System.out.println(condNet.getStringRepresentation());
-			System.out.println(condNet.writeEdgesTab());
-			System.out.println("---");
-		}
-		
-		Project newProject = model.getCurrentProject().getProject();
-				
+		CyProject cyProject = model.getCurrentProject();
+		Project project = cyProject.getProject();
+						
 		double cutoff = 0.25;
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(newProject, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cutoff);
 		
-		addDifferentialNetworks(newProject.getDifferentialNetworks());
-		
-		model.getGuiModel().getSourceStyle().updateInteractionMappings(model);
-		model.getGuiModel().getDiffStyle().updateInteractionMappings(model);
+		cyProject.updateResultNetworks();
 	}
 
-	
-	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks) {
-		VisualStyle sourceStyle = model.getGuiModel().getSourceStyle().getVisualStyle();
-		VisualStyle diffStyle = model.getGuiModel().getDiffStyle().getVisualStyle();
-		
-		System.out.println("Diffnets");
-		CyNetworkBridge bridge = new CyNetworkBridge(model);
-		for (DifferentialNetwork network : differentialNetworks){
-			System.out.println(network.getStringRepresentation());
-			System.out.println(network.writeEdgesTab());
-			
-			//add the diffnet
-			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network);
-			diffStyle.apply(cyDiffView);
-			cyDiffView.updateView();
-			
-			//add the overlap
-			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
-			sourceStyle.apply(cyOverlapView);
-			cyOverlapView.updateView();
-			
-		}
-		
-	}
 	
 	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network){
 		CyRootNetwork collection = model.getGuiModel().getSelectedCollection();

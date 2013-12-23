@@ -10,7 +10,6 @@ import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
-import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
@@ -28,7 +27,11 @@ public class Model extends Observable implements NetworkAddedListener{
 	Services services;
 	private GUIModel guiModel;
 	
-	private Project currentProject;
+	/**
+	 * The current project
+	 */
+	private CyProject currentProject = new CyProject(this);
+		
 	
 	public Model(Services services){
 		this.services = services;
@@ -91,13 +94,10 @@ public class Model extends Observable implements NetworkAddedListener{
 	}
 
 	
-	public Project getCurrentProject(){
+	public CyProject getCurrentProject() {
 		return currentProject;
 	}
-	public void setCurrentProject(Project project){
-		this.currentProject = project;
-	}
-	
+
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on Cytoscape NetworkAdded

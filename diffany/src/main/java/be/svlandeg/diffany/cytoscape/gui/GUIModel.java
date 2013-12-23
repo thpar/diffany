@@ -24,13 +24,9 @@ import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 public class GUIModel extends Observable{
 
 	private CyRootNetwork selectedCollection;
-	private NetworkEntry referenceEntry;
 	
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
-	
-	private VisualSourceStyle sourceStyle;
-	private VisualDiffStyle diffStyle;
-	
+		
 	/**
 	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
 	 * used for the algorithm.

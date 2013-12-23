@@ -19,6 +19,7 @@ import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
+import be.svlandeg.diffany.cytoscape.InvalidProjectException;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -56,7 +57,7 @@ public class RunProjectTask implements Task {
 	
 	
 	
-	private void runAlgorithm(){
+	private void runAlgorithm() throws InvalidProjectException{
 		CyNetworkBridge bridge = new CyNetworkBridge(model);
 		CyNetwork cyRefNetwork = model.getGuiModel().getReferenceNetwork();
 		ReferenceNetwork refNet = bridge.getReferenceNetwork(cyRefNetwork);
@@ -77,11 +78,8 @@ public class RunProjectTask implements Task {
 			System.out.println("---");
 		}
 		
-		
-		
-		Project newProject = new Project("Default Project", refNet, condSet, new DefaultEdgeOntology(), new DefaultNodeMapper());
-		this.model.setCurrentProject(newProject);
-		
+		Project newProject = model.getCurrentProject().getProject();
+				
 		double cutoff = 0.25;
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(newProject, cutoff);
 		

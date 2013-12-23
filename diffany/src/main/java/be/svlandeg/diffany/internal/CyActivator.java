@@ -54,6 +54,7 @@ public class CyActivator extends AbstractCyActivator
 		services.putVisualMappingFunctionFactory("passthrough", 
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
 		
+		
 		Model model = new Model(services);
 		
 		//Create and register the control panel

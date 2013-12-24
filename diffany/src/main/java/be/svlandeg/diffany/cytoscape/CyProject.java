@@ -5,14 +5,10 @@ import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.vizmap.VisualStyle;
 
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
-import be.svlandeg.diffany.internal.Services;
 
 
 
@@ -52,8 +48,15 @@ public class CyProject{
 
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
 		this.referenceNetwork = referenceNetwork;
+		Collection<CyNetworkView> networkViews = model.getServices().getCyNetworkViewManager().getNetworkViews(referenceNetwork);
+		for (CyNetworkView view : networkViews){
+			visualSourceStyle.getVisualStyle().apply(view);
+		}
 	}
 
+	public void removeConditionalNetwork(CyNetwork cyNetwork){
+		this.conditionalNetworks.remove(cyNetwork);
+	}
 
 
 	public Set<CyNetwork> getConditionalNetworks() {

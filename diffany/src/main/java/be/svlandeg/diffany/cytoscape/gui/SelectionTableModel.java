@@ -1,10 +1,16 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
+
+import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
@@ -18,6 +24,12 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	private static final long serialVersionUID = 1L;
 
+	
+	/**
+	 * Networks to be listed in the selection list
+	 */
+	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
+	
 
 	/**
 	 * Column headers
@@ -40,7 +52,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 	
 	@Override
 	public int getRowCount() {
-		return model.getNetworkEntries().size();
+		return networkEntries.size();
 	}
 
 	@Override
@@ -67,7 +79,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		switch(columnIndex){
 		case 1:
 			return false;
@@ -81,7 +93,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		switch(columnIndex){
 		case 0:
 			return entry.isSelected();
@@ -95,7 +107,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		boolean check = (Boolean)aValue;
 		switch(columnIndex){
 		case 0:
@@ -113,8 +125,38 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public void update(Observable o, Object arg) {
+		//triggered on model changes
+		this.refreshNetworkEntries();
 		this.fireTableDataChanged();
 	}
 
 
+	/**
+	 * Reload the {@link NetworkEntry}s based on the selected network collection.
+	 */
+	private void refreshNetworkEntries() {
+		List<CySubNetwork> subNets = model.getSelectedCollection().getSubNetworkList();
+		System.out.println("Number of subnets: "+subNets.size());
+		networkEntries = new ArrayList<NetworkEntry>();
+		
+		//for now, we simply create a whole new CyProject
+		//should become more flexible
+		CyProject newProject = model.resetProject();
+		
+		for (CySubNetwork subNet : subNets){
+			NetworkEntry entry = new NetworkEntry(subNet);
+			entry.setSelected(true);
+			entry.setReference(false);
+			networkEntries.add(entry);
+			newProject.addConditionalNetwork(entry.getNetwork());
+		}
+		if (networkEntries.size() > 0){
+			//set the table
+			networkEntries.get(0).setReference(true);
+			newProject.setReferenceNetwork(networkEntries.get(0).getNetwork());
+			newProject.removeConditionalNetwork(networkEntries.get(0).getNetwork());
+		}
+	}
+	
+	
 }

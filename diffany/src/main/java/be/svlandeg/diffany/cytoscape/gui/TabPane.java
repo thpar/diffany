@@ -129,12 +129,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		String action = e.getActionCommand();
 		if (action.equals("collection")){
 			//triggered on collection dropdown action
+			System.out.println("ComboBox dropdown action");
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
 		} else if (action.equals("run")){
 			//triggered on Start button click
-			System.out.println("Run project");
 			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
 			if (tf.isReady()){
@@ -148,7 +148,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on Cytoscape NetworkAdded
+		System.out.println("Network added (caught by tabpane)");
 		comboModel.refresh();
+		//FIXME again not reaching this!!!
+		System.out.println("About to check if comboBox has entries");
 		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 	

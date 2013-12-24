@@ -39,10 +39,7 @@ public class Model extends Observable {
 	 */
 	private CyRootNetwork selectedCollection;
 	
-	/**
-	 * Networks to be listed in the selection list
-	 */
-	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
+	
 	
 	
 	public Model(Services services){
@@ -136,44 +133,8 @@ public class Model extends Observable {
 	 */
 	public void setSelectedCollection(CyRootNetwork selectedCollection) {
 		this.selectedCollection = selectedCollection;
-		refreshNetworkEntries();
 		setChanged();
 		notifyObservers();
-	}
-
-	/**
-	 * The {@link NetworkEntry}s currently shown in the network selection table. These entries are wrappers for
-	 * the list of {@link CySubNetwork}s from the selected network collection.
-	 * @return current list entries in the network selection list
-	 */
-	public List<NetworkEntry> getNetworkEntries(){
-		return this.networkEntries;
-	}
-	
-	/**
-	 * Reload the {@link NetworkEntry}s based on the selected network collection.
-	 */
-	private void refreshNetworkEntries() {
-		List<CySubNetwork> subNets = ((CyRootNetwork)selectedCollection).getSubNetworkList();
-		networkEntries = new ArrayList<NetworkEntry>();
-		
-		//for now, we simply create a whole new CyProject
-		//should become more flexible
-		CyProject newProject = this.resetProject();
-		
-		
-		for (CySubNetwork subNet : subNets){
-			NetworkEntry entry = new NetworkEntry(subNet);
-			entry.setSelected(false);
-			entry.setReference(false);
-			networkEntries.add(entry);
-		}
-		if (networkEntries.size() > 0){
-			//set the table
-			networkEntries.get(0).setReference(true);
-			newProject.setReferenceNetwork(networkEntries.get(0).getNetwork());
-			
-		}
 	}
 
 

@@ -61,10 +61,12 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 		if (collectionEntries.size() > 0){
 			this.empty = false;
 			this.selectedEntry = collectionEntries.get(0);
+			System.out.println("Not empty!");
 		} else {
 			empty = true;
 		}
 		//let the gui know all entries might have changed
+		System.out.println("So, are we getting here?");
 		this.fireContentsChanged(this, 0, oldSize);
 	}
 	
@@ -104,6 +106,7 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	 * @return
 	 */
 	public boolean hasEntries(){
+		System.out.println(!empty? "has entries":"has no entries");
 		return !empty;
 	}
 

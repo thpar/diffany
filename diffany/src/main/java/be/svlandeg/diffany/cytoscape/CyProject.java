@@ -29,19 +29,16 @@ public class CyProject{
 	
 	private CyNetwork referenceNetwork;
 	private Set<CyNetwork> conditionalNetworks;
-	private Set<CyNetwork> differentialNetworks;
+	private Set<CyNetwork> resultNetworks;
 
 	
 	private VisualSourceStyle visualSourceStyle;
 	private VisualDiffStyle visualDiffStyle;
 	
-	
-	private Services services;
 
 	private Model model;
 
 	public CyProject(Model model){
-		this.services = model.getServices();
 		this.model = model;
 	}
 	
@@ -71,7 +68,7 @@ public class CyProject{
 
 	public void addConditionalNetwork(CyNetwork conditionalNetwork){
 		this.conditionalNetworks.add(conditionalNetwork);
-		Collection<CyNetworkView> networkViews = services.getCyNetworkViewManager().getNetworkViews(conditionalNetwork);
+		Collection<CyNetworkView> networkViews = model.getServices().getCyNetworkViewManager().getNetworkViews(conditionalNetwork);
 		for (CyNetworkView view : networkViews){
 			visualSourceStyle.getVisualStyle().apply(view);
 		}
@@ -79,13 +76,13 @@ public class CyProject{
 
 
 	public Set<CyNetwork> getDifferentialNetworks() {
-		return differentialNetworks;
+		return resultNetworks;
 	}
 
 
 
-	public void setDifferentialNetworks(Set<CyNetwork> differentialNetworks) {
-		this.differentialNetworks = differentialNetworks;
+	public void setDifferentialNetworks(Set<CyNetwork> resultNetworks) {
+		this.resultNetworks = resultNetworks;
 	}
 
 
@@ -105,41 +102,26 @@ public class CyProject{
 
 
 	
-
+	/**
+	 * Gets the visual style for source (input and overlap) networks, wrapped in a {@link VisualSourceStyle}
+	 * and adjusted to the edge types used in the networks of the current {@link CyProject}
+	 * @return the visual style for source networks
+	 */
 	public VisualSourceStyle getVisualSourceStyle() {
 		return visualSourceStyle;
 	}
 
 
-
+	/**
+	 * Gets the visual style for differential networks, wrapped in a {@link VisualDiffStyle}
+	 * and adjusted to the edge types used in the networks of the current {@link CyProject}
+	 * @return the visual style for differential networks
+	 */
 	public VisualDiffStyle getVisualDiffStyle() {
 		return visualDiffStyle;
 	}
 
-	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks) {
-		VisualStyle sourceStyle = model.getGuiModel().getSourceStyle().getVisualStyle();
-		VisualStyle diffStyle = model.getGuiModel().getDiffStyle().getVisualStyle();
-		
-		System.out.println("Diffnets");
-		CyNetworkBridge bridge = new CyNetworkBridge(model);
-		for (DifferentialNetwork network : differentialNetworks){
-			System.out.println(network.getStringRepresentation());
-			System.out.println(network.writeEdgesTab());
-			
-			//add the diffnet
-			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network);
-			diffStyle.apply(cyDiffView);
-			cyDiffView.updateView();
-			
-			//add the overlap
-			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
-			sourceStyle.apply(cyOverlapView);
-			cyOverlapView.updateView();
-			
-		}
-		
-	}
+	
 
 	/**
 	 * Checks if all necessary parameters are set to execute the algorithm.
@@ -157,7 +139,12 @@ public class CyProject{
 	 * where needed.
 	 */
 	public void updateResultNetworks() {
-		// TODO Auto-generated method stub
+	}
+
+
+
+	public void addResultNetwork(CyNetwork cyNet) {
+		this.resultNetworks.add(cyNet);
 		
 	}
 		

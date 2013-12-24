@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
@@ -69,32 +70,32 @@ public abstract class AbstractVisualDiffanyStyle {
 	}
 
 	
-	/**
-	 * Re-initialize mappings according to the content of selected networks. 
-	 */
-	public void updateInteractionMappings(Model model) {
-		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
-		DiscreteMapping<String, Paint> edgeColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
-				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT);
-		DiscreteMapping<String, Paint> edgeSelectedColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
-				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_SELECTED_PAINT);
-		
-		Project project = model.getCurrentProject();
-		EdgeOntology edgeOntology = project.getEdgeOntology();
-				
-		CyNetwork refNet = model.getGuiModel().getReferenceNetwork();
-		Set<CyNetwork> conditionNetworks = model.getGuiModel().getConditionEntries();
-		
-		this.addInteractionMappings(refNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
-		
-		for (CyNetwork condNet : conditionNetworks){
-			this.addInteractionMappings(condNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);			
-		}
-		
-		vis.addVisualMappingFunction(edgeColorFunction);
-		vis.addVisualMappingFunction(edgeSelectedColorFunction);
-		
-	}
+//	/**
+//	 * Re-initialize mappings according to the content of selected networks. 
+//	 */
+//	public void updateInteractionMappings(Model model) {
+//		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
+//		DiscreteMapping<String, Paint> edgeColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
+//				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT);
+//		DiscreteMapping<String, Paint> edgeSelectedColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
+//				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_SELECTED_PAINT);
+//		
+//		Project project = model.getCurrentProject();
+//		EdgeOntology edgeOntology = project.getEdgeOntology();
+//				
+//		CyNetwork refNet = model.getGuiModel().getReferenceNetwork();
+//		Set<CyNetwork> conditionNetworks = model.getGuiModel().getConditionEntries();
+//		
+//		this.addInteractionMappings(refNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
+//		
+//		for (CyNetwork condNet : conditionNetworks){
+//			this.addInteractionMappings(condNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);			
+//		}
+//		
+//		vis.addVisualMappingFunction(edgeColorFunction);
+//		vis.addVisualMappingFunction(edgeSelectedColorFunction);
+//		
+//	}
 	
 	/**
 	 * Add mappings to the VizMapper according to the edges used in the project. All found edge interaction types
@@ -115,5 +116,13 @@ public abstract class AbstractVisualDiffanyStyle {
 		return this.vis;
 	}
 	
+	/**
+	 * Convenience method to apply this VisualStyle to a CyView
+	 * 
+	 * @param view
+	 */
+	public void apply(CyNetworkView view){
+		this.vis.apply(view);
+	}
 
 }

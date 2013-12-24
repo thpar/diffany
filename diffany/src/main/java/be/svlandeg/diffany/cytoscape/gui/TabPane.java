@@ -48,7 +48,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public TabPane(Model model){
 		this.model = model;
 		model.addObserver(this);			
-		model.getGuiModel().addObserver(this);
 		
 		createTabPaneContent();
 	}
@@ -132,7 +131,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			//triggered on collection dropdown action
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-			model.getGuiModel().setSelectedCollection((CyRootNetwork)entry.getNetwork());			
+			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
 		} else if (action.equals("run")){
 			//triggered on Start button click
 			System.out.println("Run project");

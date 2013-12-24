@@ -18,12 +18,14 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	private static final long serialVersionUID = 1L;
 
-	private GUIModel guiModel;
 
 	/**
 	 * Column headers
 	 */
-	String[] columns = {"Include", "Network", "Reference"};
+	private String[] columns = {"Include", "Network", "Reference"};
+
+
+	private Model model;
 	
 	/**
 	 * Create a new model based on the general {@link Model} and add it as an {@link Observer} the contained
@@ -31,14 +33,14 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 	 * @param model
 	 */
 	public SelectionTableModel(Model model) {
-		this.guiModel = model.getGuiModel();
-		this.guiModel.addObserver(this);
+		this.model = model;
+		this.model.addObserver(this);
 	}
 	
 	
 	@Override
 	public int getRowCount() {
-		return guiModel.getNetworkEntries().size();
+		return model.getNetworkEntries().size();
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
 		switch(columnIndex){
 		case 1:
 			return false;
@@ -79,7 +81,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
 		switch(columnIndex){
 		case 0:
 			return entry.isSelected();
@@ -93,7 +95,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = model.getNetworkEntries().get(rowIndex);
 		boolean check = (Boolean)aValue;
 		switch(columnIndex){
 		case 0:
@@ -101,7 +103,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 			break;
 		case 2:
 			if (!entry.isReference()){
-				guiModel.setReferenceEntry(entry);
+				model.getCurrentProject().setReferenceNetwork(entry.getNetwork());
 				this.fireTableDataChanged();
 			} 
 			break;

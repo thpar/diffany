@@ -61,21 +61,43 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidProjectException{
 		CyProject cyProject = model.getCurrentProject();
 		Project project = cyProject.getProject();
-						
+		
+		//TODO get cutoff from gui slider
 		double cutoff = 0.25;
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cutoff);
 		
-		cyProject.updateResultNetworks();
+		addDifferentialNetworks(project.getDifferentialNetworks(), cyProject);
+		
 	}
 
 	
-	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network){
-		CyRootNetwork collection = model.getGuiModel().getSelectedCollection();
+	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network, CyProject project){
+		CyRootNetwork collection = model.getSelectedCollection();
 		
 		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
 		model.getServices().getCyNetworkManager().addNetwork(cyNet);
+		project.addResultNetwork(cyNet);
+		
 		CyNetworkView cyView = model.getServices().getCyNetworkViewFactory().createNetworkView(cyNet);
 		model.getServices().getCyNetworkViewManager().addNetworkView(cyView);
 		return cyView;
+	}
+	
+	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, CyProject cyProject) {
+		CyNetworkBridge bridge = new CyNetworkBridge(model);
+		for (DifferentialNetwork network : differentialNetworks){
+			//add the diffnet
+			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network, cyProject);
+			model.getCurrentProject().getVisualDiffStyle().apply(cyDiffView);
+			cyDiffView.updateView();
+			
+			//add the overlap
+			OverlappingNetwork overlap = network.getOverlappingNetwork();
+			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap, cyProject);
+			model.getCurrentProject().getVisualSourceStyle().apply(cyOverlapView);
+			cyOverlapView.updateView();
+			
+		}
+		
 	}
 }

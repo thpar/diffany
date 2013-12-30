@@ -1,10 +1,9 @@
 package be.svlandeg.diffany.cytoscape;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.view.model.CyNetworkView;
 
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
@@ -24,8 +23,8 @@ public class CyProject{
 	Project project;
 	
 	private CyNetwork referenceNetwork;
-	private Set<CyNetwork> conditionalNetworks;
-	private Set<CyNetwork> resultNetworks;
+	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
+	private Set<CyNetwork> resultNetworks = new HashSet<CyNetwork>();;
 
 	
 	private VisualSourceStyle visualSourceStyle;
@@ -48,10 +47,6 @@ public class CyProject{
 
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
 		this.referenceNetwork = referenceNetwork;
-		Collection<CyNetworkView> networkViews = model.getServices().getCyNetworkViewManager().getNetworkViews(referenceNetwork);
-		for (CyNetworkView view : networkViews){
-			visualSourceStyle.getVisualStyle().apply(view);
-		}
 	}
 
 	public void removeConditionalNetwork(CyNetwork cyNetwork){
@@ -71,10 +66,6 @@ public class CyProject{
 
 	public void addConditionalNetwork(CyNetwork conditionalNetwork){
 		this.conditionalNetworks.add(conditionalNetwork);
-		Collection<CyNetworkView> networkViews = model.getServices().getCyNetworkViewManager().getNetworkViews(conditionalNetwork);
-		for (CyNetworkView view : networkViews){
-			visualSourceStyle.getVisualStyle().apply(view);
-		}
 	}
 
 

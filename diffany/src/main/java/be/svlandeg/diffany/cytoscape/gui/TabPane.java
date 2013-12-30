@@ -34,12 +34,13 @@ import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
  * @author thpar
  *
  */
-public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, NetworkAddedListener{
+public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
 	private JComboBox collectionDropDown;
 	private CollectionDropDownModel comboModel;
+	private SelectionTableModel selectionModel;
 
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the models.
@@ -87,7 +88,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
-		JTable table = new JTable(new SelectionTableModel(model));
+		selectionModel = new SelectionTableModel(model);
+		JTable table = new JTable(selectionModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -121,7 +123,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void update(Observable o, Object arg) {
-		//triggered on model or guiModel change
+		//triggered on model update
+		this.comboModel.refresh();
+		this.selectionModel.refresh();
+		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 
 	@Override
@@ -145,14 +150,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		}
 	}
 
-	@Override
-	public void handleEvent(NetworkAddedEvent e) {
-		//triggered on Cytoscape NetworkAdded
-		System.out.println("Network added (caught by tabpane)");
-		comboModel.refresh();
-		//FIXME again not reaching this!!!
-		System.out.println("About to check if comboBox has entries");
-		this.collectionDropDown.setEnabled(comboModel.hasEntries());
-	}
+	
 	
 }

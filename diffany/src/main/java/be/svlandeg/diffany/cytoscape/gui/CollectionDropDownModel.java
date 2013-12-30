@@ -7,6 +7,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 
 import be.svlandeg.diffany.cytoscape.Model;
@@ -52,27 +53,43 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	 */
 	public void refresh(){
 		int oldSize = this.getSize();
-		collectionEntries = new ArrayList<NetworkEntry>();
+		List<NetworkEntry> newCollectionEntries = new ArrayList<NetworkEntry>();
 		for (CyRootNetwork collection : model.getNetworkCollections()){
-			NetworkEntry collectionEntry = new NetworkEntry(collection);
-			collectionEntries.add(collectionEntry);
+			NetworkEntry entry = getEntry(collection);
+			if (entry != null){
+				newCollectionEntries.add(entry);
+			} else {
+				NetworkEntry newEntry = new NetworkEntry(collection);
+				newCollectionEntries.add(newEntry);				
+			}
 		}
-		//select the first entry if available
-		if (collectionEntries.size() > 0){
-			this.empty = false;
-			this.selectedEntry = collectionEntries.get(0);
-			System.out.println("Not empty!");
-		} else {
-			empty = true;
+		this.collectionEntries = newCollectionEntries;
+		//select the first entry if available, only if the previously selected entry was not available
+		if (selectedEntry == null || !this.collectionEntries.contains(this.selectedEntry)){
+			if (collectionEntries.size() > 0){
+				this.empty = false;
+				this.selectedEntry = collectionEntries.get(0);
+			}
 		}
+		this.empty = this.collectionEntries.size()==0;
+		
 		//let the gui know all entries might have changed
-		System.out.println("So, are we getting here?");
 		this.fireContentsChanged(this, 0, oldSize);
+	}
+	
+	private NetworkEntry getEntry(CyNetwork network){
+		for (NetworkEntry entry : this.collectionEntries){
+			if (network == entry.getNetwork()){
+				return entry;
+			}
+		}
+		return null;
 	}
 	
 	@Override
 	public int getSize() {
 		if (empty){
+			//make a spot for the "Empty" entry
 			return 1;
 		} else {
 			return collectionEntries.size();
@@ -109,6 +126,8 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 		System.out.println(!empty? "has entries":"has no entries");
 		return !empty;
 	}
+
+	
 
 
 }

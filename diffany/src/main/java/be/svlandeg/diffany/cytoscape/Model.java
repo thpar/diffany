@@ -1,15 +1,14 @@
 package be.svlandeg.diffany.cytoscape;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Observable;
 import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.events.NetworkAddedEvent;
+import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
-import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
@@ -22,7 +21,7 @@ import be.svlandeg.diffany.internal.Services;
  * @author thpar
  *
  */
-public class Model extends Observable {
+public class Model extends Observable implements NetworkAddedListener{
 
 	/**
 	 * A collection of all Cytoscape services that were registered in the {@link CyActivator}
@@ -63,6 +62,12 @@ public class Model extends Observable {
 			set.add(rootNetManager.getRootNetwork(net));
 		}
 		
+		//display set
+		System.out.println("Found network collections:");
+		for (CyRootNetwork net: set){
+			String name = net.getRow(net).get(CyNetwork.NAME, String.class);
+			System.out.println(" - "+name);
+		}
 		return set;
 	}
 	
@@ -71,7 +76,7 @@ public class Model extends Observable {
 	 * Returns null if no such network exists.
 	 * 
 	 * @param id the network name
-	 * @return 
+	 * @return {@link CyNetwork} with given id
 	 */
 	public CyNetwork getNetworkByName(String id){
 		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
@@ -133,6 +138,14 @@ public class Model extends Observable {
 	 */
 	public void setSelectedCollection(CyRootNetwork selectedCollection) {
 		this.selectedCollection = selectedCollection;
+		setChanged();
+		notifyObservers();
+	}
+
+
+	@Override
+	public void handleEvent(NetworkAddedEvent e) {
+		//triggered on network added
 		setChanged();
 		notifyObservers();
 	}

@@ -20,7 +20,7 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
  * @author thpar
  *
  */
-public class SelectionTableModel extends AbstractTableModel implements Observer{
+public class SelectionTableModel extends AbstractTableModel{
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +46,6 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 	 */
 	public SelectionTableModel(Model model) {
 		this.model = model;
-		this.model.addObserver(this);
 	}
 	
 	
@@ -116,25 +115,18 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 		case 2:
 			if (!entry.isReference()){
 				model.getCurrentProject().setReferenceNetwork(entry.getNetwork());
-				this.fireTableDataChanged();
+//				this.fireTableDataChanged();
 			} 
 			break;
 		}
 	}
 
 
-	@Override
-	public void update(Observable o, Object arg) {
-		//triggered on model changes
-		this.refreshNetworkEntries();
-		this.fireTableDataChanged();
-	}
-
-
+	
 	/**
 	 * Reload the {@link NetworkEntry}s based on the selected network collection.
 	 */
-	private void refreshNetworkEntries() {
+	public void refresh() {
 		List<CySubNetwork> subNets = model.getSelectedCollection().getSubNetworkList();
 		System.out.println("Number of subnets: "+subNets.size());
 		networkEntries = new ArrayList<NetworkEntry>();
@@ -142,20 +134,28 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 		//for now, we simply create a whole new CyProject
 		//should become more flexible
 		CyProject newProject = model.resetProject();
+		System.out.println("Refreshing network entries 1");
 		
 		for (CySubNetwork subNet : subNets){
+			System.out.println("Subnet adding 1");
 			NetworkEntry entry = new NetworkEntry(subNet);
 			entry.setSelected(true);
 			entry.setReference(false);
 			networkEntries.add(entry);
-			newProject.addConditionalNetwork(entry.getNetwork());
+			System.out.println("Subnet adding 2");
+			System.out.println("New project"+newProject);
+			newProject.addConditionalNetwork(subNet);
+			System.out.println("Subnet adding 3");
 		}
+		System.out.println("Refreshing network entries 2");
+		//select first entry as reference
 		if (networkEntries.size() > 0){
-			//set the table
 			networkEntries.get(0).setReference(true);
 			newProject.setReferenceNetwork(networkEntries.get(0).getNetwork());
 			newProject.removeConditionalNetwork(networkEntries.get(0).getNetwork());
 		}
+		System.out.println("Refreshing network entries 3");
+		this.fireTableDataChanged();
 	}
 	
 	

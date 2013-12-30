@@ -69,7 +69,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the dropdown list.
 	 */
 	private Component createCollectionSelectionPanel() {
-		comboModel = new CollectionDropDownModel(model);
+		comboModel = new CollectionDropDownModel();
+		comboModel.refresh(model.getNetworkCollections());
 		collectionDropDown = new JComboBox(comboModel);
 		collectionDropDown.setEnabled(comboModel.hasEntries());
 		
@@ -88,7 +89,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
-		selectionModel = new SelectionTableModel(model);
+		selectionModel = new SelectionTableModel();
+		if (model.getSelectedCollection() !=null){
+			selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		}
 		JTable table = new JTable(selectionModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
@@ -124,8 +128,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void update(Observable o, Object arg) {
 		//triggered on model update
-		this.comboModel.refresh();
-		this.selectionModel.refresh();
+		this.comboModel.refresh(model.getNetworkCollections());
+		this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());
 		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 

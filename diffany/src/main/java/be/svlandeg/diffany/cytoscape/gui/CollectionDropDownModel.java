@@ -2,6 +2,7 @@ package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -26,8 +27,6 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 
 	private static final Object EMPTY_MESSAGE = "No Collections";
 
-	private Model model;
-	
 	private List<NetworkEntry> collectionEntries = new ArrayList<NetworkEntry>();
 	
 	private NetworkEntry selectedEntry;
@@ -38,23 +37,22 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and refreshes the 
 	 * list of network collections (which on creation will probably be empty).
 	 * 
-	 * @param model
 	 */
-	public CollectionDropDownModel(Model model) {
-		this.model = model;
-		refresh();
+	public CollectionDropDownModel() {
 	}
 
 	/**
-	 * Gathers all available network collections from the {@link Model} and wraps them into
-	 * {@link NetworkEntry}s to be presented to the {@link JComboBox}.
+	 * Takes a set of {@link CyRootNetwork}s and refreshes the entries in this ComboBox.
+	 * A previously selected entry will stay selected if the corresponding network still exists.
 	 * 
 	 * The refresh will make the combo box GUI redraw.
+	 * 
+	 * @param collections the network collections currently available in this Cytoscape session.
 	 */
-	public void refresh(){
+	public void refresh(Set<CyRootNetwork> collections){
 		int oldSize = this.getSize();
 		List<NetworkEntry> newCollectionEntries = new ArrayList<NetworkEntry>();
-		for (CyRootNetwork collection : model.getNetworkCollections()){
+		for (CyRootNetwork collection : collections){
 			NetworkEntry entry = getEntry(collection);
 			if (entry != null){
 				newCollectionEntries.add(entry);

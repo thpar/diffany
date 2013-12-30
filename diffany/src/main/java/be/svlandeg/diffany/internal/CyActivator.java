@@ -18,6 +18,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
+import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
@@ -54,22 +55,19 @@ public class CyActivator extends AbstractCyActivator
 		services.putVisualMappingFunctionFactory("passthrough", 
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
 		
+		
 		Model model = new Model(services);
 		
 		//Create and register the control panel
 		TabPane sidePane = new TabPane(model);
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
-		//Create and register the Diffany visual styles
-		model.getGuiModel().setSourceStyle(new VisualSourceStyle(services));
-		model.getGuiModel().setDiffStyle(new VisualDiffStyle(services));
 		
 		//register action to run  the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
 		registerAllServices(context, runProjectAction, new Properties());
 		
 		//Register network listeners
-		registerService(context,sidePane, NetworkAddedListener.class, new Properties());
 		registerService(context,model, NetworkAddedListener.class, new Properties());
 		
 	}

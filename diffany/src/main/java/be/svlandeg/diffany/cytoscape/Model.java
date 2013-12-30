@@ -10,8 +10,6 @@ import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.cytoscape.gui.GUIModel;
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
 
@@ -25,24 +23,28 @@ import be.svlandeg.diffany.internal.Services;
  */
 public class Model extends Observable implements NetworkAddedListener{
 
-	Services services;
-	private GUIModel guiModel;
+	/**
+	 * A collection of all Cytoscape services that were registered in the {@link CyActivator}
+	 */
+	private Services services;
 	
-	private Project currentProject;
+	/**
+	 * The current project
+	 */
+	private CyProject currentProject = new CyProject();
+
+	/**
+	 * Network collection that's currently selected
+	 */
+	private CyRootNetwork selectedCollection;
+	
+	
+	
 	
 	public Model(Services services){
 		this.services = services;
-		this.guiModel = new GUIModel();
-	}
 	
-	/**
-	 * 
-	 * @return the guiModel for this app.
-	 */
-	public GUIModel getGuiModel(){
-		return this.guiModel;
 	}
-	
 	
 
 	/**
@@ -60,6 +62,12 @@ public class Model extends Observable implements NetworkAddedListener{
 			set.add(rootNetManager.getRootNetwork(net));
 		}
 		
+		//display set
+		System.out.println("Found network collections:");
+		for (CyRootNetwork net: set){
+			String name = net.getRow(net).get(CyNetwork.NAME, String.class);
+			System.out.println(" - "+name);
+		}
 		return set;
 	}
 	
@@ -68,7 +76,7 @@ public class Model extends Observable implements NetworkAddedListener{
 	 * Returns null if no such network exists.
 	 * 
 	 * @param id the network name
-	 * @return 
+	 * @return {@link CyNetwork} with given id
 	 */
 	public CyNetwork getNetworkByName(String id){
 		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
@@ -91,20 +99,46 @@ public class Model extends Observable implements NetworkAddedListener{
 	}
 
 	
-	public Project getCurrentProject(){
+	/**
+	 * Returns the current {@link CyProject}.
+	 * @return the current {@link CyProject}
+	 */
+	public CyProject getCurrentProject() {
 		return currentProject;
 	}
-	public void setCurrentProject(Project project){
-		this.currentProject = project;
-	}
 	
+	
+	/**
+	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
+	 * used for the algorithm.
+	 * @return
+	 */
+	public CyRootNetwork getSelectedCollection() {
+		return selectedCollection;
+	}
+
+	/**
+	 * Set the collection of networks (aka the {@link CyRootNetwork}) that will be
+	 * used for the algorithm.
+	 * 
+	 * This change will trigger an update with all observers.
+	 * 
+	 * @param selectedCollection
+	 */
+	public void setSelectedCollection(CyRootNetwork selectedCollection) {
+		this.selectedCollection = selectedCollection;
+		setChanged();
+		notifyObservers();
+	}
+
+
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
-		//triggered on Cytoscape NetworkAdded
-		
-		
+		//triggered on network added
+		setChanged();
+		notifyObservers();
 	}
-	
-	
+
+
 	
 }

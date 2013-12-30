@@ -15,15 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
-import org.cytoscape.model.events.NetworkAddedEvent;
-import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
+import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
@@ -34,12 +35,13 @@ import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
  * @author thpar
  *
  */
-public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, NetworkAddedListener{
+public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, TableModelListener{
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
 	private JComboBox collectionDropDown;
 	private CollectionDropDownModel comboModel;
+	private SelectionTableModel selectionModel;
 
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the models.
@@ -48,7 +50,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public TabPane(Model model){
 		this.model = model;
 		model.addObserver(this);			
-		model.getGuiModel().addObserver(this);
 		
 		createTabPaneContent();
 	}
@@ -69,7 +70,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the dropdown list.
 	 */
 	private Component createCollectionSelectionPanel() {
-		comboModel = new CollectionDropDownModel(model);
+		comboModel = new CollectionDropDownModel();
+		comboModel.refresh(model.getNetworkCollections());
 		collectionDropDown = new JComboBox(comboModel);
 		collectionDropDown.setEnabled(comboModel.hasEntries());
 		
@@ -88,12 +90,19 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
-		JTable table = new JTable(new SelectionTableModel(model));
+		selectionModel = new SelectionTableModel();
+		if (model.getSelectedCollection() !=null){
+			selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		}
+		JTable table = new JTable(selectionModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(20);
 		table.getColumnModel().getColumn(2).setPreferredWidth(20);
 		table.setFillsViewportHeight(true);
+		
+		selectionModel.addTableModelListener(this);
+		
 		JScrollPane scrollPane = new JScrollPane(table);
 		panel.add(scrollPane);
 		return panel;
@@ -122,7 +131,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void update(Observable o, Object arg) {
-		//triggered on model or guiModel change
+		//triggered on model update
+		this.comboModel.refresh(model.getNetworkCollections());
+		this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());
+		this.collectionDropDown.setEnabled(comboModel.hasEntries());
 	}
 
 	@Override
@@ -130,12 +142,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		String action = e.getActionCommand();
 		if (action.equals("collection")){
 			//triggered on collection dropdown action
+			System.out.println("ComboBox dropdown action");
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-			model.getGuiModel().setSelectedCollection((CyRootNetwork)entry.getNetwork());			
+			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
 		} else if (action.equals("run")){
 			//triggered on Start button click
-			System.out.println("Run project");
 			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
 			if (tf.isReady()){
@@ -147,10 +159,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	}
 
 	@Override
-	public void handleEvent(NetworkAddedEvent e) {
-		//triggered on Cytoscape NetworkAdded
-		comboModel.refresh();
-		this.collectionDropDown.setEnabled(comboModel.hasEntries());
+	public void tableChanged(TableModelEvent e) {
+		// triggered when the data of the table has changed
+		CyProject cyProject = model.getCurrentProject();
+		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
+		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
 	}
+
+	
 	
 }

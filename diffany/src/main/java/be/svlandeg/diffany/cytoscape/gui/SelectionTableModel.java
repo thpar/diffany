@@ -1,9 +1,15 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
-import java.util.Observable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
+
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
@@ -14,31 +20,37 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
  * @author thpar
  *
  */
-public class SelectionTableModel extends AbstractTableModel implements Observer{
+public class SelectionTableModel extends AbstractTableModel{
 
 	private static final long serialVersionUID = 1L;
 
-	private GUIModel guiModel;
+	
+	/**
+	 * Networks to be listed in the selection list
+	 */
+	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
+	
+	private int referenceRow = 0;
 
 	/**
 	 * Column headers
 	 */
-	String[] columns = {"Include", "Network", "Reference"};
+	private String[] columns = {"Include", "Network", "Reference"};
+
+	
 	
 	/**
 	 * Create a new model based on the general {@link Model} and add it as an {@link Observer} the contained
 	 * {@link GUIModel}.
 	 * @param model
 	 */
-	public SelectionTableModel(Model model) {
-		this.guiModel = model.getGuiModel();
-		this.guiModel.addObserver(this);
+	public SelectionTableModel() {
 	}
 	
 	
 	@Override
 	public int getRowCount() {
-		return guiModel.getNetworkEntries().size();
+		return networkEntries.size();
 	}
 
 	@Override
@@ -65,7 +77,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		switch(columnIndex){
 		case 1:
 			return false;
@@ -79,7 +91,7 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		switch(columnIndex){
 		case 0:
 			return entry.isSelected();
@@ -93,26 +105,63 @@ public class SelectionTableModel extends AbstractTableModel implements Observer{
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		NetworkEntry entry = guiModel.getNetworkEntries().get(rowIndex);
+		NetworkEntry entry = networkEntries.get(rowIndex);
 		boolean check = (Boolean)aValue;
 		switch(columnIndex){
 		case 0:
 			entry.setSelected(check);
+			this.fireTableDataChanged();
 			break;
 		case 2:
-			if (!entry.isReference()){
-				guiModel.setReferenceEntry(entry);
-				this.fireTableDataChanged();
-			} 
+			this.setReference(rowIndex);
 			break;
 		}
 	}
 
+	private void setReference(int row){
+		int oldRefRow = this.referenceRow;
+		NetworkEntry oldRefEntry = this.networkEntries.get(oldRefRow);
+		oldRefEntry.setReference(false);
+		
+		NetworkEntry newRefEntry = this.networkEntries.get(row);
+		newRefEntry.setReference(true);
+		this.referenceRow = row;
+		
+		this.fireTableDataChanged();
+		
+	}
+	
+	/**
+	 * Reload the {@link NetworkEntry}s based on the subnetworks from the selected network collections.
+	 * 
+	 * @param list of {@link CySubNetwork}s to be displayed.
+	 */
+	public void refresh(List<CySubNetwork> subNets) {
+		networkEntries = new ArrayList<NetworkEntry>();
+				
+		for (CySubNetwork subNet : subNets){
+			NetworkEntry entry = new NetworkEntry(subNet);
+			entry.setSelected(true);
+			entry.setReference(false);
+			networkEntries.add(entry);
+		}
 
-	@Override
-	public void update(Observable o, Object arg) {
+		if (networkEntries.size() > 0){
+			this.setReference(0);
+		}
 		this.fireTableDataChanged();
 	}
-
-
+	
+	public Set<CyNetwork> getConditionalNetworks(){
+		Set<CyNetwork> condSet = new HashSet<CyNetwork>();
+		for (NetworkEntry network : networkEntries){
+			if (network.isSelected() && !network.isReference()){
+				condSet.add(network.getNetwork());
+			}
+		}
+		return condSet;
+	}
+	public CyNetwork getReferenceNetwork(){
+		return networkEntries.get(referenceRow).getNetwork();
+	}
 }

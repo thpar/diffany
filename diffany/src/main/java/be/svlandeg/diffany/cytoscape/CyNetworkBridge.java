@@ -10,7 +10,6 @@ import java.util.Set;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyIdentifiable;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -24,7 +23,6 @@ import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.internal.Services;
 
 /**
  * Conversion class that takes the appropriate Cytoscape Factories and uses them
@@ -43,13 +41,9 @@ public class CyNetworkBridge {
 	private final String NORMALIZED_NAME = "normalized_name.SUID";
 	private final String WEIGHT = "weight";
 
-	private Services services;
-	private Model model;
 
 
-	public CyNetworkBridge(Model model){
-		this.services = model.getServices();
-		this.model = model;
+	public CyNetworkBridge(){
 	}
 
 	/**

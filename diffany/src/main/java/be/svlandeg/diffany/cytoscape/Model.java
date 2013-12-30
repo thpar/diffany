@@ -10,6 +10,8 @@ import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
+import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 import be.svlandeg.diffany.internal.CyActivator;
 import be.svlandeg.diffany.internal.Services;
 
@@ -38,12 +40,15 @@ public class Model extends Observable implements NetworkAddedListener{
 	 */
 	private CyRootNetwork selectedCollection;
 	
-	
+	private VisualSourceStyle sourceStyle;
+	private VisualDiffStyle diffStyle;
 	
 	
 	public Model(Services services){
 		this.services = services;
 	
+		sourceStyle = new VisualSourceStyle(services);
+		diffStyle = new VisualDiffStyle(services);
 	}
 	
 
@@ -138,7 +143,27 @@ public class Model extends Observable implements NetworkAddedListener{
 		setChanged();
 		notifyObservers();
 	}
+	
+	
 
+	public VisualSourceStyle getSourceStyle() {
+		return sourceStyle;
+	}
+
+
+	public VisualDiffStyle getDiffStyle() {
+		return diffStyle;
+	}
+
+
+	/** 
+	 * Refresh the visual styles according to the edge types in the networks of 
+	 * the current {@link CyProject}
+	 */
+	public void updateVisualStyles(){
+		this.sourceStyle.updateInteractionMappings(this.currentProject);
+		this.diffStyle.updateInteractionMappings(this.currentProject);
+	}
 
 	
 }

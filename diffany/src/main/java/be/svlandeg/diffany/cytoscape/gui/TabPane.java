@@ -164,6 +164,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		CyProject cyProject = model.getCurrentProject();
 		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
 		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
+		
+		model.updateVisualStyles();
 	}
 
 	

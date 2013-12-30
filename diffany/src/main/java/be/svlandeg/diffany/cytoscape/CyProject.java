@@ -8,10 +8,10 @@ import org.cytoscape.model.CyNetwork;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 
 
@@ -24,21 +24,29 @@ import be.svlandeg.diffany.semantics.DefaultNodeMapper;
  */
 public class CyProject{
 
-	Project project;
+	private Project project;
+	
+	public class CyNetworkPair{
+		public CyNetworkPair(CyNetwork diffNet, CyNetwork overlapNet) {
+			this.diffNet = diffNet;
+			this.overlapNet = overlapNet;
+		}
+		public CyNetwork diffNet;
+		public CyNetwork overlapNet;
+	}
 	
 	private CyNetwork referenceNetwork;
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
-	private Set<CyNetwork> resultNetworks = new HashSet<CyNetwork>();;
+	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();;
 
+	private EdgeOntology edgeOntology = new DefaultEdgeOntology();
+	private NodeMapper nodeMapper = new DefaultNodeMapper();
+
+	public static final String DEFAULT_PROJECT_NAME = "New Project";
+	private String name = DEFAULT_PROJECT_NAME;
 	
-	private VisualSourceStyle visualSourceStyle;
-	private VisualDiffStyle visualDiffStyle;
-
-
-
 	public CyProject(){
 	}
-	
 	
 	
 	public CyNetwork getReferenceNetwork() {
@@ -66,20 +74,6 @@ public class CyProject{
 		this.conditionalNetworks = conditionalNetworks;
 	}
 
-	public void addConditionalNetwork(CyNetwork conditionalNetwork){
-		this.conditionalNetworks.add(conditionalNetwork);
-	}
-
-
-	public Set<CyNetwork> getDifferentialNetworks() {
-		return resultNetworks;
-	}
-
-
-
-	public void setDifferentialNetworks(Set<CyNetwork> resultNetworks) {
-		this.resultNetworks = resultNetworks;
-	}
 
 
 	/**
@@ -102,31 +96,12 @@ public class CyProject{
 			condNets.add(condNet);			
 		}
 		
-		this.project = new Project("New Project", refNet, condNets, new DefaultEdgeOntology(), new DefaultNodeMapper());
+		this.project = new Project(this.getName(), refNet, condNets, this.getEdgeOntology(), this.getNodeMapper());
 		
 		return project;
 	}
 
 
-	
-	/**
-	 * Gets the visual style for source (input and overlap) networks, wrapped in a {@link VisualSourceStyle}
-	 * and adjusted to the edge types used in the networks of the current {@link CyProject}
-	 * @return the visual style for source networks
-	 */
-	public VisualSourceStyle getVisualSourceStyle() {
-		return visualSourceStyle;
-	}
-
-
-	/**
-	 * Gets the visual style for differential networks, wrapped in a {@link VisualDiffStyle}
-	 * and adjusted to the edge types used in the networks of the current {@link CyProject}
-	 * @return the visual style for differential networks
-	 */
-	public VisualDiffStyle getVisualDiffStyle() {
-		return visualDiffStyle;
-	}
 
 	
 
@@ -141,18 +116,42 @@ public class CyProject{
 	}
 
 
-	/**
-	 * Iterates all resulting networks (differential and overlap) and creates {@link CyNetwork}s and {@link CyView}s
-	 * where needed.
-	 */
-	public void updateResultNetworks() {
+	public EdgeOntology getEdgeOntology() {
+		return edgeOntology;
 	}
 
 
+	public void setEdgeOntology(EdgeOntology edgeOntology) {
+		this.edgeOntology = edgeOntology;
+	}
 
-	public void addResultNetwork(CyNetwork cyNet) {
-		this.resultNetworks.add(cyNet);
-		
+
+	public NodeMapper getNodeMapper() {
+		return nodeMapper;
+	}
+
+
+	public void setNodeMapper(NodeMapper nodeMapper) {
+		this.nodeMapper = nodeMapper;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public void addResultPair(CyNetwork diffNet, CyNetwork overlapNet) {
+		this.resultNetworks.add(new CyNetworkPair(diffNet, overlapNet));
+	}
+	
+	public Set<CyNetworkPair> getResultNetworks() {
+		return resultNetworks;
 	}
 		
 

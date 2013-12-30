@@ -70,6 +70,8 @@ public class CyActivator extends AbstractCyActivator
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());
 		
+		
+		
 	}
 
 }

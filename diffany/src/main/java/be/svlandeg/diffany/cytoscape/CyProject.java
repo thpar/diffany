@@ -5,9 +5,13 @@ import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 
+import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 
 
@@ -29,12 +33,10 @@ public class CyProject{
 	
 	private VisualSourceStyle visualSourceStyle;
 	private VisualDiffStyle visualDiffStyle;
-	
 
-	private Model model;
 
-	public CyProject(Model model){
-		this.model = model;
+
+	public CyProject(){
 	}
 	
 	
@@ -90,6 +92,17 @@ public class CyProject{
 		if (!canExecute()){
 			throw new InvalidProjectException();
 		}
+		
+		CyNetworkBridge bridge = new CyNetworkBridge();
+		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork());
+		
+		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
+		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
+			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet);
+			condNets.add(condNet);			
+		}
+		
+		this.project = new Project("New Project", refNet, condNets, new DefaultEdgeOntology(), new DefaultNodeMapper());
 		
 		return project;
 	}

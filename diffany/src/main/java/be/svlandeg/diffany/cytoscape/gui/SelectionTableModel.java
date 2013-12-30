@@ -1,16 +1,16 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
-import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
@@ -110,6 +110,7 @@ public class SelectionTableModel extends AbstractTableModel{
 		switch(columnIndex){
 		case 0:
 			entry.setSelected(check);
+			this.fireTableDataChanged();
 			break;
 		case 2:
 			this.setReference(rowIndex);
@@ -126,7 +127,7 @@ public class SelectionTableModel extends AbstractTableModel{
 		newRefEntry.setReference(true);
 		this.referenceRow = row;
 		
-		this.fireTableRowsUpdated(oldRefRow, oldRefRow);
+		this.fireTableDataChanged();
 		
 	}
 	
@@ -151,5 +152,16 @@ public class SelectionTableModel extends AbstractTableModel{
 		this.fireTableDataChanged();
 	}
 	
-	
+	public Set<CyNetwork> getConditionalNetworks(){
+		Set<CyNetwork> condSet = new HashSet<CyNetwork>();
+		for (NetworkEntry network : networkEntries){
+			if (network.isSelected() && !network.isReference()){
+				condSet.add(network.getNetwork());
+			}
+		}
+		return condSet;
+	}
+	public CyNetwork getReferenceNetwork(){
+		return networkEntries.get(referenceRow).getNetwork();
+	}
 }

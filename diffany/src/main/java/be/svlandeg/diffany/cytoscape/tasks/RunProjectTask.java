@@ -84,18 +84,20 @@ public class RunProjectTask implements Task {
 	}
 	
 	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, CyProject cyProject) {
-		CyNetworkBridge bridge = new CyNetworkBridge(model);
+		CyNetworkBridge bridge = new CyNetworkBridge();
 		for (DifferentialNetwork network : differentialNetworks){
 			//add the diffnet
 			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network, cyProject);
-			model.getCurrentProject().getVisualDiffStyle().apply(cyDiffView);
-			cyDiffView.updateView();
+			
+//			model.getCurrentProject().getVisualDiffStyle().apply(cyDiffView);
+//			cyDiffView.updateView();
 			
 			//add the overlap
 			OverlappingNetwork overlap = network.getOverlappingNetwork();
 			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap, cyProject);
-			model.getCurrentProject().getVisualSourceStyle().apply(cyOverlapView);
-			cyOverlapView.updateView();
+			
+//			model.getCurrentProject().getVisualSourceStyle().apply(cyOverlapView);
+//			cyOverlapView.updateView();
 			
 		}
 		

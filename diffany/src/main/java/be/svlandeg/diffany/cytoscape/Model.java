@@ -31,7 +31,7 @@ public class Model extends Observable implements NetworkAddedListener{
 	/**
 	 * The current project
 	 */
-	private CyProject currentProject = new CyProject(this);
+	private CyProject currentProject = new CyProject();
 
 	/**
 	 * Network collection that's currently selected
@@ -106,17 +106,6 @@ public class Model extends Observable implements NetworkAddedListener{
 	public CyProject getCurrentProject() {
 		return currentProject;
 	}
-	
-	/**
-	 * Erases all project settings and creates a fresh one.
-	 * @return the newly created project
-	 */
-	public CyProject resetProject(){
-		this.currentProject = new CyProject(this);
-		return currentProject;
-	}
-
-	
 	
 	
 	/**

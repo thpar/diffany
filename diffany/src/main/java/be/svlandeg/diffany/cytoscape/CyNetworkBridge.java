@@ -38,9 +38,8 @@ public class CyNetworkBridge {
 	/**
 	 * Column name of an extra field to be used to map nodes from different networks onto each other.
 	 */
-	private final String NORMALIZED_NAME = "normalized_name.SUID";
-	private final String WEIGHT = "weight";
-
+	public static final String NORMALIZED_NAME = "normalized_name.SUID";
+	public static String WEIGHT = "weight";
 
 
 	public CyNetworkBridge(){

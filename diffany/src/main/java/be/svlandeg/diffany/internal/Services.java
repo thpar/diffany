@@ -37,7 +37,6 @@ public class Services {
 	private Map<String,VisualMappingFunctionFactory> visualMappingFunctionFactories =  
 			new HashMap<String,VisualMappingFunctionFactory>();
 	private CyLayoutAlgorithmManager cyLayoutAlgorithmManager;
-//	private CyLayoutAlgorithmManager cyLayoutAlgorithmManager;
 		
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {

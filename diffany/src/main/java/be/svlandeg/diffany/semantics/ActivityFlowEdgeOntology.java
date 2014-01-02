@@ -66,11 +66,11 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		{
 			return neutral_diff_paint;
 		}
-		if (category.equals("pos_diff_cat"))
+		if (category.equals(pos_diff_cat))
 		{
 			return pos_diff_paint;
 		}
-		if (category.equals("neg_diff_cat"))
+		if (category.equals(neg_diff_cat))
 		{
 			return neg_diff_paint;
 		}
@@ -97,6 +97,9 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
+		// Note: this implementation could also be done by refining the algorithm of ProcessOntology.
+		// The current implementation does the same in principle, but basically interprets positive/negative edges straight away instead of at the end.
+		
 		EdgeDefinition diff_edge = new EdgeDefinition();
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
 		

@@ -150,6 +150,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		
 		diff_edge.makeNegated(false);	// a differential edge is never negated 
 		
+		// a differential edge is only symmetrical if all input edges are
 		boolean refSymm = refEdge.isSymmetrical();
 		boolean diffSymm = refSymm && conSymm;
 		diff_edge.makeSymmetrical(diffSymm);
@@ -213,8 +214,6 @@ public class ProcessEdgeOntology extends EdgeOntology
 			// all differential edges are up
 			up = true;
 		}
-		
-		
 		
 		String type = "";
 		double diffWeight = 0.0;

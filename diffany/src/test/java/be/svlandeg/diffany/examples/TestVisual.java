@@ -47,6 +47,7 @@ public class TestVisual
 		assertColorInSource("increase", Color.LIGHT_GRAY, eo);
 		assertColorInSource("ppiptm", Color.LIGHT_GRAY, eo);
 		assertColorInSource("increasewhatever", Color.LIGHT_GRAY, eo);
+		assertColorInSource("increase_ppi", Color.LIGHT_GRAY, eo);
 		assertColorInSource("somethingrandom", Color.LIGHT_GRAY, eo);
 		assertColorInSource("regulate", Color.LIGHT_GRAY, eo);
 		assertColorInSource("neutral", Color.LIGHT_GRAY, eo);
@@ -60,13 +61,14 @@ public class TestVisual
 		assertColorInDifferential("decrease_ptm", Color.ORANGE, eo);
 		
 		// activity flow types
-		assertColorInSource("positive" , Color.GREEN, eo);
-		assertColorInSource("negative" , Color.RED, eo);
+		assertColorInDifferential("increase", Color.GREEN, eo);
+		assertColorInDifferential("decrease", Color.RED, eo);
 		
 		// unmapped types
-		assertColorInDifferential("regulates" , Color.GRAY, eo);
+		assertColorInDifferential("regulates", Color.GRAY, eo);
 		assertColorInDifferential("somethingRandom", Color.GRAY, eo);
-		assertColorInDifferential("increase", Color.GRAY, eo);
+		assertColorInDifferential("positive", Color.GRAY, eo);
+		assertColorInDifferential("negativeSomething", Color.GRAY, eo);
 		assertColorInDifferential("ppiptm", Color.GRAY, eo);
 		assertColorInDifferential("increasewhatever", Color.GRAY, eo);
 		assertColorInDifferential("somethingrandom", Color.GRAY, eo);

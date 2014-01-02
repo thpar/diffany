@@ -9,6 +9,7 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
+import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
@@ -18,12 +19,9 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
-import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 
 /**
  * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
@@ -55,6 +53,7 @@ public class CyActivator extends AbstractCyActivator
 		services.putVisualMappingFunctionFactory("passthrough", 
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
 		
+		services.setCyLayoutAlgorithmManager(getService(context, CyLayoutAlgorithmManager.class));
 		
 		Model model = new Model(services);
 		

@@ -5,8 +5,11 @@ import java.util.Collection;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.Task;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
@@ -83,9 +86,20 @@ public class RunProjectTask implements Task {
 		CyNetworkView cyView = model.getServices().getCyNetworkViewFactory().createNetworkView(cyNet);
 		model.getServices().getCyNetworkViewManager().addNetworkView(cyView);
 		
+		CyLayoutAlgorithm layout = model.getServices().getCyLayoutAlgorithmManager().getLayout("force-directed");
+		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
+		TaskManager tm = model.getServices().getTaskManager();
+		tm.execute(it);
+		
 		return cyNet;
 	}
 	
+	/**
+	 * Convert and add the resulting networks after running the algorithm.
+	 * 
+	 * @param differentialNetworks
+	 * @param cyProject
+	 */
 	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, CyProject cyProject) {
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		for (DifferentialNetwork network : differentialNetworks){

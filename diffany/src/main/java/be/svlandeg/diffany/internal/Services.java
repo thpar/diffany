@@ -7,6 +7,7 @@ import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
@@ -35,7 +36,9 @@ public class Services {
 	private VisualStyleFactory visualStyleFactory;
 	private Map<String,VisualMappingFunctionFactory> visualMappingFunctionFactories =  
 			new HashMap<String,VisualMappingFunctionFactory>();
-	
+	private CyLayoutAlgorithmManager cyLayoutAlgorithmManager;
+//	private CyLayoutAlgorithmManager cyLayoutAlgorithmManager;
+		
 	
 	public void setCyApplicationManager(CyApplicationManager cyApplicationManager) {
 		this.cyApplicationManager = cyApplicationManager;
@@ -148,6 +151,17 @@ public class Services {
 			VisualMappingFunctionFactory visualMappingFunctionFactory) {
 		this.visualMappingFunctionFactories.put(type, visualMappingFunctionFactory);
 	}
+
+
+	public void setCyLayoutAlgorithmManager(CyLayoutAlgorithmManager service) {
+		this.cyLayoutAlgorithmManager = service;
+	}
+
+
+	public CyLayoutAlgorithmManager getCyLayoutAlgorithmManager() {
+		return cyLayoutAlgorithmManager;
+	}
+	
 	
 	
 	

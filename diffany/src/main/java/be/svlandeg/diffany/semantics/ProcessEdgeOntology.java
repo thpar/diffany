@@ -72,8 +72,9 @@ public class ProcessEdgeOntology extends EdgeOntology
 		parentSourceCatToPaint.put(parentCat, p);
 	}
 	
+	
 	@Override
-	public Paint getDifferentialEdgeStyle(String category)
+	public Paint getDifferentialEdgePaint(String category)
 	{
 		if (category == null)
 		{
@@ -89,9 +90,9 @@ public class ProcessEdgeOntology extends EdgeOntology
 		}
 		return neutral_diff_paint;
 	}
-
+	
 	@Override
-	public Paint getSourceEdgeStyle(String edgeType)
+	protected Paint getSourceEdgePaint(String edgeType)
 	{
 		if (isDefinedSourceType(edgeType))
 		{

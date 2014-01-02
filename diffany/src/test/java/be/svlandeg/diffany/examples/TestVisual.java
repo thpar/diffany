@@ -89,7 +89,7 @@ public class TestVisual
 	 */
 	private void assertColorInSource(String type, Color c, EdgeOntology eo)
 	{
-		Paint p = eo.getSourceEdgeStyle(type);
+		Paint p = eo.getSourceEdgeStyle(type).getPaint();
 		assertEquals(c, p);
 	}
 	
@@ -102,7 +102,7 @@ public class TestVisual
 	 */
 	private void assertColorInDifferential(String cat, Color c, EdgeOntology eo)
 	{
-		Paint p = eo.getDifferentialEdgeStyle(cat);
+		Paint p = eo.getDifferentialEdgeStyle(cat).getPaint();
 		assertEquals(c, p);
 	}
 	

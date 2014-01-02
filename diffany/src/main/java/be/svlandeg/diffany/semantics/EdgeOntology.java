@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
+import be.svlandeg.diffany.concepts.VisualEdgeStyle;
 
 /**
  * This class takes care of the semantic interpretation of different edge types and their corresponding categories
@@ -404,20 +405,43 @@ public abstract class EdgeOntology
 	}
 	
 	/**
-	 * Define the visual style of an edge in a differential network, by edge category.
+	 * Define the Paint object (e.g. color) of an edge in a differential network, by edge category.
 	 * 
 	 * @param category the category of the edge interaction
 	 * @return a Paint object which specifies how the edge should be drawn
 	 */
-	public abstract Paint getDifferentialEdgeStyle(String category);
+	protected abstract Paint getDifferentialEdgePaint(String category);
+	
+	
+	/**
+	 * Define the full visual style of an edge in a differential network, by edge category.
+	 * 
+	 * @param category the category of the edge interaction
+	 * @return a VisualEdgeStyle object which specifies how the edge should be drawn
+	 */
+	public VisualEdgeStyle getDifferentialEdgeStyle(String category)
+	{
+		return new VisualEdgeStyle(getDifferentialEdgePaint(category));
+	}
+	
+	/**
+	 * Define the Paint object (e.g. color) of an edge in a 'normal' network (reference, condition-dependent or overlap).
+	 * 
+	 * @param edgeType the type of the edge interaction
+	 * @return a Paint object which specifies how the edge should be drawn
+	 */
+	protected abstract Paint getSourceEdgePaint(String edgeType);
 	
 	/**
 	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
 	 * 
 	 * @param edgeType the type of the edge interaction
-	 * @return a Paint object which specifies how the edge should be drawn
+	 * @return a VisualEdgeStyle object which specifies how the edge should be drawn
 	 */
-	public abstract Paint getSourceEdgeStyle(String edgeType);
+	public VisualEdgeStyle getSourceEdgeStyle(String edgeType)
+	{
+		return new VisualEdgeStyle(getSourceEdgePaint(edgeType));
+	}
 
 
 	/**

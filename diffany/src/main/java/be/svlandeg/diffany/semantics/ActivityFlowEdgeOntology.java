@@ -59,8 +59,9 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		addSourceCategories(source_neutral_cats);
 	}
 	
+	
 	@Override
-	public Paint getDifferentialEdgeStyle(String category)
+	protected Paint getDifferentialEdgePaint(String category)
 	{
 		if (category == null)
 		{
@@ -76,10 +77,11 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		}
 		return neutral_diff_paint;
 	}
+	
 
 
 	@Override
-	public Paint getSourceEdgeStyle(String edgeType)
+	protected Paint getSourceEdgePaint(String edgeType)
 	{
 		String cat = getSourceCategory(edgeType);
 		if (cat != null && source_pos_cats.contains(cat))
@@ -92,7 +94,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		}
 		return neutral_source_paint;
 	}
-
+	
 	
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException

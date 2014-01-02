@@ -197,19 +197,19 @@ public class DefaultEdgeOntology extends EdgeOntology
 	
 
 	@Override
-	public Paint getDifferentialEdgeStyle(String category)
+	protected Paint getDifferentialEdgePaint(String category)
 	{
 		if (afOntology.isDefinedDiffCategory(category))
-			return afOntology.getDifferentialEdgeStyle(category);
-		return prOntology.getDifferentialEdgeStyle(category);
+			return afOntology.getDifferentialEdgePaint(category);
+		return prOntology.getDifferentialEdgePaint(category);
 	}
 
 	@Override
-	public Paint getSourceEdgeStyle(String edgeType)
+	public Paint getSourceEdgePaint(String edgeType)
 	{
 		if (afOntology.isDefinedSourceType(edgeType))
-			return afOntology.getSourceEdgeStyle(edgeType);
-		return prOntology.getSourceEdgeStyle(edgeType);
+			return afOntology.getSourceEdgePaint(edgeType);
+		return prOntology.getSourceEdgePaint(edgeType);
 	}
 	
 	/**

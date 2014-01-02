@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskMonitor;
@@ -28,10 +29,12 @@ import be.svlandeg.diffany.cytoscape.Model;
 public class RunProjectTask implements Task {
 
 	private Model model;
+	private CyProject cyProject;
 	
 	
-	public RunProjectTask(Model model) {
+	public RunProjectTask(Model model, CyProject cyProject) {
 		this.model = model;
+		this.cyProject = cyProject;
 	}
 
 	@Override
@@ -52,7 +55,6 @@ public class RunProjectTask implements Task {
 	
 	
 	private void runAlgorithm() throws InvalidProjectException{
-		CyProject cyProject = model.getCurrentProject();
 		Project project = cyProject.getProject();
 		
 		//TODO get cutoff from gui slider
@@ -63,8 +65,16 @@ public class RunProjectTask implements Task {
 		
 	}
 
-	
-	private CyNetworkView addCyNetwork(CyNetworkBridge bridge, Network network){
+	/**
+	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
+	 * with Cytoscape as a {@link CySubNetwork} of the currently selected Network Collection.
+	 * 
+	 * 
+	 * @param bridge the {@link Network} to {@link CyNetwork} convertor
+	 * @param network the {@link Network} to be added
+	 * @return the created and added {@link CyNetwork}
+	 */
+	private CyNetwork addCyNetwork(CyNetworkBridge bridge, Network network){
 		CyRootNetwork collection = model.getSelectedCollection();
 		
 		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
@@ -73,27 +83,21 @@ public class RunProjectTask implements Task {
 		CyNetworkView cyView = model.getServices().getCyNetworkViewFactory().createNetworkView(cyNet);
 		model.getServices().getCyNetworkViewManager().addNetworkView(cyView);
 		
-		return cyView;
+		return cyNet;
 	}
 	
 	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, CyProject cyProject) {
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		for (DifferentialNetwork network : differentialNetworks){
+			
 			//add the diffnet
-			CyNetworkView cyDiffView = this.addCyNetwork(bridge, network);
-			
-			model.getDiffStyle().apply(cyDiffView);
-			cyDiffView.updateView();
-			
+			CyNetwork cyDiffNet = this.addCyNetwork(bridge, network);
+						
 			//add the overlap
 			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetworkView cyOverlapView = this.addCyNetwork(bridge, overlap);
+			CyNetwork cyOverlapNet = this.addCyNetwork(bridge, overlap);
 			
-			
-			model.getSourceStyle().apply(cyOverlapView);
-			cyOverlapView.updateView();
-			
-			cyProject.addResultPair(cyDiffView.getModel(), cyOverlapView.getModel());
+			cyProject.addResultPair(cyDiffNet, cyOverlapNet);
 		}
 		
 	}

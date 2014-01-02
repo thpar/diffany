@@ -21,7 +21,11 @@ public class RunProjectTaskFactory implements TaskFactory {
 
 	@Override
 	public TaskIterator createTaskIterator() {
-		TaskIterator it = new TaskIterator(new RunProjectTask(model));
+		TaskIterator it = new TaskIterator();
+		
+		it.append(new RunProjectTask(model, model.getCurrentProject()));
+		it.append(new UpdateVisualStyleTask(model, model.getCurrentProject()));
+		
 		return it;
 	}
 

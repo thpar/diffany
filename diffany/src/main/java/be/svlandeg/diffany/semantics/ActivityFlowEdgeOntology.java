@@ -66,11 +66,11 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		{
 			return neutral_diff_paint;
 		}
-		if (category.equals("pos_diff_cat"))
+		if (category.equals(pos_diff_cat))
 		{
 			return pos_diff_paint;
 		}
-		if (category.equals("neg_diff_cat"))
+		if (category.equals(neg_diff_cat))
 		{
 			return neg_diff_paint;
 		}

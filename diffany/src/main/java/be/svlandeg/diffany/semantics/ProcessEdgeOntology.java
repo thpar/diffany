@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -21,14 +20,14 @@ public class ProcessEdgeOntology extends EdgeOntology
 	private String negPrefix;
 	private String posPrefix;
 	
-	protected static Paint neg_diff_paint = Color.ORANGE;
-	protected static Paint pos_diff_paint = Color.YELLOW;
-	protected static Paint default_diff_paint = Color.CYAN;
-	protected static Paint neutral_diff_paint = Color.GRAY;
+	protected static Color neg_diff_paint = Color.ORANGE;
+	protected static Color pos_diff_paint = Color.YELLOW;
+	protected static Color default_diff_paint = Color.CYAN;
+	protected static Color neutral_diff_paint = Color.GRAY;
 	
-	protected static Paint neutral_source_paint = Color.LIGHT_GRAY;
+	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
 	
-	protected Map<String, Paint> parentSourceCatToPaint;
+	protected Map<String, Color> parentSourceCatToColor;
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
@@ -40,7 +39,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		super();
 		this.negPrefix = negPrefix;
 		this.posPrefix = posPrefix;
-		parentSourceCatToPaint = new HashMap<String, Paint>();
+		parentSourceCatToColor = new HashMap<String, Color>();
 		addSourceCategories(sourceCats);
 	}
 	
@@ -48,18 +47,18 @@ public class ProcessEdgeOntology extends EdgeOntology
 	 * Assign a specific paint object to a source category (and its children)
 	 * 
 	 * @param parentCat a category (also representing its children)
-	 * @param p the paint object specifying its visual properties
+	 * @param p the Color object specifying its visual properties
 	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, 
 	 * or when the type is not defined in this ontology
 	 */
-	protected void addPaint(String parentCat, Paint p)
+	protected void addColor(String parentCat, Color p)
 	{
 		if (parentCat == null || p == null)
 		{
 			String errormsg = "The provided parent category or the paint object should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (parentSourceCatToPaint.containsKey(parentCat))
+		if (parentSourceCatToColor.containsKey(parentCat))
 		{
 			String errormsg = "The provided parent category ('" + parentCat + "') already has a mapped paint object!";
 			throw new IllegalArgumentException(errormsg);
@@ -69,12 +68,12 @@ public class ProcessEdgeOntology extends EdgeOntology
 			String errormsg = "The provided parent category ('" + parentCat + "') is not defined in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		parentSourceCatToPaint.put(parentCat, p);
+		parentSourceCatToColor.put(parentCat, p);
 	}
 	
 	
 	@Override
-	public Paint getDifferentialEdgePaint(String category)
+	public Color getDifferentialEdgeColor(String category)
 	{
 		if (category == null)
 		{
@@ -92,21 +91,21 @@ public class ProcessEdgeOntology extends EdgeOntology
 	}
 	
 	@Override
-	protected Paint getSourceEdgePaint(String edgeType)
+	protected Color getSourceEdgeColor(String edgeType)
 	{
 		if (isDefinedSourceType(edgeType))
 		{
 			String childCat = getSourceCategory(edgeType);
-			Paint foundPaint = parentSourceCatToPaint.get(edgeType);
-			while (foundPaint == null && childCat != null)
+			Color foundColor = parentSourceCatToColor.get(edgeType);
+			while (foundColor == null && childCat != null)
 			{
 				String parentCat = retrieveParent(childCat);
-				foundPaint = parentSourceCatToPaint.get(parentCat);
+				foundColor = parentSourceCatToColor.get(parentCat);
 				childCat = parentCat;
 			}
-			if (foundPaint != null)
+			if (foundColor != null)
 			{
-				return foundPaint;
+				return foundColor;
 			}
 			return default_diff_paint;
 		}

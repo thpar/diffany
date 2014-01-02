@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -197,19 +196,19 @@ public class DefaultEdgeOntology extends EdgeOntology
 	
 
 	@Override
-	protected Paint getDifferentialEdgePaint(String category)
+	protected Color getDifferentialEdgeColor(String category)
 	{
 		if (afOntology.isDefinedDiffCategory(category))
-			return afOntology.getDifferentialEdgePaint(category);
-		return prOntology.getDifferentialEdgePaint(category);
+			return afOntology.getDifferentialEdgeColor(category);
+		return prOntology.getDifferentialEdgeColor(category);
 	}
 
 	@Override
-	public Paint getSourceEdgePaint(String edgeType)
+	protected Color getSourceEdgeColor(String edgeType)
 	{
 		if (afOntology.isDefinedSourceType(edgeType))
-			return afOntology.getSourceEdgePaint(edgeType);
-		return prOntology.getSourceEdgePaint(edgeType);
+			return afOntology.getSourceEdgeColor(edgeType);
+		return prOntology.getSourceEdgeColor(edgeType);
 	}
 	
 	/**
@@ -230,7 +229,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 */
 	protected void addDefaultPaintedParents()
 	{
-		prOntology.addPaint("ptm", Color.BLUE);
+		prOntology.addColor("ptm", Color.BLUE);
 	}
 
 	/**

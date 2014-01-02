@@ -3,7 +3,6 @@ package be.svlandeg.diffany.examples;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
-import java.awt.Paint;
 
 import org.junit.Test;
 
@@ -89,7 +88,7 @@ public class TestVisual
 	 */
 	private void assertColorInSource(String type, Color c, EdgeOntology eo)
 	{
-		Paint p = eo.getSourceEdgeStyle(type).getPaint();
+		Color p = eo.getSourceEdgeStyle(type).getColor();
 		assertEquals(c, p);
 	}
 	
@@ -102,7 +101,7 @@ public class TestVisual
 	 */
 	private void assertColorInDifferential(String cat, Color c, EdgeOntology eo)
 	{
-		Paint p = eo.getDifferentialEdgeStyle(cat).getPaint();
+		Color p = eo.getDifferentialEdgeStyle(cat).getColor();
 		assertEquals(c, p);
 	}
 	

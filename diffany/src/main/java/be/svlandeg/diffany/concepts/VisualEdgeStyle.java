@@ -1,6 +1,6 @@
 package be.svlandeg.diffany.concepts;
 
-import java.awt.Paint;
+import java.awt.Color;
 
 /**
  * This class defines the visual properties of an edge, 
@@ -11,24 +11,25 @@ import java.awt.Paint;
 public class VisualEdgeStyle
 {
 	
-	private Paint paint;
+	private Color color;
+	//private enum arrowHead{};
 	
 	/**
 	 * Constructor: creates a visual edge style which cannot be modified
-	 * @param paint the paint object (e.g. color)
+	 * @param color object 
 	 */
-	public VisualEdgeStyle(Paint paint)
+	public VisualEdgeStyle(Color color)
 	{
-		this.paint = paint;
+		this.color = color;
 	}
 	
 	/**
 	 * Retrieve the paint object
 	 * @return the paint object of this visual style
 	 */
-	public Paint getPaint()
+	public Color getColor()
 	{
-		return paint;
+		return color;
 	}
 
 	

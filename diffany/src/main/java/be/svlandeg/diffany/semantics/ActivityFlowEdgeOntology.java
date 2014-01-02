@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,17 +17,17 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	protected String neg_diff_cat;
 	protected String pos_diff_cat;
 	
-	protected static Paint neg_diff_paint = Color.RED;
-	protected static Paint pos_diff_paint = Color.GREEN;
-	protected static Paint neutral_diff_paint = Color.GRAY;
+	protected static Color neg_diff_paint = Color.RED;
+	protected static Color pos_diff_paint = Color.GREEN;
+	protected static Color neutral_diff_paint = Color.GRAY;
 
 	public Set<String> source_pos_cats;
 	public Set<String> source_neg_cats;
 	public Set<String> source_neutral_cats;
 
-	protected static Paint neg_source_paint = Color.RED;
-	protected static Paint pos_source_paint = Color.GREEN;
-	protected static Paint neutral_source_paint = Color.LIGHT_GRAY;
+	protected static Color neg_source_paint = Color.RED;
+	protected static Color pos_source_paint = Color.GREEN;
+	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
 	
 	/**
 	 * Create a new ontology, defining pos/neg categories. and inserting
@@ -61,7 +60,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	
 	
 	@Override
-	protected Paint getDifferentialEdgePaint(String category)
+	protected Color getDifferentialEdgeColor(String category)
 	{
 		if (category == null)
 		{
@@ -81,7 +80,7 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 
 	@Override
-	protected Paint getSourceEdgePaint(String edgeType)
+	protected Color getSourceEdgeColor(String edgeType)
 	{
 		String cat = getSourceCategory(edgeType);
 		if (cat != null && source_pos_cats.contains(cat))

@@ -1,6 +1,6 @@
 package be.svlandeg.diffany.semantics;
 
-import java.awt.Paint;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -405,12 +405,12 @@ public abstract class EdgeOntology
 	}
 	
 	/**
-	 * Define the Paint object (e.g. color) of an edge in a differential network, by edge category.
+	 * Define the Color object (e.g. color) of an edge in a differential network, by edge category.
 	 * 
 	 * @param category the category of the edge interaction
-	 * @return a Paint object which specifies how the edge should be drawn
+	 * @return the color of the edge
 	 */
-	protected abstract Paint getDifferentialEdgePaint(String category);
+	protected abstract Color getDifferentialEdgeColor(String category);
 	
 	
 	/**
@@ -421,16 +421,16 @@ public abstract class EdgeOntology
 	 */
 	public VisualEdgeStyle getDifferentialEdgeStyle(String category)
 	{
-		return new VisualEdgeStyle(getDifferentialEdgePaint(category));
+		return new VisualEdgeStyle(getDifferentialEdgeColor(category));
 	}
 	
 	/**
-	 * Define the Paint object (e.g. color) of an edge in a 'normal' network (reference, condition-dependent or overlap).
+	 * Define the Color object of an edge in a 'normal' network (reference, condition-dependent or overlap).
 	 * 
 	 * @param edgeType the type of the edge interaction
-	 * @return a Paint object which specifies how the edge should be drawn
+	 * @return the color of the edge
 	 */
-	protected abstract Paint getSourceEdgePaint(String edgeType);
+	protected abstract Color getSourceEdgeColor(String edgeType);
 	
 	/**
 	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
@@ -440,7 +440,7 @@ public abstract class EdgeOntology
 	 */
 	public VisualEdgeStyle getSourceEdgeStyle(String edgeType)
 	{
-		return new VisualEdgeStyle(getSourceEdgePaint(edgeType));
+		return new VisualEdgeStyle(getSourceEdgeColor(edgeType));
 	}
 
 

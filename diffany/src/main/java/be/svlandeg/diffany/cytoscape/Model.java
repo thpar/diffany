@@ -155,15 +155,5 @@ public class Model extends Observable implements NetworkAddedListener{
 		return diffStyle;
 	}
 
-
-	/** 
-	 * Refresh the visual styles according to the edge types in the networks of 
-	 * the current {@link CyProject}
-	 */
-	public void updateVisualStyles(){
-		this.sourceStyle.updateInteractionMappings(this.currentProject);
-		this.diffStyle.updateInteractionMappings(this.currentProject);
-	}
-
 	
 }

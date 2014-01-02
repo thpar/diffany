@@ -2,9 +2,9 @@ package be.svlandeg.diffany.cytoscape.vizmapper;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
 import be.svlandeg.diffany.internal.Services;
@@ -19,19 +19,19 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	}
 
 	@Override
-	protected void addInteractionMappings(CyNetwork cyNetwork, EdgeOntology edgeOntology, 
+	protected void addInteractionMappings(Set<String> interactionTypes, EdgeOntology edgeOntology, 
 			DiscreteMapping<String, Paint> edgeColorFunction,
 			DiscreteMapping<String, Paint> edgeSelectedColorFunction) {
+		
 		System.out.println("Updating Source Visual Style");
-		for (CyEdge cyEdge : cyNetwork.getEdgeList()) {
-			String interaction = cyNetwork.getRow(cyEdge).get(cyEdge.INTERACTION, String.class);
+		for (String type : interactionTypes) {
 			
-			Color paint = (Color)edgeOntology.getSourceEdgeStyle(interaction);
-			edgeColorFunction.putMapValue(interaction, paint);
+			Color paint = (Color)edgeOntology.getSourceEdgeStyle(type);
+			edgeColorFunction.putMapValue(type, paint);
 			
 			Color darkPaint = paint.darker().darker();
-			edgeSelectedColorFunction.putMapValue(interaction, darkPaint);
-			System.out.println("Mapped "+interaction+" to "+paint);
+			edgeSelectedColorFunction.putMapValue(type, darkPaint);
+			System.out.println("Mapped "+type+" to "+paint);
 		}
 	}
 

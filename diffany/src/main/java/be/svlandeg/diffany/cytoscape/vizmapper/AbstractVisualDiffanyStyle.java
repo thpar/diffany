@@ -75,29 +75,17 @@ public abstract class AbstractVisualDiffanyStyle {
 	/**
 	 * Add visual mappings according to the networks contained in the given {@link CyProject}
 	 */
-	public void updateInteractionMappings(CyProject cyProject) {
+	public void updateInteractionMappings(Set<String> interactions, EdgeOntology ontology) {
+		
+		//get mapping factories
 		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
 		DiscreteMapping<String, Paint> edgeColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
 				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT);
 		DiscreteMapping<String, Paint> edgeSelectedColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
 				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_SELECTED_PAINT);
 		
-		EdgeOntology edgeOntology = cyProject.getEdgeOntology();
-				
-		CyNetwork refNet = cyProject.getReferenceNetwork();
-		Set<CyNetwork> conditionNetworks = cyProject.getConditionalNetworks();
-		Set<CyNetworkPair> resultNets = cyProject.getResultNetworks();
 		
-		this.addInteractionMappings(refNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
-		
-		for (CyNetwork condNet : conditionNetworks){
-			this.addInteractionMappings(condNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);			
-		}
-		
-		for (CyNetworkPair pair : resultNets){
-			this.addInteractionMappings(pair.diffNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
-			this.addInteractionMappings(pair.overlapNet, edgeOntology, edgeColorFunction, edgeSelectedColorFunction);
-		}
+		this.addInteractionMappings(interactions, ontology, edgeColorFunction, edgeSelectedColorFunction);			
 
 		
 		vis.addVisualMappingFunction(edgeColorFunction);
@@ -109,11 +97,11 @@ public abstract class AbstractVisualDiffanyStyle {
 	 * Add mappings to the VizMapper according to the edges used in the project. All found edge interaction types
 	 * are mapped to a visual style using the given {@link EdgeOntology}
 	 * 
-	 * @param refNet
+	 * @param interactionTypes All interactions used in the networks of the project.
 	 * @param edgeOntology
 	 * @param edgeColorFunction
 	 */
-	protected abstract void addInteractionMappings(CyNetwork refNet, EdgeOntology edgeOntology, 
+	protected abstract void addInteractionMappings(Set<String> interactionTypes, EdgeOntology edgeOntology, 
 			DiscreteMapping<String, Paint> edgeColorFunction, DiscreteMapping<String, Paint> edgeSelectedColorFunction);
 
 	/**

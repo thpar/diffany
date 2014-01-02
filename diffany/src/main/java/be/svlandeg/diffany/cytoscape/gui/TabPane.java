@@ -28,6 +28,7 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
+import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 
 /**
  * The Control Panel for Diffany (left Cytoscape tab).
@@ -165,7 +166,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
 		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
 		
-		model.updateVisualStyles();
+		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
+		TaskIterator it = tf.createTaskIterator();
+		DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+		dtm.execute(it);
 	}
 
 	

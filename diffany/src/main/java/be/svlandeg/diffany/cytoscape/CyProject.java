@@ -1,13 +1,18 @@
 package be.svlandeg.diffany.cytoscape;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;
@@ -153,6 +158,91 @@ public class CyProject{
 	public Set<CyNetworkPair> getResultNetworks() {
 		return resultNetworks;
 	}
+	
+	/**
+	 * Iterates over all {@link CyNetwork}s and creates a {@link Set} of all the used
+	 * interactions (both from source as differential networks). This set can be used to define the visual mappings. 
+	 * @return a Set of all used interactions in this project.
+	 */
+	public Set<String> getAllInteractions(){
+		Set<String> interactions = new HashSet<String>();
+		for (CyNetwork net : getAllNetworks()){
+			interactions.addAll(this.getInteractions(net));
+		}
+		return interactions;
+	}
+	
+	/**
+	 * Get all interactions within a single network
+	 *   
+	 * @param net a {@link CyNetwork} contained in this {@link CyProject}
+	 * @return a Set of all used interactions in the given {@link CyNetwork}
+	 */
+	private Collection<String> getInteractions(CyNetwork net) {
+		Set<String> interactions = new HashSet<String>();
+		for (CyEdge edge : net.getEdgeList()){
+			String type = net.getRow(edge).get(CyEdge.INTERACTION, String.class);
+			interactions.add(type);
+		}
+		return interactions;
+	}
+
+
+	/**
+	 * Returns all {@link CyNetwork}s in this project. This includes the reference network, 
+	 * the list of conditional networks and the generated (or loaded) differential networks and their
+	 * overlap counterparts.
+	 * 
+	 * @return all {@link CyNetwork}s in this project, regardless of type.
+	 */
+	private Set<CyNetwork> getAllNetworks(){
+		Set<CyNetwork> networks = new HashSet<CyNetwork>();
+		networks.add(this.referenceNetwork);
+		for (CyNetwork conNet : this.conditionalNetworks){
+			networks.add(conNet);
+		}
+		for (CyNetworkPair netPair : this.resultNetworks){
+			networks.add(netPair.diffNet);
+			networks.add(netPair.overlapNet);
+		}
+		return networks;
+	}
+	
+	/**
+	 * Returns all {@link CyNetworkView}s that correspond to the source networks (reference, conditional and overlap) in this project.
+	 * @param services the collection of Cytoscape services.
+	 * @return all {@link CyNetworkView}s that correspond to the networks in this project.
+	 */
+	public Set<CyNetworkView> getAllSourceViews(Services services){
+		Set<CyNetworkView> views = new HashSet<CyNetworkView>();
+
+		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
+		Collection<CyNetworkView> refViews = viewManager.getNetworkViews(referenceNetwork);
+		views.addAll(refViews);
 		
+		for (CyNetwork condNet : conditionalNetworks){
+			views.addAll(viewManager.getNetworkViews(condNet));
+		}
+		for (CyNetworkPair resPair : resultNetworks){
+			views.addAll(viewManager.getNetworkViews(resPair.overlapNet));
+		}
+		return views;
+	}
+	
+	/**
+	 * Returns all {@link CyNetworkView}s that correspond to differential networks in this project.
+	 * @param services the collection of Cytoscape services.
+	 * @return all {@link CyNetworkView}s that correspond to the networks in this project.
+	 */
+	public Set<CyNetworkView> getAllDifferentialViews(Services services){
+		Set<CyNetworkView> views = new HashSet<CyNetworkView>();
+
+		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
+		
+		for (CyNetworkPair resPair : resultNetworks){
+			views.addAll(viewManager.getNetworkViews(resPair.diffNet));
+		}
+		return views;
+	}	
 
 }

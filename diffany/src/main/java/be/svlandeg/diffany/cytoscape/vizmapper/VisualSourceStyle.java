@@ -26,7 +26,7 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 		System.out.println("Updating Source Visual Style");
 		for (String type : interactionTypes) {
 			
-			Color paint = (Color)edgeOntology.getSourceEdgeStyle(type);
+			Color paint = (Color)edgeOntology.getSourceEdgeStyle(type).getColor();
 			edgeColorFunction.putMapValue(type, paint);
 			
 			Color darkPaint = paint.darker().darker();

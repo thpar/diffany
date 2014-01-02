@@ -229,7 +229,8 @@ public abstract class EdgeOntology
 	 * For a set of EdgeDefinition objects, determine their most specific common parents/ancestors.
 	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole edge set.
 	 * @param edges the original set of edges
-	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges.
+	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
+	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges
 	 */
 	protected Map<String, Integer> retrieveFirstCommonParents(Set<EdgeDefinition> edges, boolean excludeEmpty)
 	{

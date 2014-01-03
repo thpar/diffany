@@ -9,6 +9,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
+import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.BoundaryRangeValues;
@@ -28,7 +29,7 @@ public abstract class AbstractVisualDiffanyStyle {
 	protected Services services;
 	
 	//color definitions
-	private static final Color NETWORK_BACKGROUND_COLOR = new Color(190, 195, 232);
+	private static final Color NETWORK_BACKGROUND_COLOR = new Color(255, 254, 139);
 	private static final Color NODE_COLOR = Color.YELLOW;
 	
 	
@@ -91,13 +92,18 @@ public abstract class AbstractVisualDiffanyStyle {
 				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT);
 		DiscreteMapping<String, Paint> edgeSelectedColorFunction = (DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction
 				(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_STROKE_SELECTED_PAINT);
+		DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction = (DiscreteMapping<String, ArrowShape>)vmffD.createVisualMappingFunction(CyEdge.INTERACTION, String.class, 
+				BasicVisualLexicon.EDGE_TARGET_ARROW_SHAPE);
 		
-		
-		this.addInteractionMappings(interactions, ontology, edgeColorFunction, edgeSelectedColorFunction);			
+		this.addInteractionMappings(interactions, ontology, 
+				edgeColorFunction, 
+				edgeSelectedColorFunction,
+				edgeTargetArrowFunction);			
 
 		
 		vis.addVisualMappingFunction(edgeColorFunction);
 		vis.addVisualMappingFunction(edgeSelectedColorFunction);
+		vis.addVisualMappingFunction(edgeTargetArrowFunction);
 		
 	}
 	
@@ -110,7 +116,9 @@ public abstract class AbstractVisualDiffanyStyle {
 	 * @param edgeColorFunction
 	 */
 	protected abstract void addInteractionMappings(Set<String> interactionTypes, EdgeOntology edgeOntology, 
-			DiscreteMapping<String, Paint> edgeColorFunction, DiscreteMapping<String, Paint> edgeSelectedColorFunction);
+			DiscreteMapping<String, Paint> edgeColorFunction, 
+			DiscreteMapping<String, Paint> edgeSelectedColorFunction,
+			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction);
 
 	/**
 	 * 

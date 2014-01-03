@@ -389,6 +389,13 @@ public class DefaultEdgeOntology extends EdgeOntology
 		prOntology.addSourceCategoryMapping("transcribes", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("transcribe", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription factor", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription-factor", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription_factor", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcriptionfactor", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription factor binding", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription-factor binding", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcription_factor binding", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf binding", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf-binding", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf_binding", "transcription", overwrite);
@@ -494,8 +501,8 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("positive_epistatic_interaction", "positive_genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("positive epistatic interaction", "positive_genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("positive-epistatic-interaction", "positive_genetic_interaction", overwrite);
-		afOntology.addSourceCategoryMapping("alleviating epistatic_interaction", "positive_genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("alleviating_epistatic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating epistatic interaction", "positive_genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("alleviating-epistatic-interaction", "positive_genetic_interaction", overwrite);
 		
 		afOntology.addSourceCategoryMapping("negative_genetic_interaction", "negative_genetic_interaction", overwrite);
@@ -521,6 +528,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("sl", "synthetic_lethality", overwrite);
 		
 		afOntology.addSourceCategoryMapping("genetic_interaction", "genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("gi", "genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("epistatic", "genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("epistasis", "genetic_interaction", overwrite);
 		afOntology.addSourceCategoryMapping("epistatic interaction", "genetic_interaction", overwrite);

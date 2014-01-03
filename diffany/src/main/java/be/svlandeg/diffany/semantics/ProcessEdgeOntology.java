@@ -32,6 +32,8 @@ public class ProcessEdgeOntology extends EdgeOntology
 	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
 	protected static ArrowHead neutral_source_ah = ArrowHead.ARROW;
 	
+	protected static ArrowHead symm_ah = ArrowHead.NONE;
+	
 	protected Map<String, Color> parentSourceCatToColor;
 	protected Map<String, ArrowHead> parentSourceCatToArrowHead;
 
@@ -40,7 +42,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 	 * After the constructor is called, default edge-category mappings should be
 	 * inserted using addCategoryMapping!
 	 */
-	public ProcessEdgeOntology(String posPrefix, String negPrefix, Set<String> sourceCats)
+	public ProcessEdgeOntology(String posPrefix, String negPrefix, Map<String, Boolean> sourceCats)
 	{
 		super();
 		this.negPrefix = negPrefix;
@@ -148,6 +150,11 @@ public class ProcessEdgeOntology extends EdgeOntology
 	{
 		if (isDefinedSourceType(edgeType))
 		{
+			if (isSymmetricalSourceType(edgeType))
+			{
+				return symm_ah;
+			}
+			
 			String childCat = getSourceCategory(edgeType);
 			ArrowHead foundArrowHead = parentSourceCatToArrowHead.get(edgeType);
 			while (foundArrowHead == null && childCat != null)

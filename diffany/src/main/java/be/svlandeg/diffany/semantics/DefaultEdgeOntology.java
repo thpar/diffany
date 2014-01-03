@@ -1,7 +1,8 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
@@ -26,16 +27,16 @@ public class DefaultEdgeOntology extends EdgeOntology
 	public DefaultEdgeOntology()
 	{
 		String pos_cat = "increase";
-		Set<String> pos_cats = definePosCategories();
+		Map<String, Boolean> pos_cats = definePosCategories();
 
 		String neg_cat = "decrease";
-		Set<String> neg_cats = defineNegCategories();
+		Map<String, Boolean> neg_cats = defineNegCategories();
 		
-		Set<String> neutral_cats = defineNeutralCategories();
+		Map<String, Boolean> neutral_cats = defineNeutralCategories();
 		
 		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, pos_cats, neg_cats, neutral_cats);
 
-		Set<String> process_cats = defineProcessCategories();
+		Map<String, Boolean> process_cats = defineProcessCategories();
 
 		prOntology = new ProcessEdgeOntology(pos_cat + "_", neg_cat + "_", process_cats);
 
@@ -44,57 +45,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 		addDefaultPaintedParents();
 	}
 
-	/**
-	 * Define the process categories to be used in the ProcessEdgeOntology
-	 * 
-	 * @return the defined process categories
-	 */
-	protected Set<String> defineProcessCategories()
-	{
-		Set<String> cats = new HashSet<String>();
-		cats.add("ppi");
-		cats.add("ptm");
-		cats.add("phosphorylation");
-		cats.add("ubiquitination");
-		cats.add("methylation");
-		return cats;
-	}
-
-	/**
-	 * Define the positive categories to be used in the ActivityFlowEdgeOntology
-	 * 
-	 * @return the defined positive categories
-	 */
-	protected Set<String> definePosCategories()
-	{
-		Set<String> pos_cats = new HashSet<String>();
-		pos_cats.add("positive_regulation");
-		return pos_cats;
-	}
-
-	/**
-	 * Define the negative categories to be used in the ActivityFlowEdgeOntology
-	 * 
-	 * @return the defined negative categories
-	 */
-	protected Set<String> defineNegCategories()
-	{
-		Set<String> neg_cats = new HashSet<String>();
-		neg_cats.add("negative_regulation");
-		return neg_cats;
-	}
 	
-	/**
-	 * Define the neutral categories to be used in the ActivityFlowEdgeOntology
-	 * 
-	 * @return the defined negative categories
-	 */
-	protected Set<String> defineNeutralCategories()
-	{
-		Set<String> neutral_cats = new HashSet<String>();
-		neutral_cats.add("regulation");
-		return neutral_cats;
-	}
 	
 	/**
 	 * Get the semantic category of a certain edge type. Matching is done independent of upper/lower casing.
@@ -195,6 +146,13 @@ public class DefaultEdgeOntology extends EdgeOntology
 		throw new IllegalArgumentException(errormsg);
 	}
 	
+	@Override
+	public boolean isSymmetricalSourceType(String category)
+	{
+		if (afOntology.isDefinedDiffCategory(category))
+			return afOntology.isSymmetricalSourceType(category);
+		return prOntology.isSymmetricalSourceType(category);
+	}
 
 	@Override
 	protected Color getDifferentialEdgeColor(String category)
@@ -228,6 +186,84 @@ public class DefaultEdgeOntology extends EdgeOntology
 		return prOntology.getSourceEdgeArrowHead(edgeType);
 	}
 	
+	/////////////////////////////// BELOW START THE DEFAULT DEFINITIONS ////////////////////
+	
+	/**
+	 * Define the process categories to be used in the ProcessEdgeOntology
+	 * 
+	 * @return the defined process categories
+	 */
+	protected Map<String, Boolean> defineProcessCategories()
+	{
+		Map<String, Boolean> cats = new HashMap<String, Boolean>();
+		
+		cats.put("ppi", true);
+		cats.put("colocalization", true);
+		cats.put("coexpression", true);
+		
+		cats.put("transcription", false);
+		
+		cats.put("ptm", false);
+		cats.put("phosphorylation", false);
+		cats.put("dephosphorylation", false);
+		cats.put("glycosylation", false);
+		cats.put("deglycosylation", false);
+		cats.put("acetylation", false);
+		cats.put("deacetylation", false);
+		cats.put("hydroxylation", false);
+		cats.put("dehydroxylation", false);
+		cats.put("ubiquitination", false);
+		cats.put("deubiquitination", false);
+		cats.put("methylation", false);
+		cats.put("demethylation", false);
+		
+		return cats;
+	}
+
+	/**
+	 * Define the positive categories to be used in the ActivityFlowEdgeOntology
+	 * 
+	 * @return the defined positive categories
+	 */
+	protected Map<String, Boolean> definePosCategories()
+	{
+		Map<String, Boolean> pos_cats = new HashMap<String, Boolean>();
+		pos_cats.put("positive_genetic_interaction", true);
+		
+		pos_cats.put("positive_regulation", false);
+		pos_cats.put("catalysis", false);
+		return pos_cats;
+	}
+
+	/**
+	 * Define the negative categories to be used in the ActivityFlowEdgeOntology
+	 * 
+	 * @return the defined negative categories
+	 */
+	protected Map<String, Boolean> defineNegCategories()
+	{
+		Map<String, Boolean> neg_cats = new HashMap<String, Boolean>();
+		neg_cats.put("negative_genetic_interaction", true);
+		neg_cats.put("synthetic_lethality", true);
+		
+		neg_cats.put("negative_regulation", false);
+		neg_cats.put("inhibition", false);
+		return neg_cats;
+	}
+	
+	/**
+	 * Define the neutral categories to be used in the ActivityFlowEdgeOntology
+	 * 
+	 * @return the defined negative categories
+	 */
+	protected Map<String, Boolean> defineNeutralCategories()
+	{
+		Map<String, Boolean> neutral_cats = new HashMap<String, Boolean>();
+		neutral_cats.put("genetic_interaction", true);
+		neutral_cats.put("regulation", false);
+		return neutral_cats;
+	}
+	
 	/**
 	 * Provide a default child-parent mapping between source categories.
 	 */
@@ -235,10 +271,25 @@ public class DefaultEdgeOntology extends EdgeOntology
 	{
 		afOntology.putSourceParent("positive_regulation", "regulation");
 		afOntology.putSourceParent("negative_regulation", "regulation");
+		afOntology.putSourceParent("catalysis", "positive_regulation");
+		afOntology.putSourceParent("inhibition", "negative_regulation");
+		
+		afOntology.putSourceParent("positive_genetic_interaction", "genetic_interaction");
+		afOntology.putSourceParent("negative_genetic_interaction", "genetic_interaction");
+		afOntology.putSourceParent("synthetic_lethality", "negative_genetic_interaction");
 		
 		prOntology.putSourceParent("phosphorylation", "ptm");
+		prOntology.putSourceParent("dephosphorylation", "ptm");
 		prOntology.putSourceParent("ubiquitination", "ptm");
+		prOntology.putSourceParent("deubiquitination", "ptm");
 		prOntology.putSourceParent("methylation", "ptm");
+		prOntology.putSourceParent("demethylation", "ptm");
+		prOntology.putSourceParent("hydroxylation", "ptm");
+		prOntology.putSourceParent("dehydroxylation", "ptm");
+		prOntology.putSourceParent("acetylation", "ptm");
+		prOntology.putSourceParent("deacetylation", "ptm");
+		prOntology.putSourceParent("glycosylation", "ptm");
+		prOntology.putSourceParent("deglycosylation", "ptm");
 	}
 	
 	/**
@@ -257,22 +308,68 @@ public class DefaultEdgeOntology extends EdgeOntology
 	{
 		boolean overwrite = false;
 
-		// PPI category and common synonyms
+		// PR categories and common synonyms: PTM
 		
 		prOntology.addSourceCategoryMapping("methylation", "methylation", overwrite);
 		prOntology.addSourceCategoryMapping("methylates", "methylation", overwrite);
 		prOntology.addSourceCategoryMapping("methylate", "methylation", overwrite);
 		
+		prOntology.addSourceCategoryMapping("demethylation", "demethylation", overwrite);
+		prOntology.addSourceCategoryMapping("demethylates", "demethylation", overwrite);
+		prOntology.addSourceCategoryMapping("demethylate", "demethylation", overwrite);
+		
 		prOntology.addSourceCategoryMapping("phosphorylation", "phosphorylation", overwrite);
 		prOntology.addSourceCategoryMapping("phosphorylates", "phosphorylation", overwrite);
 		prOntology.addSourceCategoryMapping("phosphorylate", "phosphorylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("dephosphorylation", "dephosphorylation", overwrite);
+		prOntology.addSourceCategoryMapping("dephosphorylates", "dephosphorylation", overwrite);
+		prOntology.addSourceCategoryMapping("dephosphorylate", "dephosphorylation", overwrite);
 		
 		prOntology.addSourceCategoryMapping("ubiquitination", "ubiquitination", overwrite);
 		prOntology.addSourceCategoryMapping("ubiquitinates", "ubiquitination", overwrite);
 		prOntology.addSourceCategoryMapping("ubiquitinate", "ubiquitination", overwrite);
 		
+		prOntology.addSourceCategoryMapping("deubiquitination", "deubiquitination", overwrite);
+		prOntology.addSourceCategoryMapping("deubiquitinates", "deubiquitination", overwrite);
+		prOntology.addSourceCategoryMapping("deubiquitinate", "deubiquitination", overwrite);
+		
+		prOntology.addSourceCategoryMapping("deglycosylation", "deglycosylation", overwrite);
+		prOntology.addSourceCategoryMapping("deglycosylates", "deglycosylation", overwrite);
+		prOntology.addSourceCategoryMapping("deglycosylate", "deglycosylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("glycosylation", "glycosylation", overwrite);
+		prOntology.addSourceCategoryMapping("glycosylates", "glycosylation", overwrite);
+		prOntology.addSourceCategoryMapping("glycosylate", "glycosylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("deacetylation", "deacetylation", overwrite);
+		prOntology.addSourceCategoryMapping("deacetylates", "deacetylation", overwrite);
+		prOntology.addSourceCategoryMapping("deacetylate", "deacetylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("acetylation", "acetylation", overwrite);
+		prOntology.addSourceCategoryMapping("acetylates", "acetylation", overwrite);
+		prOntology.addSourceCategoryMapping("acetylate", "acetylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("hydroxylation", "hydroxylation", overwrite);
+		prOntology.addSourceCategoryMapping("hydroxylates", "hydroxylation", overwrite);
+		prOntology.addSourceCategoryMapping("hydroxylate", "hydroxylation", overwrite);
+		
+		prOntology.addSourceCategoryMapping("dehydroxylation", "dehydroxylation", overwrite);
+		prOntology.addSourceCategoryMapping("dehydroxylates", "dehydroxylation", overwrite);
+		prOntology.addSourceCategoryMapping("dehydroxylate", "dehydroxylation", overwrite);
+		
 		prOntology.addSourceCategoryMapping("ptm", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post-translational modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post-translational_modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post_translational_modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post_translational modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post-translational-modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("post translational modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("posttranslational modification", "ptm", overwrite);
+		prOntology.addSourceCategoryMapping("posttranslationalmodification", "ptm", overwrite);
 
+		// PR categories and common synonyms: binding and other symmetricals
+		
 		prOntology.addSourceCategoryMapping("ppi", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("proteinprotein interaction", "ppi", overwrite);
@@ -280,6 +377,29 @@ public class DefaultEdgeOntology extends EdgeOntology
 		prOntology.addSourceCategoryMapping("binds", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("bind", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("binding", "ppi", overwrite);
+		
+		prOntology.addSourceCategoryMapping("transcription", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("tf", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("tf binding", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("tf-binding", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("tf_binding", "transcription", overwrite);
+		
+		prOntology.addSourceCategoryMapping("coexpression", "coexpression", overwrite);
+		prOntology.addSourceCategoryMapping("coexpressed", "coexpression", overwrite);
+		prOntology.addSourceCategoryMapping("coexpresses", "coexpression", overwrite);
+		prOntology.addSourceCategoryMapping("coexpress", "coexpression", overwrite);
+		prOntology.addSourceCategoryMapping("coexpresses with", "coexpression", overwrite);
+		
+		prOntology.addSourceCategoryMapping("colocalization", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalized", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalizes", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalize", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocaliz with", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalisation", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalised", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalises", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalise", "colocalization", overwrite);
+		prOntology.addSourceCategoryMapping("colocalises with", "colocalization", overwrite);
 
 		// regulation category and common synonyms
 		afOntology.addSourceCategoryMapping("regulation", "regulation", overwrite);
@@ -316,6 +436,11 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("upregulation", "positive_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("up-regulation", "positive_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("up regulation", "positive_regulation", overwrite);
+		
+		afOntology.addSourceCategoryMapping("catalysis", "catalysis", overwrite);
+		afOntology.addSourceCategoryMapping("catalyses", "catalysis", overwrite);
+		afOntology.addSourceCategoryMapping("catalysation", "catalysis", overwrite);
+		afOntology.addSourceCategoryMapping("catalyzation", "catalysis", overwrite);
 
 		// negative regulation category and common synonyms
 		afOntology.addSourceCategoryMapping("negative regulation", "negative_regulation", overwrite);
@@ -343,9 +468,53 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("downregulation", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("down-regulation", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("down regulation", "negative_regulation", overwrite);
-		afOntology.addSourceCategoryMapping("inhibits", "negative_regulation", overwrite);
-		afOntology.addSourceCategoryMapping("inhibit", "negative_regulation", overwrite);
-		afOntology.addSourceCategoryMapping("inhibition", "negative_regulation", overwrite);
+		
+		afOntology.addSourceCategoryMapping("inhibits", "inhibition", overwrite);
+		afOntology.addSourceCategoryMapping("inhibit", "inhibition", overwrite);
+		afOntology.addSourceCategoryMapping("inhibition", "inhibition", overwrite);
+		
+		// genetic interactions
+		afOntology.addSourceCategoryMapping("positive_genetic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive genetic interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive-genetic-interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive gi", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating gi", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating genetic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating_genetic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating-genetic-interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive_epistatic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive epistatic interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("positive-epistatic-interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating epistatic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating_epistatic_interaction", "positive_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("alleviating-epistatic-interaction", "positive_genetic_interaction", overwrite);
+		
+		afOntology.addSourceCategoryMapping("negative_genetic_interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative genetic interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative-genetic-interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative gi", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating_genetic_interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating genetic interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating-genetic-interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating gi", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative_epistatic_interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative epistatic interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("negative-epistatic-interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating_epistatic_interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating epistatic interaction", "negative_genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("aggrevating-epistatic-interaction", "negative_genetic_interaction", overwrite);
+		
+		afOntology.addSourceCategoryMapping("synthetic_lethality", "synthetic_lethality", overwrite);
+		afOntology.addSourceCategoryMapping("synthetic lethality", "synthetic_lethality", overwrite);
+		afOntology.addSourceCategoryMapping("synthetic-lethality", "synthetic_lethality", overwrite);
+		afOntology.addSourceCategoryMapping("synthetically_lethal", "synthetic_lethality", overwrite);
+		afOntology.addSourceCategoryMapping("synthetically lethal", "synthetic_lethality", overwrite);
+		afOntology.addSourceCategoryMapping("sl", "synthetic_lethality", overwrite);
+		
+		afOntology.addSourceCategoryMapping("genetic_interaction", "genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("epistatic", "genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("epistasis", "genetic_interaction", overwrite);
+		afOntology.addSourceCategoryMapping("epistatic interaction", "genetic_interaction", overwrite);
 	}
 
 }

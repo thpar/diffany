@@ -2,6 +2,7 @@ package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
@@ -40,22 +41,16 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	protected static ArrowHead neutral_source_ah = ArrowHead.ARROW;
 
 	/**
-	 * Create a new ontology, defining pos/neg categories. and inserting
-	 * After the constructor is called, default edge-category mappings should be
-	 * inserted using addCategoryMapping!
+	 * Create a new ontology, defining pos/neg categories. 
+	 * After the constructor is called, default edge-category mappings should be inserted!
 	 * 
-	 * @param pos_diff_cat the string representing an increase in a differential
-	 * network
-	 * @param neg_diff_cat the string representing an decrease in a differential
-	 * network
-	 * @param source_pos_cats positive categories in the input networks (e.g.
-	 * upregulation)
-	 * @param source_neg_cats negative categories in the input networks (e.g.
-	 * inhibition)
-	 * @param source_neutral_cats neutral categories in the input networks (e.g.
-	 * regulation)
+	 * @param pos_diff_cat the string representing an increase in a differential network
+	 * @param neg_diff_cat the string representing an decrease in a differential network
+	 * @param source_pos_cats positive categories in the input networks (e.g. upregulation)
+	 * @param source_neg_cats negative categories in the input networks (e.g. inhibition)
+	 * @param source_neutral_cats neutral categories in the input networks (e.g. regulation)
 	 */
-	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Set<String> source_pos_cats, Set<String> source_neg_cats, Set<String> source_neutral_cats)
+	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Map<String, Boolean> source_pos_cats, Map<String, Boolean> source_neg_cats, Map<String, Boolean> source_neutral_cats)
 	{
 		super();
 
@@ -65,9 +60,9 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		addDiffCategory(pos_diff_cat);
 		addDiffCategory(neg_diff_cat);
 
-		this.source_pos_cats = source_pos_cats;
-		this.source_neg_cats = source_neg_cats;
-		this.source_neutral_cats = source_neutral_cats;
+		this.source_pos_cats = source_pos_cats.keySet();
+		this.source_neg_cats = source_neg_cats.keySet();;
+		this.source_neutral_cats = source_neutral_cats.keySet();;
 
 		addSourceCategories(source_pos_cats);
 		addSourceCategories(source_neg_cats);
@@ -188,8 +183,8 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 
 		String refCat = getSourceCategory(refEdge.getType());
 		boolean refVoid = refCat.equals(VOID_TYPE);
-		// the differential edge can not be calculated if the reference edge is
-		// a neutral edge (unspecified)
+		
+		// the differential edge can not be calculated if the reference edge is a neutral edge (unspecified)
 		if (source_neutral_cats.contains(refCat))
 		{
 			return EdgeDefinition.getVoidEdge();

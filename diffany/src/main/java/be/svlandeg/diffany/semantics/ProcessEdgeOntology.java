@@ -25,7 +25,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 	protected static Color pos_diff_paint = Color.YELLOW;
 	protected static Color default_diff_paint = Color.GRAY;
 	
-	protected static ArrowHead neg_diff_ah = ArrowHead.T;
+	protected static ArrowHead neg_diff_ah = ArrowHead.ARROW;
 	protected static ArrowHead pos_diff_ah = ArrowHead.ARROW;
 	protected static ArrowHead default_diff_ah = ArrowHead.ARROW;
 	

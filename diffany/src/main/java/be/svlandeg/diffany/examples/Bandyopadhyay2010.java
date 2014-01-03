@@ -45,9 +45,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("E", new Node("E"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Untreated");
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 1.1));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("B"), true, 0.3));
-		network.addEdge(new Edge("positive", nodes.get("E"), nodes.get("C"), true, 0.8));
+		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 1.1));
+		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("B"), true, 0.3));
+		network.addEdge(new Edge("positive gi", nodes.get("E"), nodes.get("C"), true, 0.8));
 		return network;
 	}
 
@@ -72,9 +72,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("D"), true, 0.9));
-		network.addEdge(new Edge("positive", nodes.get("A"), nodes.get("B"), true, 0.4));
-		network.addEdge(new Edge("negative", nodes.get("A"), nodes.get("C"), true, 0.7));
+		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 0.9));
+		network.addEdge(new Edge("positive gi", nodes.get("A"), nodes.get("B"), true, 0.4));
+		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("C"), true, 0.7));
 
 		cnetworks.add(network);
 		return cnetworks;

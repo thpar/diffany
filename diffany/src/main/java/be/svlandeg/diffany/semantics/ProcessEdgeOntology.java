@@ -18,8 +18,10 @@ import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 public class ProcessEdgeOntology extends EdgeOntology
 {
 
-	private String negPrefix;
-	private String posPrefix;
+	private String negPrefix_symm;
+	private String negPrefix_dir;
+	private String posPrefix_symm;
+	private String posPrefix_dir;
 	
 	protected static Color neg_diff_paint = Color.ORANGE;
 	protected static Color pos_diff_paint = Color.YELLOW;
@@ -39,14 +41,20 @@ public class ProcessEdgeOntology extends EdgeOntology
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
-	 * After the constructor is called, default edge-category mappings should be
-	 * inserted using addCategoryMapping!
+	 * After the constructor is called, default edge-category mappings should be inserted!
+	 * @param posPrefix_symm the prefix to be used when a symmetrical interaction increases
+	 * @param posPrefix_dir the prefix to be used when a directed interaction increases
+	 * @param negPrefix_symm the prefix to be used when a symmetrical interaction decreases
+	 * @param negPrefix_dir the prefix to be used when a directed interaction decreases
+	 * @param sourceCats all the source categories defined in this ontology
 	 */
-	public ProcessEdgeOntology(String posPrefix, String negPrefix, Map<String, Boolean> sourceCats)
+	public ProcessEdgeOntology(String posPrefix_symm, String posPrefix_dir, String negPrefix_symm, String negPrefix_dir, Map<String, Boolean> sourceCats)
 	{
 		super();
-		this.negPrefix = negPrefix;
-		this.posPrefix = posPrefix;
+		this.negPrefix_symm = negPrefix_symm;
+		this.negPrefix_dir = negPrefix_dir;
+		this.posPrefix_symm = posPrefix_symm;
+		this.posPrefix_dir = posPrefix_dir;
 		parentSourceCatToColor = new HashMap<String, Color>();
 		parentSourceCatToArrowHead = new HashMap<String, ArrowHead>();
 		addSourceCategories(sourceCats);
@@ -115,11 +123,15 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			return default_diff_ah;
 		}
-		if (category.startsWith(posPrefix))
+		if (category.startsWith(negPrefix_symm) || category.startsWith(posPrefix_symm))
+		{
+			return symm_ah;
+		}
+		if (category.startsWith(posPrefix_dir))
 		{
 			return pos_diff_ah;
 		}
-		if (category.startsWith(negPrefix))
+		if (category.startsWith(negPrefix_dir))
 		{
 			return neg_diff_ah;
 		}
@@ -134,11 +146,11 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			return default_diff_paint;
 		}
-		if (category.startsWith(posPrefix))
+		if (category.startsWith(posPrefix_dir) || category.startsWith(posPrefix_symm))
 		{
 			return pos_diff_paint;
 		}
-		if (category.startsWith(negPrefix))
+		if (category.startsWith(negPrefix_symm) || category.startsWith(negPrefix_dir))
 		{
 			return neg_diff_paint;
 		}
@@ -323,11 +335,17 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			if (up)
 			{
-				type = posPrefix;
+				if (diffSymm)
+					type = posPrefix_symm;
+				else
+					type = posPrefix_dir;
 			} 
 			else
 			{
-				type = negPrefix;
+				if (diffSymm)
+					type = negPrefix_symm;
+				else
+					type = negPrefix_dir;
 			}
 			String baseType = refCat;
 			if (refCat.equals(VOID_TYPE))

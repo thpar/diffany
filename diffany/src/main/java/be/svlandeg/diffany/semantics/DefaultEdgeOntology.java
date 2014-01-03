@@ -147,11 +147,11 @@ public class DefaultEdgeOntology extends EdgeOntology
 	}
 	
 	@Override
-	public boolean isSymmetricalSourceType(String category)
+	public boolean isSymmetricalSourceType(String edgeType)
 	{
-		if (afOntology.isDefinedDiffCategory(category))
-			return afOntology.isSymmetricalSourceType(category);
-		return prOntology.isSymmetricalSourceType(category);
+		if (afOntology.isDefinedSourceType(edgeType))
+			return afOntology.isSymmetricalSourceType(edgeType);
+		return prOntology.isSymmetricalSourceType(edgeType);
 	}
 
 	@Override
@@ -370,6 +370,11 @@ public class DefaultEdgeOntology extends EdgeOntology
 
 		// PR categories and common synonyms: binding and other symmetricals
 		
+		prOntology.addSourceCategoryMapping("complex", "ppi", overwrite);
+		prOntology.addSourceCategoryMapping("complex formation", "ppi", overwrite);
+		prOntology.addSourceCategoryMapping("complex-formation", "ppi", overwrite);
+		prOntology.addSourceCategoryMapping("complex_formation", "ppi", overwrite);
+		prOntology.addSourceCategoryMapping("complexformation", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("ppi", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
 		prOntology.addSourceCategoryMapping("proteinprotein interaction", "ppi", overwrite);
@@ -379,6 +384,8 @@ public class DefaultEdgeOntology extends EdgeOntology
 		prOntology.addSourceCategoryMapping("binding", "ppi", overwrite);
 		
 		prOntology.addSourceCategoryMapping("transcription", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcribes", "transcription", overwrite);
+		prOntology.addSourceCategoryMapping("transcribe", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf binding", "transcription", overwrite);
 		prOntology.addSourceCategoryMapping("tf-binding", "transcription", overwrite);

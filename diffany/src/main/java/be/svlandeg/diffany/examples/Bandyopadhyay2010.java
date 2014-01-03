@@ -27,6 +27,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
+		
+		eo.isSymmetricalSourceType("positive");
+		
 		return p;
 	}
 

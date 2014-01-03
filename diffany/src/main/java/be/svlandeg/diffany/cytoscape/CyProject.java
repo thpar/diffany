@@ -93,11 +93,11 @@ public class CyProject{
 		}
 		
 		CyNetworkBridge bridge = new CyNetworkBridge();
-		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork());
+		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), this.edgeOntology);
 		
 		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet);
+			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, this.edgeOntology);
 			condNets.add(condNet);			
 		}
 		

@@ -23,6 +23,7 @@ import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
  * Conversion class that takes the appropriate Cytoscape Factories and uses them
@@ -125,8 +126,8 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public ReferenceNetwork getReferenceNetwork(CyNetwork network){
-		return (ReferenceNetwork)getNetwork(network, NetworkType.REFERENCE);
+	public ReferenceNetwork getReferenceNetwork(CyNetwork network, EdgeOntology edgeOntology){
+		return (ReferenceNetwork)getNetwork(network, NetworkType.REFERENCE, edgeOntology);
 	}
 	
 	/**
@@ -138,8 +139,8 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public ConditionNetwork getConditionNetwork(CyNetwork network){
-		return (ConditionNetwork)getNetwork(network, NetworkType.CONDITION);
+	public ConditionNetwork getConditionNetwork(CyNetwork network, EdgeOntology edgeOntology){
+		return (ConditionNetwork)getNetwork(network, NetworkType.CONDITION, edgeOntology);
 	}
 	
 	/**
@@ -147,11 +148,12 @@ public class CyNetworkBridge {
 	 * and creates a {@link Network} out of it.
 	 * 
 	 * @param cyNetwork the "name" of the network in the network table.
-	 * 
+	 * @param type a switch to determine with role this network plays in the {@link Project}
+	 * @param edgeOntology will determine which edge types are considered symmetrical
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	private Network getNetwork(CyNetwork cyNetwork, NetworkType type){
+	private Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology){
 		
 		Network network = null;
 		String netName = this.getName(cyNetwork, cyNetwork);
@@ -183,8 +185,11 @@ public class CyNetworkBridge {
 			Node fromNode = nodeMap.get(nodeFromID);
 			Node toNode = nodeMap.get(nodeToID);
 			
-			//TODO take edge direction into account.
-			Edge edge = new Edge(this.getInteraction(cyNetwork, cyEdge), fromNode, toNode, true);
+			String interaction = this.getInteraction(cyNetwork, cyEdge);
+			
+			boolean isSymmetrical = edgeOntology.isSymmetricalSourceType(interaction);
+			
+			Edge edge = new Edge(interaction, fromNode, toNode, isSymmetrical);
 			if (this.getWeight(cyNetwork, cyEdge) !=null){
 				edge.setWeight(this.getWeight(cyNetwork, cyEdge));				
 			}

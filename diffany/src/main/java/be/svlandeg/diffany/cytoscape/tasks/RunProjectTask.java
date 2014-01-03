@@ -60,9 +60,7 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
 		
-		//TODO get cutoff from gui slider
-		double cutoff = 0.25;
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project);
 		
 		addDifferentialNetworks(project.getDifferentialNetworks(), cyProject);
 		

@@ -508,23 +508,24 @@ public abstract class EdgeOntology
 	}
 	
 	/**
-	 * Retrieve the symmetry state of a source category in this ontology
-	 * @param category the source category
+	 * Retrieve the symmetry state of a source edgeType in this ontology
+	 * @param edgeType the source edgeType
 	 * @return the symmetry state of the source category
 	 */
-	public boolean isSymmetricalSourceCategory(String category)
+	public boolean isSymmetricalSourceType(String edgeType)
 	{
-		if (category == null)
+		if (edgeType == null)
 		{
 			String errormsg = "The source category should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (! allSourceCategories.containsKey(category))
+		if (! isDefinedSourceType(edgeType))
 		{
-			String errormsg = "The source category is not defined in this ontology!";
+			String errormsg = "The source edgeType is not defined in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		return allSourceCategories.get(category.toLowerCase());
+		String cat = getSourceCategory(edgeType);
+		return allSourceCategories.get(cat.toLowerCase());
 	}
 
 	/**

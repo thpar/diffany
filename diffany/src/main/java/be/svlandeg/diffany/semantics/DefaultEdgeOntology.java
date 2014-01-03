@@ -197,11 +197,11 @@ public class DefaultEdgeOntology extends EdgeOntology
 	}
 	
 	@Override
-	public boolean isSymmetricalSourceCategory(String category)
+	public boolean isSymmetricalSourceType(String category)
 	{
 		if (afOntology.isDefinedDiffCategory(category))
-			return afOntology.isSymmetricalSourceCategory(category);
-		return prOntology.isSymmetricalSourceCategory(category);
+			return afOntology.isSymmetricalSourceType(category);
+		return prOntology.isSymmetricalSourceType(category);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 	 * After the constructor is called, default edge-category mappings should be
 	 * inserted using addCategoryMapping!
 	 */
-	public ProcessEdgeOntology(String posPrefix, String negPrefix, Set<String> sourceCats)
+	public ProcessEdgeOntology(String posPrefix, String negPrefix, Map<String, Boolean> sourceCats)
 	{
 		super();
 		this.negPrefix = negPrefix;

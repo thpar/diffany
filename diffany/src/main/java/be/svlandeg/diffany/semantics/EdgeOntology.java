@@ -27,7 +27,7 @@ public abstract class EdgeOntology
 	private Map<String, String> sourceCatHierarchy;
 
 	private Map<String, String> mapSourceTypeToCategory;
-	private Set<String> allSourceCategories;
+	private Map<String, Boolean> allSourceCategories;
 
 	private Set<String> allDiffCategories;
 
@@ -386,7 +386,7 @@ public abstract class EdgeOntology
 	{
 		if (category == null)
 			 return false;
-		return allSourceCategories.contains(category);
+		return allSourceCategories.containsKey(category);
 	}
 	
 	/**
@@ -467,7 +467,7 @@ public abstract class EdgeOntology
 	 */
 	public Set<String> getAllSourceCategories()
 	{
-		return allSourceCategories;
+		return allSourceCategories.keySet();
 	}
 
 	/**
@@ -478,6 +478,7 @@ public abstract class EdgeOntology
 	{
 		return allDiffCategories;
 	}
+	
 
 	/**
 	 * Add a differential category (casing independent)
@@ -488,7 +489,7 @@ public abstract class EdgeOntology
 	{
 		if (category == null)
 		{
-			String errormsg = "The category should not be null!";
+			String errormsg = "The differential category should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		allDiffCategories.add(category.toLowerCase());
@@ -502,34 +503,60 @@ public abstract class EdgeOntology
 	{
 		for (String c : categories)
 		{
-			allDiffCategories.add(c.toLowerCase());
+			addDiffCategory(c);
 		}
+	}
+	
+	/**
+	 * Retrieve the symmetry state of a source category in this ontology
+	 * @param category the source category
+	 * @return the symmetry state of the source category
+	 */
+	public boolean isSymmetricalSourceCategory(String category)
+	{
+		if (category == null)
+		{
+			String errormsg = "The source category should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! allSourceCategories.containsKey(category))
+		{
+			String errormsg = "The source category is not defined in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		return allSourceCategories.get(category.toLowerCase());
 	}
 
 	/**
 	 * Add a source category (casing independent)
 	 * @param category the category that should be added to this ontology
+	 * @param symmetric whether or not the category is symmetric
 	 * @throws IllegalArgumentException when the category is null
 	 */
-	protected void addSourceCategory(String category) throws IllegalArgumentException
+	protected void addSourceCategory(String category, boolean symmetric) throws IllegalArgumentException
 	{
 		if (category == null)
 		{
-			String errormsg = "The category should not be null!";
+			String errormsg = "The source category should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		allSourceCategories.add(category.toLowerCase());
+		if (allSourceCategories.containsKey(category))
+		{
+			String errormsg = "The source category was already previously defined!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		allSourceCategories.put(category.toLowerCase(), symmetric);
 	}
 
 	/**
 	 * Add a number of source categories (casing independent)
 	 * @param categories the categories that should be added to this ontology
 	 */
-	protected void addSourceCategories(Set<String> categories)
+	protected void addSourceCategories(Map<String, Boolean> categories)
 	{
-		for (String c : categories)
+		for (String c : categories.keySet())
 		{
-			allSourceCategories.add(c.toLowerCase());
+			addSourceCategory(c, categories.get(c));
 		}
 	}
 
@@ -547,12 +574,12 @@ public abstract class EdgeOntology
 			String errormsg = "The provided child category ('" + childCat + "') already has a parent category!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!allSourceCategories.contains(childCat.toLowerCase()))
+		if (!allSourceCategories.containsKey(childCat.toLowerCase()))
 		{
 			String errormsg = "The provided child category ('" + childCat + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!allSourceCategories.contains(parentCat.toLowerCase()))
+		if (!allSourceCategories.containsKey(parentCat.toLowerCase()))
 		{
 			String errormsg = "The provided parent category ('" + parentCat + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
@@ -647,7 +674,7 @@ public abstract class EdgeOntology
 	 */
 	public void addSourceCategoryMapping(String edgeType, String category, boolean overwrite) throws IllegalArgumentException
 	{
-		if (!allSourceCategories.contains(category.toLowerCase()))
+		if (!allSourceCategories.containsKey(category.toLowerCase()))
 		{
 			String errormsg = "The provided edge category ('" + category + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
@@ -665,8 +692,8 @@ public abstract class EdgeOntology
 	 */
 	protected void removeAllCategoriesAndMappings()
 	{
-		allSourceCategories = new HashSet<String>();
-		allSourceCategories.add(VOID_TYPE);
+		allSourceCategories = new HashMap<String, Boolean>();
+		allSourceCategories.put(VOID_TYPE, true);
 
 		allDiffCategories = new HashSet<String>();
 		allDiffCategories.add(VOID_TYPE);

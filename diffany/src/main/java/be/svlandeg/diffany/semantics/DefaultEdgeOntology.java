@@ -1,7 +1,8 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
@@ -26,16 +27,16 @@ public class DefaultEdgeOntology extends EdgeOntology
 	public DefaultEdgeOntology()
 	{
 		String pos_cat = "increase";
-		Set<String> pos_cats = definePosCategories();
+		Map<String, Boolean> pos_cats = definePosCategories();
 
 		String neg_cat = "decrease";
-		Set<String> neg_cats = defineNegCategories();
+		Map<String, Boolean> neg_cats = defineNegCategories();
 		
-		Set<String> neutral_cats = defineNeutralCategories();
+		Map<String, Boolean> neutral_cats = defineNeutralCategories();
 		
 		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, pos_cats, neg_cats, neutral_cats);
 
-		Set<String> process_cats = defineProcessCategories();
+		Map<String, Boolean> process_cats = defineProcessCategories();
 
 		prOntology = new ProcessEdgeOntology(pos_cat + "_", neg_cat + "_", process_cats);
 
@@ -49,14 +50,14 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 * 
 	 * @return the defined process categories
 	 */
-	protected Set<String> defineProcessCategories()
+	protected Map<String, Boolean> defineProcessCategories()
 	{
-		Set<String> cats = new HashSet<String>();
-		cats.add("ppi");
-		cats.add("ptm");
-		cats.add("phosphorylation");
-		cats.add("ubiquitination");
-		cats.add("methylation");
+		Map<String, Boolean> cats = new HashMap<String, Boolean>();
+		cats.put("ppi", true);
+		cats.put("ptm", false);
+		cats.put("phosphorylation", false);
+		cats.put("ubiquitination", false);
+		cats.put("methylation", false);
 		return cats;
 	}
 
@@ -65,10 +66,10 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 * 
 	 * @return the defined positive categories
 	 */
-	protected Set<String> definePosCategories()
+	protected Map<String, Boolean> definePosCategories()
 	{
-		Set<String> pos_cats = new HashSet<String>();
-		pos_cats.add("positive_regulation");
+		Map<String, Boolean> pos_cats = new HashMap<String, Boolean>();
+		pos_cats.put("positive_regulation", false);
 		return pos_cats;
 	}
 
@@ -77,10 +78,10 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 * 
 	 * @return the defined negative categories
 	 */
-	protected Set<String> defineNegCategories()
+	protected Map<String, Boolean> defineNegCategories()
 	{
-		Set<String> neg_cats = new HashSet<String>();
-		neg_cats.add("negative_regulation");
+		Map<String, Boolean> neg_cats = new HashMap<String, Boolean>();
+		neg_cats.put("negative_regulation", false);
 		return neg_cats;
 	}
 	
@@ -89,10 +90,10 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 * 
 	 * @return the defined negative categories
 	 */
-	protected Set<String> defineNeutralCategories()
+	protected Map<String, Boolean> defineNeutralCategories()
 	{
-		Set<String> neutral_cats = new HashSet<String>();
-		neutral_cats.add("regulation");
+		Map<String, Boolean> neutral_cats = new HashMap<String, Boolean>();
+		neutral_cats.put("regulation", false);
 		return neutral_cats;
 	}
 	
@@ -195,6 +196,13 @@ public class DefaultEdgeOntology extends EdgeOntology
 		throw new IllegalArgumentException(errormsg);
 	}
 	
+	@Override
+	public boolean isSymmetricalSourceCategory(String category)
+	{
+		if (afOntology.isDefinedDiffCategory(category))
+			return afOntology.isSymmetricalSourceCategory(category);
+		return prOntology.isSymmetricalSourceCategory(category);
+	}
 
 	@Override
 	protected Color getDifferentialEdgeColor(String category)

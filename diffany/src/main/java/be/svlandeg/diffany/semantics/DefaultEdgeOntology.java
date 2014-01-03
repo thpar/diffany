@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
+import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 
 /**
  * This class holds both an ActivityFlowEdgeOntology and a ProcessEdgeOntology. 
@@ -211,6 +212,22 @@ public class DefaultEdgeOntology extends EdgeOntology
 		return prOntology.getSourceEdgeColor(edgeType);
 	}
 	
+	@Override
+	protected ArrowHead getDifferentialEdgeArrowHead(String category)
+	{
+		if (afOntology.isDefinedDiffCategory(category))
+			return afOntology.getDifferentialEdgeArrowHead(category);
+		return prOntology.getDifferentialEdgeArrowHead(category);
+	}
+
+	@Override
+	protected ArrowHead getSourceEdgeArrowHead(String edgeType)
+	{
+		if (afOntology.isDefinedSourceType(edgeType))
+			return afOntology.getSourceEdgeArrowHead(edgeType);
+		return prOntology.getSourceEdgeArrowHead(edgeType);
+	}
+	
 	/**
 	 * Provide a default child-parent mapping between source categories.
 	 */
@@ -230,6 +247,7 @@ public class DefaultEdgeOntology extends EdgeOntology
 	protected void addDefaultPaintedParents()
 	{
 		prOntology.addColor("ptm", Color.BLUE);
+		prOntology.addArrowHead("ptm", ArrowHead.ARROW);
 	}
 
 	/**
@@ -329,6 +347,5 @@ public class DefaultEdgeOntology extends EdgeOntology
 		afOntology.addSourceCategoryMapping("inhibit", "negative_regulation", overwrite);
 		afOntology.addSourceCategoryMapping("inhibition", "negative_regulation", overwrite);
 	}
-
 
 }

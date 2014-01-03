@@ -8,6 +8,7 @@ import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
 import be.svlandeg.diffany.concepts.VisualEdgeStyle;
+import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 
 /**
  * This class takes care of the semantic interpretation of different edge types and their corresponding categories
@@ -405,12 +406,20 @@ public abstract class EdgeOntology
 	}
 	
 	/**
-	 * Define the Color object (e.g. color) of an edge in a differential network, by edge category.
+	 * Define the Color object of an edge in a differential network, by edge category.
 	 * 
 	 * @param category the category of the edge interaction
 	 * @return the color of the edge
 	 */
 	protected abstract Color getDifferentialEdgeColor(String category);
+	
+	/**
+	 * Define the ArrowHead object of an edge in a differential network, by edge category.
+	 * 
+	 * @param category the category of the edge interaction
+	 * @return the arrowhead of the edge
+	 */
+	protected abstract ArrowHead getDifferentialEdgeArrowHead(String category);
 	
 	
 	/**
@@ -421,7 +430,7 @@ public abstract class EdgeOntology
 	 */
 	public VisualEdgeStyle getDifferentialEdgeStyle(String category)
 	{
-		return new VisualEdgeStyle(getDifferentialEdgeColor(category));
+		return new VisualEdgeStyle(getDifferentialEdgeColor(category), getDifferentialEdgeArrowHead(category));
 	}
 	
 	/**
@@ -433,6 +442,14 @@ public abstract class EdgeOntology
 	protected abstract Color getSourceEdgeColor(String edgeType);
 	
 	/**
+	 * Define the ArrowHead object of an edge in a 'normal' network (reference, condition-dependent or overlap).
+	 * 
+	 * @param edgeType the type of the edge interaction
+	 * @return the arrowhead of the edge
+	 */
+	protected abstract ArrowHead getSourceEdgeArrowHead(String edgeType);
+	
+	/**
 	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
 	 * 
 	 * @param edgeType the type of the edge interaction
@@ -440,7 +457,7 @@ public abstract class EdgeOntology
 	 */
 	public VisualEdgeStyle getSourceEdgeStyle(String edgeType)
 	{
-		return new VisualEdgeStyle(getSourceEdgeColor(edgeType));
+		return new VisualEdgeStyle(getSourceEdgeColor(edgeType), getSourceEdgeArrowHead(edgeType));
 	}
 
 

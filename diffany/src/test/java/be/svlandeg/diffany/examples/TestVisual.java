@@ -28,7 +28,7 @@ public class TestVisual
 		// ****** SOURCE NETWORK ****** //
 		
 		// process types
-		assertColorInSource("ppi" , Color.CYAN, eo);
+		assertColorInSource("ppi" , Color.LIGHT_GRAY, eo);
 		assertColorInSource("ptm" , Color.BLUE, eo);
 		assertColorInSource("phosphorylates" , Color.BLUE, eo);
 		assertColorInSource("ubiquitinate" , Color.BLUE, eo);

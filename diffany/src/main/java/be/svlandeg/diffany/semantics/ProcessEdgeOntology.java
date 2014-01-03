@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
+import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 
 /**
  * This edge ontology deals with process edges such as ppi and ptm, their
@@ -22,12 +23,17 @@ public class ProcessEdgeOntology extends EdgeOntology
 	
 	protected static Color neg_diff_paint = Color.ORANGE;
 	protected static Color pos_diff_paint = Color.YELLOW;
-	protected static Color default_diff_paint = Color.CYAN;
-	protected static Color neutral_diff_paint = Color.GRAY;
+	protected static Color default_diff_paint = Color.GRAY;
+	
+	protected static ArrowHead neg_diff_ah = ArrowHead.T;
+	protected static ArrowHead pos_diff_ah = ArrowHead.ARROW;
+	protected static ArrowHead default_diff_ah = ArrowHead.ARROW;
 	
 	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
+	protected static ArrowHead neutral_source_ah = ArrowHead.ARROW;
 	
 	protected Map<String, Color> parentSourceCatToColor;
+	protected Map<String, ArrowHead> parentSourceCatToArrowHead;
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
@@ -40,6 +46,7 @@ public class ProcessEdgeOntology extends EdgeOntology
 		this.negPrefix = negPrefix;
 		this.posPrefix = posPrefix;
 		parentSourceCatToColor = new HashMap<String, Color>();
+		parentSourceCatToArrowHead = new HashMap<String, ArrowHead>();
 		addSourceCategories(sourceCats);
 	}
 	
@@ -71,13 +78,59 @@ public class ProcessEdgeOntology extends EdgeOntology
 		parentSourceCatToColor.put(parentCat, p);
 	}
 	
+	/**
+	 * Assign a specific arrowhead to a source category (and its children)
+	 * 
+	 * @param parentCat a category (also representing its children)
+	 * @param p the ArrowHead object specifying its visual properties
+	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, 
+	 * or when the type is not defined in this ontology
+	 */
+	protected void addArrowHead(String parentCat, ArrowHead p)
+	{
+		if (parentCat == null || p == null)
+		{
+			String errormsg = "The provided parent category or the ArrowHead object should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (parentSourceCatToArrowHead.containsKey(parentCat))
+		{
+			String errormsg = "The provided parent category ('" + parentCat + "') already has a mapped ArrowHead object!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (! isDefinedSourceCat(parentCat))
+		{
+			String errormsg = "The provided parent category ('" + parentCat + "') is not defined in this ontology!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		parentSourceCatToArrowHead.put(parentCat, p);
+	}
+	
+	@Override
+	public ArrowHead getDifferentialEdgeArrowHead(String category)
+	{
+		if (category == null)
+		{
+			return default_diff_ah;
+		}
+		if (category.startsWith(posPrefix))
+		{
+			return pos_diff_ah;
+		}
+		if (category.startsWith(negPrefix))
+		{
+			return neg_diff_ah;
+		}
+		return default_diff_ah;
+	}
+	
 	
 	@Override
 	public Color getDifferentialEdgeColor(String category)
 	{
 		if (category == null)
 		{
-			return neutral_diff_paint;
+			return default_diff_paint;
 		}
 		if (category.startsWith(posPrefix))
 		{
@@ -87,7 +140,28 @@ public class ProcessEdgeOntology extends EdgeOntology
 		{
 			return neg_diff_paint;
 		}
-		return neutral_diff_paint;
+		return default_diff_paint;
+	}
+	
+	@Override
+	protected ArrowHead getSourceEdgeArrowHead(String edgeType)
+	{
+		if (isDefinedSourceType(edgeType))
+		{
+			String childCat = getSourceCategory(edgeType);
+			ArrowHead foundArrowHead = parentSourceCatToArrowHead.get(edgeType);
+			while (foundArrowHead == null && childCat != null)
+			{
+				String parentCat = retrieveParent(childCat);
+				foundArrowHead = parentSourceCatToArrowHead.get(parentCat);
+				childCat = parentCat;
+			}
+			if (foundArrowHead != null)
+			{
+				return foundArrowHead;
+			}
+		}
+		return neutral_source_ah;
 	}
 	
 	@Override
@@ -107,7 +181,6 @@ public class ProcessEdgeOntology extends EdgeOntology
 			{
 				return foundColor;
 			}
-			return default_diff_paint;
 		}
 		return neutral_source_paint;
 	}

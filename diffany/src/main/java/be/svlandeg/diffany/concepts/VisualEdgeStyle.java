@@ -12,24 +12,37 @@ public class VisualEdgeStyle
 {
 	
 	private Color color;
-	//private enum arrowHead{};
+	private ArrowHead ah;
+	
+	public enum ArrowHead{ARROW, T, NONE};
+	
 	
 	/**
 	 * Constructor: creates a visual edge style which cannot be modified
 	 * @param color object 
 	 */
-	public VisualEdgeStyle(Color color)
+	public VisualEdgeStyle(Color color, ArrowHead ah)
 	{
 		this.color = color;
+		this.ah = ah;
 	}
 	
 	/**
-	 * Retrieve the paint object
-	 * @return the paint object of this visual style
+	 * Retrieve the color
+	 * @return the color of this visual style
 	 */
 	public Color getColor()
 	{
 		return color;
+	}
+	
+	/**
+	 * Retrieve the arrowhead style
+	 * @return the type of arrowhead of this visual style
+	 */
+	public ArrowHead getArrowHead()
+	{
+		return ah;
 	}
 
 	

@@ -50,6 +50,29 @@ public class CyProject{
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	private String name = DEFAULT_PROJECT_NAME;
 	
+	public enum ComparisonMode{
+		/**
+		 * The reference network gets compared against each condition network separately
+		 */
+		REF_PAIRWISE,
+		/**
+		 * The reference network gets compared against all condition networks at once
+		 */
+		REF_TO_ALL;
+		
+		@Override
+		public String toString(){
+			switch(this){
+			default:
+			case REF_PAIRWISE:
+				return "Pairwise";
+			case REF_TO_ALL:
+				return "One to all";
+			}
+		}
+	}
+	private ComparisonMode mode = ComparisonMode.REF_TO_ALL;
+	
 	public CyProject(){
 	}
 	
@@ -243,6 +266,25 @@ public class CyProject{
 			views.addAll(viewManager.getNetworkViews(resPair.diffNet));
 		}
 		return views;
+	}
+
+
+	/**
+	 * Returns the execution mode for this project: Reference against all conditional networks, one at a time or all at once.
+	 * @return execution (or comparison) mode of the project
+	 */
+	public ComparisonMode getMode() {
+		return mode;
+	}
+
+	/**
+	 * Set the comparison mode for this project.
+	 * 
+	 * @param mode
+	 */
+	public void setMode(ComparisonMode mode) {
+		this.mode = mode;
 	}	
 
+	
 }

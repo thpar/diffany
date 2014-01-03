@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.cytoscape.tasks;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
@@ -13,6 +14,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
@@ -60,10 +62,18 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
 		
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project);
+		switch(cyProject.getMode()){
+		case REF_PAIRWISE:
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project);
+			break;
+		case REF_TO_ALL:
+			new CalculateDiff().calculateDiffNetwork(project.getReferenceNetwork(), 
+					(Set<ConditionNetwork>)project.getConditionNetworks(), 
+					project.getEdgeOntology(), project.getNodeMapper());
+			break;
+		}
 		
 		addDifferentialNetworks(project.getDifferentialNetworks(), cyProject);
-		
 	}
 
 	/**

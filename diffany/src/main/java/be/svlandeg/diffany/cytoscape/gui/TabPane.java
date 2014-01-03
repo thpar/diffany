@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -8,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,6 +25,7 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.CyProject;
+import be.svlandeg.diffany.cytoscape.CyProject.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
@@ -44,6 +45,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private CollectionDropDownModel comboModel;
 	private SelectionTableModel selectionModel;
 
+	private final String COLLECTION_ACTION = "collection";
+	private final String MODE_ACTION = "mode";
+	private final String RUN_ACTION = "run";
+	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the models.
 	 * @param model
@@ -56,16 +61,18 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	}
 	
 	private void createTabPaneContent(){
-		this.setLayout(new BorderLayout());
-		this.add(createCollectionSelectionPanel(), BorderLayout.NORTH);
-		this.add(createNetworkSelectionPanel(), BorderLayout.CENTER);
+		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		this.add(createCollectionSelectionPanel());
+		this.add(createNetworkSelectionPanel());
+		this.add(createOptionPanel());
 		
 		JButton runButton = new JButton("Start");
-		runButton.setActionCommand("run");
+		runButton.setActionCommand(RUN_ACTION);
 		runButton.addActionListener(this);
-		this.add(runButton, BorderLayout.SOUTH);
+		this.add(runButton);
 	}
 	
+
 	/**
 	 * Creates the panel containing the drop down list to select a network collection. 
 	 * @return {@link JPanel} containing the dropdown list.
@@ -80,7 +87,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		collPanel.add(new JLabel("Network collection: "));
 		collPanel.add(collectionDropDown);
 		
-		collectionDropDown.setActionCommand("collection");
+		collectionDropDown.setActionCommand(COLLECTION_ACTION);
 		collectionDropDown.addActionListener(this);
 		return collPanel;
 	}
@@ -106,6 +113,26 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		panel.add(scrollPane);
+		return panel;
+	}
+	
+	/**
+	 * Creates the panel containing extra project options like cut off and comparison mode
+	 * @return the panel to be added to the side pane
+	 */
+	private Component createOptionPanel() {
+		JPanel panel = new JPanel();
+		
+		JLabel label = new JLabel("Comparison mode: ");
+		panel.add(label);		
+		
+		ModeDropDownModel modeDropDownModel = new ModeDropDownModel();
+		JComboBox modeDropDown = new JComboBox(modeDropDownModel);
+		
+		modeDropDown.setSelectedItem(model.getCurrentProject().getMode());
+		modeDropDown.setActionCommand(MODE_ACTION);
+		modeDropDown.addActionListener(this);
+		panel.add(modeDropDown);
 		return panel;
 	}
 
@@ -141,13 +168,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
-		if (action.equals("collection")){
+		if (action.equals(COLLECTION_ACTION)){
 			//triggered on collection dropdown action
 			System.out.println("ComboBox dropdown action");
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
-		} else if (action.equals("run")){
+		} else if (action.equals(RUN_ACTION)){
 			//triggered on Start button click
 			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
@@ -156,6 +183,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
 				dtm.execute(it);
 			}
+		} else if (action.equals(MODE_ACTION)){
+			JComboBox source = (JComboBox)e.getSource();
+			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();
+			model.getCurrentProject().setMode(mode);
 		}
 	}
 

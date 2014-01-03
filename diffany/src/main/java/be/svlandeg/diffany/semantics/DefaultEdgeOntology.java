@@ -26,19 +26,21 @@ public class DefaultEdgeOntology extends EdgeOntology
 	 */
 	public DefaultEdgeOntology()
 	{
-		String pos_cat = "increase";
+		String pos_cat_symm = "increase";
+		String pos_cat_dir = "increases";
 		Map<String, Boolean> pos_cats = definePosCategories();
 
-		String neg_cat = "decrease";
+		String neg_cat_symm = "decrease";
+		String neg_cat_dir = "decreases";
 		Map<String, Boolean> neg_cats = defineNegCategories();
 		
 		Map<String, Boolean> neutral_cats = defineNeutralCategories();
 		
-		afOntology = new ActivityFlowEdgeOntology(pos_cat, neg_cat, pos_cats, neg_cats, neutral_cats);
+		afOntology = new ActivityFlowEdgeOntology(pos_cat_symm, pos_cat_dir, neg_cat_symm, neg_cat_dir, pos_cats, neg_cats, neutral_cats);
 
 		Map<String, Boolean> process_cats = defineProcessCategories();
 
-		prOntology = new ProcessEdgeOntology(pos_cat + "_", neg_cat + "_", process_cats);
+		prOntology = new ProcessEdgeOntology(pos_cat_symm + "_", pos_cat_dir + "_", neg_cat_symm + "_", neg_cat_dir + "_", process_cats);
 
 		insertDefaultParents();
 		insertDefaultMappings();

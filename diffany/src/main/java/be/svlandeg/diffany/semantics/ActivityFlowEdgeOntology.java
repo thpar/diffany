@@ -17,12 +17,16 @@ import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 public class ActivityFlowEdgeOntology extends EdgeOntology
 {
 
-	protected String neg_diff_cat;
-	protected String pos_diff_cat;
+	protected String neg_diff_cat_symm;
+	protected String pos_diff_cat_symm;
+	protected String neg_diff_cat_dir;
+	protected String pos_diff_cat_dir;
 
 	protected static Color neg_diff_paint = Color.RED;
 	protected static Color pos_diff_paint = Color.GREEN;
 	protected static Color neutral_diff_paint = Color.GRAY;
+	
+	protected static ArrowHead symm_ah = ArrowHead.NONE;
 	
 	protected static ArrowHead neg_diff_ah = ArrowHead.T;
 	protected static ArrowHead pos_diff_ah = ArrowHead.ARROW;
@@ -44,25 +48,31 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	 * Create a new ontology, defining pos/neg categories. 
 	 * After the constructor is called, default edge-category mappings should be inserted!
 	 * 
-	 * @param pos_diff_cat the string representing an increase in a differential network
-	 * @param neg_diff_cat the string representing an decrease in a differential network
+	 * @param pos_diff_cat_symm the string representing a symmetrical increase in a differential network
+	 * @param pos_diff_cat_dir the string representing a directed increase in a differential network
+	 * @param neg_diff_cat_symm the string representing a symmetrical decrease in a differential network
+	 * @param neg_diff_cat_dir the string representing a directed decrease in a differential network
 	 * @param source_pos_cats positive categories in the input networks (e.g. upregulation)
 	 * @param source_neg_cats negative categories in the input networks (e.g. inhibition)
 	 * @param source_neutral_cats neutral categories in the input networks (e.g. regulation)
 	 */
-	public ActivityFlowEdgeOntology(String pos_diff_cat, String neg_diff_cat, Map<String, Boolean> source_pos_cats, Map<String, Boolean> source_neg_cats, Map<String, Boolean> source_neutral_cats)
+	public ActivityFlowEdgeOntology(String pos_diff_cat_symm, String pos_diff_cat_dir,  String neg_diff_cat_symm, String neg_diff_cat_dir, Map<String, Boolean> source_pos_cats, Map<String, Boolean> source_neg_cats, Map<String, Boolean> source_neutral_cats)
 	{
 		super();
 
-		this.pos_diff_cat = pos_diff_cat;
-		this.neg_diff_cat = neg_diff_cat;
+		this.pos_diff_cat_symm = pos_diff_cat_symm;
+		this.pos_diff_cat_dir = pos_diff_cat_dir;
+		this.neg_diff_cat_symm = neg_diff_cat_symm;
+		this.neg_diff_cat_dir = neg_diff_cat_dir;
 
-		addDiffCategory(pos_diff_cat);
-		addDiffCategory(neg_diff_cat);
+		addDiffCategory(pos_diff_cat_symm);
+		addDiffCategory(pos_diff_cat_dir);
+		addDiffCategory(neg_diff_cat_symm);
+		addDiffCategory(neg_diff_cat_dir);
 
 		this.source_pos_cats = source_pos_cats.keySet();
-		this.source_neg_cats = source_neg_cats.keySet();;
-		this.source_neutral_cats = source_neutral_cats.keySet();;
+		this.source_neg_cats = source_neg_cats.keySet();
+		this.source_neutral_cats = source_neutral_cats.keySet();
 
 		addSourceCategories(source_pos_cats);
 		addSourceCategories(source_neg_cats);
@@ -76,11 +86,11 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		{
 			return neutral_diff_paint;
 		}
-		if (category.equals(pos_diff_cat))
+		if (category.equals(pos_diff_cat_symm) || category.equals(pos_diff_cat_dir))
 		{
 			return pos_diff_paint;
 		}
-		if (category.equals(neg_diff_cat))
+		if (category.equals(neg_diff_cat_symm) || category.equals(neg_diff_cat_dir))
 		{
 			return neg_diff_paint;
 		}
@@ -94,11 +104,15 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 		{
 			return neutral_diff_ah;
 		}
-		if (category.equals(pos_diff_cat))
+		if (category.equals(pos_diff_cat_symm) || category.equals(neg_diff_cat_symm))
+		{
+			return symm_ah;
+		}
+		if (category.equals(pos_diff_cat_dir))
 		{
 			return pos_diff_ah;
 		}
-		if (category.equals(neg_diff_cat))
+		if (category.equals(neg_diff_cat_dir))
 		{
 			return neg_diff_ah;
 		}
@@ -124,11 +138,19 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 	protected ArrowHead getSourceEdgeArrowHead(String edgeType)
 	{
 		String cat = getSourceCategory(edgeType);
-		if (cat != null && source_pos_cats.contains(cat))
+		if (cat == null)
+		{
+			return neutral_source_ah;
+		}
+		if (isSymmetricalSourceType(edgeType))
+		{
+			return symm_ah;
+		}
+		if (source_pos_cats.contains(cat))
 		{
 			return pos_source_ah;
 		}
-		if (cat != null && source_neg_cats.contains(cat))
+		if (source_neg_cats.contains(cat))
 		{
 			return neg_source_ah;
 		}
@@ -299,10 +321,14 @@ public class ActivityFlowEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge();
 		}
 
-		if (conDirection)
-			diff_edge.setType(pos_diff_cat);
-		if (!conDirection)
-			diff_edge.setType(neg_diff_cat);
+		if (conDirection && diffSymm)
+			diff_edge.setType(pos_diff_cat_symm);
+		if (conDirection && ! diffSymm)
+			diff_edge.setType(pos_diff_cat_dir);
+		if (!conDirection && diffSymm)
+			diff_edge.setType(neg_diff_cat_symm);
+		if (!conDirection && ! diffSymm)
+			diff_edge.setType(neg_diff_cat_dir);
 
 		diff_edge.setWeight(minDiffWeight);
 

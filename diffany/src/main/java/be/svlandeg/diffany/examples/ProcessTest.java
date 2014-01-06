@@ -47,8 +47,8 @@ public class ProcessTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
@@ -85,8 +85,8 @@ public class ProcessTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 
 		network.addEdge(new Edge("ppi", nodes.get("M"), nodes.get("N"), true, 3, false));
 		network.addEdge(new Edge("phosphorylates", nodes.get("S"), nodes.get("T"), true, 2, false));

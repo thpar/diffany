@@ -41,9 +41,9 @@ public class TestExamples
 		Set<Edge> dEdges =  dNetwork.getEdges();
 		assertEquals(3, dEdges.size());
 		
-		assertOneEdge(dNetwork, "A", "B", true, false, "increase", false, 0.7);
-		assertOneEdge(dNetwork, "A", "C", true, false, "decrease", false, 0.7);
-		assertOneEdge(dNetwork, "C", "E", true, false, "decrease", false, 0.8);
+		assertOneEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
+		assertOneEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 0.7);
+		assertOneEdge(dNetwork, "C", "E", true, false, "decrease_genetic_interaction", false, 0.8);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
@@ -76,9 +76,9 @@ public class TestExamples
 		
 		assertEquals(3, dEdges.size());
 		
-		assertOneEdge(dNetwork, "A", "B", true, false, "increase", false, 0.7);
-		assertOneEdge(dNetwork, "A", "C", true, false, "decrease", false, 1.2);
-		assertOneEdge(dNetwork, "A", "E", true, false, "decrease", false, 0.8);
+		assertOneEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
+		assertOneEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 1.2);
+		assertOneEdge(dNetwork, "A", "E", true, false, "decrease_genetic_interaction", false, 0.8);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
@@ -111,13 +111,13 @@ public class TestExamples
 		assertEquals(7, dEdges.size());
 		 
 		// TODO check increase(s)
-		assertOneEdge(dNetwork, "S", "T", false, false, "increases", false, 1);
-		assertOneEdge(dNetwork, "K", "J", false, false, "increase", false, 2);
-		assertOneEdge(dNetwork, "J", "K", false, false, "increases", false, 2);
-		assertOneEdge(dNetwork, "A", "B", false, false, "increases", false, 1);
-		assertOneEdge(dNetwork, "B", "A", false, false, "decreases", false, 1);
-		assertOneEdge(dNetwork, "M", "N", false, false, "increases", false, 12);
-		assertOneEdge(dNetwork, "N", "M", false, false, "increase", false, 7);
+		assertOneEdge(dNetwork, "S", "T", false, false, "increases_regulation", false, 1);
+		assertOneEdge(dNetwork, "K", "J", false, false, "increases_regulation", false, 2);
+		assertOneEdge(dNetwork, "J", "K", false, false, "decrease_negative_regulation", false, 2);
+		assertOneEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 1);
+		assertOneEdge(dNetwork, "B", "A", false, false, "decreases_regulation", false, 1);
+		assertOneEdge(dNetwork, "M", "N", false, false, "increases_regulation", false, 12);
+		assertOneEdge(dNetwork, "N", "M", false, false, "increase_positive_regulation", false, 7);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();

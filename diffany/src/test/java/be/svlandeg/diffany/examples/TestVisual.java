@@ -10,7 +10,7 @@ import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /** 
- * Class that automatically tests the visualisation properties of the DefaultEdgeOntology.
+ * Class that automatically tests the visualisation properties of the DefaultEdgeOntologyOld.
  * 
  * @author Sofie Van Landeghem
  */
@@ -55,9 +55,9 @@ public class TestVisual
 		// ****** DIFFERENTIAL NETWORK ****** //
 		
 		// process types
-		assertColorInDifferential("increase_ppi", Color.YELLOW, eo);
-		assertColorInDifferential("increase_whatever", Color.YELLOW, eo);
-		assertColorInDifferential("decrease_ptm", Color.ORANGE, eo);
+		assertColorInDifferential("increase_ppi", Color.GREEN, eo);
+		assertColorInDifferential("increase_whatever", Color.GREEN, eo);
+		assertColorInDifferential("decrease_ptm", Color.RED, eo);
 		
 		// activity flow types
 		assertColorInDifferential("increase", Color.GREEN, eo);
@@ -69,7 +69,6 @@ public class TestVisual
 		assertColorInDifferential("positive", Color.GRAY, eo);
 		assertColorInDifferential("negativeSomething", Color.GRAY, eo);
 		assertColorInDifferential("ppiptm", Color.GRAY, eo);
-		assertColorInDifferential("increasewhatever", Color.GRAY, eo);
 		assertColorInDifferential("somethingrandom", Color.GRAY, eo);
 		assertColorInDifferential("ppi", Color.GRAY, eo);
 		assertColorInDifferential("ptm", Color.GRAY, eo);

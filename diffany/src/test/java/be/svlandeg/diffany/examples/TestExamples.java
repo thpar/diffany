@@ -113,11 +113,11 @@ public class TestExamples
 		// TODO check increase(s)
 		assertOneEdge(dNetwork, "S", "T", false, false, "increases_regulation", false, 1);
 		assertOneEdge(dNetwork, "K", "J", false, false, "increases_regulation", false, 2);
-		assertOneEdge(dNetwork, "J", "K", false, false, "decrease_negative_regulation", false, 2);
+		assertOneEdge(dNetwork, "J", "K", false, false, "increases_regulation", false, 2);
 		assertOneEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 1);
 		assertOneEdge(dNetwork, "B", "A", false, false, "decreases_regulation", false, 1);
 		assertOneEdge(dNetwork, "M", "N", false, false, "increases_regulation", false, 12);
-		assertOneEdge(dNetwork, "N", "M", false, false, "increase_positive_regulation", false, 7);
+		assertOneEdge(dNetwork, "N", "M", false, false, "increases_regulation", false, 7);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
@@ -152,7 +152,7 @@ public class TestExamples
 		
 		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 2);
 		assertOneEdge(dNetwork, "G", "H", false, false, "ubiquitination_to_phosphorylation", false, 6);
-		assertOneEdge(dNetwork, "H", "G", false, false, "decrease_ubiquitination", false, 1);
+		assertOneEdge(dNetwork, "H", "G", false, false, "decreases_ubiquitination", false, 1);
 		assertOneEdge(dNetwork, "M", "N", true, false, "increase_ppi", false, 3);
 		assertOneEdge(dNetwork, "S", "T", true, false, "ppi_to_phosphorylation", false, 5);
 		

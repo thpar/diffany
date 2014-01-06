@@ -178,7 +178,7 @@ public class CalculateDiffOfMore
 			}
 		}
 		cleaning.removeRedundantEdges(diff);
-		cleaning.directSymmetricalWhenOverlapping(diff);
+		cleaning.directSymmetricalWhenOverlapping(diff, eo);
 		
 		return diff;
 	}

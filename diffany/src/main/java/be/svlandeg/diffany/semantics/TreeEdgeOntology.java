@@ -40,7 +40,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	protected Map<String, Color> parentSourceCatToColor;
 	protected Map<String, ArrowHead> parentSourceCatToArrowHead;
 	
-	protected Map<String, String> differential_translations;
+	
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
@@ -55,7 +55,6 @@ public class TreeEdgeOntology extends EdgeOntology
 	{
 		super();
 		sourceCatHierarchy = new HashMap<String, String>();
-		differential_translations = new HashMap<String, String>();
 		this.negPrefix_symm = negPrefix_symm;
 		this.negPrefix_dir = negPrefix_dir;
 		this.posPrefix_symm = posPrefix_symm;
@@ -65,23 +64,6 @@ public class TreeEdgeOntology extends EdgeOntology
 		addSourceCategories(sourceCats);
 	}
 	
-	/**
-	 * Define a translation of a type translation into a simplification, 
-	 * e.g. "negativeregulation_to_positiveregulation" turns into "increase_regulation"
-	 * 
-	 * @param transformation the original type change
-	 * @param simplification a simplified version of the string, representing the same change
-	 * @throws IllegalArgumentException when the transformation was already previously entered
-	 */
-	protected void putDifferentialTranslation(String transformation, String simplification) throws IllegalArgumentException
-	{
-		if (differential_translations.containsKey(transformation))
-		{
-			String errormsg = "The provided translation rule ('" + transformation + "') generates a conflict!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		differential_translations.put(transformation, simplification);
-	}
 	
 	////////////// TREE ALGORITHMS //////////////////////////////////
 	
@@ -601,11 +583,7 @@ public class TreeEdgeOntology extends EdgeOntology
 			type += "_" + baseType;
 			diffWeight = minDiffWeight;
 		}
-		String simplifiedType = type;
-		if (differential_translations.containsKey(type))
-		{
-			simplifiedType = differential_translations.get(type);
-		}
+		String simplifiedType = getDifferentialTranslation(type);
 		diff_edge.setType(simplifiedType);
 		
 		if (diffWeight <= cutoff)

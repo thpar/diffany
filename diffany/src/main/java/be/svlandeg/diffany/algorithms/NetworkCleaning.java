@@ -3,10 +3,8 @@ package be.svlandeg.diffany.algorithms;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
  * This class provides generic methods useful for network cleaning before or
@@ -24,7 +22,7 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 **/
-	public void directSymmetricalWhenOverlapping(DifferentialNetwork net)
+	public void directSymmetricalWhenOverlapping(DifferentialNetwork net, EdgeOntology eo)
 	{
 		Set<Edge> copySet = new HashSet<Edge>();	// needed to avoid ConcurrentModificationException
 		copySet.addAll(net.getEdges());
@@ -39,6 +37,8 @@ public class NetworkCleaning
 
 				Edge fwdDirection = new Edge(source, target, symmE);
 				fwdDirection.makeSymmetrical(false);
+				fwdDirection.setType(getDirectedType(eo, symmE.getType()));
+				
 				Set<Edge> others = net.getAllEdges(source, target);
 				for (Edge fwdE : others)
 				{
@@ -50,6 +50,8 @@ public class NetworkCleaning
 
 				Edge reverseDirection = new Edge(target, source, symmE);
 				reverseDirection.makeSymmetrical(false);
+				reverseDirection.setType(getDirectedType(eo, symmE.getType()));
+				
 				others = net.getAllEdges(target, source);
 				for (Edge backE : others)
 				{
@@ -77,6 +79,26 @@ public class NetworkCleaning
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Transform the edge type from symmetrical to directed
+	 * @return
+	 */
+	private String getDirectedType(EdgeOntology eo, String oldtype)
+	{
+		if (oldtype.equals("increase"))
+		{
+			return "decrease";
+		}
+		if (oldtype.equals("decrease"))
+		{
+			return "increase";
+		}
+		String newtype = oldtype.replace("increase_", "increases_");
+		newtype = newtype.replace("decrease_", "decreases_");
+		String translatedType = eo.getDifferentialTranslation(newtype);
+		return translatedType;
 	}
 
 	/**

@@ -27,6 +27,8 @@ public abstract class EdgeOntology
 	
 	protected Map<String, Boolean> allSourceCategories;
 	protected Set<String> allDiffCategories;
+	
+	protected Map<String, String> differential_translations;
 
 	/**
 	 * Create an empty ontology, with no edge categories or any mapping defined
@@ -34,6 +36,7 @@ public abstract class EdgeOntology
 	public EdgeOntology()
 	{
 		removeAllCategoriesAndMappings();
+		differential_translations = new HashMap<String, String>();
 	}
 	
 	
@@ -63,6 +66,38 @@ public abstract class EdgeOntology
 	 */
 	public abstract EdgeDefinition getOverlapEdge(Set<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
 	
+	/**
+	 * Define a translation of a type translation into a simplification, 
+	 * e.g. "negativeregulation_to_positiveregulation" turns into "increase_regulation"
+	 * 
+	 * @param transformation the original type change
+	 * @param simplification a simplified version of the string, representing the same change
+	 * @throws IllegalArgumentException when the transformation was already previously entered
+	 */
+	public void putDifferentialTranslation(String transformation, String simplification) throws IllegalArgumentException
+	{
+		if (differential_translations.containsKey(transformation))
+		{
+			String errormsg = "The provided translation rule ('" + transformation + "') generates a conflict!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		differential_translations.put(transformation, simplification);
+	}
+	
+	/**
+	 * Return the translation of a type into its simplification.
+	 * @param transformation the original type change
+	 * @return its translation (or the same string if there is no mapped translation)
+	 */
+	public String getDifferentialTranslation(String transformation)
+	{
+		String simpl = transformation;
+		if (differential_translations.containsKey(transformation))
+		{
+			simpl = differential_translations.get(transformation);
+		}
+		return simpl;
+	}
 
 	/**
 	 * Private method that increments a specific type in a category-to-count hashmap.

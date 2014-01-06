@@ -136,7 +136,7 @@ public class CalculateDiffOfTwo
 			}
 		}
 		cleaning.removeRedundantEdges(diff);
-		cleaning.directSymmetricalWhenOverlapping(diff);
+		cleaning.directSymmetricalWhenOverlapping(diff, eo);
 		
 		return diff;
 	}

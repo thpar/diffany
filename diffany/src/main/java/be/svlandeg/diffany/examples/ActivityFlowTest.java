@@ -1,21 +1,10 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.Condition;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
+import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.semantics.*;
 
 /**
  * Testing class that tries to simulate a range of possibilities in activity flow networks
@@ -31,7 +20,7 @@ public class ActivityFlowTest extends GenericExample
 	 */
 	public Project getTestProject()
 	{
-		String name = "Negation_test";
+		String name = "AF_test";
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();
@@ -57,8 +46,8 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
 		
@@ -101,8 +90,8 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));

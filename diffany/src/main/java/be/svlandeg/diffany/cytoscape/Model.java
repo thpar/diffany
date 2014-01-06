@@ -7,6 +7,8 @@ import java.util.Set;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.model.events.NetworkDestroyedEvent;
+import org.cytoscape.model.events.NetworkDestroyedListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
@@ -23,7 +25,7 @@ import be.svlandeg.diffany.internal.Services;
  * @author thpar
  *
  */
-public class Model extends Observable implements NetworkAddedListener{
+public class Model extends Observable implements NetworkAddedListener, NetworkDestroyedListener{
 
 	/**
 	 * A collection of all Cytoscape services that were registered in the {@link CyActivator}
@@ -144,6 +146,12 @@ public class Model extends Observable implements NetworkAddedListener{
 		notifyObservers();
 	}
 	
+	@Override
+	public void handleEvent(NetworkDestroyedEvent e) {
+		currentProject.cleanup(e.getSource());
+		setChanged();
+		notifyObservers();
+	}
 	
 
 	public VisualSourceStyle getSourceStyle() {
@@ -154,6 +162,8 @@ public class Model extends Observable implements NetworkAddedListener{
 	public VisualDiffStyle getDiffStyle() {
 		return diffStyle;
 	}
+
+
 
 	
 }

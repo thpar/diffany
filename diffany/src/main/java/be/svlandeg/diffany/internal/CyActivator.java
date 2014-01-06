@@ -7,6 +7,7 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.events.NetworkAddedListener;
+import org.cytoscape.model.events.NetworkDestroyedListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
@@ -68,6 +69,7 @@ public class CyActivator extends AbstractCyActivator
 		
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());
+		registerService(context,model, NetworkDestroyedListener.class, new Properties());
 		
 		
 		

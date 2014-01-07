@@ -89,6 +89,8 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceParent("negative_genetic_interaction", "genetic_interaction");
 		putSourceParent("synthetic_lethality", "negative_genetic_interaction");
 		
+		putSourceParent("ppi", "colocalization");
+		
 		putSourceParent("phosphorylation", "ptm");
 		putSourceParent("dephosphorylation", "ptm");
 		putSourceParent("ubiquitination", "ptm");

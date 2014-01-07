@@ -1,13 +1,9 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import be.svlandeg.diffany.concepts.EdgeDefinition;
-import be.svlandeg.diffany.concepts.VisualEdgeStyle;
+import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 
 /**
@@ -39,6 +35,39 @@ public abstract class EdgeOntology
 		differential_translations = new HashMap<String, String>();
 	}
 	
+	/**
+	 * Retrieve all the elements in this ontology that are root (i.e. do not have a parent)
+	 * @return all root elements in this ontology
+	 */
+	public abstract Set<String> retrieveAllSourceRootCats();
+	
+	/**
+	 * Determine whether or not two categories are related to eachother as child (sub) - parent (super)
+	 * @param childCat the subclass category
+	 * @param parentCat the superclass category
+	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated, 0 if equal)
+	 */
+	public abstract int isSourceChildOf(String childCat, String parentCat);
+	
+	/**
+	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
+	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
+	 * 
+	 * @param EdgeSet the edge definition in the reference and condition-specific networks (can include EdgeDefinition.getVoidEdge()),
+	 * but should only have 1 edge per network!
+	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential network
+	 * 
+	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
+	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
+	 */
+	public EdgeDefinition getDifferentialEdge(SingleEdgeSet edgeset, double cutoff) throws IllegalArgumentException
+	{
+		EdgeDefinition refEdge = edgeset.getReferenceEdge();
+		
+		List<EdgeDefinition> conEdges = edgeset.getConditionEdges();
+			
+		return getDifferentialEdge(refEdge, conEdges, cutoff);
+	}
 	
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
@@ -51,7 +80,7 @@ public abstract class EdgeOntology
 	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException;
+	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException;
 
 	/**
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
@@ -64,7 +93,7 @@ public abstract class EdgeOntology
 	 * @return the edge definition in the overlapping network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public abstract EdgeDefinition getOverlapEdge(Set<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
+	public abstract EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
 	
 	/**
 	 * Define a translation of a type translation into a simplification, 

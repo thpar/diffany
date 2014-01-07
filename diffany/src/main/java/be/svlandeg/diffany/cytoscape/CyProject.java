@@ -283,33 +283,7 @@ public class CyProject{
 	public void setMode(ComparisonMode mode) {
 		this.mode = mode;
 	}
-
-	/**
-	 * Checks if all the networks in this project still have their Cytoscape counterpart
-	 * @param source the {@link CyNetworkManager} that signalled the destruction of a {@link CyNetwork}
-	 */
-	public void cleanup(CyNetworkManager source) {
-		if (!source.networkExists(this.referenceNetwork.getSUID())){
-			//TODO 
-		}
-		for (CyNetwork condNet : this.conditionalNetworks){
-			if (!source.networkExists(condNet.getSUID())){
-				this.conditionalNetworks.remove(condNet);
-			}
-		}
-		for (CyNetworkPair resPair : this.resultNetworks){
-			if (!source.networkExists(resPair.diffNet.getSUID())){ 
-				if (source.networkExists(resPair.overlapNet.getSUID())){
-					source.destroyNetwork(resPair.overlapNet);
-				}
-			} else if (!source.networkExists(resPair.overlapNet.getSUID())){ 
-				if (source.networkExists(resPair.diffNet.getSUID())){
-					source.destroyNetwork(resPair.diffNet);
-				}
-			}
-			this.resultNetworks.remove(resPair);
-		}
-	}	
+	
 
 	
 }

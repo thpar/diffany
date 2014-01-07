@@ -48,6 +48,8 @@ public class CyProject{
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	private String name = DEFAULT_PROJECT_NAME;
 	
+	private double cutoff = 0;
+	
 	public enum ComparisonMode{
 		/**
 		 * The reference network gets compared against each condition network separately
@@ -283,7 +285,15 @@ public class CyProject{
 	public void setMode(ComparisonMode mode) {
 		this.mode = mode;
 	}
-	
 
+
+	public double getCutoff() {
+		return cutoff;
+	}
+
+
+	public void setCutoff(double cutoff) {
+		this.cutoff = cutoff;
+	}
 	
 }

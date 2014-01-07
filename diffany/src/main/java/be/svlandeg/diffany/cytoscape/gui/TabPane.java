@@ -170,7 +170,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		String action = e.getActionCommand();
 		if (action.equals(COLLECTION_ACTION)){
 			//triggered on collection dropdown action
-			System.out.println("ComboBox dropdown action");
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			

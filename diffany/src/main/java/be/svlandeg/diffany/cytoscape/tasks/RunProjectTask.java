@@ -64,12 +64,13 @@ public class RunProjectTask implements Task {
 		
 		switch(cyProject.getMode()){
 		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project);
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cyProject.getCutoff());
 			break;
 		case REF_TO_ALL:
-			new CalculateDiff().calculateDiffNetwork(project.getReferenceNetwork(), 
+			DifferentialNetwork diff = new CalculateDiff().calculateDiffNetwork(project.getReferenceNetwork(), 
 					(Set<ConditionNetwork>)project.getConditionNetworks(), 
-					project.getEdgeOntology(), project.getNodeMapper());
+					project.getEdgeOntology(), project.getNodeMapper(), cyProject.getCutoff());
+			project.addDifferential(diff);
 			break;
 		}
 		

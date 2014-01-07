@@ -1,10 +1,7 @@
 package be.svlandeg.diffany.semantics;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
 import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
@@ -67,6 +64,21 @@ public class TreeEdgeOntology extends EdgeOntology
 	
 	////////////// TREE ALGORITHMS //////////////////////////////////
 	
+	
+	@Override
+	public Set<String> retrieveAllSourceRootCats()
+	{
+		Set<String> allRoots = new HashSet<String>();
+		for (String cat : allSourceCategories.keySet())
+		{
+			if (! sourceCatHierarchy.keySet().contains(cat))	// does not have a parent
+			{
+				allRoots.add(cat);
+			}
+		}
+		return allRoots;
+	}
+	
 	/**
 	 * Define a child category and its parent category. The child should not have received a parent before.
 	 * @param childCat the child category (subclass)
@@ -121,13 +133,8 @@ public class TreeEdgeOntology extends EdgeOntology
 		return children;
 	}
 	
-	/**
-	 * Determine whether or not two categories are related to eachother as child (sub) - parent (super)
-	 * @param childCat the subclass category
-	 * @param parentCat the superclass category
-	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated, 0 if equal)
-	 */
-	protected int isSourceChildOf(String childCat, String parentCat)
+	@Override
+	public int isSourceChildOf(String childCat, String parentCat)
 	{
 		int depth = 0;
 		if (childCat.equals(parentCat))
@@ -177,7 +184,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	 * @param edges the original set of edges
 	 * @return a map of most general common children and their (equal) maximal distance to the original edges.
 	 */
-	protected Map<String, Integer> retrieveFirstCommonChildren(Set<EdgeDefinition> edges)
+	protected Map<String, Integer> retrieveFirstCommonChildren(Collection<EdgeDefinition> edges)
 	{
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonChildren = new HashMap<String, Integer>();
@@ -251,7 +258,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
 	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges
 	 */
-	protected Map<String, Integer> retrieveFirstCommonParents(Set<EdgeDefinition> edges, boolean excludeEmpty)
+	protected Map<String, Integer> retrieveFirstCommonParents(Collection<EdgeDefinition> edges, boolean excludeEmpty)
 	{
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonParents = new HashMap<String, Integer>();
@@ -336,7 +343,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	//////////////// ACTUAL EDGE ONTOLOGY METHODS ////////////////
 	
 	@Override
-	public EdgeDefinition getOverlapEdge(Set<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		if (edges == null || edges.isEmpty())
 		{
@@ -427,7 +434,7 @@ public class TreeEdgeOntology extends EdgeOntology
 
 	
 	@Override
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Set<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();

@@ -16,6 +16,7 @@ public class CalculateDiffOfTwo
 {
 	
 	protected NetworkCleaning cleaning;
+	protected ConflictResolver conflictresolver;
 	
 	/**
 	 * Constructor, which initializes the functionality for cleaning a network.
@@ -23,6 +24,7 @@ public class CalculateDiffOfTwo
 	public CalculateDiffOfTwo()
 	{
 		cleaning = new NetworkCleaning();
+		conflictresolver = new ConflictResolver();
 	}
 	
 	
@@ -58,7 +60,7 @@ public class CalculateDiffOfTwo
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
-
+		
 		for (Node source1 : allNodes) // source node in reference network
 		{
 			// get the equivalent source node in the condition network
@@ -91,7 +93,7 @@ public class CalculateDiffOfTwo
 
 				// get the reference edge
 				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
-				EdgeDefinition edgedef1 = getSingleEdge(referenceEdges);
+				//EdgeDefinition edgedef1 = getSingleEdge(referenceEdges);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
@@ -99,39 +101,48 @@ public class CalculateDiffOfTwo
 				{
 					conditionEdges = condition.getAllEdges(source2, target2);
 				}
-				EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
-				Set<EdgeDefinition> edgedefs2 = new HashSet<EdgeDefinition>();
-				edgedefs2.add(edgedef2);
-
-				EdgeDefinition diff_edge_def = eo.getDifferentialEdge(edgedef1, edgedefs2, cutoff);
-
-				Set<Node> allSources = new HashSet<Node>();
-				allSources.add(source1);
-				allSources.add(source2);
-				String sourceconsensus = nm.getConsensusName(allSources);
+				//EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
+				//Set<EdgeDefinition> edgedefs2 = new HashSet<EdgeDefinition>();
+				//edgedefs2.add(edgedef2);
 				
-				Set<Node> allTargets = new HashSet<Node>();
-				allTargets.add(target1);
-				allTargets.add(target2);
-				String targetconsensus = nm.getConsensusName(allTargets);
+				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
+				condlist.add(conditionEdges);
+				EdgeSet es = new EdgeSet(referenceEdges, condlist);
+				Map<String, SingleEdgeSet> edgeSets = conflictresolver.resolveEdgesPerRoot(eo, es);
 				
-				// non-void differential edge
-				if (diff_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+				for (String root : edgeSets.keySet())
 				{
-					if (!allDiffNodes.containsKey(sourceconsensus))
-					{
-						allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
-					}
-					Node sourceresult = allDiffNodes.get(sourceconsensus);
+					SingleEdgeSet ses = edgeSets.get(root);
+					EdgeDefinition diff_edge_def = eo.getDifferentialEdge(ses, cutoff);
+	
+					Set<Node> allSources = new HashSet<Node>();
+					allSources.add(source1);
+					allSources.add(source2);
+					String sourceconsensus = nm.getConsensusName(allSources);
 					
-					if (!allDiffNodes.containsKey(targetconsensus))
-					{
-						allDiffNodes.put(targetconsensus, new Node(targetconsensus));
-					}
-					Node targetresult = allDiffNodes.get(targetconsensus);
+					Set<Node> allTargets = new HashSet<Node>();
+					allTargets.add(target1);
+					allTargets.add(target2);
+					String targetconsensus = nm.getConsensusName(allTargets);
 					
-					Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
-					diff.addEdge(edgediff);
+					// non-void differential edge
+					if (diff_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+					{
+						if (!allDiffNodes.containsKey(sourceconsensus))
+						{
+							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
+						}
+						Node sourceresult = allDiffNodes.get(sourceconsensus);
+						
+						if (!allDiffNodes.containsKey(targetconsensus))
+						{
+							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
+						}
+						Node targetresult = allDiffNodes.get(targetconsensus);
+						
+						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+						diff.addEdge(edgediff);
+					}
 				}
 			}
 		}
@@ -203,49 +214,55 @@ public class CalculateDiffOfTwo
 				}
 
 				// get the reference edge
-				Set<Edge> n1Edges = n1.getAllEdges(source1, target1);
-				EdgeDefinition edgedef1 = getSingleEdge(n1Edges);
+				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1);
 
 				// get the condition-specific edge
-				Set<Edge> n2Edges = new HashSet<Edge>();
+				Set<Edge> conditionEdges = new HashSet<Edge>();
 				if (source2 != null && target2 != null)
 				{
-					n2Edges = n2.getAllEdges(source2, target2);
+					conditionEdges = n2.getAllEdges(source2, target2);
 				}
-				EdgeDefinition edgedef2 = getSingleEdge(n2Edges);
-
-				Set<EdgeDefinition> edges = new HashSet<EdgeDefinition>();
-				edges.add(edgedef1);
-				edges.add(edgedef2);
-				EdgeDefinition overlap_edge_def = eo.getOverlapEdge(edges, cutoff, minOperator);
-
-				Set<Node> allSources = new HashSet<Node>();
-				allSources.add(source1);
-				allSources.add(source2);
-				String sourceconsensus = nm.getConsensusName(allSources);
 				
-				Set<Node> allTargets = new HashSet<Node>();
-				allTargets.add(target1);
-				allTargets.add(target2);
-				String targetconsensus = nm.getConsensusName(allTargets);
+				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
+				condlist.add(conditionEdges);
+				EdgeSet es = new EdgeSet(referenceEdges, condlist);
+				Map<String, SingleEdgeSet> edgeSets = conflictresolver.resolveEdgesPerRoot(eo, es);
 				
-				// non-void overlapping edge
-				if (overlap_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+				for (String root : edgeSets.keySet())
 				{
-					if (!allDiffNodes.containsKey(sourceconsensus))
-					{
-						allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
-					}
-					Node sourceresult = allDiffNodes.get(sourceconsensus);
+					SingleEdgeSet ses = edgeSets.get(root);
 					
-					if (!allDiffNodes.containsKey(targetconsensus))
-					{
-						allDiffNodes.put(targetconsensus, new Node(targetconsensus));
-					}
-					Node targetresult = allDiffNodes.get(targetconsensus);
+					Set<EdgeDefinition> allEdges = ses.getAllEdges();
+					EdgeDefinition overlap_edge_def = eo.getOverlapEdge(allEdges, cutoff, minOperator);
+	
+					Set<Node> allSources = new HashSet<Node>();
+					allSources.add(source1);
+					allSources.add(source2);
+					String sourceconsensus = nm.getConsensusName(allSources);
 					
-					Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
-					overlap.addEdge(overlapdiff);
+					Set<Node> allTargets = new HashSet<Node>();
+					allTargets.add(target1);
+					allTargets.add(target2);
+					String targetconsensus = nm.getConsensusName(allTargets);
+					
+					// non-void overlapping edge
+					if (overlap_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+					{
+						if (!allDiffNodes.containsKey(sourceconsensus))
+						{
+							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
+						}
+						Node sourceresult = allDiffNodes.get(sourceconsensus);
+						
+						if (!allDiffNodes.containsKey(targetconsensus))
+						{
+							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
+						}
+						Node targetresult = allDiffNodes.get(targetconsensus);
+						
+						Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
+						overlap.addEdge(overlapdiff);
+					}
 				}
 			}
 		}
@@ -270,24 +287,6 @@ public class CalculateDiffOfTwo
 			throw new UnsupportedOperationException("This algorithm currently only supports 1-1 node mappings");
 		}
 		return nodes.iterator().next();
-	}
-
-	/**
-	 * Return one single edge from a collection, assuming that there will only be 1
-	 * @param edges the set of edges
-	 * @return the one edge in the set, a void one if the set is empty, or throw an UnsupportedOperationException if there are more than 1
-	 */
-	private EdgeDefinition getSingleEdge(Set<Edge> edges)
-	{
-		if (edges.size() > 1)
-		{
-			throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
-		}
-		if (edges.isEmpty())
-		{
-			return EdgeDefinition.getVoidEdge();
-		}
-		return edges.iterator().next();
 	}
 
 }

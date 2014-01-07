@@ -41,17 +41,17 @@ public class TestExamples
 		Set<Edge> dEdges =  dNetwork.getEdges();
 		assertEquals(3, dEdges.size());
 		
-		assertOneEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
-		assertOneEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 0.7);
-		assertOneEdge(dNetwork, "C", "E", true, false, "decrease_genetic_interaction", false, 0.8);
+		assertAnEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
+		assertAnEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 0.7);
+		assertAnEdge(dNetwork, "C", "E", true, false, "decrease_genetic_interaction", false, 0.8);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 0.9);
-		assertOneEdge(sNetwork, "A", "B", true, false, "genetic_interaction", false, 0.3);
+		assertAnEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 0.9);
+		assertAnEdge(sNetwork, "A", "B", true, false, "genetic_interaction", false, 0.3);
 	}
 	
 	/**
@@ -76,18 +76,18 @@ public class TestExamples
 		
 		assertEquals(3, dEdges.size());
 		
-		assertOneEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
-		assertOneEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 1.2);
-		assertOneEdge(dNetwork, "A", "E", true, false, "decrease_genetic_interaction", false, 0.8);
+		assertAnEdge(dNetwork, "A", "B", true, false, "increase_genetic_interaction", false, 0.7);
+		assertAnEdge(dNetwork, "A", "C", true, false, "decrease_genetic_interaction", false, 1.2);
+		assertAnEdge(dNetwork, "A", "E", true, false, "decrease_genetic_interaction", false, 0.8);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 0.7);
-		assertOneEdge(sNetwork, "A", "F", true, false, "negative_genetic_interaction", false, 1);
-		assertOneEdge(sNetwork, "A", "B", true, false, "genetic_interaction", false, 0.3);
+		assertAnEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 0.7);
+		assertAnEdge(sNetwork, "A", "F", true, false, "negative_genetic_interaction", false, 1);
+		assertAnEdge(sNetwork, "A", "B", true, false, "genetic_interaction", false, 0.3);
 	}
 	
 	/**
@@ -110,24 +110,23 @@ public class TestExamples
 		Set<Edge> dEdges =  dNetwork.getEdges();
 		assertEquals(7, dEdges.size());
 		 
-		// TODO check increase(s)
-		assertOneEdge(dNetwork, "S", "T", false, false, "increases_regulation", false, 1);
-		assertOneEdge(dNetwork, "K", "J", false, false, "increases_regulation", false, 2);
-		assertOneEdge(dNetwork, "J", "K", false, false, "increases_regulation", false, 2);
-		assertOneEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 1);
-		assertOneEdge(dNetwork, "B", "A", false, false, "decreases_regulation", false, 1);
-		assertOneEdge(dNetwork, "M", "N", false, false, "increases_regulation", false, 12);
-		assertOneEdge(dNetwork, "N", "M", false, false, "increases_regulation", false, 7);
+		assertAnEdge(dNetwork, "S", "T", false, false, "increases_regulation", false, 1);
+		assertAnEdge(dNetwork, "K", "J", false, false, "increases_regulation", false, 2);
+		assertAnEdge(dNetwork, "J", "K", false, false, "increases_regulation", false, 2);
+		assertAnEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 1);
+		assertAnEdge(dNetwork, "B", "A", false, false, "decreases_regulation", false, 1);
+		assertAnEdge(dNetwork, "M", "N", false, false, "increases_regulation", false, 12);
+		assertAnEdge(dNetwork, "N", "M", false, false, "increases_regulation", false, 7);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(4, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "B", false, false, "positive_regulation", false, 2);
-		assertOneEdge(sNetwork, "G", "H", true, false, "negative_regulation", true, 3);
-		assertOneEdge(sNetwork, "X", "Y", false, false, "positive_regulation", true, 2);
-		assertOneEdge(sNetwork, "M", "N", false, false, "regulation", false, 5);
+		assertAnEdge(sNetwork, "A", "B", false, false, "positive_regulation", false, 2);
+		assertAnEdge(sNetwork, "G", "H", true, false, "negative_regulation", true, 3);
+		assertAnEdge(sNetwork, "X", "Y", false, false, "positive_regulation", true, 2);
+		assertAnEdge(sNetwork, "M", "N", false, false, "regulation", false, 5);
 	}
 	
 	/**
@@ -148,22 +147,23 @@ public class TestExamples
 		// Testing the edges in the differential network
 		DifferentialNetwork dNetwork = dNetworks.iterator().next();
 		Set<Edge> dEdges =  dNetwork.getEdges();
-		assertEquals(5, dEdges.size());
+		assertEquals(6, dEdges.size());
 		
-		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 2);
-		assertOneEdge(dNetwork, "G", "H", false, false, "ubiquitination_to_phosphorylation", false, 6);
-		assertOneEdge(dNetwork, "H", "G", false, false, "decreases_ubiquitination", false, 1);
-		assertOneEdge(dNetwork, "M", "N", true, false, "increase_ppi", false, 3);
-		assertOneEdge(dNetwork, "S", "T", true, false, "ppi_to_phosphorylation", false, 5);
+		assertAnEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 2);
+		assertAnEdge(dNetwork, "G", "H", false, false, "ubiquitination_to_phosphorylation", false, 6);
+		assertAnEdge(dNetwork, "H", "G", false, false, "decreases_ubiquitination", false, 1);
+		assertAnEdge(dNetwork, "M", "N", true, false, "increase_ppi", false, 3);
+		assertAnEdge(dNetwork, "S", "T", true, false, "decrease_ppi", false, 3);
+		assertAnEdge(dNetwork, "S", "T", true, false, "increase_phosphorylation", false, 2);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 		
-		assertOneEdge(sNetwork, "X", "Y", true, false, "ptm", false, 3);
-		assertOneEdge(sNetwork, "G", "H", false, false, "ptm", false, 1);
-		assertOneEdge(sNetwork, "K", "J", true, false, "phosphorylation", true, 4);
+		assertAnEdge(sNetwork, "X", "Y", true, false, "ptm", false, 3);
+		assertAnEdge(sNetwork, "G", "H", false, false, "ptm", false, 1);
+		assertAnEdge(sNetwork, "K", "J", true, false, "phosphorylation", true, 4);
 	}
 	
 	/**
@@ -186,23 +186,23 @@ public class TestExamples
 		Set<Edge> dEdges = dNetwork.getEdges();
 		assertEquals(7, dEdges.size());
 		
-		assertOneEdge(dNetwork, "W", "Z", true, false, "decrease_ppi", false, 0.5);
-		assertOneEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 0.3);
-		assertOneEdge(dNetwork, "A", "D", true, false, "increase_ppi", false, 0.75);
-		assertOneEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
+		assertAnEdge(dNetwork, "W", "Z", true, false, "decrease_ppi", false, 0.5);
+		assertAnEdge(dNetwork, "A", "B", true, false, "decrease_ppi", false, 0.3);
+		assertAnEdge(dNetwork, "A", "D", true, false, "increase_ppi", false, 0.75);
+		assertAnEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
 		
-		assertOneEdge(dNetwork, "M", "N", false, false, "increases_phosphorylation", false, 4);
-		assertOneEdge(dNetwork, "P", "M", false, false, "increases_ptm", false, 2);
-		assertOneEdge(dNetwork, "N", "P", false, false, "decreases_phosphorylation", false, 3);
+		assertAnEdge(dNetwork, "M", "N", false, false, "increases_phosphorylation", false, 4);
+		assertAnEdge(dNetwork, "P", "M", false, false, "increases_ptm", false, 2);
+		assertAnEdge(dNetwork, "N", "P", false, false, "decreases_phosphorylation", false, 3);
 		
 		// Testing the edges in the corresponding overlapping network
 		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 		
-		assertOneEdge(sNetwork, "A", "B", true, false, "ppi", false, 0.3);
-		assertOneEdge(sNetwork, "A", "C", true, false, "ppi", false, 0.6);
-		assertOneEdge(sNetwork, "M", "N", false, false, "phosphorylation", false, 2);
+		assertAnEdge(sNetwork, "A", "B", true, false, "ppi", false, 0.3);
+		assertAnEdge(sNetwork, "A", "C", true, false, "ppi", false, 0.6);
+		assertAnEdge(sNetwork, "M", "N", false, false, "phosphorylation", false, 2);
 	}
 	
 	/**
@@ -219,14 +219,23 @@ public class TestExamples
 	 * @param negated whether or not the edge should be negated
 	 * @param weight the weight the edge should have
 	 */
-	private void assertOneEdge(Network n, String sourceName, String targetName, boolean symm, boolean normalized, String type, boolean negated, double weight)
+	private void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, boolean normalized, String type, boolean negated, double weight)
 	{
 		Set<Edge> edges = n.getAllEdgesByName(sourceName, targetName, symm, normalized);
-		assertEquals(1, edges.size());
-		Edge edge = edges.iterator().next();
-		assertEquals(edge.isSymmetrical(), symm);
-		assertEquals(edge.getType(), type);
-		assertEquals(edge.isNegated(), negated);
-		assertEquals(edge.getWeight(), weight, 0.00000005);
+		boolean found = false;
+		for (Edge edge : edges)
+		{
+			if (edge.isSymmetrical() == symm && edge.isNegated() == negated)
+			{
+				if (edge.getType().equals(type))
+				{
+					if ((edge.getWeight() < weight+0.00000005) && (edge.getWeight() > weight-0.00000005))
+					{
+						found = true;
+					}
+				}
+			}
+		}
+		assertEquals(found, true);
 	}
 }

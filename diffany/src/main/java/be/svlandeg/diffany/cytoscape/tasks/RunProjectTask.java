@@ -62,6 +62,8 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
 		
+		System.out.println("Running algorithm: "+cyProject.getMode());
+		
 		switch(cyProject.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project);

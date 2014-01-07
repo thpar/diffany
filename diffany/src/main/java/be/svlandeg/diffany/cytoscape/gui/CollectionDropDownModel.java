@@ -121,7 +121,6 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 	 * @return
 	 */
 	public boolean hasEntries(){
-		System.out.println(!empty? "has entries":"has no entries");
 		return !empty;
 	}
 

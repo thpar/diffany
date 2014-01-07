@@ -29,7 +29,7 @@ public abstract class AbstractVisualDiffanyStyle {
 	protected Services services;
 	
 	//color definitions
-	private static final Color NETWORK_BACKGROUND_COLOR = new Color(255, 254, 139);
+	private static final Color NETWORK_BACKGROUND_COLOR = Color.WHITE;
 	private static final Color NODE_COLOR = Color.YELLOW;
 	
 	

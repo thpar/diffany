@@ -28,7 +28,6 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, Paint> edgeSelectedColorFunction,
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
 		
-		System.out.println("Updating Source Visual Style");
 		for (String type : interactionTypes) {
 			VisualEdgeStyle edgeStyle = edgeOntology.getSourceEdgeStyle(type);
 			
@@ -38,7 +37,6 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 			
 			Color darkPaint = paint.darker().darker();
 			edgeSelectedColorFunction.putMapValue(type, darkPaint);
-			System.out.println("Mapped "+type+" to "+paint);
 			
 			
 			//arrow head
@@ -56,7 +54,6 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 				shape = ArrowShapeVisualProperty.T;
 				break;
 			}
-			System.out.println("Mapped "+type+" to "+shape);
 			edgeTargetArrowFunction.putMapValue(type,shape);
 		}
 	}

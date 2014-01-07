@@ -26,7 +26,6 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, Paint> edgeColorFunction, 
 			DiscreteMapping<String, Paint> edgeSelectedColorFunction,
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
-		System.out.println("Updating Differential Visual Style");
 		for (String type : interactionTypes) {
 			VisualEdgeStyle edgeStyle = edgeOntology.getDifferentialEdgeStyle(type);
 			
@@ -35,7 +34,6 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 			edgeColorFunction.putMapValue(type, paint);
 			Color darkPaint = paint.darker().darker();
 			edgeSelectedColorFunction.putMapValue(type, darkPaint);
-			System.out.println("Mapped "+type+" to "+paint);
 			
 			//arrow head
 			ArrowHead arrowHead = edgeStyle.getArrowHead();
@@ -53,7 +51,6 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 				break;
 			}
 			edgeTargetArrowFunction.putMapValue(type,shape);
-			System.out.println("Mapped "+type+" to "+shape);
 			
 			//edge stroke
 			

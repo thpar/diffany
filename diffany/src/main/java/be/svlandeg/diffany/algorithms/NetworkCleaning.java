@@ -24,6 +24,9 @@ public class NetworkCleaning
 	 **/
 	public void directSymmetricalWhenOverlapping(DifferentialNetwork net, EdgeOntology eo)
 	{
+		// TODO
+		
+		/*
 		Set<Edge> copySet = new HashSet<Edge>();	// needed to avoid ConcurrentModificationException
 		copySet.addAll(net.getEdges());
 		for (Edge symmE : copySet)
@@ -34,10 +37,12 @@ public class NetworkCleaning
 			{
 				Node source = symmE.getSource();
 				Node target = symmE.getTarget();
+				String symmType = symmE.getType();
 
 				Edge fwdDirection = new Edge(source, target, symmE);
 				fwdDirection.makeSymmetrical(false);
-				fwdDirection.setType(getDirectedType(eo, symmE.getType()));
+				
+				fwdDirection.setType(getDirectedType(eo, symmType));
 				
 				Set<Edge> others = net.getAllEdges(source, target);
 				for (Edge fwdE : others)
@@ -78,28 +83,9 @@ public class NetworkCleaning
 					net.removeEdge(symmE);
 				}
 			}
-		}
+		}*/
 	}
 	
-	/**
-	 * Transform the edge type from symmetrical to directed
-	 * @return
-	 */
-	private String getDirectedType(EdgeOntology eo, String oldtype)
-	{
-		if (oldtype.equals("increase"))
-		{
-			return "decrease";
-		}
-		if (oldtype.equals("decrease"))
-		{
-			return "increase";
-		}
-		String newtype = oldtype.replace("increase_", "increases_");
-		newtype = newtype.replace("decrease_", "decreases_");
-		String translatedType = eo.getDifferentialTranslation(newtype);
-		return translatedType;
-	}
 
 	/**
 	 * Remove edges in the network that are symmetrical and are represented

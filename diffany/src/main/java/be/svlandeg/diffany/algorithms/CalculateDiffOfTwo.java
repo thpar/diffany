@@ -41,8 +41,6 @@ public class CalculateDiffOfTwo
 	 * @return the differential network between the two
 	 *         
 	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
-	 * TODO: expand this algorithm to be able to deal with more than 1 edge between two nodes 
-	 * in the original networks (v.1.0)
 	 */
 	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, String diff_name, double cutoff)
@@ -93,7 +91,6 @@ public class CalculateDiffOfTwo
 
 				// get the reference edge
 				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
-				//EdgeDefinition edgedef1 = getSingleEdge(referenceEdges);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
@@ -101,9 +98,6 @@ public class CalculateDiffOfTwo
 				{
 					conditionEdges = condition.getAllEdges(source2, target2);
 				}
-				//EdgeDefinition edgedef2 = getSingleEdge(conditionEdges);
-				//Set<EdgeDefinition> edgedefs2 = new HashSet<EdgeDefinition>();
-				//edgedefs2.add(edgedef2);
 				
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
 				condlist.add(conditionEdges);
@@ -165,9 +159,7 @@ public class CalculateDiffOfTwo
 	 * 
 	 * @return the overlapping network between the two
 	 *      
-	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
-	 * TODO: expand this algorithm to be able to deal with more than 1 edge between two nodes 
-	 * in the original networks (v.1.0)
+	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0)
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, 
 			NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)

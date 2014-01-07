@@ -154,13 +154,8 @@ public class TreeEdgeOntology extends EdgeOntology
 		return -1;
 	}
 
-	/**
-	 * Return the common parent of two categories, or null if there is none
-	 * @param childCat1 the first child (sub) category
-	 * @param childCat2 the second child (sub) category
-	 * @return the common parent (super) category, or null if there is none such
-	 */
-	protected String commonSourceParent(String childCat1, String childCat2)
+	@Override
+	public String commonSourceParent(String childCat1, String childCat2)
 	{
 		if (!sourceCatHierarchy.containsKey(childCat1))
 		{

@@ -52,7 +52,16 @@ public class EdgeDefinition
 		this(DEFAULT_TYPE , DEFAULT_SYMM, DEFAULT_WEIGHT, DEFAULT_NEG);
 	}
 	
-	
+	/**
+	 * Cloning constructor
+	 * @param old the EdgeDefinition to be cloned
+	 */
+	public EdgeDefinition(EdgeDefinition old)
+	{
+		this(new String(old.type) , new Boolean(old.symmetrical), old.weight, new Boolean(old.negated));
+	}
+
+
 	/**
 	 * Obtain a void edge, for the purpose of being able to compare it to existing edges.
 	 * @return a void edge (weight == 0, symmetrical == true)

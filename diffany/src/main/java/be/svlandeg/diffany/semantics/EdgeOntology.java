@@ -50,6 +50,14 @@ public abstract class EdgeOntology
 	public abstract int isSourceChildOf(String childCat, String parentCat);
 	
 	/**
+	 * Return the common parent of two categories, or null if there is none
+	 * @param childCat1 the first child (sub) category
+	 * @param childCat2 the second child (sub) category
+	 * @return the common parent (super) category, or null if there is none such
+	 */
+	public abstract String commonSourceParent(String childCat1, String childCat2);
+	
+	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
 	 * 

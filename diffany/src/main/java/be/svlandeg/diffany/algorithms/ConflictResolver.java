@@ -2,9 +2,7 @@ package be.svlandeg.diffany.algorithms;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.EdgeDefinition;
-import be.svlandeg.diffany.concepts.EdgeSet;
-import be.svlandeg.diffany.concepts.SingleEdgeSet;
+import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
@@ -18,10 +16,10 @@ public class ConflictResolver
 {
 	
 	/**
-	 * TODO
-	 * @param eo
-	 * @param oldEdgeSet
-	 * @return
+	 * Group all input edges into subclasses per root category of the EdgeOntology
+	 * @param eo the edge ontology
+	 * @param oldEdgeSet the original sets of input edges
+	 * @return all input edges grouped by edge root category
 	 */
 	public Map<String, SingleEdgeSet> resolveEdgesPerRoot(EdgeOntology eo, EdgeSet oldEdgeSet)
 	{
@@ -93,5 +91,57 @@ public class ConflictResolver
 		
 		return mappedEdges;
 	}
+	
+	// TODO
+	public SingleEdgeSet unifyDirection(SingleEdgeSet oldSet, EdgeOntology eo)
+	{
+		int conditions = oldSet.getConditionCount();
+		
+		EdgeDefinition old_referenceEdge = oldSet.getReferenceEdge();
+		List<EdgeDefinition> old_conditionEdges = oldSet.getConditionEdges();
+		
+		int symmetricalCount = 0;
+		int directedCount = 0;
+		
+		if (old_referenceEdge.isSymmetrical())
+		{
+			symmetricalCount++;
+		}
+		else
+		{
+			directedCount++;
+		}
+		
+		for (EdgeDefinition c : old_conditionEdges)
+		{
+			if (c.isSymmetrical())
+			{
+				symmetricalCount++;
+			}
+			else
+			{
+				directedCount++;
+			}
+		}
+		
+		if (symmetricalCount == 0 || directedCount == 0)
+		{
+			return oldSet;	// nothing needs to be changed
+		}
+		
+		// let's make all of them directed!
+		SingleEdgeSet newSet = new SingleEdgeSet(conditions);
+		
+		String symmType = old_referenceEdge.getType();
+
+		EdgeDefinition fwdDirection = new EdgeDefinition(old_referenceEdge);
+		fwdDirection.makeSymmetrical(false);
+		
+		newSet.putReferenceEdge(fwdDirection);
+		
+		return newSet;
+		
+	}
+	
 
 }

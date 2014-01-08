@@ -64,6 +64,7 @@ public abstract class AbstractVisualDiffanyStyle {
 		//node default style
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, NODE_COLOR);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_SIZE, 30d);
 		
 		//node basic mappings
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");

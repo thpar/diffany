@@ -132,6 +132,28 @@ public class EdgeSet
 		}
 		conditionEdges.get(conditionNR).add(e);
 	}
+	
+	@Override
+	public String toString()
+	{
+		String result = "Edge Set with reference edges: [" ;
+		for (EdgeDefinition e : referenceEdges)
+		{
+			result += e + " ";
+		}
+		result += "] ";
+		result += " and " + conditionCount + " conditions: ";
+		for (int i = 0; i < conditionCount; i++)
+		{
+			result += " [" ;
+			for (EdgeDefinition e : conditionEdges.get(i))
+			{
+				result += e + " ";
+			}
+			result += "] ";
+		}
+		return result;
+	}
 
 
 }

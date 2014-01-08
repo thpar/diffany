@@ -648,7 +648,7 @@ public class TreeEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge();
 		}
 		diff_edge.setWeight(diffWeight);
-		//System.out.println("generated : " + diff_edge.writeToTab());
+		
 		return diff_edge;
 	}
 

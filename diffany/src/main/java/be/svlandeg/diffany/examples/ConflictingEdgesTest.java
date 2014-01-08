@@ -41,8 +41,8 @@ public class ConflictingEdgesTest extends GenericExample
 		nodes.put("B", new Node("B"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference");
 		
@@ -51,6 +51,12 @@ public class ConflictingEdgesTest extends GenericExample
 		
 		network.addEdge(new Edge("ptm", nodes.get("G"), nodes.get("H"), false, 3, false));
 		network.addEdge(new Edge("phosphorylation", nodes.get("G"), nodes.get("H"), false, 1, false));
+		network.addEdge(new Edge("regulation", nodes.get("G"), nodes.get("H"), false, 7, false));
+		
+		network.addEdge(new Edge("ptm", nodes.get("J"), nodes.get("K"), false, 4, true));
+		network.addEdge(new Edge("ubiquitination", nodes.get("J"), nodes.get("K"), true, 2, false));
+		network.addEdge(new Edge("regulation", nodes.get("J"), nodes.get("K"), false, 7, false));
+		network.addEdge(new Edge("regulation", nodes.get("J"), nodes.get("K"), false, 5, true));
 		return network;
 	}
 	
@@ -74,11 +80,19 @@ public class ConflictingEdgesTest extends GenericExample
 		nodes.put("B", new Node("B"));
 		nodes.put("G", new Node("G"));
 		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("K"));
-		nodes.put("K", new Node("J"));
+		nodes.put("J", new Node("J"));
+		nodes.put("K", new Node("K"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 8, false));
+		
 		network.addEdge(new Edge("phosphorylation", nodes.get("G"), nodes.get("H"), false, 2, false));
+		network.addEdge(new Edge("catalysis", nodes.get("G"), nodes.get("H"), false, 4, false));
+		
+		network.addEdge(new Edge("ptm", nodes.get("J"), nodes.get("K"), true, 3, false));
+		network.addEdge(new Edge("ptm", nodes.get("J"), nodes.get("K"), false, 6, false));
+		
+		network.addEdge(new Edge("positive_regulation", nodes.get("J"), nodes.get("K"), false, 3, true));
+		network.addEdge(new Edge("inhibition", nodes.get("J"), nodes.get("K"), true, 4, false));
 		
 		cnetworks.add(network);
 		return cnetworks;

@@ -209,6 +209,48 @@ public class TestExamples
 	}
 	
 	/**
+	 * JUNIT Test: check whether the example network with edge conflicts produces correct results.
+	 */
+	@Test
+	public void testConflicts()
+	{
+		ConflictingEdgesTest ex = new ConflictingEdgesTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		new CalculateDiff().calculateOneDifferentialNetwork(p, cutoff);
+		
+		// Testing that there is exactly one differential network created
+		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		assertEquals(1, dNetworks.size());
+		
+		// Testing the edges in the differential network
+		DifferentialNetwork dNetwork = dNetworks.iterator().next();
+		Set<Edge> dEdges = dNetwork.getEdges();
+		assertEquals(8, dEdges.size());
+		
+		assertAnEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 6);
+		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_ptm", false, 5);
+		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_regulation", false, 3);
+		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_ptm", false, 1);
+		assertAnEdge(dNetwork, "J", "K", false, false, "decreases_regulation", false, 3);
+		assertAnEdge(dNetwork, "K", "J", false, false, "decreases_regulation", false, 4);
+		assertAnEdge(dNetwork, "J", "K", false, false, "increases_ptm", false, 6);
+		assertAnEdge(dNetwork, "K", "J", false, false, "increases_ptm", false, 1);
+		
+		
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
+		Set<Edge> sEdges =  sNetwork.getEdges();
+		assertEquals(5, sEdges.size());
+		
+		assertAnEdge(sNetwork, "A", "B", false, false, "positive_regulation", false, 2);
+		assertAnEdge(sNetwork, "G", "H", false, false, "regulation", false, 4);
+		assertAnEdge(sNetwork, "G", "H", false, false, "ptm", false, 2);
+		assertAnEdge(sNetwork, "J", "K", false, false, "regulation", false, 4);
+		assertAnEdge(sNetwork, "K", "J", false, false, "ptm", false, 2);
+	}
+	
+	/**
 	 * Private method that asserts whether a certain edge is present in a network.
 	 * This method will fail during JUnit testing when there is no edge or more than one edge between the specified node names.
 	 * This method will also fail if the found edge has the wrong symmetry, weight, negation, or interaction type.

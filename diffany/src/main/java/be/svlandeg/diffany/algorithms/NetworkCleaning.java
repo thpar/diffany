@@ -99,7 +99,9 @@ public class NetworkCleaning
 			
 			EdgeSet unifiedEdgeSet = unifyDirection(normalEdges, reverseEdges, eo);
 			
-			mappedSingleEdges.put(key, summarizeToOne(unifiedEdgeSet,eo));
+			SingleEdgeSet singleEdgeSet = summarizeToOne(unifiedEdgeSet,eo);
+			
+			mappedSingleEdges.put(key, singleEdgeSet);
 		}
 		return mappedSingleEdges;
 	}
@@ -225,7 +227,6 @@ public class NetworkCleaning
 	 * @param oldSet the old edge set
 	 * @param eo the edge ontology
 	 * @return the new edge set, holding at most one edge per input network
-	 * TODO (currently just throws an exception)
 	 */
 	protected SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo)
 	{

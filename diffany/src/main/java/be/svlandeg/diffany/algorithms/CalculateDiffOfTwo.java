@@ -18,7 +18,6 @@ public class CalculateDiffOfTwo
 {
 	
 	protected NetworkCleaning cleaning;
-	protected ConflictResolver conflictresolver;
 	
 	/**
 	 * Constructor, which initializes the functionality for cleaning a network.
@@ -26,7 +25,6 @@ public class CalculateDiffOfTwo
 	public CalculateDiffOfTwo()
 	{
 		cleaning = new NetworkCleaning();
-		conflictresolver = new ConflictResolver();
 	}
 	
 	/**
@@ -107,7 +105,7 @@ public class CalculateDiffOfTwo
 				back_condlist.add(back_conditionEdges);
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
 				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = conflictresolver.fullSolution(eo, es, back_es);
+				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -147,7 +145,7 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		cleaning.removeRedundantEdges(overlap, nm);
+		cleaning.fullOutputCleaning(overlap, nm);
 		return overlap;
 	}
 	

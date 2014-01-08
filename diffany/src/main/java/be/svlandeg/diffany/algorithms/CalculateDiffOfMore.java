@@ -21,7 +21,6 @@ public class CalculateDiffOfMore
 {
 	
 	protected NetworkCleaning cleaning;
-	protected ConflictResolver conflictresolver;
 	protected CalculateDiffOfTwo twoProcessor;
 	protected static String EMPTY_NAME = "*empty*";
 	
@@ -32,7 +31,6 @@ public class CalculateDiffOfMore
 	{
 		twoProcessor = new CalculateDiffOfTwo();
 		cleaning = new NetworkCleaning();
-		conflictresolver = new ConflictResolver();
 	}
 	
 	/**
@@ -152,7 +150,7 @@ public class CalculateDiffOfMore
 				}	
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
 				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = conflictresolver.fullSolution(eo, es, back_es);
+				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -183,8 +181,7 @@ public class CalculateDiffOfMore
 				}
 			}
 		}
-		cleaning.removeRedundantEdges(diff, nm);
-		cleaning.directSymmetricalWhenOverlapping(diff, eo);
+		cleaning.fullOutputCleaning(diff, nm);
 		
 		return diff;
 	}

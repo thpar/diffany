@@ -8,8 +8,11 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
+import org.cytoscape.view.presentation.property.LineTypeVisualProperty;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
+import org.cytoscape.view.presentation.property.values.LineType;
+import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.BoundaryRangeValues;
@@ -74,10 +77,18 @@ public abstract class AbstractVisualDiffanyStyle {
 		ContinuousMapping<Double, Double> edgeWidthMapping = (ContinuousMapping<Double, Double>)vmffC.createVisualMappingFunction(CyNetworkBridge.WEIGHT, Double.class, BasicVisualLexicon.EDGE_WIDTH);
 		edgeWidthMapping.addPoint(0d, new BoundaryRangeValues<Double>(0.1d,0.1d,0.1d));
 		edgeWidthMapping.addPoint(10d, new BoundaryRangeValues<Double>(30d,30d,30d));
-		vis.addVisualMappingFunction(edgeWidthMapping);		
+		vis.addVisualMappingFunction(edgeWidthMapping);
 		
 		PassthroughMapping<String, ?> edgeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
 		vis.addVisualMappingFunction(edgeLabelMapping);
+		
+		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
+		DiscreteMapping<Boolean, LineType> edgeLineMapping = (DiscreteMapping<Boolean, LineType>)vmffD.createVisualMappingFunction(CyNetworkBridge.NEGATED, Boolean.class, BasicVisualLexicon.EDGE_LINE_TYPE);
+		edgeLineMapping.putMapValue(true, LineTypeVisualProperty.DASH_DOT);
+		edgeLineMapping.putMapValue(false, LineTypeVisualProperty.SOLID);
+		vis.addVisualMappingFunction(edgeLineMapping);		
+		
+		
 	}
 
 	

@@ -41,8 +41,9 @@ public class CyNetworkBridge {
 	 */
 	public static final String NORMALIZED_NAME = "normalized_name.SUID";
 	public static String WEIGHT = "weight";
-
-
+	public static String NEGATED = "negated";
+	
+	
 	public CyNetworkBridge(){
 	}
 
@@ -69,7 +70,10 @@ public class CyNetworkBridge {
 		if (edgeTable.getColumn(WEIGHT)==null){
 			edgeTable.createColumn(WEIGHT, Double.class, false);			
 		}
-
+		
+		if (edgeTable.getColumn(NEGATED)==null){
+			edgeTable.createColumn(NEGATED, Boolean.class, false);			
+		}
 		
 		for (Node node: network.getNodes()){
 			CyNode cyNode = cyNetwork.addNode();
@@ -89,6 +93,8 @@ public class CyNetworkBridge {
 			CyEdge newEdge = cyNetwork.addEdge(fromNode, toNode, !edge.isSymmetrical());
 			cyNetwork.getRow(newEdge).set(WEIGHT, edge.getWeight());
 			cyNetwork.getRow(newEdge).set(CyEdge.INTERACTION, edge.getType());
+			cyNetwork.getRow(newEdge).set(NEGATED, edge.isNegated());
+			
 			
 		}
 		return cyNetwork;
@@ -193,12 +199,25 @@ public class CyNetworkBridge {
 			if (this.getWeight(cyNetwork, cyEdge) !=null){
 				edge.setWeight(this.getWeight(cyNetwork, cyEdge));				
 			}
+			edge.makeNegated(this.isNegated(cyNetwork, cyEdge));
 			edgeSet.add(edge);
 		}
 		
 		network.setNodesAndEdges(new HashSet<Node>(nodeMap.values()), edgeSet);
 		
 		return network;
+	}
+	
+	/**
+	 * Get the value of the NEGATED column
+	 * 
+	 * @param cyNetwork
+	 * @param cyEdge
+	 * @return true if the NEGATED column contains "true"
+	 */
+	private boolean isNegated(CyNetwork cyNetwork, CyEdge cyEdge) {
+		Boolean negated = cyNetwork.getRow(cyEdge).get(NEGATED, Boolean.class);
+		return negated !=null && negated;
 	}
 
 	/**

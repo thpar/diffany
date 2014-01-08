@@ -24,7 +24,8 @@ public abstract class EdgeOntology
 	protected Map<String, Boolean> allSourceCategories;
 	protected Set<String> allDiffCategories;
 	
-	protected Map<String, String> differential_translations;
+	protected Set<String> posSourceCats;
+	protected Set<String> negSourceCats;
 
 	/**
 	 * Create an empty ontology, with no edge categories or any mapping defined
@@ -32,7 +33,8 @@ public abstract class EdgeOntology
 	public EdgeOntology()
 	{
 		removeAllCategoriesAndMappings();
-		differential_translations = new HashMap<String, String>();
+		posSourceCats = new HashSet<String>();
+		negSourceCats = new HashSet<String>();
 	}
 	
 	/**
@@ -104,37 +106,38 @@ public abstract class EdgeOntology
 	public abstract EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
 	
 	/**
-	 * Define a translation of a type translation into a simplification, 
-	 * e.g. "negativeregulation_to_positiveregulation" turns into "increase_regulation"
+	 * Define a 'positive' category, like positive regulation
 	 * 
-	 * @param transformation the original type change
-	 * @param simplification a simplified version of the string, representing the same change
-	 * @throws IllegalArgumentException when the transformation was already previously entered
+	 * @param pos_cat the 'positive' category
+	 * @throws IllegalArgumentException when the category is not defined in this ontology
 	 */
-	public void putDifferentialTranslation(String transformation, String simplification) throws IllegalArgumentException
+	public void addPosSourceCat(String pos_cat) throws IllegalArgumentException
 	{
-		if (differential_translations.containsKey(transformation))
+		if (! isDefinedSourceCat(pos_cat))
 		{
-			String errormsg = "The provided translation rule ('" + transformation + "') generates a conflict!";
+			String errormsg = "The positive category is not defined in this ontology!";
 			throw new IllegalArgumentException(errormsg);
+			
 		}
-		differential_translations.put(transformation, simplification);
+		posSourceCats.add(pos_cat);
 	}
 	
 	/**
-	 * Return the translation of a type into its simplification.
-	 * @param transformation the original type change
-	 * @return its translation (or the same string if there is no mapped translation)
+	 * Define a 'negative' category, like negative regulation
+	 * 
+	 * @param neg_cat the 'negative' category
+	 * @throws IllegalArgumentException when the category is not defined in this ontology
 	 */
-	public String getDifferentialTranslation(String transformation)
+	public void addNegSourceCat(String neg_cat) throws IllegalArgumentException
 	{
-		String simpl = transformation;
-		if (differential_translations.containsKey(transformation))
+		if (! isDefinedSourceCat(neg_cat))
 		{
-			simpl = differential_translations.get(transformation);
+			String errormsg = "The negative category is not defined in this ontology!";
+			throw new IllegalArgumentException(errormsg);
 		}
-		return simpl;
+		negSourceCats.add(neg_cat);
 	}
+	
 
 	/**
 	 * Private method that increments a specific type in a category-to-count hashmap.

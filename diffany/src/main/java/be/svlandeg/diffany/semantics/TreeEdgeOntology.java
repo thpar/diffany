@@ -37,7 +37,6 @@ public class TreeEdgeOntology extends EdgeOntology
 	protected Map<String, Color> parentSourceCatToColor;
 	protected Map<String, ArrowHead> parentSourceCatToArrowHead;
 	
-	
 
 	/**
 	 * Create a new ontology, defining the set of categories. and inserting
@@ -174,12 +173,12 @@ public class TreeEdgeOntology extends EdgeOntology
 	
 
 	/**
-	 * For a set of EdgeDefinition objects, determine their most general common children.
-	 * Most general is seen as a minimal maximum distance down to that (grand)child across the whole edge set.
+	 * For a set of EdgeDefinition objects, determine all their common children.
+	 * 
 	 * @param edges the original set of edges
-	 * @return a map of most general common children and their (equal) maximal distance to the original edges.
+	 * @return a map of all common children and their maximal distance to the original edges.
 	 */
-	protected Map<String, Integer> retrieveFirstCommonChildren(Collection<EdgeDefinition> edges)
+	protected Map<String, Integer> retrieveAllCommonChildren(Collection<EdgeDefinition> edges)
 	{
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonChildren = new HashMap<String, Integer>();
@@ -227,33 +226,56 @@ public class TreeEdgeOntology extends EdgeOntology
 			if (childrenCatsByCount.get(cat) == countEdges)
 				allCommonChildren.put(cat, childByDepth.get(cat));
 		}
-		int minChildDepth = Integer.MAX_VALUE;
-		for (String foundCat : allCommonChildren.keySet())
-		{
-			int foundDepth = childByDepth.get(foundCat);
-			minChildDepth = Math.min(minChildDepth, foundDepth);
-		}
-		for (String cat : childByDepth.keySet())
-		{
-			int thisDepth = childByDepth.get(cat);
-			if (thisDepth != minChildDepth)
-			{
-				// don't keep more specific categories if there is a more general common child
-				allCommonChildren.remove(cat);	
-			}
-		}
 		
 		return allCommonChildren;
 	}
 	
 	/**
-	 * For a set of EdgeDefinition objects, determine their most specific common parents/ancestors.
-	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole edge set.
+	 * For a set of EdgeDefinition objects, determine their most general common child.
+	 * Most general is seen as a minimal maximum distance down to that (grand)child across the whole edge set.
+	 * @param edges the original set of edges
+	 * @return the most general common child.
+	 */
+	protected String retrieveFirstCommonChild(Collection<EdgeDefinition> edges)
+	{
+		Map<String, Integer> allCommonChildren = retrieveAllCommonChildren(edges);
+		Set<String> allFirstChildren = new HashSet<String>();
+		
+		int minChildDepth = Integer.MAX_VALUE;
+		for (String foundCat : allCommonChildren.keySet())
+		{
+			int foundDepth = allCommonChildren.get(foundCat);
+			minChildDepth = Math.min(minChildDepth, foundDepth);
+		}
+		for (String cat : allCommonChildren.keySet())
+		{
+			int thisDepth = allCommonChildren.get(cat);
+			if (thisDepth == minChildDepth)
+			{
+				// don't keep more specific categories if there is a more general common child
+				allFirstChildren.add(cat);	
+			}
+		}
+		if (allFirstChildren.isEmpty())
+		{
+			return null;
+		}
+		if (allFirstChildren.size() > 1)
+		{
+			String errormsg = "Found more than 1 first common child!";
+			throw new RuntimeException(errormsg);
+		}
+		return allFirstChildren.iterator().next();
+	}
+	
+	/**
+	 * For a set of EdgeDefinition objects, determine all their common parents/ancestors.
+	 * 
 	 * @param edges the original set of edges
 	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
-	 * @return a map of most specific common parents and their (equal) maximal distance to the original edges
+	 * @return a map of all common parents and their maximal distance to the original edges
 	 */
-	protected Map<String, Integer> retrieveFirstCommonParents(Collection<EdgeDefinition> edges, boolean excludeEmpty)
+	protected Map<String, Integer> retrieveAllCommonParents(Collection<EdgeDefinition> edges, boolean excludeEmpty)
 	{
 		int countEdges = edges.size();
 		Map<String, Integer> allCommonParents = new HashMap<String, Integer>();
@@ -316,23 +338,47 @@ public class TreeEdgeOntology extends EdgeOntology
 			// no category covers all of the edges
 			return new HashMap<String, Integer>();
 		}
+		return allCommonParents;
+	}
+	
+	/**
+	 * For a set of EdgeDefinition objects, determine their most specific common parent/ancestor.
+	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole edge set.
+	 * 
+	 * @param edges the original set of edges
+	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
+	 * @return the most specific common parent, or null if there is none
+	 */
+	protected String retrieveFirstCommonParent(Collection<EdgeDefinition> edges, boolean excludeEmpty)
+	{
+		Map<String, Integer> allCommonParents = retrieveAllCommonParents(edges, excludeEmpty);
+		Set<String> allFirstParents = new HashSet<String>();
 		
 		int minParentDepth = Integer.MAX_VALUE;
 		for (String foundCat : allCommonParents.keySet())
 		{
-			int foundDepth = parentByDepth.get(foundCat);
+			int foundDepth = allCommonParents.get(foundCat);
 			minParentDepth = Math.min(minParentDepth, foundDepth);
 		}
-		for (String cat : parentByDepth.keySet())
+		for (String cat : allCommonParents.keySet())
 		{
-			int thisDepth = parentByDepth.get(cat);
-			if (thisDepth != minParentDepth)
+			int thisDepth = allCommonParents.get(cat);
+			if (thisDepth == minParentDepth)
 			{
 				// don't keep more general categories if there is a more specific common parent
-				allCommonParents.remove(cat);	
+				allFirstParents.add(cat);
 			}
 		}
-		return allCommonParents;
+		if (allFirstParents.isEmpty())
+		{
+			return null;
+		}
+		if (allFirstParents.size() > 1)
+		{
+			String errormsg = "Found more than 1 first common parent!";
+			throw new RuntimeException(errormsg);
+		}
+		return allFirstParents.iterator().next();
 	}
 	
 	//////////////// ACTUAL EDGE ONTOLOGY METHODS ////////////////
@@ -397,34 +443,30 @@ public class TreeEdgeOntology extends EdgeOntology
 		
 		// 3. DEFINE TYPE BY INSPECTING CHILDREN AND PARENTS //
 
-		Map<String, Integer> allCommonParents = retrieveFirstCommonParents(edges, false);
-		if (allCommonParents.isEmpty()) 
+		String firstCommonParent = retrieveFirstCommonParent(edges, false);
+		if (firstCommonParent == null) 
 		{
 			// no category covers all of the edges
 			return EdgeDefinition.getVoidEdge();
 		}
-		String commonParent = allCommonParents.keySet().iterator().next();
-		int minParentDepth = allCommonParents.get(commonParent);
 		
-		
-		if (minParentDepth == 0 || !overlapNegated)	//  the shared edge is the (first) common super class 
+		if (!overlapNegated && firstCommonParent != null)	//  the shared edge is the (first) common super class 
 		{
 			// if there are multiple common parents, equally close (minimal depth), we take the first one at random
-			overlap_edge.setType(commonParent);
+			overlap_edge.setType(firstCommonParent);
 			return overlap_edge;
 		} 
 		
-		Map<String, Integer> allCommonChildren = retrieveFirstCommonChildren(edges);
-		
-		if (! allCommonChildren.isEmpty()) 	
+		String firstCommonChild = retrieveFirstCommonChild(edges);
+		if (firstCommonParent == null) 
 		{
-			// the shared edge is the negation of the (first) common subclass, if there is one such
-			String commonChild = allCommonChildren.keySet().iterator().next();
-			overlap_edge.setType(commonChild);
-			return overlap_edge;
+			// no category covers all of the edges
+			return EdgeDefinition.getVoidEdge();
 		}
-
-		return EdgeDefinition.getVoidEdge();
+		
+		// the shared edge is the negation of the (first) common subclass, if there is one such
+		overlap_edge.setType(firstCommonChild);
+		return overlap_edge;
 	}
 
 	
@@ -433,6 +475,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	{
 		EdgeDefinition diff_edge = new EdgeDefinition();
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
+		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
 		
 		//////////// DEAL WITH SYMMETRY AND NEGATION ////////////////
 		boolean conSymm = true;
@@ -479,15 +522,78 @@ public class TreeEdgeOntology extends EdgeOntology
 		double minDiffWeight = Double.MAX_VALUE;
 		double minCumulWeight = Double.MAX_VALUE;
 		
+		// DEFINE THE COMMON PARENT OF ALL EDGES
+		allEdges.addAll(conEdges2);
+		allEdges.add(refEdge);
+		
+		String firstParent = retrieveFirstCommonParent(allEdges, true);
+		if (firstParent == null) 	
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		String firstNeutralParent = firstParent;
+		while (firstNeutralParent != null && (posSourceCats.contains(firstNeutralParent) || negSourceCats.contains(firstNeutralParent)))
+		{
+			firstNeutralParent = retrieveParent(firstNeutralParent);
+		}
+		
+		if (firstNeutralParent == null) 	
+		{
+			return EdgeDefinition.getVoidEdge();
+		}
+		
+		String baseType = firstNeutralParent;
+		
 		for (EdgeDefinition conEdge : conEdges2)
 		{
 			String conCat = getSourceCategory(conEdge.getType());
-			double diffWeight = 0;
+			double diffWeight = conEdge.getWeight() - refEdge.getWeight();
 			double cumWeight = conEdge.getWeight() + refEdge.getWeight();
 			
-			if (refCat.equals(conCat)) 
+			// refcat is void, concat is not --> increase (unless concat is negative)
+			if (refCat.equals(VOID_TYPE) && ! conCat.equals(VOID_TYPE))
 			{
-				diffWeight = conEdge.getWeight() - refEdge.getWeight();
+				if (negSourceCats.contains(conCat))
+				{
+					countDown++;
+				}
+				else
+				{
+					countUp++;
+				}
+				diffWeight = conEdge.getWeight();
+			}
+			
+			// refcat is not void, concat is void --> decrease (unless refcat is negative)
+			else if (! refCat.equals(VOID_TYPE)  && conCat.equals(VOID_TYPE))
+			{
+				if (negSourceCats.contains(refCat))
+				{
+					countUp++;
+				}
+				else
+				{
+					countDown++;
+				}
+				diffWeight = refEdge.getWeight();
+			}
+			
+			// refcat is positive, concat is negative --> decrease
+			else if (posSourceCats.contains(refCat) && negSourceCats.contains(conCat))
+			{
+				countDown++;
+				diffWeight = cumWeight;
+			}
+			
+			// refcat is negative, concat is positive --> increase
+			else if (negSourceCats.contains(refCat) && posSourceCats.contains(conCat))
+			{
+				countUp++;
+				diffWeight = cumWeight;
+			}
+			
+			else
+			{
 				if (diffWeight < 0) // decrease
 				{
 					diffWeight *= -1;
@@ -498,17 +604,7 @@ public class TreeEdgeOntology extends EdgeOntology
 					countUp++;
 				}
 			}
-			else if (refCat.equals(VOID_TYPE) && ! conCat.equals(VOID_TYPE))
-			{
-				countUp++;
-				diffWeight = conEdge.getWeight();
-			}
-
-			else if (conCat.equals(VOID_TYPE) && ! refCat.equals(VOID_TYPE))
-			{
-				countDown++;
-				diffWeight = refEdge.getWeight();
-			}
+			
 			minDiffWeight = Math.min(minDiffWeight, diffWeight);
 			minCumulWeight = Math.min(minCumulWeight, cumWeight);
 		}
@@ -518,75 +614,34 @@ public class TreeEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge();
 		}
 		
-		Boolean up = null;
-		if (countUp == 0 && countDown == conEdges2.size())
-		{
-			// all differential edges are down
-			up = false;
-		}
-		if (countDown == 0 && countUp == conEdges2.size())
-		{
-			// all edges are up
-			up = true;
-		}
+		// all edges are either all up, or all down
+		boolean up = countUp > 0;
 		
 		String type = "";
 		double diffWeight = 0.0;
-		if (up == null)
+		
+		//type = refCat + "_to_" + conParent;
+		//diffWeight = minCumulWeight;
+		
+		if (up)
 		{
-			Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2, false);
-			if (conParents.isEmpty()) 	
-			{
-				return EdgeDefinition.getVoidEdge();
-			}
-			String conParent = conParents.keySet().iterator().next();
-			
-			// fully changed category: take common parent of conEdges, if there is one
-			// however, only do this when the two categories are not directly related (unspecified)
-			
-			int related1 = isSourceChildOf(refCat, conParent);
-			int related2 = isSourceChildOf(conParent, refCat);
-			
-			if (related1 >= 0 || related2 >= 0)
-			{
-				return EdgeDefinition.getVoidEdge();
-			}
-			type = refCat + "_to_" + conParent;
-			diffWeight = minCumulWeight;
-		}
-		else 
-		{
-			if (up)
-			{
-				if (diffSymm)
-					type = posPrefix_symm;
-				else
-					type = posPrefix_dir;
-			} 
+			if (diffSymm)
+				type = posPrefix_symm;
 			else
-			{
-				if (diffSymm)
-					type = negPrefix_symm;
-				else
-					type = negPrefix_dir;
-			}
-			String baseType = refCat;
-			if (refCat.equals(VOID_TYPE))
-			{
-				Map<String, Integer> conParents = retrieveFirstCommonParents(conEdges2, true);
-				if (conParents.isEmpty()) 	
-				{
-					return EdgeDefinition.getVoidEdge();
-				}
-				String conParent = conParents.keySet().iterator().next();
-				
-				baseType = conParent;
-			}
-			type += "_" + baseType;
-			diffWeight = minDiffWeight;
+				type = posPrefix_dir;
+		} 
+		else
+		{
+			if (diffSymm)
+				type = negPrefix_symm;
+			else
+				type = negPrefix_dir;
 		}
-		String simplifiedType = getDifferentialTranslation(type);
-		diff_edge.setType(simplifiedType);
+		
+		type += "_" + baseType;
+		diffWeight = minDiffWeight;
+		
+		diff_edge.setType(type);
 		
 		if (diffWeight <= cutoff)
 		{

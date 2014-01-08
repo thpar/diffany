@@ -543,6 +543,7 @@ public class TreeEdgeOntology extends EdgeOntology
 		}
 		
 		String baseType = firstNeutralParent;
+		boolean unspecified = false;
 		
 		for (EdgeDefinition conEdge : conEdges2)
 		{
@@ -603,6 +604,13 @@ public class TreeEdgeOntology extends EdgeOntology
 				{
 					countUp++;
 				}
+				boolean refNeutral = ! (negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
+				boolean conNeutral = ! (negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
+	
+				if ((refNeutral && ! conNeutral) || (conNeutral && ! refNeutral))
+				{
+					unspecified = true;
+				}
 			}
 			
 			minDiffWeight = Math.min(minDiffWeight, diffWeight);
@@ -637,7 +645,10 @@ public class TreeEdgeOntology extends EdgeOntology
 			else
 				type = negPrefix_dir;
 		}
-		
+		if (unspecified)
+		{
+			type += "_unspecified";
+		}
 		type += "_" + baseType;
 		diffWeight = minDiffWeight;
 		

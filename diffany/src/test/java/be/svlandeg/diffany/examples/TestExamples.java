@@ -230,9 +230,9 @@ public class TestExamples
 		
 		assertAnEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 6);
 		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_ptm", false, 5);
-		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_regulation", false, 3);
+		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_ptm", false, 1);
-		assertAnEdge(dNetwork, "J", "K", false, false, "decreases_regulation", false, 3);
+		assertAnEdge(dNetwork, "J", "K", false, false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "K", "J", false, false, "decreases_regulation", false, 4);
 		assertAnEdge(dNetwork, "J", "K", false, false, "increases_ptm", false, 6);
 		assertAnEdge(dNetwork, "K", "J", false, false, "increases_ptm", false, 1);

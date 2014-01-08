@@ -48,6 +48,9 @@ public class ConflictingEdgesTest extends GenericExample
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("ptm", nodes.get("A"), nodes.get("B"), false, 5, false));
+		
+		network.addEdge(new Edge("ptm", nodes.get("G"), nodes.get("H"), false, 3, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("G"), nodes.get("H"), false, 1, false));
 		return network;
 	}
 	
@@ -75,6 +78,7 @@ public class ConflictingEdgesTest extends GenericExample
 		nodes.put("K", new Node("J"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 8, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("G"), nodes.get("H"), false, 2, false));
 		
 		cnetworks.add(network);
 		return cnetworks;

@@ -112,7 +112,7 @@ public class NetworkCleaning
 	 * @param oldEdgeSet the original sets of input edges
 	 * @return all input edges grouped by edge root category
 	 */
-	private Map<String, EdgeSet> resolveEdgesPerRoot(EdgeOntology eo, EdgeSet oldEdgeSet)
+	protected Map<String, EdgeSet> resolveEdgesPerRoot(EdgeOntology eo, EdgeSet oldEdgeSet)
 	{
 		Map<String, EdgeSet> mappedEdges = new HashMap<String, EdgeSet>();
 		Set<String> roots = eo.retrieveAllSourceRootCats();
@@ -174,7 +174,7 @@ public class NetworkCleaning
 	 * @param eo the edge ontology
 	 * @return the new edge set with only directed, or only symmetrical edges
 	 */
-	private EdgeSet unifyDirection(EdgeSet oldSet, EdgeSet backEdgeSet, EdgeOntology eo)
+	protected EdgeSet unifyDirection(EdgeSet oldSet, EdgeSet backEdgeSet, EdgeOntology eo)
 	{
 		boolean hasSymmetrical = containsSymmetricalEdges(oldSet);
 		boolean hasDirected = containsDirectedEdges(oldSet);
@@ -227,14 +227,14 @@ public class NetworkCleaning
 	 * @return the new edge set, holding at most one edge per input network
 	 * TODO (currently just throws an exception)
 	 */
-	private SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo)
+	protected SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo)
 	{
 		SingleEdgeSet newSet = new SingleEdgeSet(oldSet.getConditionCount());
 		
 		Set<EdgeDefinition> rootRefEs = oldSet.getReferenceEdges();
 		if (rootRefEs.size() > 1)	// TODO
 		{
-			throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
+			newSet.putReferenceEdge(resolveToOne(rootRefEs,  eo));
 		}
 		else
 		{
@@ -246,7 +246,7 @@ public class NetworkCleaning
 			Set<EdgeDefinition> rootCondIEs = oldSet.getConditionEdges(i);
 			if (rootCondIEs.size() > 1)	// TODO
 			{
-				throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
+				newSet.putConditionEdge(resolveToOne(rootCondIEs, eo), i);
 			}
 			else
 			{
@@ -255,6 +255,34 @@ public class NetworkCleaning
 		}
 		
 		return newSet;
+	}
+	
+	/**
+	 * Resolve a set of edges to one. This is currently implemented by taking the edge with the highest weight. 
+	 * 
+	 * @param edges the original set of input edges
+	 * @param eo the edge ontology
+	 * @return one edge, produced after resolving conflicts, or throws a RunTimeException if no best edge could be found. 
+	 */
+	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges,  EdgeOntology eo)
+	{
+		// TODO: should we also take into account whether or one of the edges is more specific?
+		double maxWeight = 0.0;
+		
+		for (EdgeDefinition e : edges)
+		{
+			maxWeight = Math.max(maxWeight, e.getWeight());
+		}
+		
+		for (EdgeDefinition e : edges)
+		{
+			if (maxWeight == e.getWeight())
+			{
+				return e;
+			}
+		}
+		String errormsg = "Could not resolve the set of edges to one!";
+		throw new RuntimeException(errormsg);
 	}
 	
 	/**

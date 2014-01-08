@@ -526,7 +526,7 @@ public class TreeEdgeOntology extends EdgeOntology
 		}
 		if (countDown == 0 && countUp == conEdges2.size())
 		{
-			// all differential edges are up
+			// all edges are up
 			up = true;
 		}
 		

@@ -14,7 +14,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -37,7 +41,7 @@ import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
  * @author thpar
  *
  */
-public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, TableModelListener{
+public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, TableModelListener, ChangeListener{
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
@@ -123,8 +127,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private Component createOptionPanel() {
 		JPanel panel = new JPanel();
 		
+		JPanel modePanel = new JPanel();
 		JLabel label = new JLabel("Comparison mode: ");
-		panel.add(label);		
+		modePanel.add(label);		
 		
 		ModeDropDownModel modeDropDownModel = new ModeDropDownModel();
 		JComboBox modeDropDown = new JComboBox(modeDropDownModel);
@@ -132,7 +137,20 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		modeDropDown.setSelectedItem(model.getCurrentProject().getMode());
 		modeDropDown.setActionCommand(MODE_ACTION);
 		modeDropDown.addActionListener(this);
-		panel.add(modeDropDown);
+		modePanel.add(modeDropDown);
+		
+		panel.add(modePanel);
+		
+		JPanel cutoffPanel = new JPanel();
+		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCurrentProject().getCutoff(),
+				0, 1000, 0.01);
+		JSpinner cutoffSpinner = new JSpinner(spinModel);
+		cutoffPanel.add(new JLabel("Cutoff"));
+		cutoffPanel.add(cutoffSpinner);
+		cutoffSpinner.addChangeListener(this);
+		
+		panel.add(cutoffPanel);
+		
 		return panel;
 	}
 
@@ -200,6 +218,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		TaskIterator it = tf.createTaskIterator();
 		DialogTaskManager dtm = model.getServices().getDialogTaskManager();
 		dtm.execute(it);
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		//triggered when cutoff spinner is changed
+		JSpinner spinner = (JSpinner)e.getSource();
+		this.model.getCurrentProject().setCutoff((Double)spinner.getValue());
+		
 	}
 
 	

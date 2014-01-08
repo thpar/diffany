@@ -3,15 +3,14 @@ package be.svlandeg.diffany.concepts;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * Abstract class that represents a network: a collection of edges and nodes
  * All source and target nodes of the edges are present in the collection of nodes,
  * but not all nodes have to be connected with edges.
+ * 
  * @author Sofie Van Landeghem
- *
  */
 public abstract class Network
 {
@@ -77,18 +76,33 @@ public abstract class Network
 		return edges;
 	}
 
+	
 	/**
-	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
-	 * In case there are symmetrical edges in this network between target-source, these will be added too.
-	 * Nodes are matched by defining equals with the DefaultNodeMapper.
+	 * Get all directed edges in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network between source-target or target-source, these will be excluded!
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
+	 * @param nm the node mapper object that defines equality between nodes for comparison purposes
 	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
-	public Set<Edge> getAllEdges(Node source, Node target)
+	public Set<Edge> getDirectedEdges(Node source, Node target, NodeMapper nm)
 	{
-		return getAllEdges(source, target, new DefaultNodeMapper());
+		Set<Edge> resultEdges = new HashSet<Edge>();
+		if (source != null && target != null)
+		{
+			for (Edge e : edges)
+			{
+				if (! e.symmetrical)
+				{
+					if (nm.areEqual(e.getSource(), source) && nm.areEqual(e.getTarget(), target))
+					{
+						resultEdges.add(e);
+					}
+				}
+			}
+		}
+		return resultEdges;
 	}
 	
 	/**

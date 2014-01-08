@@ -124,14 +124,22 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putDifferentialTranslation("inhibition_to_catalysis", "increases_regulation");
 		
 		putDifferentialTranslation("decreases_positive_regulation", "decreases_regulation");
+		putDifferentialTranslation("decrease_positive_regulation", "decrease_regulation");
 		putDifferentialTranslation("decreases_catalysis", "decreases_regulation");
+		putDifferentialTranslation("decrease_catalysis", "decrease_regulation");
 		putDifferentialTranslation("increases_positive_regulation", "increases_regulation");
+		putDifferentialTranslation("increase_positive_regulation", "increase_regulation");
 		putDifferentialTranslation("increases_catalysis", "increases_regulation");
+		putDifferentialTranslation("increase_catalysis", "increase_regulation");
 		
 		putDifferentialTranslation("decreases_negative_regulation", "increases_regulation");
+		putDifferentialTranslation("decrease_negative_regulation", "increase_regulation");
 		putDifferentialTranslation("decreases_inhibition", "increases_regulation");
+		putDifferentialTranslation("decrease_inhibition", "increase_regulation");
 		putDifferentialTranslation("increases_negative_regulation", "decreases_regulation");
+		putDifferentialTranslation("increase_negative_regulation", "decrease_regulation");
 		putDifferentialTranslation("increases_inhibition", "decreases_regulation");
+		putDifferentialTranslation("increase_inhibition", "decrease_regulation");
 
 		/// GI
 		
@@ -141,12 +149,18 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putDifferentialTranslation("synthetic_lethality_to_positive_genetic_interaction", "increase_genetic_interaction");
 		
 		putDifferentialTranslation("decrease_positive_genetic_interaction", "decrease_genetic_interaction");
+		putDifferentialTranslation("decreases_positive_genetic_interaction", "decreases_genetic_interaction");
 		putDifferentialTranslation("increase_positive_genetic_interaction", "increase_genetic_interaction");
+		putDifferentialTranslation("increases_positive_genetic_interaction", "increases_genetic_interaction");
 		
 		putDifferentialTranslation("decrease_negative_genetic_interaction", "increase_genetic_interaction");
+		putDifferentialTranslation("decreases_negative_genetic_interaction", "increases_genetic_interaction");
 		putDifferentialTranslation("increase_negative_genetic_interaction", "decrease_genetic_interaction");
+		putDifferentialTranslation("increases_negative_genetic_interaction", "decreases_genetic_interaction");
 		putDifferentialTranslation("decrease_synthetic_lethality", "increase_genetic_interaction");
+		putDifferentialTranslation("decreases_synthetic_lethality", "increases_genetic_interaction");
 		putDifferentialTranslation("increase_synthetic_lethality", "decrease_genetic_interaction");
+		putDifferentialTranslation("increases_synthetic_lethality", "decreases_genetic_interaction");
 	}
 	
 	/**

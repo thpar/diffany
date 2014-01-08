@@ -127,25 +127,32 @@ public class CalculateDiffOfMore
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
+				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1, nm);
+				Set<Edge> back_referenceEdges = reference.getDirectedEdges(target1, source1, nm);
 
 				// get all condition-specific edges (one for each condition network)
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
+				ArrayList<Set<Edge>> back_condlist = new ArrayList<Set<Edge>>();
 				
 				for (int i = 0; i < listedConditions.size(); i++)
 				{
 					Set<Edge> conditionEdges = new HashSet<Edge>();
+					Set<Edge> back_conditionEdges = new HashSet<Edge>();
+					
 					ConditionNetwork condition = listedConditions.get(i);
 					Node source2 = allsources2.get(i);
 					Node target2 = alltargets2.get(i);
 					if (! source2.getName().equals(EMPTY_NAME) && ! target2.getName().equals(EMPTY_NAME))
 					{
-						conditionEdges = condition.getAllEdges(source2, target2);
+						conditionEdges = condition.getAllEdges(source2, target2, nm);
+						back_conditionEdges = condition.getDirectedEdges(target2, source2, nm);
 					}
 					condlist.add(i, conditionEdges);
+					back_condlist.add(i, back_conditionEdges);
 				}	
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
-				Map<String, SingleEdgeSet> edgeSets = conflictresolver.resolveEdgesPerRoot(eo, es);
+				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
+				Map<String, SingleEdgeSet> edgeSets = conflictresolver.fullSolution(eo, es, back_es);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -176,7 +183,7 @@ public class CalculateDiffOfMore
 				}
 			}
 		}
-		cleaning.removeRedundantEdges(diff);
+		cleaning.removeRedundantEdges(diff, nm);
 		cleaning.directSymmetricalWhenOverlapping(diff, eo);
 		
 		return diff;

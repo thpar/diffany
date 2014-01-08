@@ -65,7 +65,9 @@ public class CalculateDiff
 			String errormsg = "Found null parameter in calculateDiffNetwork!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		DifferentialNetwork dn =  twoProcessor.calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
+		Set<ConditionNetwork> allConditions = new HashSet<ConditionNetwork>();
+		allConditions.add(condition);
+		DifferentialNetwork dn =  moreProcessor.calculateDiffNetwork(reference, allConditions, eo, nm, diff_name, cutoff);
 		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
@@ -263,15 +265,14 @@ public class CalculateDiff
 			String errormsg = "The edge weight should be positive!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		DifferentialNetwork dn = moreProcessor.calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
 		if (conditions.size() == 1)
 		{
-			DifferentialNetwork dn = twoProcessor.calculateDiffNetwork(reference, conditions.iterator().next(), eo, nm, diff_name, cutoff);
 			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, 
 					nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 			dn.setOverlappingNetwork(sn);
 			return dn;
 		}
-		DifferentialNetwork dn = moreProcessor.calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
 		Set<Network> allNetworks = new HashSet<Network>();
 		allNetworks.add(reference);
 		allNetworks.addAll(conditions);

@@ -21,7 +21,7 @@ public class TestExamples
 	
 	
 	/**
-	 * Test whether the small example figure 1C from the Bandyopadhyay et al. 2010 paper
+	 * JUNIT Test: check whether the small example figure 1C from the Bandyopadhyay et al. 2010 paper
 	 * produces correct results.
 	 */
 	@Test
@@ -55,7 +55,7 @@ public class TestExamples
 	}
 	
 	/**
-	 * Test whether the small example figure 3A from the Ideker et al. 2011 paper
+	 * JUNIT Test: check whether the small example figure 3A from the Ideker et al. 2011 paper
 	 * produces correct results.
 	 */
 	@Test
@@ -91,9 +91,9 @@ public class TestExamples
 	}
 	
 	/**
-	 * Test whether the example activity flow network produces correct results.
+	 * JUNIT Test: check whether the example activity flow network produces correct results.
 	 */
-	//@Test
+	@Test
 	public void testActivityFlowNetwork()
 	{
 		ActivityFlowTest ex = new ActivityFlowTest();
@@ -130,9 +130,9 @@ public class TestExamples
 	}
 	
 	/**
-	 * Test whether the example process network produces correct results.
+	 * JUNIT Test: check whether the example process network produces correct results.
 	 */
-	//@Test
+	@Test
 	public void testProcessNetwork()
 	{
 		ProcessTest ex = new ProcessTest();
@@ -167,9 +167,9 @@ public class TestExamples
 	}
 	
 	/**
-	 * Test whether the example network with multiple conditions produces correct results.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
 	 */
-	//@Test
+	@Test
 	public void testMultipleConditions()
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
@@ -191,7 +191,7 @@ public class TestExamples
 		assertAnEdge(dNetwork, "A", "D", true, false, "increase_ppi", false, 0.75);
 		assertAnEdge(dNetwork, "A", "Z", true, false, "decrease_ppi", false, 0.8);
 		
-		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_phosphorylation", false, 0.3);
+		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_phosphorylation", false, 1.1);
 		
 		assertAnEdge(dNetwork, "M", "N", false, false, "increases_phosphorylation", false, 4);
 		assertAnEdge(dNetwork, "P", "M", false, false, "increases_ptm", false, 2);

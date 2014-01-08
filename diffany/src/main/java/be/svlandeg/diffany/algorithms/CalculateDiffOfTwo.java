@@ -7,7 +7,9 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * This class can calculate a differential network between one reference and one condition-specific network. 
+ * This class can calculate an overlap network between two networks,
+ * and is being used by CalculateDiffOfMore for calculating overlap between more than 2 networks
+ * 
  * Currently this algorithm assumes a 1-to-1 mapping of nodes between the two networks!
  * 
  * @author Sofie Van Landeghem
@@ -25,125 +27,6 @@ public class CalculateDiffOfTwo
 	{
 		cleaning = new NetworkCleaning();
 		conflictresolver = new ConflictResolver();
-	}
-	
-	
-	/**
-	 * Calculate the differential network between the reference and condition-specific network. 
-	 * The overlapping network should be calculated independently!
-	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
-	 * 
-	 * @param reference the reference network
-	 * @param condition a condition-specific network
-	 * @param eo the edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the differential network. 
-	 * @return the differential network between the two
-	 *         
-	 * TODO: expand this algorithm to be able to deal with n-m node mappings (v.2.0) 
-	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, String diff_name, double cutoff)
-	{
-		Set<ConditionNetwork> conditions = new HashSet<ConditionNetwork>();
-		conditions.add(condition);
-
-		Set<Network> allOriginals = new HashSet<Network>();
-		allOriginals.addAll(conditions);
-		allOriginals.add(reference);
-
-		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditions);
-
-		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
-		Set<Node> allNodes = nm.getAllNodes(allOriginals);
-
-		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
-		
-		for (Node source1 : allNodes) // source node in reference network
-		{
-			// get the equivalent source node in the condition network
-			Node source2;
-			if (nodeMapping.containsKey(source1))
-			{
-				Set<Node> sources2 = nodeMapping.get(source1);
-				source2 = getSingleNode(sources2);
-			}
-			else
-			// source1 is not actually a part of the reference network
-			{
-				source2 = source1;
-			}
-
-			for (Node target1 : allNodes) // target node in reference network
-			{
-				// get the equivalent target node in the condition network
-				Node target2;
-				if (nodeMapping.containsKey(target1))
-				{
-					Set<Node> targets2 = nodeMapping.get(target1);
-					target2 = getSingleNode(targets2);
-				}
-				else
-				// target1 is not actually a part of the reference network
-				{
-					target2 = target1;
-				}
-
-				// get the reference edge
-				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
-
-				// get the condition-specific edge
-				Set<Edge> conditionEdges = new HashSet<Edge>();
-				if (source2 != null && target2 != null)
-				{
-					conditionEdges = condition.getAllEdges(source2, target2);
-				}
-				
-				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
-				condlist.add(conditionEdges);
-				EdgeSet es = new EdgeSet(referenceEdges, condlist);
-				Map<String, SingleEdgeSet> edgeSets = conflictresolver.resolveEdgesPerRoot(eo, es);
-				
-				for (String root : edgeSets.keySet())
-				{
-					SingleEdgeSet ses = edgeSets.get(root);
-					EdgeDefinition diff_edge_def = eo.getDifferentialEdge(ses, cutoff);
-	
-					Set<Node> allSources = new HashSet<Node>();
-					allSources.add(source1);
-					allSources.add(source2);
-					String sourceconsensus = nm.getConsensusName(allSources);
-					
-					Set<Node> allTargets = new HashSet<Node>();
-					allTargets.add(target1);
-					allTargets.add(target2);
-					String targetconsensus = nm.getConsensusName(allTargets);
-					
-					// non-void differential edge
-					if (diff_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
-					{
-						if (!allDiffNodes.containsKey(sourceconsensus))
-						{
-							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
-						}
-						Node sourceresult = allDiffNodes.get(sourceconsensus);
-						
-						if (!allDiffNodes.containsKey(targetconsensus))
-						{
-							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
-						}
-						Node targetresult = allDiffNodes.get(targetconsensus);
-						
-						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
-						diff.addEdge(edgediff);
-					}
-				}
-			}
-		}
-		cleaning.removeRedundantEdges(diff);
-		cleaning.directSymmetricalWhenOverlapping(diff, eo);
-		
-		return diff;
 	}
 	
 	/**
@@ -206,19 +89,25 @@ public class CalculateDiffOfTwo
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1);
+				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1, nm);
+				Set<Edge> back_referenceEdges = n1.getDirectedEdges(target1, source1, nm);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
+				Set<Edge> back_conditionEdges = new HashSet<Edge>();
 				if (source2 != null && target2 != null)
 				{
-					conditionEdges = n2.getAllEdges(source2, target2);
+					conditionEdges = n2.getAllEdges(source2, target2, nm);
+					back_conditionEdges = n2.getDirectedEdges(target2, source2, nm);
 				}
 				
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
+				ArrayList<Set<Edge>> back_condlist = new ArrayList<Set<Edge>>();
 				condlist.add(conditionEdges);
+				back_condlist.add(back_conditionEdges);
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
-				Map<String, SingleEdgeSet> edgeSets = conflictresolver.resolveEdgesPerRoot(eo, es);
+				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
+				Map<String, SingleEdgeSet> edgeSets = conflictresolver.fullSolution(eo, es, back_es);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -258,7 +147,7 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		cleaning.removeRedundantEdges(overlap);
+		cleaning.removeRedundantEdges(overlap, nm);
 		return overlap;
 	}
 	

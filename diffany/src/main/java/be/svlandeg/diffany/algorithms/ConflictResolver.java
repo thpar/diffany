@@ -16,14 +16,46 @@ public class ConflictResolver
 {
 	
 	/**
-	 * Group all input edges into subclasses per root category of the EdgeOntology
+	 * Group all input edges into subclasses per root category of the EdgeOntology, unifying the directionality 
+	 * (either all symmetric or all directed), and resolving conflicts within a root category.
+	 * 
+	 * Calls the subroutines resolveEdgesPerRoot, unifyDirection and summarizeToOne.
+	 * 
+	 * @param eo the edge ontology
+	 * @param oldEdgeSet all edges between two nodes, including both directed and symmetrical edges
+	 * @param backEdgeSet all reverse edges between the same two nodes, excluding symmetrical edges
+	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
+	 */
+	public Map<String, SingleEdgeSet> fullSolution(EdgeOntology eo, EdgeSet oldEdgeSet, EdgeSet backEdgeSet)
+	{
+		Map<String, EdgeSet> mappedNormalEdges = resolveEdgesPerRoot(eo, oldEdgeSet);
+		Map<String, EdgeSet> mappedReverseEdges = resolveEdgesPerRoot(eo, backEdgeSet);
+		
+		Map<String, SingleEdgeSet> mappedSingleEdges = new HashMap<String, SingleEdgeSet>();
+		
+		for (String key : mappedNormalEdges.keySet())
+		{
+			EdgeSet normalEdges = mappedNormalEdges.get(key);
+			EdgeSet reverseEdges = mappedReverseEdges.get(key);
+			
+			EdgeSet unifiedEdgeSet = unifyDirection(normalEdges, reverseEdges, eo);
+			
+			mappedSingleEdges.put(key, summarizeToOne(unifiedEdgeSet,eo));
+		}
+		return mappedSingleEdges;
+	}
+	
+
+	/**
+	 * Group all input edges into subclasses per root category of the EdgeOntology.
+	 *
 	 * @param eo the edge ontology
 	 * @param oldEdgeSet the original sets of input edges
 	 * @return all input edges grouped by edge root category
 	 */
-	public Map<String, SingleEdgeSet> resolveEdgesPerRoot(EdgeOntology eo, EdgeSet oldEdgeSet)
+	protected Map<String, EdgeSet> resolveEdgesPerRoot(EdgeOntology eo, EdgeSet oldEdgeSet)
 	{
-		Map<String, SingleEdgeSet> mappedEdges = new HashMap<String, SingleEdgeSet>();
+		Map<String, EdgeSet> mappedEdges = new HashMap<String, EdgeSet>();
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 
 		Set<EdgeDefinition> refEs = oldEdgeSet.getReferenceEdges();
@@ -31,10 +63,9 @@ public class ConflictResolver
 		
 		for (String root : roots)
 		{
-			SingleEdgeSet es = new SingleEdgeSet(oldEdgeSet.getConditionCount());
+			EdgeSet es = new EdgeSet(oldEdgeSet.getConditionCount());
 			
 			// Determine which reference edges belong to this root
-			Set<EdgeDefinition> rootRefEs = new HashSet<EdgeDefinition>();
 			for (EdgeDefinition refE : refEs)
 			{
 				String edgeType = refE.getType();
@@ -42,26 +73,17 @@ public class ConflictResolver
 				boolean belongsToRoot = eo.isSourceChildOf(edgeClass, root) >= 0;
 				if (belongsToRoot)
 				{
-					rootRefEs.add(refE);
+					es.addReferenceEdge(refE);
 				}
 			}
-			if (rootRefEs.size() > 1)	// TODO
+			if (es.getReferenceEdges().isEmpty())
 			{
-				throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
-			}
-			if (rootRefEs.size() < 1)
-			{
-				es.putReferenceEdge(EdgeDefinition.getVoidEdge());
-			}
-			else
-			{
-				es.putReferenceEdge(rootRefEs.iterator().next());
+				es.addReferenceEdge(EdgeDefinition.getVoidEdge());
 			}
 			
 			// Determine which condition-specific edges belong to this root
 			for (int i = 0; i < oldEdgeSet.getConditionCount(); i++)
 			{
-				Set<EdgeDefinition> rootCondIEs = new HashSet<EdgeDefinition>();
 				for (EdgeDefinition conE : conditionEdges.get(i))
 				{
 					String edgeType = conE.getType();
@@ -69,22 +91,13 @@ public class ConflictResolver
 					boolean belongsToRoot = eo.isSourceChildOf(edgeClass, root) >= 0;
 					if (belongsToRoot)
 					{
-						rootCondIEs.add(conE);
+						es.addConditionEdge(conE, i);
 					}
 				}
-				if (rootCondIEs.size() > 1)	// TODO
+				if (es.getConditionEdges(i).isEmpty())
 				{
-					throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
+					es.addConditionEdge(EdgeDefinition.getVoidEdge(), i);
 				}
-				if (rootCondIEs.size() < 1)
-				{
-					es.putConditionEdge(EdgeDefinition.getVoidEdge(), i);
-				}
-				else
-				{
-					es.putConditionEdge(rootCondIEs.iterator().next(), i);
-				}
-				
 			}
 			mappedEdges.put(root, es);
 		}
@@ -92,55 +105,159 @@ public class ConflictResolver
 		return mappedEdges;
 	}
 	
-	// TODO
-	public SingleEdgeSet unifyDirection(SingleEdgeSet oldSet, EdgeOntology eo)
+	
+	/**
+	 * Create a new EdgeSet with all interactions either directed, or symmetrical.
+	 * This should only be done for EdgeSets within the same ontology subtree (i.e. call resolveEdgesPerRoot first).
+	 * 
+	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
+	 * @param oldSet the old edgeset with opposite directed edges (if any)
+	 * @param eo the edge ontology
+	 * @return the new edge set with only directed, or only symmetrical edges
+	 */
+	protected EdgeSet unifyDirection(EdgeSet oldSet, EdgeSet backEdgeSet, EdgeOntology eo)
 	{
+		boolean hasSymmetrical = containsSymmetricalEdges(oldSet);
+		boolean hasDirected = containsDirectedEdges(oldSet);
+		boolean hasOppositeDirected = containsDirectedEdges(backEdgeSet);
+		
+		// all edges are directed
+		if (! hasSymmetrical)
+		{
+			return oldSet;	// nothing needs to be changed
+		}
+		
+		// all edges are symmetrical, also the reverse ones
+		if (! hasDirected && ! hasOppositeDirected)
+		{
+			return oldSet;	// nothing needs to be changed
+		}
+		
+		// In all other cases: let's make all of them directed!
 		int conditions = oldSet.getConditionCount();
 		
-		EdgeDefinition old_referenceEdge = oldSet.getReferenceEdge();
-		List<EdgeDefinition> old_conditionEdges = oldSet.getConditionEdges();
+		EdgeSet newSet = new EdgeSet(conditions);
 		
-		int symmetricalCount = 0;
-		int directedCount = 0;
-		
-		if (old_referenceEdge.isSymmetrical())
+		for (EdgeDefinition referenceEdge : oldSet.getReferenceEdges())
 		{
-			symmetricalCount++;
+			EdgeDefinition refFwdDirection = new EdgeDefinition(referenceEdge);
+			refFwdDirection.makeSymmetrical(false);
+			newSet.addReferenceEdge(refFwdDirection);
+		}
+		
+		for (int i = 0; i < conditions; i++)
+		{
+			for (EdgeDefinition old_conIEdge : oldSet.getConditionEdges(i))
+			{
+				EdgeDefinition conIFwdDirection = new EdgeDefinition(old_conIEdge);
+				conIFwdDirection.makeSymmetrical(false);
+				newSet.addConditionEdge(conIFwdDirection, i);
+			}
+		}
+		
+		return newSet;
+	}
+	
+	/**
+	 * Summarize all edges per network to one edge only.
+	 * It is assumed that unifyDirection was previously called to obtain either all directed or all symmetrical edges,
+	 * and that resolveEdgesPerRoot was used to provide an EdgeSet which only contains edges for one root category.
+	 * 
+	 * @param oldSet the old edge set
+	 * @param eo the edge ontology
+	 * @return the new edge set, holding at most one edge per input network
+	 * TODO (currently just throws an exception)
+	 */
+	protected SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo)
+	{
+		SingleEdgeSet newSet = new SingleEdgeSet(oldSet.getConditionCount());
+		
+		Set<EdgeDefinition> rootRefEs = oldSet.getReferenceEdges();
+		if (rootRefEs.size() > 1)	// TODO
+		{
+			throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
 		}
 		else
 		{
-			directedCount++;
+			newSet.putReferenceEdge(rootRefEs.iterator().next());
 		}
 		
-		for (EdgeDefinition c : old_conditionEdges)
+		for (int i = 0; i < oldSet.getConditionCount(); i++)
 		{
-			if (c.isSymmetrical())
+			Set<EdgeDefinition> rootCondIEs = oldSet.getConditionEdges(i);
+			if (rootCondIEs.size() > 1)	// TODO
 			{
-				symmetricalCount++;
+				throw new UnsupportedOperationException("This algorithm currently only supports 1 edge between two nodes in the original networks");
 			}
 			else
+			{
+				newSet.putConditionEdge(rootCondIEs.iterator().next(), i);
+			}
+		}
+		
+		return newSet;
+	}
+	
+	/**
+	 * Determine whether or not the set of edges contains at least one directed edge
+	 * @param edgeSet the set of edges
+	 * @return whether or not the set contains at least one directed edge
+	 */
+	private boolean containsDirectedEdges(EdgeSet edgeSet)
+	{
+		int directedCount = 0;
+		
+		for (EdgeDefinition referenceEdge : edgeSet.getReferenceEdges())
+		{
+			if (! referenceEdge.isSymmetrical())
 			{
 				directedCount++;
 			}
 		}
 		
-		if (symmetricalCount == 0 || directedCount == 0)
+		List<Set<EdgeDefinition>> conditionEdges = edgeSet.getConditionEdges();
+		for (int i = 0; i < conditionEdges.size(); i++)
 		{
-			return oldSet;	// nothing needs to be changed
+			for (EdgeDefinition c : conditionEdges.get(i))
+			{
+				if (! c.isSymmetrical())
+				{
+					directedCount++;
+				}
+			}
+		}
+		return (directedCount > 0);
+	}
+	
+	/**
+	 * Determine whether or not the set of edges contains at least one symmetrical edge
+	 * @param edgeSet the set of edges
+	 * @return whether or not the set contains at least one symmetrical edge
+	 */
+	private boolean containsSymmetricalEdges(EdgeSet edgeSet)
+	{
+		int symmetricalCount = 0;
+		
+		for (EdgeDefinition referenceEdge : edgeSet.getReferenceEdges())
+		{
+			if (referenceEdge.isSymmetrical())
+			{
+				symmetricalCount++;
+			}
 		}
 		
-		// let's make all of them directed!
-		SingleEdgeSet newSet = new SingleEdgeSet(conditions);
-		
-		String symmType = old_referenceEdge.getType();
-
-		EdgeDefinition fwdDirection = new EdgeDefinition(old_referenceEdge);
-		fwdDirection.makeSymmetrical(false);
-		
-		newSet.putReferenceEdge(fwdDirection);
-		
-		return newSet;
-		
+		List<Set<EdgeDefinition>> conditionEdges = edgeSet.getConditionEdges();
+		for (int i = 0; i < conditionEdges.size(); i++)
+		{
+			for (EdgeDefinition c : conditionEdges.get(i))
+			{
+				if (c.isSymmetrical())
+				{
+					symmetricalCount++;
+				}
+			}
+		}
+		return (symmetricalCount > 0);
 	}
 	
 

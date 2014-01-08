@@ -5,6 +5,7 @@ import java.util.Set;
 
 import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * This class provides generic methods useful for network cleaning before or
@@ -14,6 +15,7 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
  */
 public class NetworkCleaning
 {
+	
 
 	/**
 	 * Clean a network by adjusting symmetrical edges between two nodes that
@@ -24,8 +26,6 @@ public class NetworkCleaning
 	 **/
 	public void directSymmetricalWhenOverlapping(DifferentialNetwork net, EdgeOntology eo)
 	{
-		// TODO
-		
 		/*
 		Set<Edge> copySet = new HashSet<Edge>();	// needed to avoid ConcurrentModificationException
 		copySet.addAll(net.getEdges());
@@ -93,8 +93,9 @@ public class NetworkCleaning
 	 * then when the type, weight and negation are all equal.
 	 * 
 	 * @param net the network that needs cleaning
+	 * @param nm the node mapper for the network
 	 **/
-	public void removeRedundantEdges(Network net)
+	public void removeRedundantEdges(Network net, NodeMapper nm)
 	{
 		Set<Edge> removed_edges = new HashSet<Edge>();
 		
@@ -108,7 +109,7 @@ public class NetworkCleaning
 				String name2 = n2.getName();
 				if (name1.compareTo(name2) < 0)
 				{
-					Set<Edge> all_edges = net.getAllEdges(n1, n2);
+					Set<Edge> all_edges = net.getAllEdges(n1, n2, nm);
 					for (Edge et : all_edges)
 					{
 						for (Edge eb : all_edges)

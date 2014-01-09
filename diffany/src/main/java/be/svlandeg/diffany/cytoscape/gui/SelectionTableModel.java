@@ -140,10 +140,12 @@ public class SelectionTableModel extends AbstractTableModel{
 		networkEntries = new ArrayList<NetworkEntry>();
 				
 		for (CySubNetwork subNet : subNets){
-			NetworkEntry entry = new NetworkEntry(subNet);
-			entry.setSelected(true);
-			entry.setReference(false);
-			networkEntries.add(entry);
+			if (!isGhostNetwork(subNet)){				
+				NetworkEntry entry = new NetworkEntry(subNet);
+				entry.setSelected(true);
+				entry.setReference(false);
+				networkEntries.add(entry);
+			}
 		}
 
 		if (networkEntries.size() > 0){
@@ -152,6 +154,18 @@ public class SelectionTableModel extends AbstractTableModel{
 		this.fireTableDataChanged();
 	}
 	
+	/**
+	 * Allows to ignore the ghost network that is often created when importing a network or loading a session.
+	 * 
+	 * @param subNet
+	 * @return
+	 */
+	private boolean isGhostNetwork(CySubNetwork subNet) {
+		String name = subNet.getRow(subNet).get(CyNetwork.NAME, String.class);
+		return name==null || name.isEmpty();
+	}
+
+
 	public Set<CyNetwork> getConditionalNetworks(){
 		Set<CyNetwork> condSet = new HashSet<CyNetwork>();
 		for (NetworkEntry network : networkEntries){

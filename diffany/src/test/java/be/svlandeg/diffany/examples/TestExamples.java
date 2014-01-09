@@ -28,7 +28,7 @@ public class TestExamples
 	public void testBandyopadhyay()
 	{
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		double cutoff = 0.25;
+		double cutoff = 0.0;
 		Project p = ex.getProjectFigure1C();
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
 		
@@ -50,7 +50,7 @@ public class TestExamples
 		Set<Edge> sEdges =  sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
 		
-		assertAnEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 0.9);
+		assertAnEdge(sNetwork, "A", "D", true, false, "negative_genetic_interaction", false, 1.1);
 		assertAnEdge(sNetwork, "A", "B", true, false, "genetic_interaction", false, 0.3);
 	}
 	
@@ -62,7 +62,7 @@ public class TestExamples
 	public void testIdeker()
 	{
 		Ideker2011 ex = new Ideker2011();
-		double cutoff = 0.25;
+		double cutoff = 0.0;
 		Project p = ex.getProjectFigure3A();
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
 		

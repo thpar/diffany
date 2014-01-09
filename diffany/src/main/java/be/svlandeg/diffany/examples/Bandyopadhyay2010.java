@@ -72,7 +72,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 0.9));
+		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 1.1));
 		network.addEdge(new Edge("positive gi", nodes.get("A"), nodes.get("B"), true, 0.4));
 		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("C"), true, 0.7));
 
@@ -86,7 +86,7 @@ public class Bandyopadhyay2010 extends GenericExample
 	public static void main(String[] args)
 	{
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		double cutoff = 0.25;
+		double cutoff = 0.0;
 		
 		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
 		Project p = ex.getProjectFigure1C();

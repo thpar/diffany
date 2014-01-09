@@ -52,6 +52,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
 	private final String RUN_ACTION = "run";
+	private JButton runButton;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the models.
@@ -70,7 +71,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.add(createNetworkSelectionPanel());
 		this.add(createOptionPanel());
 		
-		JButton runButton = new JButton("Start");
+		runButton = new JButton("Start");
 		runButton.setActionCommand(RUN_ACTION);
 		runButton.addActionListener(this);
 		this.add(runButton);
@@ -218,6 +219,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		CyProject cyProject = model.getCurrentProject();
 		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
 		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
+		this.runButton.setEnabled(cyProject.canExecute());
 		
 		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
 		TaskIterator it = tf.createTaskIterator();

@@ -129,6 +129,8 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addColor("colocalization", Color.YELLOW);
 		addColor("positive_regulation", Color.GREEN);
 		addColor("negative_regulation", Color.RED);
+		addColor("positive_genetic_interaction", Color.GREEN);
+		addColor("negative_genetic_interaction", Color.RED);
 		
 		addArrowHead("ptm", ArrowHead.DIAMOND);
 		addArrowHead("transcription", ArrowHead.ARROW);

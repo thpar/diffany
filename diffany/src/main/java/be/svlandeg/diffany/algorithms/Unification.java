@@ -56,7 +56,7 @@ public class Unification
 		{
 			eo.addSourceCategory(type, newTypes.get(type));
 			eo.addSourceCategoryMapping(type, type, false);
-			log.log(" Unknown type " + type + " added to the edge ontology.");
+			log.log(" Unknown type " + type + " added to the edge ontology");
 		}
 	}
 }

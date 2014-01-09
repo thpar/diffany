@@ -45,12 +45,6 @@ public class ConditionNetwork extends Network
 		return conditions;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * be.svlandeg.diffany.concepts.Network#getStringRepresentation()
-	 */
 	@Override
 	public String getStringRepresentation()
 	{

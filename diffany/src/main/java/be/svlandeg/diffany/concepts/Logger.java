@@ -7,13 +7,12 @@ import java.util.List;
  * A Logger object records all messages that are relevant to the user of the networks algorithms. 
  * For instance, it reports on how edge conflicts were resolved, when default values were used, etc.
  * 
- * TODO v2.0: use the Logger to contain Exceptions inheriting from SolvableException.
- * 
  * @author Sofie Van Landeghem
  */
 public class Logger
 {
-	
+	//TODO v2.0: use the Logger to contain Exceptions inheriting from SolvableException.
+	 
 	private List<String> logs;
 	
 	/**

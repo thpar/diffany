@@ -108,7 +108,7 @@ public class Project
 	 */
 	public void saveProject(String fileLocation)
 	{
-		//TODO: implement!
+		//TODO v1.0: implement!
 		throw new UnsupportedOperationException("Saving of project not yet implemented");
 	}
 
@@ -120,13 +120,13 @@ public class Project
 	 */
 	public void loadFromFile(String fileLocation)
 	{
-		//TODO: implement!
+		//TODO v1.0: implement!
 		throw new UnsupportedOperationException("Loading of project not yet implemented");
 	}
 
 	/**
 	 * Set the edge ontology for this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
 	 * 
 	 * @param edgeOntology the edge ontology (not null!)
 	 * @throws IllegalArgumentException if the edgeOntology is null
@@ -144,7 +144,7 @@ public class Project
 
 	/**
 	 * Set the node mapper for this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
 	 * 
 	 * @param nodeMapper the node mapper (not null!)
 	 * @throws IllegalArgumentException if the nodeMapper is null
@@ -161,7 +161,7 @@ public class Project
 
 	/**
 	 * Set the condition-specific networks in this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
 	 * 
 	 * @param conditions the condition-specific networks (not null or empty!)
 	 * @throws IllegalArgumentException if the set is null or empty
@@ -179,7 +179,7 @@ public class Project
 
 	/**
 	 * Set the reference network of this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
 	 * 
 	 * @param reference the reference network
 	 * @throws IllegalArgumentException if the network is null

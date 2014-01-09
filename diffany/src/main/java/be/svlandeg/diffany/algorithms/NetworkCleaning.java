@@ -15,6 +15,17 @@ import be.svlandeg.diffany.semantics.NodeMapper;
 public class NetworkCleaning
 {
 	
+	private Logger log;
+	
+	/**
+	 * Create a new cleaning object, which can log important messages.
+	 * @param log the logger object
+	 */
+	public NetworkCleaning(Logger log)
+	{
+		this.log = log;
+	}
+	
 	/**
 	 * Clean an output network: Remove redundant/duplicate edges in the network.
 	 * 
@@ -71,6 +82,7 @@ public class NetworkCleaning
 				}
 			}
 		}
+		log.log("Output cleaning: removed redundant edges");
 	}
 	
 	/**

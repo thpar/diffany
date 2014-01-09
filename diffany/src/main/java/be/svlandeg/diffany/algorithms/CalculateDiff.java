@@ -3,12 +3,7 @@ package be.svlandeg.diffany.algorithms;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.OverlappingNetwork;
+import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -28,16 +23,11 @@ public class CalculateDiff
 	protected static String diffnamesuffix = "_diff";
 	protected static String overlapnamesuffix = "_overlap";
 	
-	protected CalculateDiffOfTwo twoProcessor;
-	protected CalculateDiffOfMore moreProcessor;
-	
 	/**
 	 * Constructor initializes the algorithm suites.
 	 */
 	public CalculateDiff()
 	{
-		twoProcessor = new CalculateDiffOfTwo();
-		moreProcessor = new CalculateDiffOfMore();
 	}
 
 	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND 1 CONDITION-SPECIFIC NETWORK  //////////////
@@ -53,12 +43,13 @@ public class CalculateDiff
 	 * @param diff_name the name to give to the differential network. 
 	 * 	The overlapping network will get this name + the appendix '_overlap'.
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, String diff_name, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || condition == null || eo == null || nm == null || diff_name == null)
 		{
@@ -67,8 +58,8 @@ public class CalculateDiff
 		}
 		Set<ConditionNetwork> allConditions = new HashSet<ConditionNetwork>();
 		allConditions.add(condition);
-		DifferentialNetwork dn =  moreProcessor.calculateDiffNetwork(reference, allConditions, eo, nm, diff_name, cutoff);
-		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
+		DifferentialNetwork dn = new CalculateDiffOfMore(log).calculateDiffNetwork(reference, allConditions, eo, nm, diff_name, cutoff);
+		OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -82,19 +73,20 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlap_name the name to give to the overlapping network
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the overlapping network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public OverlappingNetwork calculateOverlappingNetwork(Network reference, Network condition, EdgeOntology eo, 
-			NodeMapper nm, String overlap_name, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, String overlap_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || condition == null || eo == null || nm == null || overlap_name == null)
 		{
 			String errormsg = "Found null parameter in calculateDiffNetwork!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, condition, eo, nm, overlap_name, cutoff, default_MIN);
+		OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, condition, eo, nm, overlap_name, cutoff, default_MIN);
 		return sn;
 	}
 	
@@ -110,14 +102,15 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
 	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, String diff_name) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, Logger log) throws IllegalArgumentException
 	{
-		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff);
+		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff, log);
 	}
 	
 	/**
@@ -132,15 +125,16 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		String diff_name = condition.getName() + diffnamesuffix;
-		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff);
+		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff, log);
 	}
 	
 	/**
@@ -155,15 +149,16 @@ public class CalculateDiff
 	 * @param condition a condition-specific network
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
-			NodeMapper nm) throws IllegalArgumentException
+			NodeMapper nm, Logger log) throws IllegalArgumentException
 	{
 		String diff_name = condition.getName() + diffnamesuffix;
-		return calculateDiffNetwork(reference, condition, eo, nm, diff_name);
+		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, log);
 	}
 
 	/**
@@ -174,7 +169,8 @@ public class CalculateDiff
 	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
-	 * All calculated differential networks are added to the project directly.
+	 * All calculated differential networks and the logger object are added to the project directly.
+	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
@@ -191,7 +187,8 @@ public class CalculateDiff
 	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'
 	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
 	 * 
-	 * All calculated differential networks are added to the project directly.
+	 * All calculated differential networks and the logger object are added to the project directly. 
+	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
@@ -202,15 +199,18 @@ public class CalculateDiff
 		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
+		Logger log = p.getLogger();
+		log.clean();
 		for (ConditionNetwork c : p.getConditionNetworks())
 		{
-			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm, cutoff);
+			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm, cutoff, log);
 			p.addDifferential(diff);
 		}
 	}
 	
 	
 	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND MULTIPLE CONDITION-SPECIFIC NETWORKS  //////////////
+	
 	
 	/**
 	 * Calculate the overlapping network for a set of input networks (at least 2).
@@ -220,12 +220,13 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlapping_name the name to give to the overlapping network. 
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the overlapping network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, 
-			NodeMapper nm, String overlapping_name, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, String overlapping_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (networks == null  || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
 		{
@@ -234,11 +235,11 @@ public class CalculateDiff
 		}
 		if (networks.size() == 2)
 		{
-			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(networks.iterator().next(), networks.iterator().next(), eo, 
+			OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(networks.iterator().next(), networks.iterator().next(), eo, 
 					nm, overlapping_name, cutoff, default_MIN);
 			return sn;
 		}
-		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(networks, eo, nm, overlapping_name, cutoff, default_MIN);
+		OverlappingNetwork sn = new CalculateDiffOfMore(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, cutoff, default_MIN);
 		return sn;
 	}
 	
@@ -253,22 +254,23 @@ public class CalculateDiff
 	 * @param diff_name the name to give to the differential network. 
 	 * 	The overlapping network will get this name + the appendix '_overlap'.
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
-			NodeMapper nm, String diff_name, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
 		{
 			String errormsg = "The edge weight should be positive!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		DifferentialNetwork dn = moreProcessor.calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
+		DifferentialNetwork dn = new CalculateDiffOfMore(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
 		if (conditions.size() == 1)
 		{
-			OverlappingNetwork sn = twoProcessor.calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, 
+			OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, 
 					nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 			dn.setOverlappingNetwork(sn);
 			return dn;
@@ -276,7 +278,7 @@ public class CalculateDiff
 		Set<Network> allNetworks = new HashSet<Network>();
 		allNetworks.add(reference);
 		allNetworks.addAll(conditions);
-		OverlappingNetwork sn = moreProcessor.calculateOverlappingNetwork(allNetworks, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
+		OverlappingNetwork sn = new CalculateDiffOfMore(log).calculateOverlappingNetwork(allNetworks, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -293,14 +295,15 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
 	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
-			NodeMapper nm, String diff_name) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, Logger log) throws IllegalArgumentException
 	{
-		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, default_cutoff);
+		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, default_cutoff, log);
 	}
 	
 	/**
@@ -315,15 +318,16 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
-			NodeMapper nm, double cutoff) throws IllegalArgumentException
+			NodeMapper nm, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		String diff_name = "all_conditions_against_reference" + diffnamesuffix;
-		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
+		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff, log);
 	}
 	
 	/**
@@ -338,15 +342,16 @@ public class CalculateDiff
 	 * @param conditions a set of condition-specific networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
+	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
-			NodeMapper nm) throws IllegalArgumentException
+			NodeMapper nm, Logger log) throws IllegalArgumentException
 	{
 		String diff_name = "all_conditions_against_reference" + diffnamesuffix;
-		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name);
+		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, log);
 	}
 	
 	/**
@@ -357,7 +362,8 @@ public class CalculateDiff
 	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
-	 * The calculated differential networks is added to the project directly.
+	 * The calculated differential networks and the logger object are added are added to the project directly.
+	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
@@ -374,7 +380,8 @@ public class CalculateDiff
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
 	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
 	 * 
-	 * The calculated differential networks is added to the project directly.
+	 * The calculated differential networks and the logger object are added are added to the project directly.
+	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
@@ -385,9 +392,12 @@ public class CalculateDiff
 		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
+		Logger log = p.getLogger();
+		log.clean();
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(p.getConditionNetworks());
-		DifferentialNetwork diff = calculateDiffNetwork(r, cs, eo, nm);
+		DifferentialNetwork diff = calculateDiffNetwork(r, cs, eo, nm, log);
 		p.addDifferential(diff);
 	}
+	
 
 }

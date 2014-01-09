@@ -18,13 +18,16 @@ public class CalculateDiffOfTwo
 {
 	
 	protected NetworkCleaning cleaning;
+	protected Logger log;
 	
 	/**
 	 * Constructor, which initializes the functionality for cleaning a network.
+	 * @param log the logger that records logging messages
 	 */
-	public CalculateDiffOfTwo()
+	public CalculateDiffOfTwo(Logger log)
 	{
-		cleaning = new NetworkCleaning();
+		cleaning = new NetworkCleaning(log);
+		this.log = log;
 	}
 	
 	/**
@@ -163,7 +166,9 @@ public class CalculateDiffOfTwo
 		}
 		if (nodes.size() > 1)
 		{
-			throw new UnsupportedOperationException("This algorithm currently only supports 1-1 node mappings");
+			String msg = "This algorithm currently only supports 1-1 node mappings.";
+			log.log("Fatal error: " + msg);
+			throw new UnsupportedOperationException(msg);
 		}
 		return nodes.iterator().next();
 	}

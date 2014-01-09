@@ -25,6 +25,8 @@ public class Project
 
 	protected EdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
+	
+	protected Logger logger;
 
 	protected ReferenceNetwork reference;
 	protected Set<ConditionNetwork> conditions;
@@ -57,6 +59,8 @@ public class Project
 		setDifferentials(differentials);
 		setEdgeOntology(edgeOntology);
 		setNodeMapper(nodeMapper);
+		
+		logger = new Logger();
 	}
 
 	/**
@@ -85,6 +89,7 @@ public class Project
 	public Project(String location)
 	{
 		loadFromFile(location);
+		logger = new Logger();
 	}
 	
 	/**
@@ -103,17 +108,19 @@ public class Project
 	 */
 	public void saveProject(String fileLocation)
 	{
+		//TODO: implement!
 		throw new UnsupportedOperationException("Saving of project not yet implemented");
 	}
 
 	/**
 	 * Load the project data from a specific file location. 
 	 * Make sure all restrictions on number of networks are respected during the load!
-	 * 
+	 *
 	 * @param fileLocation the location from where the project should be loaded
 	 */
 	public void loadFromFile(String fileLocation)
 	{
+		//TODO: implement!
 		throw new UnsupportedOperationException("Loading of project not yet implemented");
 	}
 
@@ -264,6 +271,15 @@ public class Project
 	public Collection<DifferentialNetwork> getDifferentialNetworks()
 	{
 		return differentials;
+	}
+	
+	/**
+	 * Get the logger object, that contains all log messages from the last run.
+	 * @return the logger object of this project.
+	 */
+	public Logger getLogger()
+	{
+		return logger;
 	}
 
 }

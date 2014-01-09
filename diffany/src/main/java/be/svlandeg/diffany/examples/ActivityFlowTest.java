@@ -126,5 +126,11 @@ public class ActivityFlowTest extends GenericExample
 		
 		System.out.println("");
 		ex.printAllNetworks(p);
+		
+		System.out.println("Logs:");
+		for (String l : p.getLogger().getAllLogMessages())
+		{
+			System.out.println(l);
+		}
 	}
 }

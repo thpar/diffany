@@ -23,14 +23,16 @@ public class CalculateDiffOfMore
 	protected NetworkCleaning cleaning;
 	protected CalculateDiffOfTwo twoProcessor;
 	protected static String EMPTY_NAME = "*empty*";
+	protected Logger log;
 	
 	/**
 	 * Constructor initializes the algorithm suites.
 	 */
-	public CalculateDiffOfMore()
+	public CalculateDiffOfMore(Logger log)
 	{
-		twoProcessor = new CalculateDiffOfTwo();
-		cleaning = new NetworkCleaning();
+		twoProcessor = new CalculateDiffOfTwo(log);
+		cleaning = new NetworkCleaning(log);
+		this.log = log;
 	}
 	
 	/**

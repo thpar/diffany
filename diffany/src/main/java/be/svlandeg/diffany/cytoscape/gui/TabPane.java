@@ -181,6 +181,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.comboModel.refresh(model.getNetworkCollections());
 		this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());
 		this.collectionDropDown.setEnabled(comboModel.hasEntries());
+		this.refreshCyProject();
 	}
 
 	@Override
@@ -210,6 +211,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		// triggered when the data of the table has changed
+		this.refreshCyProject();
+	}
+	
+	public void refreshCyProject(){
 		CyProject cyProject = model.getCurrentProject();
 		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
 		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
@@ -217,7 +222,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
 		TaskIterator it = tf.createTaskIterator();
 		DialogTaskManager dtm = model.getServices().getDialogTaskManager();
-		dtm.execute(it);
+		dtm.execute(it);		
 	}
 
 	@Override

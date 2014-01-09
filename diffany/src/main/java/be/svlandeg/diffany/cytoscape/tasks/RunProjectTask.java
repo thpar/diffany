@@ -66,11 +66,8 @@ public class RunProjectTask implements Task {
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cyProject.getCutoff());
 			break;
-		case REF_TO_ALL:
-			DifferentialNetwork diff = new CalculateDiff().calculateDiffNetwork(project.getReferenceNetwork(), 
-					(Set<ConditionNetwork>)project.getConditionNetworks(), 
-					project.getEdgeOntology(), project.getNodeMapper(), cyProject.getCutoff());
-			project.addDifferential(diff);
+		case REF_TO_ALL:	
+			new CalculateDiff().calculateOneDifferentialNetwork(project, cyProject.getCutoff());
 			break;
 		}
 		

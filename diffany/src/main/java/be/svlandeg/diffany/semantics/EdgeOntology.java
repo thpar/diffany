@@ -21,6 +21,7 @@ public abstract class EdgeOntology
 
 	protected Map<String, String> mapSourceTypeToCategory;
 	
+	protected static Boolean default_symmetry = false;
 	protected Map<String, Boolean> allSourceCategories;
 	protected Set<String> allDiffCategories;
 	
@@ -336,15 +337,9 @@ public abstract class EdgeOntology
 	 */
 	public boolean isSymmetricalSourceType(String edgeType)
 	{
-		if (edgeType == null)
+		if (edgeType == null || ! isDefinedSourceType(edgeType))
 		{
-			String errormsg = "The source category should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (! isDefinedSourceType(edgeType))
-		{
-			String errormsg = "The source edgeType is not defined in this ontology!";
-			throw new IllegalArgumentException(errormsg);
+			return default_symmetry;
 		}
 		String cat = getSourceCategory(edgeType);
 		return allSourceCategories.get(cat.toLowerCase());

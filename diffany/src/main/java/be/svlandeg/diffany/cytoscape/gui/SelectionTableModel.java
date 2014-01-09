@@ -120,8 +120,10 @@ public class SelectionTableModel extends AbstractTableModel{
 
 	private void setReference(int row){
 		int oldRefRow = this.referenceRow;
-		NetworkEntry oldRefEntry = this.networkEntries.get(oldRefRow);
-		oldRefEntry.setReference(false);
+		if (oldRefRow != -1){
+			NetworkEntry oldRefEntry = this.networkEntries.get(oldRefRow);
+			oldRefEntry.setReference(false);			
+		}
 		
 		NetworkEntry newRefEntry = this.networkEntries.get(row);
 		newRefEntry.setReference(true);
@@ -131,6 +133,16 @@ public class SelectionTableModel extends AbstractTableModel{
 		
 	}
 	
+	private void clearReference() {
+		int oldRefRow = this.referenceRow;
+		if (oldRefRow >= 0){
+			NetworkEntry oldRefEntry = this.networkEntries.get(oldRefRow);
+			oldRefEntry.setReference(false);
+		}
+		this.referenceRow = -1;
+	}
+
+
 	/**
 	 * Reload the {@link NetworkEntry}s based on the subnetworks from the selected network collections.
 	 * 
@@ -142,15 +154,13 @@ public class SelectionTableModel extends AbstractTableModel{
 		for (CySubNetwork subNet : subNets){
 			if (!isGhostNetwork(subNet)){				
 				NetworkEntry entry = new NetworkEntry(subNet);
-				entry.setSelected(true);
+				entry.setSelected(false);
 				entry.setReference(false);
 				networkEntries.add(entry);
 			}
 		}
-
-		if (networkEntries.size() > 0){
-			this.setReference(0);
-		}
+		this.clearReference();
+		
 		this.fireTableDataChanged();
 	}
 	
@@ -176,6 +186,10 @@ public class SelectionTableModel extends AbstractTableModel{
 		return condSet;
 	}
 	public CyNetwork getReferenceNetwork(){
-		return networkEntries.get(referenceRow).getNetwork();
+		if (this.referenceRow < 0){
+			return null;
+		} else {
+			return networkEntries.get(referenceRow).getNetwork();
+		}
 	}
 }

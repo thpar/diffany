@@ -76,7 +76,10 @@ public class CyProject{
 	public CyProject(){
 	}
 	
-	
+	/**
+	 * 
+	 * @return the reference network set for this project. Returns null if no reference has been selected yet.
+	 */
 	public CyNetwork getReferenceNetwork() {
 		return referenceNetwork;
 	}
@@ -139,8 +142,7 @@ public class CyProject{
 	 * @return true when minimal input parameters are set
 	 */
 	public boolean canExecute(){
-		//TODO actual check 
-		return true;
+		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
 	}
 
 
@@ -220,7 +222,9 @@ public class CyProject{
 	 */
 	private Set<CyNetwork> getAllNetworks(){
 		Set<CyNetwork> networks = new HashSet<CyNetwork>();
-		networks.add(this.referenceNetwork);
+		if (this.referenceNetwork !=null){
+			networks.add(this.referenceNetwork);			
+		}
 		for (CyNetwork conNet : this.conditionalNetworks){
 			networks.add(conNet);
 		}
@@ -240,8 +244,10 @@ public class CyProject{
 		Set<CyNetworkView> views = new HashSet<CyNetworkView>();
 
 		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
-		Collection<CyNetworkView> refViews = viewManager.getNetworkViews(referenceNetwork);
-		views.addAll(refViews);
+		if (this.referenceNetwork !=null){
+			Collection<CyNetworkView> refViews = viewManager.getNetworkViews(referenceNetwork);
+			views.addAll(refViews);			
+		}
 		
 		for (CyNetwork condNet : conditionalNetworks){
 			views.addAll(viewManager.getNetworkViews(condNet));

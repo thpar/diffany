@@ -456,7 +456,6 @@ public class TreeEdgeOntology extends EdgeOntology
 		
 		if (!overlapNegated && firstCommonParent != null)	//  the shared edge is the (first) common super class 
 		{
-			// if there are multiple common parents, equally close (minimal depth), we take the first one at random
 			overlap_edge.setType(firstCommonParent);
 			return overlap_edge;
 		} 

@@ -153,21 +153,28 @@ public class EdgeDefinition
 	 */
 	public void setWeight(double weight) throws IllegalArgumentException
 	{
-		checkWeight(weight);
-		this.weight = weight;
+		// TODO properly log this event!
+		if (checkWeight(weight))
+		{
+			this.weight = weight;
+		}
+		weight = DEFAULT_WEIGHT;
 	}
 	
 	/**
 	 * Internal method to check whether the weight value is appropriate.
 	 * @throws IllegalArgumentException when the specified weight is a negative number
+	 * @return whether or not the weight is valid
 	 */
-	private void checkWeight(double weight) throws IllegalArgumentException
+	private boolean checkWeight(double weight) throws IllegalArgumentException
 	{
 		if (weight < 0.0)
 		{
-			String errormsg = "The edge weight should be positive!";
-			throw new IllegalArgumentException(errormsg);
+			//String errormsg = "The edge weight should be positive!";
+			//throw new IllegalArgumentException(errormsg);
+			return false;
 		}
+		return true;
 	}
 	
 	/**

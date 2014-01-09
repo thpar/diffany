@@ -135,6 +135,10 @@ public class TreeEdgeOntology extends EdgeOntology
 	@Override
 	public int isSourceChildOf(String childCat, String parentCat)
 	{
+		if (childCat == null || parentCat == null)
+		{
+			return -1;
+		}
 		int depth = 0;
 		if (childCat.equals(parentCat))
 		{

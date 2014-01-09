@@ -18,15 +18,17 @@ public class CalculateDiffOfTwo
 {
 	
 	protected NetworkCleaning cleaning;
+	protected Unification unification;
 	protected Logger log;
 	
 	/**
-	 * Constructor, which initializes the functionality for cleaning a network.
+	 * Constructor, which also initializes the functionality for cleaning/unifying a network.
 	 * @param log the logger that records logging messages
 	 */
 	public CalculateDiffOfTwo(Logger log)
 	{
 		cleaning = new NetworkCleaning(log);
+		unification = new Unification(log);
 		this.log = log;
 	}
 	
@@ -51,7 +53,7 @@ public class CalculateDiffOfTwo
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.add(n1);
 		allOriginals.add(n2);
-
+		
 		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, allOriginals);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(n1, n2);

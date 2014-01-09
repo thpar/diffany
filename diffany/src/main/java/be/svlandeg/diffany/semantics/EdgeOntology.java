@@ -356,7 +356,7 @@ public abstract class EdgeOntology
 	 * @param symmetric whether or not the category is symmetric
 	 * @throws IllegalArgumentException when the category is null
 	 */
-	protected void addSourceCategory(String category, boolean symmetric) throws IllegalArgumentException
+	public void addSourceCategory(String category, boolean symmetric) throws IllegalArgumentException
 	{
 		if (category == null)
 		{

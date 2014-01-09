@@ -226,10 +226,11 @@ public class TestExamples
 		// Testing the edges in the differential network
 		DifferentialNetwork dNetwork = dNetworks.iterator().next();
 		Set<Edge> dEdges = dNetwork.getEdges();
-		assertEquals(8, dEdges.size());
+		assertEquals(9, dEdges.size());
 		
 		assertAnEdge(dNetwork, "A", "B", false, false, "increases_regulation", false, 6);
 		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_ptm", false, 5);
+		assertAnEdge(dNetwork, "A", "B", false, false, "decreases_somerandominteraction", false, 4);
 		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "G", "H", false, false, "decreases_ptm", false, 1);
 		assertAnEdge(dNetwork, "J", "K", false, false, "decreases_unspecified_regulation", false, 3);

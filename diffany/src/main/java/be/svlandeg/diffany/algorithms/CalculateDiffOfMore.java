@@ -21,17 +21,20 @@ public class CalculateDiffOfMore
 {
 	
 	protected NetworkCleaning cleaning;
+	protected Unification unification;
+	
 	protected CalculateDiffOfTwo twoProcessor;
 	protected static String EMPTY_NAME = "*empty*";
 	protected Logger log;
 	
 	/**
-	 * Constructor initializes the algorithm suites.
+	 * Constructor, which also initializes the functionality for cleaning/unifying a network.
 	 */
 	public CalculateDiffOfMore(Logger log)
 	{
 		twoProcessor = new CalculateDiffOfTwo(log);
 		cleaning = new NetworkCleaning(log);
+		unification = new Unification(log);
 		this.log = log;
 	}
 	
@@ -56,6 +59,11 @@ public class CalculateDiffOfMore
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
+		
+		for (Network n : allOriginals)
+		{
+			unification.expandOntology(n.getEdges(), eo);
+		}
 
 		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditionNetworks);
 

@@ -1,8 +1,18 @@
 package be.svlandeg.diffany.cytoscape.tasks;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.Set;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
@@ -14,8 +24,8 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
@@ -55,10 +65,49 @@ public class RunProjectTask implements Task {
 		this.runAlgorithm();
 		
 		taskMonitor.setProgress(1.0);
+		
 	}
 	
 	
 	
+	private void displayReport(Logger logger) {
+		//TODO get parent window
+		final JDialog reportDialog = new JDialog(model.getParentWindow(), "Report", false);
+		reportDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		
+		StringBuffer reportContent = new StringBuffer();
+		for (String msg : logger.getAllLogMessages()){
+			reportContent.append(msg);
+			reportContent.append(System.getProperty("line.separator"));
+		}
+		
+		JPanel logPanel = new JPanel();
+		logPanel.setLayout(new BorderLayout());
+		JTextArea text = new JTextArea(reportContent.toString());
+		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setRows(20);
+		text.setColumns(50);
+		JScrollPane scrollPane = new JScrollPane(text);
+		logPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		JPanel buttonPanel = new JPanel();
+		JButton closeButton = new JButton("Close");
+		buttonPanel.add(closeButton);
+		closeButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				reportDialog.dispose();
+			}
+		});
+		logPanel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		reportDialog.setContentPane(logPanel);
+		reportDialog.pack();
+		reportDialog.setVisible(true);
+		
+	}
+
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
 		
@@ -72,6 +121,7 @@ public class RunProjectTask implements Task {
 		}
 		
 		addDifferentialNetworks(project.getDifferentialNetworks(), cyProject);
+		displayReport(project.getLogger());
 	}
 
 	/**

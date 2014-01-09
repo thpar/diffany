@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 
+import javax.swing.JFrame;
+
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
@@ -44,6 +46,8 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 	
 	private VisualSourceStyle sourceStyle;
 	private VisualDiffStyle diffStyle;
+
+	private JFrame swingApplication;
 	
 	
 	public Model(Services services){
@@ -162,6 +166,13 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 	}
 
 
+	public void setParentWindow(JFrame jFrame) {
+		this.swingApplication = jFrame;
+	}
+
+	public JFrame getParentWindow(){
+		return this.swingApplication;
+	}
 
 	
 }

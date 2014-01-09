@@ -3,6 +3,7 @@ package be.svlandeg.diffany.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -56,7 +57,11 @@ public class CyActivator extends AbstractCyActivator
 		
 		services.setCyLayoutAlgorithmManager(getService(context, CyLayoutAlgorithmManager.class));
 		
+		CySwingApplication swingApplication = getService(context, CySwingApplication.class);
+		
 		Model model = new Model(services);
+		
+		model.setParentWindow(swingApplication.getJFrame());
 		
 		//Create and register the control panel
 		TabPane sidePane = new TabPane(model);
@@ -70,7 +75,6 @@ public class CyActivator extends AbstractCyActivator
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());
 		registerService(context,model, NetworkDestroyedListener.class, new Properties());
-		
 		
 		
 	}

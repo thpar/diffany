@@ -30,9 +30,6 @@ public class Logger
 	public void clean()
 	{
 		logs = new ArrayList<String>();
-		logs.add("Added testing logs");
-		logs.add("Something went wrong and we did something");
-		logs.add("Then we did something else");
 	}
 	
 	/**

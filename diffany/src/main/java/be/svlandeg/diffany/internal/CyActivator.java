@@ -11,6 +11,8 @@ import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
+import org.cytoscape.session.events.SessionAboutToBeSavedListener;
+import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
@@ -21,6 +23,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
+import be.svlandeg.diffany.SessionListener;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
@@ -76,6 +79,9 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,model, NetworkAddedListener.class, new Properties());
 		registerService(context,model, NetworkDestroyedListener.class, new Properties());
 		
+		//Register session handlers
+		registerService(context, new SessionListener(model),SessionLoadedListener.class, new Properties() );
+		registerService(context, new SessionListener(model),SessionAboutToBeSavedListener.class, new Properties() );
 		
 	}
 

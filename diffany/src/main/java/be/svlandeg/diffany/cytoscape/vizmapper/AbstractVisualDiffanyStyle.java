@@ -51,9 +51,16 @@ public abstract class AbstractVisualDiffanyStyle {
 		
 		this.defaultStyle();
 
-		services.getVisualMappingManager().addVisualStyle(this.vis);
+		registerStyle();
 	}
 
+	/**
+	 * Registers this style with the VizMapper
+	 */
+	public void registerStyle(){
+		services.getVisualMappingManager().addVisualStyle(this.vis);		
+	}
+	
 	/**
 	 * The default Diffany style that applies to all networks
 	 */
@@ -147,6 +154,7 @@ public abstract class AbstractVisualDiffanyStyle {
 	 */
 	public void apply(CyNetworkView view){
 		this.vis.apply(view);
+		services.getVisualMappingManager().setVisualStyle(vis, view);
 	}
 
 }

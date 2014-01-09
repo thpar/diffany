@@ -20,28 +20,28 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
  */
 public class UpdateVisualStyleTask implements Task {
 
-	private CyProject project;
+	private CyProject cyProject;
 	private Model model;
 	
 	public UpdateVisualStyleTask(Model model, CyProject project) {		
-		this.project = project;
+		this.cyProject = project;
 		this.model = model;
 	}
 
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		
-		Set<String> interactions = project.getAllInteractions();
-		EdgeOntology ontology = project.getEdgeOntology();
+		Set<String> interactions = cyProject.getAllInteractions();
+		EdgeOntology ontology = cyProject.getEdgeOntology();
 		
 		model.getSourceStyle().updateInteractionMappings(interactions, ontology);
 		model.getDiffStyle().updateInteractionMappings(interactions, ontology);
 		
-		for (CyNetworkView view : project.getAllSourceViews(model.getServices())){
+		for (CyNetworkView view : cyProject.getAllSourceViews(model.getServices())){
 			model.getSourceStyle().apply(view);
 			view.updateView();
 		}
-		for (CyNetworkView view : project.getAllDifferentialViews(model.getServices())){
+		for (CyNetworkView view : cyProject.getAllDifferentialViews(model.getServices())){
 			model.getDiffStyle().apply(view);
 			view.updateView();
 		}

@@ -25,8 +25,11 @@ import org.osgi.framework.BundleContext;
 
 import be.svlandeg.diffany.SessionListener;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.actions.LoadExampleAction;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
+import be.svlandeg.diffany.examples.Bandyopadhyay2010;
+import be.svlandeg.diffany.examples.Ideker2011;
 
 /**
  * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
@@ -57,8 +60,9 @@ public class CyActivator extends AbstractCyActivator
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=discrete)"));
 		services.putVisualMappingFunctionFactory("passthrough", 
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
-		
+
 		services.setCyLayoutAlgorithmManager(getService(context, CyLayoutAlgorithmManager.class));
+
 		
 		CySwingApplication swingApplication = getService(context, CySwingApplication.class);
 		
@@ -71,9 +75,15 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
 		
-		//register action to run  the current Diffany project
+		//register action to run the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
 		registerAllServices(context, runProjectAction, new Properties());
+		
+		//register actions to import the projects defined in the examples package
+		registerAllServices(context, new LoadExampleAction(services,"Bandyopadhyay2010", 
+				new Bandyopadhyay2010().getProjectFigure1C()), new Properties());
+		registerAllServices(context, new LoadExampleAction(services,"Ideker2011", 
+				new Ideker2011().getProjectFigure3A()), new Properties());
 		
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());

@@ -10,6 +10,7 @@ import java.util.Set;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyIdentifiable;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -46,17 +47,37 @@ public class CyNetworkBridge {
 	
 	public CyNetworkBridge(){
 	}
-
+	
 	/**
-	 * Converts a {@link Network} to a {@link CyNetwork}
+	 * Creates a {@link CyNetwork} from a {@link Network} and adds it to Cytoscape.
 	 * 
-	 * @param network input {@link Network} 
-	 * @param collection 
-	 * @return {@link CyNetwork} that can be added to Cytoscape using a {@link CyNetworkManager}
+	 * @param network the {@link Network} to be added in Cytoscape
+	 * @param collection the {@link CyRootNetwork} to link the new {@link Network} to
+	 * @return the newly created and added {@link CyNetwork}
 	 */
 	public CyNetwork createCyNetwork(Network network, CyRootNetwork collection){
-		
 		CySubNetwork cyNetwork = collection.addSubNetwork();
+		return createCyNetwork(network, cyNetwork);
+	}
+	
+	/**
+	 * Creates a {@link CyNetwork} from a {@link Network} and adds it to Cytoscape.
+	 * 
+	 * @param network the {@link Network} to be added in Cytoscape
+	 * @param factory the {@link CyNetworkFactory} to create a fresh {@link CyNetwork}
+	 * @return the newly created and added {@link CyNetwork}
+	 */
+	public CyNetwork createCyNetwork(Network network, CyNetworkFactory factory){
+		return createCyNetwork(network, factory.createNetwork());
+	}
+	/**
+	 * Converts a {@link Network} to a given {@link CyNetwork}
+	 * 
+	 * @param network input {@link Network} 
+	 * @param cyNetwork the new network, created by the {@link CyNetworkFactory}
+	 * @return {@link CyNetwork} that can be added to Cytoscape using a {@link CyNetworkManager}
+	 */
+	private CyNetwork createCyNetwork(Network network, CyNetwork cyNetwork){
 		
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
 		

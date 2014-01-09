@@ -53,6 +53,9 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 			case T:
 				shape = ArrowShapeVisualProperty.T;
 				break;
+			case DIAMOND:
+				shape = ArrowShapeVisualProperty.DIAMOND;
+				break;
 			}
 			edgeTargetArrowFunction.putMapValue(type,shape);
 		}

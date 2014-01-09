@@ -33,10 +33,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper for the network
+	 * @param toLog whether or not to log important messages
 	 **/
-	public void fullOutputCleaning(Network net, NodeMapper nm)
+	public void fullOutputCleaning(Network net, NodeMapper nm, boolean toLog)
 	{
-		removeRedundantEdges(net, nm);
+		removeRedundantEdges(net, nm, toLog);
 	}
 
 	/**
@@ -46,9 +47,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper for the network
+	 * @param toLog whether or not to log important messages
 	 **/
-	private void removeRedundantEdges(Network net, NodeMapper nm)
+	private void removeRedundantEdges(Network net, NodeMapper nm, boolean toLog)
 	{
+		if (toLog)
+		{
+			log.log(" Removing redundant edges from the output");
+		}
+		
 		Set<Edge> removed_edges = new HashSet<Edge>();
 		
 		// remove duplicate symmetrical edges between source-target and
@@ -82,7 +89,6 @@ public class NetworkCleaning
 				}
 			}
 		}
-		log.log("Output cleaning: removed redundant edges");
 	}
 	
 	/**
@@ -95,25 +101,31 @@ public class NetworkCleaning
 	 * @param eo the edge ontology
 	 * @param oldEdgeSet all edges between two nodes, including both directed and symmetrical edges
 	 * @param backEdgeSet all reverse edges between the same two nodes, excluding symmetrical edges
+	 * 
+	 * @param source the source node (used for logging)
+	 * @param target the target node (used for logging)
+	 * @param toLog whether or not to log important messages
+	 * 
 	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
 	 */
-	public Map<String, SingleEdgeSet> fullInputCleaning(EdgeOntology eo, EdgeSet oldEdgeSet, EdgeSet backEdgeSet)
+	public Map<String, SingleEdgeSet> fullInputCleaning(EdgeOntology eo, EdgeSet oldEdgeSet, EdgeSet backEdgeSet,
+			Node source, Node target, boolean toLog)
 	{
 		Map<String, EdgeSet> mappedNormalEdges = resolveEdgesPerRoot(eo, oldEdgeSet);
 		Map<String, EdgeSet> mappedReverseEdges = resolveEdgesPerRoot(eo, backEdgeSet);
 		
 		Map<String, SingleEdgeSet> mappedSingleEdges = new HashMap<String, SingleEdgeSet>();
 		
-		for (String key : mappedNormalEdges.keySet())
+		for (String rootCat : mappedNormalEdges.keySet())
 		{
-			EdgeSet normalEdges = mappedNormalEdges.get(key);
-			EdgeSet reverseEdges = mappedReverseEdges.get(key);
+			EdgeSet normalEdges = mappedNormalEdges.get(rootCat);
+			EdgeSet reverseEdges = mappedReverseEdges.get(rootCat);
 			
 			EdgeSet unifiedEdgeSet = unifyDirection(normalEdges, reverseEdges, eo);
 			
-			SingleEdgeSet singleEdgeSet = summarizeToOne(unifiedEdgeSet,eo);
+			SingleEdgeSet singleEdgeSet = summarizeToOne(unifiedEdgeSet, eo, source, target, rootCat, toLog);
 			
-			mappedSingleEdges.put(key, singleEdgeSet);
+			mappedSingleEdges.put(rootCat, singleEdgeSet);
 		}
 		return mappedSingleEdges;
 	}
@@ -186,6 +198,7 @@ public class NetworkCleaning
 	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
 	 * @param oldSet the old edgeset with opposite directed edges (if any)
 	 * @param eo the edge ontology
+	 * 
 	 * @return the new edge set with only directed, or only symmetrical edges
 	 */
 	protected EdgeSet unifyDirection(EdgeSet oldSet, EdgeSet backEdgeSet, EdgeOntology eo)
@@ -238,16 +251,23 @@ public class NetworkCleaning
 	 * 
 	 * @param oldSet the old edge set
 	 * @param eo the edge ontology
+	 *
+	 * @param source the source node (used for logging)
+	 * @param target the target node (used for logging)
+	 * @param rootCat the root category (used for logging)
+	 * @param toLog whether or not to log important messages
+	 * 
 	 * @return the new edge set, holding at most one edge per input network
 	 */
-	protected SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo)
+	protected SingleEdgeSet summarizeToOne(EdgeSet oldSet, EdgeOntology eo, 
+			Node source, Node target, String rootCat, boolean toLog)
 	{
 		SingleEdgeSet newSet = new SingleEdgeSet(oldSet.getConditionCount());
 		
 		Set<EdgeDefinition> rootRefEs = oldSet.getReferenceEdges();
-		if (rootRefEs.size() > 1)	// TODO
+		if (rootRefEs.size() > 1)	
 		{
-			newSet.putReferenceEdge(resolveToOne(rootRefEs,  eo));
+			newSet.putReferenceEdge(resolveToOne(rootRefEs, eo, "the reference network", source, target, rootCat, toLog));
 		}
 		else
 		{
@@ -257,9 +277,9 @@ public class NetworkCleaning
 		for (int i = 0; i < oldSet.getConditionCount(); i++)
 		{
 			Set<EdgeDefinition> rootCondIEs = oldSet.getConditionEdges(i);
-			if (rootCondIEs.size() > 1)	// TODO
+			if (rootCondIEs.size() > 1)	
 			{
-				newSet.putConditionEdge(resolveToOne(rootCondIEs, eo), i);
+				newSet.putConditionEdge(resolveToOne(rootCondIEs, eo, "the condition-specific network #" + (i+1), source, target, rootCat, toLog), i);
 			}
 			else
 			{
@@ -275,9 +295,17 @@ public class NetworkCleaning
 	 * 
 	 * @param edges the original set of input edges
 	 * @param eo the edge ontology
+	 * 
+	 * @param network the name/type of input network (used for logging)
+	 * @param source the source node (used for logging)
+	 * @param target the target node (used for logging)
+	 * @param rootCat the root category (used for logging)
+	 * @param toLog whether or not to log important messages
+	 * 
 	 * @return one edge, produced after resolving conflicts, or throws a RunTimeException if no best edge could be found. 
 	 */
-	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges,  EdgeOntology eo)
+	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges,  EdgeOntology eo, String network,
+			Node source, Node target, String rootCat, boolean toLog)
 	{
 		// TODO: should we also take into account whether or one of the edges is more specific?
 		double maxWeight = 0.0;
@@ -291,11 +319,18 @@ public class NetworkCleaning
 		{
 			if (maxWeight == e.getWeight())
 			{
+				if (toLog)
+				{
+					log.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " 
+						+ source.getName() + " and " + target.getName() + " for the category " + rootCat +
+						" in " + network);
+				}
 				return e;
 			}
 		}
-		String errormsg = "Could not resolve the set of edges to one!";
-		throw new RuntimeException(errormsg);
+		String msg = "Could not resolve the set of edges to one.";
+		log.log("Fatal error: " + msg);
+		throw new RuntimeException(msg);
 	}
 	
 	/**

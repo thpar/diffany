@@ -14,7 +14,7 @@ public class VisualEdgeStyle
 	private Color color;
 	private ArrowHead ah;
 	
-	public enum ArrowHead{ARROW, T, NONE};
+	public enum ArrowHead{ARROW, T, NONE, DIAMOND};
 	
 	
 	/**

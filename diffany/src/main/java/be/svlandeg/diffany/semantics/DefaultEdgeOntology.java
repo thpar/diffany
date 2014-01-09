@@ -50,10 +50,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 
 		cats.put("ppi", true);
 		cats.put("colocalization", true);
-		cats.put("coexpression", true);
 		
-		cats.put("ppi", true);
-		cats.put("colocalization", true);
 		cats.put("coexpression", true);
 		
 		cats.put("transcription", false);
@@ -129,10 +126,17 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	protected void addDefaultPaintedParents()
 	{
 		addColor("ptm", Color.BLUE);
+		addColor("colocalization", Color.YELLOW);
 		addColor("positive_regulation", Color.GREEN);
 		addColor("negative_regulation", Color.RED);
 		
-		addArrowHead("ptm", ArrowHead.ARROW);
+		addArrowHead("ptm", ArrowHead.DIAMOND);
+		addArrowHead("transcription", ArrowHead.ARROW);
+		addArrowHead("regulation", ArrowHead.ARROW);
+		
+		addArrowHead("genetic_interaction", ArrowHead.NONE);
+		addArrowHead("colocalization", ArrowHead.NONE);
+		addArrowHead("coexpression", ArrowHead.NONE);
 	}
 
 	/**

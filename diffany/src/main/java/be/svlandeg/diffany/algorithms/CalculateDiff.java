@@ -24,11 +24,10 @@ public class CalculateDiff
 	protected static String overlapnamesuffix = "_overlap";
 	
 	/**
-	 * Constructor initializes the algorithm suites.
+	 * The constructor initializes the algorithm.
 	 */
 	public CalculateDiff()
-	{
-	}
+	{}
 
 	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND 1 CONDITION-SPECIFIC NETWORK  //////////////
 	
@@ -109,7 +108,7 @@ public class CalculateDiff
 	 */
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, String diff_name, Logger log) throws IllegalArgumentException
-	{
+	{ 
 		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, default_cutoff, log);
 	}
 	
@@ -203,9 +202,11 @@ public class CalculateDiff
 		log.clean();
 		for (ConditionNetwork c : p.getConditionNetworks())
 		{
+			log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
 			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm, cutoff, log);
 			p.addDifferential(diff);
 		}
+		log.log("Done!");
 	}
 	
 	
@@ -395,9 +396,10 @@ public class CalculateDiff
 		Logger log = p.getLogger();
 		log.clean();
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(p.getConditionNetworks());
+		log.log("Calculating the differential and overlap network between " + r.getName() + " and " 
+				+ cs.size() + " condition-dependent network(s)");
 		DifferentialNetwork diff = calculateDiffNetwork(r, cs, eo, nm, log);
 		p.addDifferential(diff);
+		log.log("Done!");
 	}
-	
-
 }

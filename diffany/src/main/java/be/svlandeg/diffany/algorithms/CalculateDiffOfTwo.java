@@ -108,7 +108,7 @@ public class CalculateDiffOfTwo
 				back_condlist.add(back_conditionEdges);
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
 				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es);
+				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es, source1, target1, false);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -148,7 +148,7 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(overlap, nm);
+		cleaning.fullOutputCleaning(overlap, nm, false);
 		return overlap;
 	}
 	

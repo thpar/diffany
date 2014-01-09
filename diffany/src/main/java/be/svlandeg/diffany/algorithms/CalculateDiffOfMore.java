@@ -152,7 +152,7 @@ public class CalculateDiffOfMore
 				}	
 				EdgeSet es = new EdgeSet(referenceEdges, condlist);
 				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es);
+				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es, source1, target1, true);
 				
 				for (String root : edgeSets.keySet())
 				{
@@ -183,8 +183,7 @@ public class CalculateDiffOfMore
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(diff, nm);
-		
+		cleaning.fullOutputCleaning(diff, nm, true);
 		return diff;
 	}
 	
@@ -222,7 +221,6 @@ public class CalculateDiffOfMore
 			overlapTmp = twoProcessor.calculateOverlappingNetwork(overlapTmp, secondN, eo, nm, overlapping_name, cutoff, minOperator);
 			second++;
 		}
-		
 		return overlapTmp;
 	}
 	
@@ -239,7 +237,9 @@ public class CalculateDiffOfMore
 		}
 		if (nodes.size() > 1)
 		{
-			throw new UnsupportedOperationException("This algorithm currently only supports 1-1 node mappings");
+			String msg = "This algorithm currently only supports 1-1 node mappings.";
+			log.log("Fatal error: " + msg);
+			throw new UnsupportedOperationException(msg);
 		}
 		return nodes.iterator().next();
 	}

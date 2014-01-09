@@ -71,7 +71,6 @@ public class RunProjectTask implements Task {
 	
 	
 	private void displayReport(Logger logger) {
-		//TODO get parent window
 		final JDialog reportDialog = new JDialog(model.getParentWindow(), "Report", false);
 		reportDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		

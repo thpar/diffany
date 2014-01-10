@@ -8,8 +8,8 @@
  - Locate the jar file you downloaded above
  - If installed correctly, the "Currently Installed" tab of the App Manager should now display "be.svlandeg.diffany" as "Installed"
  
-[1]http://cytoscape.org/
-[2]http://bioinformatics.psb.ugent.be/supplementary_data/solan/diffany/
+[1]: http://cytoscape.org/
+[2]: http://bioinformatics.psb.ugent.be/supplementary_data/solan/diffany/
 
 ## Example networks ####
 There are two small examples included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples

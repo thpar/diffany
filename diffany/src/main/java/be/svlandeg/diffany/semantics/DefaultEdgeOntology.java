@@ -53,6 +53,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		
 		cats.put("coexpression", true);
 		
+		cats.put("protein_dna_binding", false);
 		cats.put("transcription", false);
 		
 		cats.put("ptm", false);
@@ -87,6 +88,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceParent("synthetic_lethality", "negative_genetic_interaction");
 		
 		putSourceParent("ppi", "colocalization");
+		putSourceParent("transcription", "protein_dna_binding");
 		
 		putSourceParent("phosphorylation", "ptm");
 		putSourceParent("dephosphorylation", "ptm");
@@ -127,6 +129,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		addColor("ptm", Color.BLUE);
 		addColor("colocalization", Color.YELLOW);
+		addColor("protein_dna_binding", Color.CYAN);
 		addColor("positive_regulation", Color.GREEN);
 		addColor("negative_regulation", Color.RED);
 		addColor("positive_genetic_interaction", Color.GREEN);
@@ -222,9 +225,21 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
 		addSourceCategoryMapping("proteinprotein interaction", "ppi", overwrite);
 		addSourceCategoryMapping("proteinproteininteraction", "ppi", overwrite);
+		addSourceCategoryMapping("protein-protein binding", "ppi", overwrite);
+		addSourceCategoryMapping("proteinprotein binding", "ppi", overwrite);
+		addSourceCategoryMapping("proteinproteinbinding", "ppi", overwrite);
 		addSourceCategoryMapping("binds", "ppi", overwrite);
 		addSourceCategoryMapping("bind", "ppi", overwrite);
 		addSourceCategoryMapping("binding", "ppi", overwrite);
+		
+		addSourceCategoryMapping("protein_dna_binding", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein dna binding", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein-dna_binding", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein-dna binding", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein_dna_interaction", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein dna interaction", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein-dna_interaction", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein-dna interaction", "protein_dna_binding", overwrite);
 		
 		addSourceCategoryMapping("transcription", "transcription", overwrite);
 		addSourceCategoryMapping("transcribes", "transcription", overwrite);
@@ -245,6 +260,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("coexpressed", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpresses", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpress", "coexpression", overwrite);
+		addSourceCategoryMapping("coexpr", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpresses with", "coexpression", overwrite);
 		
 		addSourceCategoryMapping("colocalization", "colocalization", overwrite);

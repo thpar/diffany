@@ -25,7 +25,7 @@ Two new networks should show up: a differential network (with the "Diffany - Dif
 A popup shows the log file of this run.
 
 ## User created networks ####
-The Diffany algorithm should work on a plethora of networks, taking into account a few caveats:
+The Diffany algorithms should work on a plethora of networks, taking into account a few caveats:
  - Weights should be floating point values in the column "weight"
  - Explicitly negating edges ("does NOT bind") can be done by adding a column "negated", containing boolean values
  - Equivalent nodes should have the same name accross the different networks in order to compare their edges.

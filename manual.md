@@ -18,3 +18,10 @@ One of the networks needs to be selected as reference network (in the examples r
 Clicking the "Start" button at the bottom of the tab runs the algorithm. Two new networks should show up: a differential network (with the "Diffany Differantial" style applied) and an overlap network.
 A popup shows the log file of this run.
 
+## User created networks ####
+The Diffany algorithm should work on a plethora of networks, taking into account a few caveats:
+ - Weights should be floating point values in the column "weight"
+ - Explicitly negating an edge ("does NOT bind") can be done by adding a column "negated", containing boolean values
+ - Nodes should have the same name accross the different networks in order to compared their edges.
+ - Cytoscape sees two edges with the same id as the exact same edge, which causes attributes (like weight) to be synced accross networks. Take this into account if this is not the intended behaviour.
+

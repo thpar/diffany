@@ -31,6 +31,6 @@ The Diffany algorithm should work on a plethora of networks, taking into account
  - Equivalent nodes should have the same name accross the different networks in order to compare their edges.
  - Cytoscape sees two edges with the same id as the exact same edge, which causes attributes (like weight) to be synced accross networks. 
 Take this into account if this is not the intended behaviour.
- - Interaction types are defined by the default column "interaction". When an interaction type not available in the default edge ontology is selected, it will be transparently added to the ontology.
+ - Interaction types are defined by the default column "interaction". When an interaction type not available in the default edge ontology is chosen, it will be transparently added to the ontology.
 However, if you want to exploit the existing edge ontology hierarchy, use any of these built-in AF types:  genetic_interaction, positive_genetic_interaction, negative_genetic_interaction, synthetic_lethality, regulation, positive_regulation, catalysis, negative_regulation, inhibition
  or PR types: ppi, colocalization, coexpression, protein_dna_binding, transcription, ptm, phosphorylation, dephosphorylation, glycosylation, deglycosylation, acetylation, deacetylation, hydroxylation, dehydroxylation, ubiquitination, deubiquitination, methylation, demethylation

@@ -27,10 +27,10 @@ public class TreeEdgeOntology extends EdgeOntology
 	
 	protected static ArrowHead neg_diff_ah = ArrowHead.ARROW;
 	protected static ArrowHead pos_diff_ah = ArrowHead.ARROW;
-	protected static ArrowHead default_diff_ah = ArrowHead.ARROW;
+	protected static ArrowHead default_diff_ah = ArrowHead.NONE;
 	
 	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
-	protected static ArrowHead neutral_source_ah = ArrowHead.ARROW;
+	protected static ArrowHead neutral_source_ah = ArrowHead.NONE;
 	
 	protected static ArrowHead symm_ah = ArrowHead.NONE;
 	
@@ -650,9 +650,9 @@ public class TreeEdgeOntology extends EdgeOntology
 		}
 		if (unspecified)
 		{
-			type += "_unspecified";
+			type += "unspecified_";
 		}
-		type += "_" + baseType;
+		type += baseType;
 		diffWeight = minDiffWeight;
 		
 		diff_edge.setType(type);
@@ -732,10 +732,6 @@ public class TreeEdgeOntology extends EdgeOntology
 		{
 			return default_diff_ah;
 		}
-		if (category.startsWith(negPrefix_symm) || category.startsWith(posPrefix_symm))
-		{
-			return symm_ah;
-		}
 		if (category.startsWith(posPrefix_dir))
 		{
 			return pos_diff_ah;
@@ -743,6 +739,10 @@ public class TreeEdgeOntology extends EdgeOntology
 		if (category.startsWith(negPrefix_dir))
 		{
 			return neg_diff_ah;
+		}
+		if (category.startsWith(negPrefix_symm) || category.startsWith(posPrefix_symm))
+		{
+			return symm_ah;
 		}
 		return default_diff_ah;
 	}
@@ -771,13 +771,8 @@ public class TreeEdgeOntology extends EdgeOntology
 	{
 		if (isDefinedSourceType(edgeType))
 		{
-			if (isSymmetricalSourceType(edgeType))
-			{
-				return symm_ah;
-			}
-			
 			String childCat = getSourceCategory(edgeType);
-			ArrowHead foundArrowHead = parentSourceCatToArrowHead.get(edgeType);
+			ArrowHead foundArrowHead = parentSourceCatToArrowHead.get(childCat);
 			while (foundArrowHead == null && childCat != null)
 			{
 				String parentCat = retrieveParent(childCat);
@@ -787,6 +782,10 @@ public class TreeEdgeOntology extends EdgeOntology
 			if (foundArrowHead != null)
 			{
 				return foundArrowHead;
+			}
+			if (isSymmetricalSourceType(edgeType))
+			{
+				return symm_ah;
 			}
 		}
 		return neutral_source_ah;

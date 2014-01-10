@@ -20,7 +20,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	public DefaultEdgeOntology()
 	{
-		super ("increase", "increases", "decrease", "decreases", defineAllCategories());
+		super ("increase_", "increases_", "decrease_", "decreases_", defineAllCategories());
 		
 		insertDefaultParents();
 		insertDefaultMappings();
@@ -132,11 +132,14 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addColor("positive_genetic_interaction", Color.GREEN);
 		addColor("negative_genetic_interaction", Color.RED);
 		
+		addArrowHead("regulation", ArrowHead.ARROW);
+		addArrowHead("positive_regulation", ArrowHead.ARROW);
+		addArrowHead("negative_regulation", ArrowHead.T);
+		addArrowHead("genetic_interaction", ArrowHead.NONE);
+		
 		addArrowHead("ptm", ArrowHead.DIAMOND);
 		addArrowHead("transcription", ArrowHead.ARROW);
-		addArrowHead("regulation", ArrowHead.ARROW);
 		
-		addArrowHead("genetic_interaction", ArrowHead.NONE);
 		addArrowHead("colocalization", ArrowHead.NONE);
 		addArrowHead("coexpression", ArrowHead.NONE);
 	}

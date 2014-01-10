@@ -32,6 +32,7 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.CyProject.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 
@@ -71,9 +72,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.add(createNetworkSelectionPanel());
 		this.add(createOptionPanel());
 		
-		runButton = new JButton("Start");
-		runButton.setActionCommand(RUN_ACTION);
-		runButton.addActionListener(this);
+		runButton = new JButton(new RunProjectAction(model));
+//		runButton.setActionCommand(RUN_ACTION);
+//		runButton.addActionListener(this);
 		this.add(runButton);
 	}
 	
@@ -195,13 +196,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
 		} else if (action.equals(RUN_ACTION)){
 			//triggered on Start button click
-			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
 			
-			if (tf.isReady()){
-				TaskIterator it = tf.createTaskIterator();			
-				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
-				dtm.execute(it);
-			}
+//			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
+//			
+//			if (tf.isReady()){
+//				TaskIterator it = tf.createTaskIterator();			
+//				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+//				dtm.execute(it);
+//			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
 			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();

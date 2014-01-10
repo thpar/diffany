@@ -301,5 +301,11 @@ public class CyProject{
 	public void setCutoff(double cutoff) {
 		this.cutoff = cutoff;
 	}
+
+	public void removeDestroyedNetworks() {
+		// TODO Auto-generated method stub
+		
+		
+	}
 	
 }

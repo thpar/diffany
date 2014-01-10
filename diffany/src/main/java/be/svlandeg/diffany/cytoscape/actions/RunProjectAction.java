@@ -18,6 +18,11 @@ public class RunProjectAction extends AbstractCyAction {
 		setPreferredMenu("Apps.Diffany");
 		this.model = model;
 	}
+	
+	public RunProjectAction(Model model){
+		super("Start Alg.");
+		this.model = model;
+	}
 
 	/**
 	 * 

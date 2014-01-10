@@ -23,8 +23,8 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
-import be.svlandeg.diffany.SessionListener;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.SessionListener;
 import be.svlandeg.diffany.cytoscape.actions.LoadExampleAction;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;

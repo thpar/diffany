@@ -1,11 +1,10 @@
-package be.svlandeg.diffany;
+package be.svlandeg.diffany.cytoscape;
 
 import org.cytoscape.session.events.SessionAboutToBeSavedEvent;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 
-import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 
 public class SessionListener implements SessionAboutToBeSavedListener,

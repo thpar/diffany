@@ -32,3 +32,4 @@ The Diffany algorithm should work on a plethora of networks, taking into account
  - Cytoscape sees two edges with the same id as the exact same edge, which causes attributes (like weight) to be synced accross networks. 
 Take this into account if this is not the intended behaviour.
 
+## Default interaction types ####

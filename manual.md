@@ -18,7 +18,7 @@ Clicking one of the examples will create a new Cytoscape collection with the exa
 The Diffany tab in the side panel will now show the newly added collection(s). Select one of the collections to get a list of its networks.
 A network gets included in the project by clicking the checkbox next to it. Upon inclusion, the visual style "Diffany Source" is immediately applied on its view.
 One of the networks needs to be selected as reference network (in the examples resp. "Untreated Network" and "Reference Netwerk"). 
-Neiter of the examples need further options: they both use a cutoff of 0 and the pairwise comparison mode.
+Neither of the examples need further options: they both use a cutoff of 0 and the pairwise comparison mode.
 
 Clicking the "Start" button at the bottom of the tab runs the algorithm.
 Two new networks should show up: a differential network (with the "Diffany Differantial" style applied) and its counterpart overlap network.

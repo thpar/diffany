@@ -1,5 +1,5 @@
-= Diffany =====
-== Installation =====
+# Diffany ####
+## Installation ####
  - If not installed yet, Cytoscape 3 can be found at http://cytoscape.org/
  - Download the Diffany app file: diffany-0.0.1-RC.jar
  - Launch Cytoscape 3
@@ -8,7 +8,7 @@
  - Locate the jar file you downloaded above
  - If installed correctly, the "Currently Installed" tab of the App Manager should now display "be.svlandeg.diffany" as "Installed"
  
-== Example networks ====
+## Example networks ####
 There are two small examples included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples
 Clicking one of the examples will create a new Cytoscape collection with the example networks in it.
 

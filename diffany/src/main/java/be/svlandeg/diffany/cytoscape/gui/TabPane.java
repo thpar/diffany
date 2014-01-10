@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -69,11 +70,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private void createTabPaneContent(){
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
-		JPanel inputNetworkPanel = new JPanel();
-		inputNetworkPanel.setBorder(BorderFactory.createTitledBorder("Input networks"));
-		inputNetworkPanel.add(createCollectionSelectionPanel());
-		inputNetworkPanel.add(createNetworkSelectionPanel());
-		this.add(inputNetworkPanel);
+		this.add(createNetworkSelectionPanel());
 		
 		this.add(createOptionPanel());
 		
@@ -89,25 +86,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	}
 	
 
-	/**
-	 * Creates the panel containing the drop down list to select a network collection. 
-	 * @return {@link JPanel} containing the dropdown list.
-	 */
-	private Component createCollectionSelectionPanel() {
-		collectionModel = new CollectionDropDownModel();
-		collectionModel.refresh(model.getNetworkCollections());
-		collectionDropDown = new JComboBox(collectionModel);
-		collectionDropDown.setEnabled(collectionModel.hasEntries());
-		
-		JPanel collPanel = new JPanel();
-		collPanel.add(new JLabel("Network collection: "));
-		collPanel.add(collectionDropDown);
-		
-		collectionDropDown.setActionCommand(COLLECTION_ACTION);
-		collectionDropDown.addActionListener(this);
-		
-		return collPanel;
-	}
+	
 	
 	/**
 	 * Creates the panel containing the network list
@@ -115,6 +94,24 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createNetworkSelectionPanel(){
 		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
+		
+		collectionModel = new CollectionDropDownModel();
+		collectionModel.refresh(model.getNetworkCollections());
+		collectionDropDown = new JComboBox(collectionModel);
+		collectionDropDown.setEnabled(collectionModel.hasEntries());
+		
+		JPanel collPanel = new JPanel();
+		collPanel.setLayout(new BoxLayout(collPanel, BoxLayout.LINE_AXIS));
+		collPanel.add(new JLabel("Network collection: "));
+		collPanel.add(collectionDropDown);
+		
+		collectionDropDown.setActionCommand(COLLECTION_ACTION);
+		collectionDropDown.addActionListener(this);
+		
+		panel.add(collPanel, BorderLayout.NORTH);
+		
 		selectionModel = new SelectionTableModel();
 		if (model.getSelectedCollection() !=null){
 			selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
@@ -129,7 +126,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		selectionModel.addTableModelListener(this);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		panel.add(scrollPane);
+		panel.add(scrollPane, BorderLayout.CENTER);
 		return panel;
 	}
 	
@@ -139,6 +136,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createOptionPanel() {
 		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		panel.setBorder(BorderFactory.createTitledBorder("Options"));
 		
 		JPanel modePanel = new JPanel();

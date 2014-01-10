@@ -1,9 +1,10 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observer;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
@@ -11,7 +12,6 @@ import javax.swing.table.AbstractTableModel;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
-import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 
 /**
@@ -29,6 +29,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	 * Networks to be listed in the selection list
 	 */
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
+	private Map<CyNetwork, NetworkEntry> entryMap = new HashMap<CyNetwork, NetworkEntry>();
 	
 	private int referenceRow = 0;
 
@@ -37,12 +38,11 @@ public class SelectionTableModel extends AbstractTableModel{
 	 */
 	private String[] columns = {"Include", "Network", "Reference"};
 
-	
+
 	
 	/**
-	 * Create a new model based on the general {@link Model} and add it as an {@link Observer} the contained
-	 * {@link GUIModel}.
-	 * @param model
+	 * Create a new table model.
+	 * 
 	 */
 	public SelectionTableModel() {
 	}
@@ -133,33 +133,40 @@ public class SelectionTableModel extends AbstractTableModel{
 		
 	}
 	
-	private void clearReference() {
-		int oldRefRow = this.referenceRow;
-		if (oldRefRow >= 0){
-			NetworkEntry oldRefEntry = this.networkEntries.get(oldRefRow);
-			oldRefEntry.setReference(false);
-		}
-		this.referenceRow = -1;
-	}
-
 
 	/**
 	 * Reload the {@link NetworkEntry}s based on the subnetworks from the selected network collections.
+	 * Compare with the previous list to maintain selections.
 	 * 
 	 * @param list of {@link CySubNetwork}s to be displayed.
 	 */
 	public void refresh(List<CySubNetwork> subNets) {
+		List<NetworkEntry> oldEntries = networkEntries;
+		Map<CyNetwork, NetworkEntry> oldMap = entryMap;
+		
 		networkEntries = new ArrayList<NetworkEntry>();
-				
+		entryMap = new HashMap<CyNetwork, NetworkEntry>();		
+		
+		this.referenceRow = -1;
 		for (CySubNetwork subNet : subNets){
-			if (!isGhostNetwork(subNet)){				
-				NetworkEntry entry = new NetworkEntry(subNet);
-				entry.setSelected(false);
-				entry.setReference(false);
-				networkEntries.add(entry);
+			if (!isGhostNetwork(subNet)){
+				if (oldMap.containsKey(subNet)){
+					NetworkEntry origEntry = oldMap.get(subNet);
+					networkEntries.add(origEntry);
+					entryMap.put(subNet, origEntry);
+					if (origEntry.isReference()){
+						this.referenceRow = networkEntries.indexOf(origEntry);
+					}
+				} else {
+					NetworkEntry entry = new NetworkEntry(subNet);
+					entry.setSelected(false);
+					entry.setReference(false);
+					networkEntries.add(entry);
+					entryMap.put(subNet, entry);
+				}
+				
 			}
 		}
-		this.clearReference();
 		
 		this.fireTableDataChanged();
 	}

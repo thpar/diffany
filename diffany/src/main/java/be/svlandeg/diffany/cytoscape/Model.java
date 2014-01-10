@@ -74,12 +74,6 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 			set.add(rootNetManager.getRootNetwork(net));
 		}
 		
-		//display set
-		System.out.println("Found network collections:");
-		for (CyRootNetwork net: set){
-			String name = net.getRow(net).get(CyNetwork.NAME, String.class);
-			System.out.println(" - "+name);
-		}
 		return set;
 	}
 	

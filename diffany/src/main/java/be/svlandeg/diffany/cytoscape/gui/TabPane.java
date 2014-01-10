@@ -47,7 +47,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private static final long serialVersionUID = 1L;
 	private Model model;
 	private JComboBox collectionDropDown;
-	private CollectionDropDownModel comboModel;
+	private CollectionDropDownModel collectionModel;
 	private SelectionTableModel selectionModel;
 
 	private final String COLLECTION_ACTION = "collection";
@@ -81,10 +81,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the dropdown list.
 	 */
 	private Component createCollectionSelectionPanel() {
-		comboModel = new CollectionDropDownModel();
-		comboModel.refresh(model.getNetworkCollections());
-		collectionDropDown = new JComboBox(comboModel);
-		collectionDropDown.setEnabled(comboModel.hasEntries());
+		collectionModel = new CollectionDropDownModel();
+		collectionModel.refresh(model.getNetworkCollections());
+		collectionDropDown = new JComboBox(collectionModel);
+		collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
 		JPanel collPanel = new JPanel();
 		collPanel.add(new JLabel("Network collection: "));
@@ -180,9 +180,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void update(Observable o, Object arg) {
 		//triggered on model update
-		this.comboModel.refresh(model.getNetworkCollections());
+		this.collectionModel.refresh(model.getNetworkCollections());
 		this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());
-		this.collectionDropDown.setEnabled(comboModel.hasEntries());
+		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
 		this.refreshCyProject();
 	}
 

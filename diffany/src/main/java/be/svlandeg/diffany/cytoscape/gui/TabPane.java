@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -67,12 +68,24 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private void createTabPaneContent(){
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		this.add(createCollectionSelectionPanel());
-		this.add(createNetworkSelectionPanel());
+		
+		JPanel inputNetworkPanel = new JPanel();
+		inputNetworkPanel.setBorder(BorderFactory.createTitledBorder("Input networks"));
+		inputNetworkPanel.add(createCollectionSelectionPanel());
+		inputNetworkPanel.add(createNetworkSelectionPanel());
+		this.add(inputNetworkPanel);
+		
 		this.add(createOptionPanel());
 		
+		JPanel runPanel = new JPanel();
+		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runButton = new JButton(new RunProjectAction(model));
-		this.add(runButton);
+		
+		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
+		runPanel.add(runButton);
+		
+		
+		this.add(runPanel);
 	}
 	
 
@@ -92,8 +105,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		collectionDropDown.setActionCommand(COLLECTION_ACTION);
 		collectionDropDown.addActionListener(this);
-		
-		collPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
 		
 		return collPanel;
 	}
@@ -128,6 +139,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	private Component createOptionPanel() {
 		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createTitledBorder("Options"));
 		
 		JPanel modePanel = new JPanel();
 		JLabel label = new JLabel("Comparison mode: ");

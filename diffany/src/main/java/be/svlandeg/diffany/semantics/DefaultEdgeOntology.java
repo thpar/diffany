@@ -141,7 +141,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addArrowHead("genetic_interaction", ArrowHead.NONE);
 		
 		addArrowHead("ptm", ArrowHead.DIAMOND);
-		addArrowHead("transcription", ArrowHead.ARROW);
+		addArrowHead("protein_dna_binding", ArrowHead.ARROW);
 		
 		addArrowHead("colocalization", ArrowHead.NONE);
 		addArrowHead("coexpression", ArrowHead.NONE);

@@ -6,7 +6,7 @@ import org.cytoscape.work.TaskIterator;
 import be.svlandeg.diffany.cytoscape.Model;
 
 /**
- * Temporary {@link TaskFactory} to execute the {@link TestTask}.
+ * Factory to run {@link RunProjectTask}, followed by a {@link UpdateVisualStyleTask}
  * 
  * @author Thomas Van Parys
  *
@@ -15,6 +15,11 @@ public class RunProjectTaskFactory implements TaskFactory {
 
 	private Model model;
 	
+	/**
+	 * Construct a new factory.
+	 * 
+	 * @param model Diffany {@link Model}
+	 */
 	public RunProjectTaskFactory(Model model) {
 		this.model = model;
 	}

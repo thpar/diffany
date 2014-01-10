@@ -14,10 +14,20 @@ import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
+/**
+ * {@link VisualStyle} to be applied on source and overlap networks.
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	
 	
-	
+	/**
+	 * Construct and register new visual style for source and overlap networks.
+	 * 
+	 * @param services app services
+	 */
 	public VisualSourceStyle(Services services) {
 		super("Diffany - Source", services);
 	}

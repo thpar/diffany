@@ -25,10 +25,27 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
+/**
+ * A {@link VisualStyle} wrapper with default values for all Diffany styles. All new styles within this app
+ * should extend this class.
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public abstract class AbstractVisualDiffanyStyle {
 
+	/**
+	 * Name of the visual style
+	 */
 	protected String name;
+	
+	/**
+	 * The {@link VisualStyle} itself.
+	 */
 	protected VisualStyle vis;
+	/**
+	 * App services
+	 */
 	protected Services services;
 	
 	//color definitions

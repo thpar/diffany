@@ -16,6 +16,9 @@ public class NetworkEntry {
 	private boolean isSelected;
 	private boolean isReference;
 	
+	/**
+	 * Construct empty entry
+	 */
 	public NetworkEntry() {
 	}
 	

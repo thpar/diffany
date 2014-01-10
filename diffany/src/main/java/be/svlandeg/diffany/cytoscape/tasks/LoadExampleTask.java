@@ -21,11 +21,24 @@ import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.internal.Services;
 
+/**
+ * Task to load example {@link Project}s into Cytoscape.
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class LoadExampleTask implements Task{
 
-	Services services;
+	private Services services;
 	private Project exampleProject ;
 	
+	/**
+	 * Construct a new task from a {@link Project}. The resulting networks and 
+	 * project settings will be ignored. Only the source networks are loaded and constructed. 
+	 * 
+	 * @param services the app {@link Services}
+	 * @param exampleProject {@link Project} to be used as example input.
+	 */
 	public LoadExampleTask(Services services, Project exampleProject) {
 		this.services = services;
 		this.exampleProject = exampleProject;

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.view.presentation.property.ArrowShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
+import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
 import be.svlandeg.diffany.concepts.VisualEdgeStyle;
@@ -14,8 +15,19 @@ import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
+/**
+ * {@link VisualStyle} to be applied on differential networks.
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 
+	/**
+	 * Construct and register new visual style for differential networks.
+	 * 
+	 * @param services app services
+	 */
 	public VisualDiffStyle(Services services) {
 		super("Diffany - Differential", services);
 	}

@@ -176,6 +176,11 @@ public class SelectionTableModel extends AbstractTableModel{
 	}
 
 
+	/**
+	 * Get all conditional {@link CyNetwork}s in this project.
+	 * 
+	 * @return all conditional {@link CyNetwork}s in this project.
+	 */
 	public Set<CyNetwork> getConditionalNetworks(){
 		Set<CyNetwork> condSet = new HashSet<CyNetwork>();
 		for (NetworkEntry network : networkEntries){
@@ -185,6 +190,12 @@ public class SelectionTableModel extends AbstractTableModel{
 		}
 		return condSet;
 	}
+	
+	/**
+	 * Gets the {@link CyNetwork} to be used as reference network.
+	 * 
+	 * @return the {@link CyNetwork} to be used as reference network. Returns null is no reference network has been set yet.
+	 */
 	public CyNetwork getReferenceNetwork(){
 		if (this.referenceRow < 0){
 			return null;

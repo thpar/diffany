@@ -37,7 +37,6 @@ import be.svlandeg.diffany.cytoscape.Model;
 /**
  * This Task gathers information from the model and creates and runs a new {@link Project}
  * 
- * 
  * @author Thomas Van Parys
  *
  */
@@ -46,7 +45,12 @@ public class RunProjectTask implements Task {
 	private Model model;
 	private CyProject cyProject;
 	
-	
+	/**
+	 * Constructs a new run task.
+	 * 
+	 * @param model the Diffany {@link Model}
+	 * @param cyProject the {@link CyProject} to run.
+	 */
 	public RunProjectTask(Model model, CyProject cyProject) {
 		this.model = model;
 		this.cyProject = cyProject;
@@ -69,7 +73,11 @@ public class RunProjectTask implements Task {
 	}
 	
 	
-	
+	/**
+	 * Read the log from the {@link Project} and display it as a dialog.
+	 * 
+	 * @param logger
+	 */
 	private void displayReport(Logger logger) {
 		final JDialog reportDialog = new JDialog(model.getParentWindow(), "Report", false);
 		reportDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -107,6 +115,12 @@ public class RunProjectTask implements Task {
 		
 	}
 
+	/**
+	 * Select the correct run mode and run the {@link CyProject}
+	 * 
+	 * @throws InvalidProjectException thrown when a {@link Project} can not yet be constructed from 
+	 * the information in the {@link CyProject}
+	 */
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
 		

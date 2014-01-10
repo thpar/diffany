@@ -34,7 +34,6 @@ import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
-import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 
 /**
@@ -208,6 +207,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.refreshCyProject();
 	}
 	
+	/**
+	 * Reads the selections in the GUI and reflects them in the current {@link CyProject} object.
+	 */
 	public void refreshCyProject(){
 		CyProject cyProject = model.getCurrentProject();
 		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());

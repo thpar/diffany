@@ -21,9 +21,7 @@ import be.svlandeg.diffany.internal.Services;
 
 /**
  * Model that keeps track of all settings and selections within the Cytoscape App.
- * Only calling {@link runAlgorithm} should construct the actual model to do the 
- * calculations and produce results, which are handed back to this model.
- * 
+ *  
  * @author Thomas Van Parys
  *
  */
@@ -49,7 +47,10 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 
 	private JFrame swingApplication;
 	
-	
+	/**
+	 * Construct a new model and adds the app services to it
+	 * @param services the app services
+	 */
 	public Model(Services services){
 		this.services = services;
 	
@@ -157,21 +158,34 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 		notifyObservers();
 	}
 	
-
+	/**
+	 * Get the style applied to source networks
+	 * @return the style applied to source networks
+	 */
 	public VisualSourceStyle getSourceStyle() {
 		return sourceStyle;
 	}
 
-
+	/**
+	 * Get the style applied to differential networks
+	 * @return the style applied to differential networks
+	 */
 	public VisualDiffStyle getDiffStyle() {
 		return diffStyle;
 	}
 
-
+	/**
+	 * Set a reference to the Cytoscape main window
+	 * @param jFrame a reference to the Cytoscape main window
+	 */
 	public void setParentWindow(JFrame jFrame) {
 		this.swingApplication = jFrame;
 	}
-
+	
+	/**
+	 * Get a reference to the Cytoscape main window
+	 * @return a reference to the Cytoscape main window
+	 */
 	public JFrame getParentWindow(){
 		return this.swingApplication;
 	}

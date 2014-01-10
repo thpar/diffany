@@ -2,6 +2,7 @@ package be.svlandeg.diffany.cytoscape.tasks;
 
 import java.util.Set;
 
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.work.Task;
@@ -23,6 +24,14 @@ public class UpdateVisualStyleTask implements Task {
 	private CyProject cyProject;
 	private Model model;
 	
+	/**
+	 * Construct a new task to update the visual styles in the model, according to the interactions 
+	 * in the {@link CyNetwork}s contained in the {@link CyProject}. The new visual styles will be applied 
+	 * to the same set of networks.
+	 * 
+	 * @param model Diffany {@link Model}
+	 * @param project the {@link CyProject} containing the used {@link CyNetwork}s. 
+	 */
 	public UpdateVisualStyleTask(Model model, CyProject project) {		
 		this.cyProject = project;
 		this.model = model;

@@ -3,6 +3,7 @@ package be.svlandeg.diffany.cytoscape.actions;
 import java.awt.event.ActionEvent;
 
 import org.cytoscape.application.swing.AbstractCyAction;
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
@@ -24,6 +25,11 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 	private Model model;
 	private CyProject cyProject;
 	
+	/**
+	 * 
+	 * @param model the Diffany {@link Model}
+	 * @param cyProject {@link CyProject} containing the {@link CyNetwork}s to update.
+	 */
 	public UpdateVisualStyleAction(Model model, CyProject cyProject){
 		super(BUTTON_TITLE);
 		this.model = model;

@@ -5,15 +5,22 @@ import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedEvent;
 import org.cytoscape.session.events.SessionLoadedListener;
 
-import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
-
+/**
+ * A listener that catches session load and save events from Cytoscape.
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class SessionListener implements SessionAboutToBeSavedListener,
 		SessionLoadedListener {
 
 	private Model model;
 	
 	
-	
+	/**
+	 * Construct new listener
+	 * @param model the Diffany {@link Model}
+	 */
 	public SessionListener(Model model) {
 		this.model = model;
 	}

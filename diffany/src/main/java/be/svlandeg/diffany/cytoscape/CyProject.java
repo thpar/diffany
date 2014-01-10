@@ -29,6 +29,12 @@ public class CyProject{
 
 	private Project project;
 	
+	/**
+	 * Internal class to link a differential network to its overlap counterpart.
+	 * 
+	 * @author Thomas Van Parys
+	 *
+	 */
 	public class CyNetworkPair{
 		public CyNetworkPair(CyNetwork diffNet, CyNetwork overlapNet) {
 			this.diffNet = diffNet;
@@ -45,11 +51,20 @@ public class CyProject{
 	private EdgeOntology edgeOntology = new DefaultEdgeOntology();
 	private NodeMapper nodeMapper = new DefaultNodeMapper();
 
+	/**
+	 * Default project name
+	 */
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	private String name = DEFAULT_PROJECT_NAME;
 	
 	private double cutoff = 0;
 	
+	/**
+	 * Allows for switching between algorithm execution modes.
+	 * 
+	 * @author Thomas Van Parys
+	 *
+	 */
 	public enum ComparisonMode{
 		/**
 		 * The reference network gets compared against each condition network separately
@@ -73,38 +88,53 @@ public class CyProject{
 	}
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
 	
+	/**
+	 * Construct empty project
+	 */
 	public CyProject(){
 	}
 	
 	/**
+	 * Gets the reference network for this project.
 	 * 
-	 * @return the reference network set for this project. Returns null if no reference has been selected yet.
+	 * @return the reference network for this project. Returns null if no reference has been selected yet.
 	 */
 	public CyNetwork getReferenceNetwork() {
 		return referenceNetwork;
 	}
 
-
-
+	/**
+	 * Set the referenceNetwork for this project
+	 * @param referenceNetwork
+	 */
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
 		this.referenceNetwork = referenceNetwork;
 	}
 
+	/**
+	 * Remove a conditional network from the list
+	 * @param cyNetwork network to be removed
+	 */
 	public void removeConditionalNetwork(CyNetwork cyNetwork){
 		this.conditionalNetworks.remove(cyNetwork);
 	}
 
 
+	/**
+	 * Get the set of conditional networks for this project
+	 * @return the set of conditional networks for this project
+	 */
 	public Set<CyNetwork> getConditionalNetworks() {
 		return conditionalNetworks;
 	}
 
-
-
+	/**
+	 * Set the set of conditional networks for this project
+	 * @param conditionalNetworks set of conditional networks for this project
+	 */
 	public void setConditionalNetworks(Set<CyNetwork> conditionalNetworks) {
 		this.conditionalNetworks = conditionalNetworks;
 	}
-
 
 
 	/**
@@ -145,41 +175,70 @@ public class CyProject{
 		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
 	}
 
-
+	/**
+	 * Get the {@link EdgeOntology}.
+	 * 
+	 * @return the edge ontology defined for this project
+	 */
 	public EdgeOntology getEdgeOntology() {
 		return edgeOntology;
 	}
 
-
+	/**
+	 * Set the {@link EdgeOntology}.
+	 * @param edgeOntology the edge ontology defined for this project
+	 */
 	public void setEdgeOntology(EdgeOntology edgeOntology) {
 		this.edgeOntology = edgeOntology;
 	}
 
-
+	/**
+	 * Get the {@link NodeMapper}.
+	 * @return node mapper defined for this project
+	 */
 	public NodeMapper getNodeMapper() {
 		return nodeMapper;
 	}
 
-
+	/**
+	 * Set the {@link NodeMapper}.
+	 * @param nodeMapper node mapper defined for this project
+	 */
 	public void setNodeMapper(NodeMapper nodeMapper) {
 		this.nodeMapper = nodeMapper;
 	}
 
-
+	/**
+	 * Get the project name
+	 * @return the project name
+	 */
 	public String getName() {
 		return name;
 	}
 
-
+	/**
+	 * Set the project name
+	 * @param name the project name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
+	/**
+	 * Add a pair of resulting networks to the {@link CyProject}, probably after the algoritm has been run.
+	 * A result pair consists of a differential network and its overlap counterpart.
+	 * 
+	 * @param diffNet the resulting differential network
+	 * @param overlapNet its overlapping counterpart
+	 */
 	public void addResultPair(CyNetwork diffNet, CyNetwork overlapNet) {
 		this.resultNetworks.add(new CyNetworkPair(diffNet, overlapNet));
 	}
 	
+	/**
+	 * Get the set of resulting network pairs.
+	 * @return the set of resulting network pairs.
+	 */
 	public Set<CyNetworkPair> getResultNetworks() {
 		return resultNetworks;
 	}
@@ -292,16 +351,26 @@ public class CyProject{
 		this.mode = mode;
 	}
 
-
+	/**
+	 * Get the edge cutoff.
+	 * @return the edge cutoff.
+	 */
 	public double getCutoff() {
 		return cutoff;
 	}
-
-
+	
+	/**
+	 * Set the edge cutoff
+	 * @param cutoff the edge cutoff
+	 */
 	public void setCutoff(double cutoff) {
 		this.cutoff = cutoff;
 	}
 
+	/**
+	 * Iterates the {@link CyNetwork}s in the project and removes those that 
+	 * have been destroyed in the Cytoscape session.
+	 */
 	public void removeDestroyedNetworks() {
 		// TODO Auto-generated method stub
 		

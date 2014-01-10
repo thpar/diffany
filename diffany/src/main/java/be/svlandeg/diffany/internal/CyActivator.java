@@ -32,9 +32,11 @@ import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.Ideker2011;
 
 /**
- * Entry point for the Diffany Cytoscape App. Here the necessary services are called and bundled into the
+ * Entry point for the Diffany Cytoscape 3 App. Here the necessary services are called and bundled into the
  * {@link Model} to be used throughout the app. The services this app offers are created here and registered
  * within the {@link BundleContext}.
+ * 
+ * @author Thomas Van Parys
  */
 public class CyActivator extends AbstractCyActivator
 {

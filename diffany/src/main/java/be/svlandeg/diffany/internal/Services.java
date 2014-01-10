@@ -20,7 +20,7 @@ import org.osgi.framework.BundleContext;
 /**
  * Class used to gather all services from the {@link BundleContext} as loaded in the {@link CyActivator}
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class Services {

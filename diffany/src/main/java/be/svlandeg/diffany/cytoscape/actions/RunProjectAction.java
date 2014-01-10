@@ -13,6 +13,8 @@ public class RunProjectAction extends AbstractCyAction {
 
 	private Model model;
 
+	private static final String BUTTON_TITLE = "Start";
+	
 	public RunProjectAction(Model model, String menuTitle) {
 		super(menuTitle, model.getServices().getCyApplicationManager(), null, null);
 		setPreferredMenu("Apps.Diffany");
@@ -20,7 +22,7 @@ public class RunProjectAction extends AbstractCyAction {
 	}
 	
 	public RunProjectAction(Model model){
-		super("Start Alg.");
+		super(BUTTON_TITLE);
 		this.model = model;
 	}
 

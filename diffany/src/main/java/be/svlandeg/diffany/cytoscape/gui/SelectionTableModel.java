@@ -17,7 +17,7 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
 /**
  * The model for the list of available networks in the selected collection.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class SelectionTableModel extends AbstractTableModel{

@@ -24,7 +24,7 @@ import be.svlandeg.diffany.internal.Services;
  * Only calling {@link runAlgorithm} should construct the actual model to do the 
  * calculations and produce results, which are handed back to this model.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class Model extends Observable implements NetworkAddedListener, NetworkDestroyedListener{

@@ -8,7 +8,7 @@ import be.svlandeg.diffany.cytoscape.Model;
 /**
  * Temporary {@link TaskFactory} to execute the {@link TestTask}.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class RunProjectTaskFactory implements TaskFactory {

@@ -8,7 +8,7 @@ import org.cytoscape.model.CyNetwork;
  * 
  * Also supplies extra options per network.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class NetworkEntry {

@@ -22,7 +22,7 @@ import be.svlandeg.diffany.semantics.*;
  * The CyProject keeps the GUI settings for the current project and is able to generate a 
  * {@link Project} object to execute the algorithm.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class CyProject{

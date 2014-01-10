@@ -15,7 +15,7 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
  * This task gathers all used interactions in a given {@link CyProject}, updates
  * this {@link VisualStyle}s and applies them to all {@link CyView}s in the {@link CyProject}.
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class UpdateVisualStyleTask implements Task {

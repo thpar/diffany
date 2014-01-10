@@ -31,7 +31,7 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
  * to create given concepts. The other way around, it enables existing {@link CyNetwork}s to
  * be converted to the project's {@link Network} concept. 
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class CyNetworkBridge {

@@ -18,7 +18,7 @@ import be.svlandeg.diffany.cytoscape.NetworkEntry;
  * Model for the {@link JComboBox} that shows the list of available network collections (or {@link CyRootNetwork}) in 
  * this session. 
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class CollectionDropDownModel extends AbstractListModel implements ComboBoxModel{

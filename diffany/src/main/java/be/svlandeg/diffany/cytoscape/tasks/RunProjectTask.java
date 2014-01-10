@@ -38,7 +38,7 @@ import be.svlandeg.diffany.cytoscape.Model;
  * This Task gathers information from the model and creates and runs a new {@link Project}
  * 
  * 
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class RunProjectTask implements Task {

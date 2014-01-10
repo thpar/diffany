@@ -33,13 +33,14 @@ import be.svlandeg.diffany.cytoscape.CyProject.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
+import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 import be.svlandeg.diffany.cytoscape.tasks.RunProjectTaskFactory;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 
 /**
  * The Control Panel for Diffany (left Cytoscape tab).
  *  
- * @author thpar
+ * @author Thomas Van Parys
  *
  */
 public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, TableModelListener, ChangeListener{
@@ -52,7 +53,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
-	private final String RUN_ACTION = "run";
 	private JButton runButton;
 	
 	/**
@@ -73,8 +73,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.add(createOptionPanel());
 		
 		runButton = new JButton(new RunProjectAction(model));
-//		runButton.setActionCommand(RUN_ACTION);
-//		runButton.addActionListener(this);
 		this.add(runButton);
 	}
 	
@@ -95,6 +93,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		collectionDropDown.setActionCommand(COLLECTION_ACTION);
 		collectionDropDown.addActionListener(this);
+		
+		collPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
+		
 		return collPanel;
 	}
 	
@@ -194,16 +195,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			JComboBox source = (JComboBox)e.getSource();
 			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
 			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
-		} else if (action.equals(RUN_ACTION)){
-			//triggered on Start button click
-			
-//			RunProjectTaskFactory tf = new RunProjectTaskFactory(model);
-//			
-//			if (tf.isReady()){
-//				TaskIterator it = tf.createTaskIterator();			
-//				DialogTaskManager dtm = model.getServices().getDialogTaskManager();
-//				dtm.execute(it);
-//			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
 			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();

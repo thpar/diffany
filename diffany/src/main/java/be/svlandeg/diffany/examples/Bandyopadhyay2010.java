@@ -44,10 +44,10 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("D", new Node("D"));
 		nodes.put("E", new Node("E"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Untreated");
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 1.1));
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("B"), true, 0.3));
-		network.addEdge(new Edge("positive gi", nodes.get("E"), nodes.get("C"), true, 0.8));
+		ReferenceNetwork network = new ReferenceNetwork("Untreated Network");
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
+		network.addEdge(new Edge("positive genetic interaction", nodes.get("E"), nodes.get("C"), true, 0.8));
 		return network;
 	}
 
@@ -64,7 +64,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Treated", conditions);
+		ConditionNetwork network = new ConditionNetwork("Treated Network", conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -72,9 +72,9 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("D", new Node("D"));
 		
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 1.1));
-		network.addEdge(new Edge("positive gi", nodes.get("A"), nodes.get("B"), true, 0.4));
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("C"), true, 0.7));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
+		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.4));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("C"), true, 0.7));
 
 		cnetworks.add(network);
 		return cnetworks;

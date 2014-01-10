@@ -20,8 +20,8 @@ public class CalculateDiff
 	protected boolean default_MIN = true;
 	
 	protected double default_cutoff = 0.0;
-	protected static String diffnamesuffix = "_diff";
-	protected static String overlapnamesuffix = "_overlap";
+	protected static String diffnameprefix = "diff_";
+	protected static String overlapnameprefix = "overlap_";
 	
 	/**
 	 * The constructor initializes the algorithm.
@@ -40,7 +40,7 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
-	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * 	The overlapping network will get this name + the prefix 'overlap_'.
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
 	 * @param log the logger that records logging messages
 	 * 
@@ -58,7 +58,7 @@ public class CalculateDiff
 		Set<ConditionNetwork> allConditions = new HashSet<ConditionNetwork>();
 		allConditions.add(condition);
 		DifferentialNetwork dn = new CalculateDiffOfMore(log).calculateDiffNetwork(reference, allConditions, eo, nm, diff_name, cutoff);
-		OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, condition, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
+		OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, condition, eo, nm, overlapnameprefix + diff_name, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -100,7 +100,7 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
-	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * 	The overlapping network will get this name + the prefix 'overlap_'.
 	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
@@ -116,8 +116,8 @@ public class CalculateDiff
 	 * Calculate the differential network between the reference and condition-specific network. 
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
 	 * 
-	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'.
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
+	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'.
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
 	 * 
 	 * @param reference the reference network
 	 * @param condition a condition-specific network
@@ -132,7 +132,7 @@ public class CalculateDiff
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, double cutoff, Logger log) throws IllegalArgumentException
 	{
-		String diff_name = condition.getName() + diffnamesuffix;
+		String diff_name = diffnameprefix + condition.getName();
 		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, cutoff, log);
 	}
 	
@@ -140,8 +140,8 @@ public class CalculateDiff
 	 * Calculate the differential network between the reference and condition-specific network. 
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
 	 * 
-	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'.
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
+	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'.
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * @param reference the reference network
@@ -156,7 +156,7 @@ public class CalculateDiff
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, Logger log) throws IllegalArgumentException
 	{
-		String diff_name = condition.getName() + diffnamesuffix;
+		String diff_name = diffnameprefix + condition.getName();
 		return calculateDiffNetwork(reference, condition, eo, nm, diff_name, log);
 	}
 
@@ -164,8 +164,8 @@ public class CalculateDiff
 	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object for each differential network.
 	 * 
-	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
+	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * All calculated differential networks and the logger object are added to the project directly.
@@ -183,8 +183,8 @@ public class CalculateDiff
 	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object for each differential network.
 	 * 
-	 * The name of the differential network will be the name of the condition-specific network with appendix '_diff'
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap'.
+	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
 	 * 
 	 * All calculated differential networks and the logger object are added to the project directly. 
 	 * The logger object will first be cleaned.
@@ -253,7 +253,7 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
-	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * 	The overlapping network will get this name + the prefix 'overlap_'.
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
 	 * @param log the logger that records logging messages
 	 * 
@@ -272,14 +272,14 @@ public class CalculateDiff
 		if (conditions.size() == 1)
 		{
 			OverlappingNetwork sn = new CalculateDiffOfTwo(log).calculateOverlappingNetwork(reference, conditions.iterator().next(), eo, 
-					nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
+					nm, overlapnameprefix + diff_name, cutoff, default_MIN);
 			dn.setOverlappingNetwork(sn);
 			return dn;
 		}
 		Set<Network> allNetworks = new HashSet<Network>();
 		allNetworks.add(reference);
 		allNetworks.addAll(conditions);
-		OverlappingNetwork sn = new CalculateDiffOfMore(log).calculateOverlappingNetwork(allNetworks, eo, nm, diff_name + overlapnamesuffix, cutoff, default_MIN);
+		OverlappingNetwork sn = new CalculateDiffOfMore(log).calculateOverlappingNetwork(allNetworks, eo, nm, overlapnameprefix + diff_name, cutoff, default_MIN);
 		dn.setOverlappingNetwork(sn);
 		return dn;
 	}
@@ -295,7 +295,7 @@ public class CalculateDiff
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network. 
-	 * 	The overlapping network will get this name + the appendix '_overlap'.
+	 * 	The overlapping network will get this name + the prefix 'overlap_'.
 	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
@@ -327,7 +327,7 @@ public class CalculateDiff
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
 			NodeMapper nm, double cutoff, Logger log) throws IllegalArgumentException
 	{
-		String diff_name = "all_conditions_against_reference" + diffnamesuffix;
+		String diff_name = diffnameprefix + "all_conditions_against_reference";
 		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff, log);
 	}
 	
@@ -351,7 +351,7 @@ public class CalculateDiff
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo, 
 			NodeMapper nm, Logger log) throws IllegalArgumentException
 	{
-		String diff_name = "all_conditions_against_reference" + diffnamesuffix;
+		String diff_name = diffnameprefix + "all_conditions_against_reference";
 		return calculateDiffNetwork(reference, conditions, eo, nm, diff_name, log);
 	}
 	
@@ -360,7 +360,7 @@ public class CalculateDiff
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * The calculated differential networks and the logger object are added are added to the project directly.
@@ -379,7 +379,7 @@ public class CalculateDiff
 	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding overlapping network will get an additional appendix '_overlap' at the end.
+	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
 	 * 
 	 * The calculated differential networks and the logger object are added are added to the project directly.
 	 * The logger object will first be cleaned.

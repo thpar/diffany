@@ -47,11 +47,11 @@ public class Ideker2011 extends GenericExample
 		nodes.put("E", new Node("E"));
 		nodes.put("F", new Node("F"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("F"), true, 1.0));
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("D"), true, 0.7));
-		network.addEdge(new Edge("negative gi", nodes.get("A"), nodes.get("B"), true, 0.3));
-		network.addEdge(new Edge("positive gi", nodes.get("A"), nodes.get("E"), true, 0.8));
+		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011");
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("F"), true, 1.0));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 0.7));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
+		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("E"), true, 0.8));
 		return network;
 	}
 
@@ -68,7 +68,7 @@ public class Ideker2011 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions);
+		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -77,10 +77,10 @@ public class Ideker2011 extends GenericExample
 		nodes.put("C", new Node("C"));
 		nodes.put("F", new Node("F"));
 
-		network.addEdge(new Edge("negative gi", nodes.get("F"), nodes.get("A"), true, 1.0));
-		network.addEdge(new Edge("positive gi", nodes.get("B"), nodes.get("A"), true, 0.4));
-		network.addEdge(new Edge("negative gi", nodes.get("C"), nodes.get("A"), true, 1.2));
-		network.addEdge(new Edge("negative gi", nodes.get("D"), nodes.get("A"), true, 0.7));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("F"), nodes.get("A"), true, 1.0));
+		network.addEdge(new Edge("positive genetic interaction", nodes.get("B"), nodes.get("A"), true, 0.4));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("C"), nodes.get("A"), true, 1.2));
+		network.addEdge(new Edge("negative genetic interaction", nodes.get("D"), nodes.get("A"), true, 0.7));
 		
 		cnetworks.add(network);
 		return cnetworks;

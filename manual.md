@@ -21,7 +21,7 @@ One of the networks needs to be selected as reference network (in the examples r
 Neither of the examples need further options: they both use a cutoff of 0 and the pairwise comparison mode.
 
 Clicking the "Start" button at the bottom of the tab runs the algorithm.
-Two new networks should show up: a differential network (with the "Diffany Differantial" style applied) and its counterpart overlap network.
+Two new networks should show up: a differential network (with the "Diffany - Differential" style applied) and its counterpart overlap network.
 A popup shows the log file of this run.
 
 ## User created networks ####

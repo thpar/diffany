@@ -12,7 +12,7 @@
 [2]: http://bioinformatics.psb.ugent.be/supplementary_data/solan/diffany/
 
 ## Example networks ####
-There are two small examples included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples
+There are two small examples included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples. 
 Clicking one of the examples will create a new Cytoscape collection with the example networks in it.
 
 The Diffany tab in the side panel will now show the newly added collection(s). Select one of the collections to get a list of its networks.

@@ -16,7 +16,7 @@ There are two small examples included in the app. These can be loaded from the m
 Clicking one of the examples will create a new Cytoscape collection with the example networks in it.
 
 The Diffany tab in the side panel will now show the newly added collection(s). Select one of the collections to get a list of its networks.
-A network gets included in the project by clicking the checkbox next to it. Upon inclusion, the visual style "Diffany Source" is immediately applied on its view.
+A network gets included in the project by clicking the checkbox next to it. Upon inclusion, the visual style "Diffany - Source" is immediately applied on its view.
 One of the networks needs to be selected as reference network (in the examples resp. "Untreated Network" and "Reference Netwerk"). 
 Neither of the examples need further options: they both use a cutoff of 0 and the pairwise comparison mode.
 

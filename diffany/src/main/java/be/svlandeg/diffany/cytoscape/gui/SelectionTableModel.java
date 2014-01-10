@@ -84,7 +84,7 @@ public class SelectionTableModel extends AbstractTableModel{
 		case 0:
 			return !entry.isReference();
 		case 2:
-			return entry.isSelected() && !entry.isReference();
+			return !entry.isReference();
 		}
 		return false;
 	}
@@ -113,6 +113,9 @@ public class SelectionTableModel extends AbstractTableModel{
 			this.fireTableDataChanged();
 			break;
 		case 2:
+			if (!entry.isSelected()){
+				entry.setSelected(true);
+			}
 			this.setReference(rowIndex);
 			break;
 		}

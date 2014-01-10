@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyRow;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
@@ -144,7 +145,6 @@ public class SelectionTableModel extends AbstractTableModel{
 	 * @param list of {@link CySubNetwork}s to be displayed.
 	 */
 	public void refresh(List<CySubNetwork> subNets) {
-		List<NetworkEntry> oldEntries = networkEntries;
 		Map<CyNetwork, NetworkEntry> oldMap = entryMap;
 		
 		networkEntries = new ArrayList<NetworkEntry>();
@@ -170,7 +170,6 @@ public class SelectionTableModel extends AbstractTableModel{
 				
 			}
 		}
-		
 		this.fireTableDataChanged();
 	}
 	
@@ -182,7 +181,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	 */
 	private boolean isGhostNetwork(CySubNetwork subNet) {
 		String name = subNet.getRow(subNet).get(CyNetwork.NAME, String.class);
-		return name==null || name.isEmpty();
+		return name==null || name.isEmpty();			
 	}
 
 

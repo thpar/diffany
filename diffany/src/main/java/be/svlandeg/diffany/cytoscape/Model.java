@@ -147,7 +147,7 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 	
 	@Override
 	public void handleEvent(NetworkDestroyedEvent e) {
-		currentProject.removeDestroyedNetworks();
+		//triggered on network destroyed
 		setChanged();
 		notifyObservers();
 	}

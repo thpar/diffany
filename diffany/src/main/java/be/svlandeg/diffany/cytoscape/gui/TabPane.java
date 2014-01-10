@@ -77,6 +77,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		JPanel runPanel = new JPanel();
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runButton = new JButton(new RunProjectAction(model));
+		runButton.setEnabled(model.getCurrentProject().canExecute());
 		
 		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
 		runPanel.add(runButton);

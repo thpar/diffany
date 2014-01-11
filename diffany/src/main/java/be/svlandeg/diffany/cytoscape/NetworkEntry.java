@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.cytoscape;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyRow;
 
 /**
  * Wrapper class for {@link CyNetwork}s to easily include them in GUI components by supplying a toString method returning 
@@ -15,6 +16,9 @@ public class NetworkEntry {
 	private CyNetwork network;
 	private boolean isSelected;
 	private boolean isReference;
+	
+
+	private static final String UNKNOWN = "network unknown";
 	
 	/**
 	 * Construct empty entry
@@ -35,8 +39,13 @@ public class NetworkEntry {
 	 * 
 	 * @return String default name from the network table.
 	 */
-	public String getName() {
-		return network.getRow(network).get(CyNetwork.NAME, String.class);
+	public String getName(){
+		try{
+			return network.getRow(network).get(CyNetwork.NAME, String.class);			
+		} catch (NullPointerException e){
+			System.err.println(e.getMessage());
+			return UNKNOWN;
+		}
 	}
 	@Override
 	public String toString(){

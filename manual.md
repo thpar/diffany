@@ -26,6 +26,7 @@ A popup shows the log file of this run.
 
 ## User created networks ####
 The Diffany algorithms should work on a plethora of networks, taking into account a few caveats:
+ - The networks to be compared should be created within the same network collection.
  - Weights should be floating point values in the column "weight"
  - Explicitly negating edges ("does NOT bind") can be done by adding a column "negated", containing boolean values
  - Equivalent nodes should have the same name accross the different networks in order to compare their edges.

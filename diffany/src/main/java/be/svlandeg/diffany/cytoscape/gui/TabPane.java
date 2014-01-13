@@ -192,9 +192,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void update(Observable o, Object arg) {
 		//triggered on model update
 		this.collectionModel.refresh(model.getNetworkCollections());
-		this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());
 		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
-		this.refreshCyProject();
+		
+		if (model.getSelectedCollection() !=null){
+			this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		} else {
+			this.selectionModel.clear();
+		}
 	}
 
 	@Override
@@ -203,8 +207,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		if (action.equals(COLLECTION_ACTION)){
 			//triggered on collection dropdown action
 			JComboBox source = (JComboBox)e.getSource();
-			NetworkEntry entry = (NetworkEntry)source.getSelectedItem();
-			model.setSelectedCollection((CyRootNetwork)entry.getNetwork());			
+			Object selected = source.getSelectedItem();
+			if (selected instanceof NetworkEntry){
+				NetworkEntry entry = (NetworkEntry)selected;
+				model.setSelectedCollection((CyRootNetwork)entry.getNetwork());							
+			} else {
+				model.setSelectedCollection(null);
+			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
 			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();

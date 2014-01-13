@@ -116,8 +116,9 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 	
 	/**
 	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
-	 * used for the algorithm.
-	 * @return
+	 * used for the algorithm. 
+	 * @return The collection of networks (aka the {@link CyRootNetwork}) that will be used for the algorithm. Returns null
+	 * if no collection has been selected (yet).
 	 */
 	public CyRootNetwork getSelectedCollection() {
 		return selectedCollection;

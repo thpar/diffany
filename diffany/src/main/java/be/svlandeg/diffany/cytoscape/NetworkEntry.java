@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.cytoscape;
 
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyRow;
 
 /**
  * Wrapper class for {@link CyNetwork}s to easily include them in GUI components by supplying a toString method returning 
@@ -87,6 +86,6 @@ public class NetworkEntry {
 		this.isReference = isReference;
 	}
 	
-	
+		
 	
 }

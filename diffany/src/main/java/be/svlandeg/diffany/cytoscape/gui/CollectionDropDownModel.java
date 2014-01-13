@@ -25,7 +25,7 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Object EMPTY_MESSAGE = "No Collections";
+	private static final String EMPTY_MESSAGE = "No Collections";
 
 	private List<NetworkEntry> collectionEntries = new ArrayList<NetworkEntry>();
 	
@@ -63,13 +63,15 @@ public class CollectionDropDownModel extends AbstractListModel implements ComboB
 		}
 		this.collectionEntries = newCollectionEntries;
 		//select the first entry if available, only if the previously selected entry was not available
-		if (selectedEntry == null || !this.collectionEntries.contains(this.selectedEntry)){
-			if (collectionEntries.size() > 0){
-				this.empty = false;
-				this.selectedEntry = collectionEntries.get(0);
-			}
+		if (collectionEntries.size() == 0){
+			empty = true;
+			selectedEntry = null;
+		} else {
+			empty = false;
+			if (selectedEntry == null || !collectionEntries.contains(selectedEntry)){		
+				selectedEntry = collectionEntries.get(0);
+			}			
 		}
-		this.empty = this.collectionEntries.size()==0;
 		
 		//let the gui know all entries might have changed
 		this.fireContentsChanged(this, 0, oldSize);

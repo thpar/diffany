@@ -32,7 +32,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	private List<NetworkEntry> networkEntries = new ArrayList<NetworkEntry>();
 	private Map<CyNetwork, NetworkEntry> entryMap = new HashMap<CyNetwork, NetworkEntry>();
 	
-	private int referenceRow = 0;
+	private int referenceRow = -1;
 
 	/**
 	 * Column headers
@@ -211,5 +211,15 @@ public class SelectionTableModel extends AbstractTableModel{
 		} else {
 			return networkEntries.get(referenceRow).getNetwork();
 		}
+	}
+
+	/**
+	 * Clears all data in the model. To be used when no network collection could be selected.
+	 */
+	public void clear() {
+		this.networkEntries = new ArrayList<NetworkEntry>();
+		this.entryMap = new HashMap<CyNetwork, NetworkEntry>();
+		this.referenceRow = -1;
+		this.fireTableDataChanged();
 	}
 }

@@ -1,9 +1,13 @@
 package be.svlandeg.diffany.concepts;
 
+import be.svlandeg.diffany.io.EdgeIO;
+
 
 /**
  * Class that represents an edge in a network: an edge has a source and target node
  * and can have a certain weight. It is symmetrical or not, and may or may not be negated.
+ * 
+ * Edge data can be saved and loaded through the {@link EdgeIO} class
  * 
  * @author Sofie Van Landeghem
  */
@@ -102,18 +106,13 @@ public class Edge extends EdgeDefinition
 	{
 		return target;
 	}
-
-	/**
-	 * Get a string representation of this edge.
-	 * More specifically, print it as: source.name - target.name - edge.type - symmetrical - weight - negated.
-	 * @return a string representation of this edge, ready for printing
-	 */
-	public String writeToTab()
+	
+	
+	@Override
+	public String toString()
 	{
-		String defResult = super.writeToTab();
-		String result = source.getName() + '\t' + target.getName() + '\t' + defResult;
-		
-		return result;
+		return EdgeIO.writeToTab(this);
 	}
+
 
 }

@@ -10,6 +10,8 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  * All source and target nodes of the edges are present in the collection of nodes,
  * but not all nodes have to be connected with edges.
  * 
+ * Network data can be saved and loaded through the {@link NetworkIO} class.
+ * 
  * @author Sofie Van Landeghem
  */
 public abstract class Network
@@ -210,21 +212,7 @@ public abstract class Network
 		nodes.add(node);
 	}
 
-	/**
-	 * Get a string representation of all edges, divided by newlines, with edges in a tabbed format.
-	 * More specifically, each edge is printed as: source.name - target.name - edge.type - symmetrical - weight - negated.
-	 * @return a string representation of all edges in this network, ready for printing
-	 */
-	public String writeEdgesTab()
-	{
-		String result = "";
-		for (Edge e : edges)
-		{
-			result += e.writeToTab();
-			result += System.getProperty("line.separator");
-		}
-		return result;
-	}
+	
 
 
 }

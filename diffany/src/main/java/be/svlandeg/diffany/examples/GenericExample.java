@@ -3,6 +3,7 @@ package be.svlandeg.diffany.examples;
 import java.util.Collection;
 
 import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.io.NetworkIO;
 
 /**
  * Generic class for printing an example to the console.
@@ -19,7 +20,7 @@ public abstract class GenericExample
 	private void printNetwork(Network n)
 	{
 		System.out.println(n.getStringRepresentation());
-		System.out.println(n.writeEdgesTab());
+		System.out.println(NetworkIO.writeEdgesToTab(n));
 		System.out.println("");
 	}
 

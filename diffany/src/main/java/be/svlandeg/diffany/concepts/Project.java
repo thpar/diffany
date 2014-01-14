@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.io.ProjectIO;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -11,10 +12,9 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  * A project consists of a selection of networks and all analyses performed on these networks within the current session. 
  * It should contain exactly 1 reference network, at least 1 condition-specific network, 
  * and it may contain 1 or more differential networks.
- * 
  * Additionally, a project links to an ontology that defines the semantics of edge types.
  * 
- * Classes that extend the Project class should provide functionality for saving and loading the data.
+ * Project data can be saved and loaded through the {@link ProjectIO} class.
  * 
  * @author Sofie Van Landeghem
  */
@@ -80,17 +80,6 @@ public class Project
 	{
 		this(name, reference, conditions, new HashSet<DifferentialNetwork>(), edgeOntology, nodeMapper);
 	}
-
-	/**
-	 * Create a previous project by loading it from a file location
-	 * 
-	 * @param location the location where this project was saved previously
-	 */
-	public Project(String location)
-	{
-		loadFromFile(location);
-		logger = new Logger();
-	}
 	
 	/**
 	 * Return the name of this project
@@ -101,28 +90,6 @@ public class Project
 		return name;
 	}
 
-	/**
-	 * Save the project data to a specific file location
-	 * 
-	 * @param fileLocation the location where the project should be saved
-	 */
-	public void saveProject(String fileLocation)
-	{
-		//TODO v1.1: implement!
-		throw new UnsupportedOperationException("Saving of project not yet implemented");
-	}
-
-	/**
-	 * Load the project data from a specific file location. 
-	 * Make sure all restrictions on number of networks are respected during the load!
-	 *
-	 * @param fileLocation the location from where the project should be loaded
-	 */
-	public void loadFromFile(String fileLocation)
-	{
-		//TODO v1.1: implement!
-		throw new UnsupportedOperationException("Loading of project not yet implemented");
-	}
 
 	/**
 	 * Set the edge ontology for this project.

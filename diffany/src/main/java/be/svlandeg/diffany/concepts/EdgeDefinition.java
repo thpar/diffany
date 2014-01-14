@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
-import java.text.DecimalFormat;
+import be.svlandeg.diffany.io.EdgeIO;
+
 
 /**
  * An edge definition holds all information of an edge, except its actual source and target nodes.
@@ -170,6 +171,7 @@ public class EdgeDefinition
 	{
 		if (weight < 0.0)
 		{
+			//TODO v1.1
 			//String errormsg = "The edge weight should be positive!";
 			//throw new IllegalArgumentException(errormsg);
 			return false;
@@ -177,33 +179,12 @@ public class EdgeDefinition
 		return true;
 	}
 	
-	/**
-	 * Get a string representation of this edge definition.
-	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
-	 * @return a string representation of this edge, ready for printing
-	 */
-	public String writeToTab()
-	{
-		DecimalFormat df = new DecimalFormat("#.##");
-		String symm = "symmetrical";
-		if (! symmetrical)
-		{
-			symm = "directed";
-		}
-		String neg = "negated";
-		if (! negated)
-		{
-			neg = "not negated";
-		}
-		String result = type + '\t' + symm + '\t' + df.format(weight) + '\t' + neg;
-		
-		return result;
-	}
+	
 	
 	@Override
 	public String toString()
 	{
-		return writeToTab();
+		return EdgeIO.writeDefinitionToTab(this);
 	}
 
 

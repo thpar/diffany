@@ -108,7 +108,7 @@ public class Project
 	 */
 	public void saveProject(String fileLocation)
 	{
-		//TODO v1.0: implement!
+		//TODO v1.1: implement!
 		throw new UnsupportedOperationException("Saving of project not yet implemented");
 	}
 
@@ -120,7 +120,7 @@ public class Project
 	 */
 	public void loadFromFile(String fileLocation)
 	{
-		//TODO v1.0: implement!
+		//TODO v1.1: implement!
 		throw new UnsupportedOperationException("Loading of project not yet implemented");
 	}
 

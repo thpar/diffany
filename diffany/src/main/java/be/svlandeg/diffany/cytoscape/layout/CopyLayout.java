@@ -7,6 +7,10 @@ import org.cytoscape.view.layout.AbstractLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
 import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.undo.UndoSupport;
+
+import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.tasks.CopyLayoutTask;
 
 /**
  * Layout algorithm that tries to layout a view identical to a given reference view, based on 
@@ -17,12 +21,15 @@ import org.cytoscape.work.TaskIterator;
  */
 public class CopyLayout extends AbstractLayoutAlgorithm{
 
-	private CyNetworkView refView;
+	private Model model;
+	private UndoSupport undo;
+	private final static String NAME = "copylayout";
 
-
-	public CopyLayout(CyNetworkView refView){
-		super("copylayout", "Copy Layout", null);
-		this.refView = refView;
+	public CopyLayout(Model model){
+		super(NAME, "Copy Layout", null);
+		UndoSupport undo = null;
+		this.model = model;
+		this.undo = undo;
 	}
 	
 
@@ -30,8 +37,12 @@ public class CopyLayout extends AbstractLayoutAlgorithm{
 	public TaskIterator createTaskIterator(CyNetworkView networkView,
 			Object layoutContext, Set<View<CyNode>> nodesToLayOut,
 			String layoutAttribute) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		CopyLayoutTask task = new CopyLayoutTask(model.getCurrentProject(), 
+				NAME, networkView, nodesToLayOut, layoutAttribute, undo);
+		TaskIterator it = new TaskIterator();
+		it.append(task);
+		return it;
 	}
 
 }

@@ -2,6 +2,7 @@ package be.svlandeg.diffany.io;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.concepts.Edge;
@@ -9,7 +10,7 @@ import be.svlandeg.diffany.concepts.EdgeDefinition;
 import be.svlandeg.diffany.concepts.Node;
 
 /**
- * This class allows reading or writing an {@link Edge} from File.
+ * This class allows reading/writing an {@link Edge} from/to File.
  * 
  * @author Sofie Van Landeghem
  */
@@ -22,9 +23,28 @@ public class EdgeIO
 	private static String notnegatedString = "not negated";
 
 	/**
+	 * Get a string representation of all edges in a collection, divided by newlines, with edges in a tabbed format.
+	 * 
+	 * @param edges the edges that needs to be written
+	 * @return a string representation of all edges in this network, ready for printing
+	 * @see EdgeIO#writeToTab
+	 */
+	public static String writeEdgesToTab(Set<Edge> edges)
+	{
+		String result = "";
+		for (Edge e : edges)
+		{
+			result += EdgeIO.writeToTab(e);
+			result += System.getProperty("line.separator");
+		}
+		return result;
+	}
+	
+	/**
 	 * Get a string representation of an edge.
 	 * More specifically, print it as: source.name - target.name - edge.type - symmetrical - weight - negated.
 	 * 
+	 * @param e the edge
 	 * @return a string representation of this edge, ready for printing
 	 */
 	public static String writeToTab(Edge e)
@@ -34,6 +54,7 @@ public class EdgeIO
 		return result;
 	}
 	
+	
 	/**
 	 * Read an Edge from a tab-delimited String.
 	 * 
@@ -41,7 +62,7 @@ public class EdgeIO
 	 * @return the corresponding Edge object
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public Edge readFromTab(String s) throws IOException
+	public static Edge readFromTab(String s) throws IOException
 	{
 		StringTokenizer stok = new StringTokenizer(s, "\t");
 		String source = stok.nextToken();
@@ -57,11 +78,12 @@ public class EdgeIO
 		return new Edge(new Node(source), new Node(target), def);
 	}
 	
+
 	/**
 	 * Get a string representation of an edge definition.
 	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
 	 * 
-	 * @return a string representation of this edge, ready for printing
+	 * @return a string representation of this edge definition, ready for printing
 	 */
 	public static String writeDefinitionToTab(EdgeDefinition def)
 	{
@@ -82,15 +104,16 @@ public class EdgeIO
 		return result;
 	}
 	
+	
 	/**
 	 * Read an EdgeDefinition from a tab-delimited String.
 	 * 
 	 * @return a string representation of this edge , ready for printing
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static EdgeDefinition readDefinitionToTab(String s) throws IOException
+	public static EdgeDefinition readDefinitionToTab(String def) throws IOException
 	{
-		StringTokenizer stok = new StringTokenizer(s, "\t");
+		StringTokenizer stok = new StringTokenizer(def, "\t");
 		String type = stok.nextToken();
 		String symm_string = stok.nextToken();
 		double weight = Double.parseDouble(stok.nextToken());

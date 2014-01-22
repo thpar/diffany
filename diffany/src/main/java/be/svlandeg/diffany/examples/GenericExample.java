@@ -2,8 +2,12 @@ package be.svlandeg.diffany.examples;
 
 import java.util.Collection;
 
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.io.NetworkIO;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Network;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.io.EdgeIO;
 
 /**
  * Generic class for printing an example to the console.
@@ -20,7 +24,7 @@ public abstract class GenericExample
 	private void printNetwork(Network n)
 	{
 		System.out.println(n.getStringRepresentation());
-		System.out.println(NetworkIO.writeEdgesToTab(n));
+		System.out.println(EdgeIO.writeEdgesToTab(n.getEdges()));
 		System.out.println("");
 	}
 

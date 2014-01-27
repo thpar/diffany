@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.io;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -87,7 +86,6 @@ public class EdgeIO
 	 */
 	public static String writeDefinitionToTab(EdgeDefinition def)
 	{
-		DecimalFormat df = new DecimalFormat("#.##");
 		String symm = symmString;
 		if (! def.isSymmetrical())
 		{
@@ -99,7 +97,7 @@ public class EdgeIO
 			neg = notnegatedString;
 		}
 		double weight = def.getWeight();
-		String result = def.getType() + '\t' + symm + '\t' + df.format(weight) + '\t' + neg;
+		String result = def.getType() + '\t' + symm + '\t' + weight + '\t' + neg;
 		
 		return result;
 	}

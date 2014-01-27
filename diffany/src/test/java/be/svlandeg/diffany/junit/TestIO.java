@@ -1,10 +1,12 @@
 package be.svlandeg.diffany.junit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -21,6 +23,8 @@ import be.svlandeg.diffany.io.NetworkIO;
  * Class that automatically tests the IO functionality of Diffany:
  * writing/reading networks and projects to/from file.
  * 
+ * TODO test reading
+ * 
  * @author Sofie Van Landeghem
  */
 public class TestIO
@@ -29,126 +33,69 @@ public class TestIO
 	private static String testLocation = "C:/temp/diffany/";
 	
 	/**
-	 * JUNIT Test: write and read a {@link ReferenceNetwork}.
+	 * JUNIT Test: write and read all types of Networks.
 	 * The networks used in this tests are tested for completeness in {@link TestExamples#testBandyopadhyay}
 	 */
 	@Test
-	public void testReferenceNetworkIO()
+	public void testNetworkIO()
 	{
-		File testDir = new File(testLocation + "reference/");
-		testDir.mkdirs();
+		File rDir = new File(testLocation + "reference/");
+		File cDir = new File(testLocation + "condition/");
+		File dDir = new File(testLocation + "differential/");
+		File oDir = new File(testLocation + "overlap/");
+		
+		rDir.mkdirs();
+		cDir.mkdirs();
+		dDir.mkdirs();
+		oDir.mkdirs();
 		
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
 		Project p = ex.getProjectFigure1C();
+		double cutoff = 0.0;
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
 		
 		// The reference network
-		ReferenceNetwork rNetwork = p.getReferenceNetwork();
-		boolean written = true;
-		try
-		{
-			NetworkIO.writeNetworkToDir(rNetwork, testDir);
-		}
-		catch(IOException io)
-		{
-			written = false;
-		}
-		assertTrue(written);
-	}
-	
-	/**
-	 * JUNIT Test: write and read a {@link ConditionNetwork}.
-	 * The networks used in this tests are tested for completeness in {@link TestExamples#testBandyopadhyay}
-	 */
-	@Test
-	public void testConditionNetworkIO()
-	{
-		File testDir = new File(testLocation + "condition");
-		testDir.mkdirs();
-		
-		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		double cutoff = 0.0;
-		Project p = ex.getProjectFigure1C();
+		ReferenceNetwork rWriteNetwork = p.getReferenceNetwork();
 		
 		// The condition-dependent network (there is only 1 in that specific project)
-		ConditionNetwork cNetwork = p.getConditionNetworks().iterator().next();
-		boolean written = true;
-		try
-		{
-			NetworkIO.writeNetworkToDir(cNetwork, testDir);
-		}
-		catch(IOException io)
-		{
-			written = false;
-		}
-		assertTrue(written);
-	}
-
-	
-	/**
-	 * JUNIT Test: write and read a {@link DifferentialNetwork}.
-	 * The networks used in this tests are tested for completeness in {@link TestExamples#testBandyopadhyay}
-	 */
-	@Test
-	public void testDifferentialNetworkIO()
-	{
-		File testDir = new File(testLocation + "differential/");
-		testDir.mkdirs();
-		
-		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		double cutoff = 0.0;
-		Project p = ex.getProjectFigure1C();
-		
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		ConditionNetwork cWriteNetwork = p.getConditionNetworks().iterator().next();
 		
 		// There is exactly one differential network created
 		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
-		DifferentialNetwork dNetwork = dNetworks.iterator().next();
-		
-		boolean written = true;
-		try
-		{
-			NetworkIO.writeNetworkToDir(dNetwork, testDir);
-		}
-		catch(IOException io)
-		{
-			written = false;
-		}
-		assertTrue(written);
-	}
-	
-	/**
-	 * JUNIT Test: write and read a {@link OverlappingNetwork}.
-	 * The networks used in this tests are tested for completeness in {@link TestExamples#testBandyopadhyay}
-	 */
-	@Test
-	public void testOverlappingNetworkIO()
-	{
-		File testDir = new File(testLocation + "overlap/");
-		testDir.mkdirs();
-		
-		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		double cutoff = 0.0;
-		Project p = ex.getProjectFigure1C();
-		
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
-		
-		// There is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
-		DifferentialNetwork dNetwork = dNetworks.iterator().next();
-		
+		DifferentialNetwork dWriteNetwork = dNetworks.iterator().next();
+				
 		// The overlapping network (there should be only 1)
-		OverlappingNetwork sNetwork = dNetwork.getOverlappingNetwork();
-		
-		boolean written = true;
+		OverlappingNetwork oWriteNetwork = dWriteNetwork.getOverlappingNetwork();
+			
+		// WRITING
 		try
 		{
-			NetworkIO.writeNetworkToDir(sNetwork, testDir);
+			NetworkIO.writeReferenceNetworkToDir(rWriteNetwork, rDir);
+			NetworkIO.writeConditionNetworkToDir(cWriteNetwork, cDir);
+			NetworkIO.writeDifferentialNetworkToDir(dWriteNetwork, dDir);
+			NetworkIO.writeOverlappingNetworkToDir(oWriteNetwork, oDir);
 		}
 		catch(IOException io)
 		{
-			written = false;
+			fail(io.getMessage());
 		}
-		assertTrue(written);
+		
+		// READING
+		try
+		{
+			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir);
+			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir);
+			Set<ConditionNetwork> cReadNetworks = new HashSet<ConditionNetwork>();
+			cReadNetworks.add(cReadNetwork);
+			
+			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, rReadNetwork, cReadNetworks);
+			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, rReadNetwork, cReadNetworks);
+		}
+		catch(IOException io)
+		{
+			fail(io.getMessage());
+		}
+		
 	}
 	
 	

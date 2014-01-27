@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Network;
@@ -23,6 +24,9 @@ public class NetworkIO
 
 	private static String default_edge_file = "edges.tab";
 	private static String default_node_file = "nodes.tab";
+	private static String default_definition_File = "network.tab";
+	
+	private enum NetworkType{ConditionNetwork, DifferentialNetwork, OverlappingNetwork, ReferenceNetwork};
 	
 	
 	/**
@@ -38,7 +42,8 @@ public class NetworkIO
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		writeNetworkToFiles(network, edgeFile, nodeFile);
+		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_File);
+		writeNetworkToFiles(network, edgeFile, nodeFile, definitionFile);
 	}
 
 	/**
@@ -51,7 +56,7 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeNetworkToFiles(Network network, File edgesFile, File nodesFile) throws IOException
+	public static void writeNetworkToFiles(Network network, File edgesFile, File nodesFile, File definitionFile) throws IOException
 	{
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
 		for (Edge e : network.getEdges())
@@ -64,14 +69,33 @@ public class NetworkIO
 		edgeWriter.close();
 
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
+		TreeSet<String> sortedNodes = new TreeSet<String>();
 		for (Node n : network.getNodes())
 		{
-			nodeWriter.append(n.getName());
+			sortedNodes.add(n.getName());
+		}
+		for (String name : sortedNodes)
+		{
+			nodeWriter.append(name);
 			nodeWriter.newLine();
 			nodeWriter.flush();
 		}
 		nodeWriter.flush();
 		nodeWriter.close();
+		
+		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
+		
+		defWriter.append("Name" + "\t" + network.getName());
+		defWriter.newLine();
+		
+		String networkClass = network.getClass().getSimpleName();
+		defWriter.append("Type" + "\t" + networkClass);
+		defWriter.newLine();
+		
+		// TODO write network-type-specific information
+		
+		defWriter.flush();
+		defWriter.close();
 	}
 	
 	/**

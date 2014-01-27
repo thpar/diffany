@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.examples;
+package be.svlandeg.diffany.junit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +11,7 @@ import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /** 
- * Class that automatically tests the visualisation properties of the DefaultEdgeOntologyOld.
+ * Class that automatically tests the visualisation properties of the DefaultEdgeOntology.
  * 
  * @author Sofie Van Landeghem
  */

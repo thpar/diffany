@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +37,7 @@ public class TestIO
 	@Test
 	public void testNetworkIO()
 	{
+		// System-dependent tmp dir. E.g. windows 7: C:\Users\YourUserName\AppData\Local\Temp
 		String testLocation = System.getProperty("java.io.tmpdir") + "diffany" + File.separator;
 		
 		File rDir = new File(testLocation + "reference/");

@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,8 +31,6 @@ import be.svlandeg.diffany.io.NetworkIO;
 public class TestIO
 {
 	
-	private static String testLocation = "C:/temp/diffany/";
-	
 	/**
 	 * JUNIT Test: write and read all types of Networks.
 	 * The networks used in this tests are tested for completeness in {@link TestExamples#testBandyopadhyay}
@@ -39,6 +38,8 @@ public class TestIO
 	@Test
 	public void testNetworkIO()
 	{
+		String testLocation = System.getProperty("java.io.tmpdir") + "diffany" + File.separator;
+		
 		File rDir = new File(testLocation + "reference/");
 		File cDir = new File(testLocation + "condition/");
 		File dDir = new File(testLocation + "differential/");

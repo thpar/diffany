@@ -62,7 +62,7 @@
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
-			<!-- The manifest for running the project from the commandline. -->
+			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -76,7 +76,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- <finalName>console-diffany-uberjar</finalName> -->
               		<transformers>
                 		<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   			<mainClass>be.svlandeg.diffany.console.RunConsole</mainClass>

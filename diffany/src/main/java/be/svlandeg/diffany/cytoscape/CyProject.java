@@ -149,11 +149,11 @@ public class CyProject{
 		}
 		
 		CyNetworkBridge bridge = new CyNetworkBridge();
-		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), this.edgeOntology);
+		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), this.edgeOntology, this.nodeMapper);
 		
 		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, this.edgeOntology);
+			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, this.edgeOntology, this.nodeMapper);
 			condNets.add(condNet);			
 		}
 		

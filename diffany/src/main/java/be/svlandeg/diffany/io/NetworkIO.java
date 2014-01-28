@@ -21,6 +21,7 @@ import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * This class allows reading or writing a {@link Network} from File.
@@ -38,13 +39,13 @@ public class NetworkIO
 	private static String name_field = "Name";
 	private static String type_field = "Type";
 	
-	
 
 	/**
 	 * Write the string representation of the network: All edges to one File, and all nodes to another, as specified by the parameters.
 	 * Additionally, the network name and type are written to a defitionsfile
 	 * 
-	 * @param network the Network that needs to be written
+	 * @param network the {@link Network} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
@@ -52,8 +53,9 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	protected static void writeNetworkToFiles(Network network, File edgesFile, File nodesFile, File definitionFile) throws IOException
+	protected static void writeNetworkToFiles(Network network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile) throws IOException
 	{
+		// EDGES
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
 		for (Edge e : network.getEdges())
 		{
@@ -64,9 +66,21 @@ public class NetworkIO
 		edgeWriter.flush();
 		edgeWriter.close();
 
+		// NODES
+		// TODO v2.0: this code now simply prints the node name, but could be made more general through NodeIO and Node IDs?
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
-		TreeSet<String> sortedNodes = new TreeSet<String>();
+		
+		Set<Node> unduplicatedNodes = new HashSet<Node>();
 		for (Node n : network.getNodes())
+		{
+			if (! nm.isContained(n, unduplicatedNodes))
+			{
+				unduplicatedNodes.add(n);
+			}
+		}
+		
+		TreeSet<String> sortedNodes = new TreeSet<String>();
+		for (Node n : unduplicatedNodes)
 		{
 			sortedNodes.add(n.getName());
 		}
@@ -79,6 +93,7 @@ public class NetworkIO
 		nodeWriter.flush();
 		nodeWriter.close();
 		
+		// DEFINITION: NAME and TYPE (CLASS)
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
 		
 		defWriter.append(name_field + "\t" + network.getName());
@@ -96,16 +111,17 @@ public class NetworkIO
 	 * Write the string representation of the reference network to (subfiles of) a directory.
 	 * 
 	 * @param network the {@link ReferenceNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param dir the output dir in which the tab files will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeReferenceNetworkToDir(ReferenceNetwork network, File dir) throws IOException
+	public static void writeReferenceNetworkToDir(ReferenceNetwork network, NodeMapper nm, File dir) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeReferenceNetworkToFiles(network, edgeFile, nodeFile, definitionFile);
+		writeReferenceNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
 	}
 	
 	/**
@@ -113,16 +129,17 @@ public class NetworkIO
 	 * Different files will contain the edges information, nodes and network definition.
 	 * 
 	 * @param network the {@link ReferenceNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeReferenceNetworkToFiles(ReferenceNetwork network, File edgesFile, File nodesFile, File definitionFile)
+	public static void writeReferenceNetworkToFiles(ReferenceNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
 			throws IOException
 	{
-		writeNetworkToFiles(network, edgesFile, nodesFile, definitionFile);
+		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
 	}
 	
 	
@@ -130,16 +147,17 @@ public class NetworkIO
 	 * Write the string representation of the differential network to (subfiles of) a directory.
 	 * 
 	 * @param network the {@link DifferentialNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param dir the output dir in which the tab files will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeDifferentialNetworkToDir(DifferentialNetwork network, File dir) throws IOException
+	public static void writeDifferentialNetworkToDir(DifferentialNetwork network, NodeMapper nm, File dir) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeDifferentialNetworkToFiles(network, edgeFile, nodeFile, definitionFile);
+		writeDifferentialNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
 	}
 	
 	/**
@@ -147,16 +165,17 @@ public class NetworkIO
 	 * Different files will contain the edges information, nodes and network definition.
 	 * 
 	 * @param network the {@link DifferentialNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeDifferentialNetworkToFiles(DifferentialNetwork network, File edgesFile, File nodesFile, File definitionFile)
+	public static void writeDifferentialNetworkToFiles(DifferentialNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
 			throws IOException
 	{
-		writeNetworkToFiles(network, edgesFile, nodesFile, definitionFile);
+		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
 	}
 	
 	
@@ -165,16 +184,17 @@ public class NetworkIO
 	 * Write the string representation of the overlapping network to (subfiles of) a directory.
 	 * 
 	 * @param network the {@link OverlappingNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param dir the output dir in which the tab files will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeOverlappingNetworkToDir(OverlappingNetwork network, File dir) throws IOException
+	public static void writeOverlappingNetworkToDir(OverlappingNetwork network, NodeMapper nm, File dir) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeOverlappingNetworkToFiles(network, edgeFile, nodeFile, definitionFile);
+		writeOverlappingNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
 	}
 	
 	/**
@@ -182,16 +202,17 @@ public class NetworkIO
 	 * Different files will contain the edges information, nodes and network definition.
 	 * 
 	 * @param network the {@link OverlappingNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeOverlappingNetworkToFiles(OverlappingNetwork network, File edgesFile, File nodesFile, File definitionFile)
+	public static void writeOverlappingNetworkToFiles(OverlappingNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
 			throws IOException
 	{
-		writeNetworkToFiles(network, edgesFile, nodesFile, definitionFile);
+		writeNetworkToFiles(network, nm ,edgesFile, nodesFile, definitionFile);
 	}
 	
 	
@@ -199,17 +220,18 @@ public class NetworkIO
 	 * Write the string representation of the condition-specific network to (subfiles of) a directory.
 	 * 
 	 * @param network the {@link ConditionNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param dir the output dir in which the tab files will be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeConditionNetworkToDir(ConditionNetwork network, File dir) throws IOException
+	public static void writeConditionNetworkToDir(ConditionNetwork network, NodeMapper nm, File dir) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
-		writeConditionNetworkToFiles(network, edgeFile, nodeFile, definitionFile, default_conditions_File);
+		writeConditionNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile, default_conditions_File);
 	}
 	
 	/**
@@ -217,6 +239,7 @@ public class NetworkIO
 	 * Different files will contain the edges information, nodes, network definition and conditions.
 	 * 
 	 * @param network the {@link ConditionNetwork} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
@@ -224,10 +247,10 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeConditionNetworkToFiles(ConditionNetwork network, File edgesFile, File nodesFile, File definitionFile, File conditionsFile)
+	public static void writeConditionNetworkToFiles(ConditionNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile, File conditionsFile)
 			throws IOException
 	{
-		writeNetworkToFiles(network, edgesFile, nodesFile, definitionFile);
+		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
 		
 		Set<Condition> conditions = network.getConditions();
 	
@@ -252,11 +275,12 @@ public class NetworkIO
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @return a Network representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	private static Network readInputNetworkFromDir(File dir) throws IOException
+	private static Network readInputNetworkFromDir(File dir, NodeMapper nm) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
@@ -264,14 +288,14 @@ public class NetworkIO
 		File conditionsFile = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
 		
 		Set<Edge> edges = readEdgesFromFile(edgeFile);
-		Set<Node> nodes = readNodesFromFile(nodeFile);
+		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
 		
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
 		
 		if (type.equals("ReferenceNetwork"))
 		{
-			ReferenceNetwork r = new ReferenceNetwork(name);
+			ReferenceNetwork r = new ReferenceNetwork(name, nm);
 			r.setNodesAndEdges(nodes, edges);
 			return r;
 		}
@@ -279,7 +303,7 @@ public class NetworkIO
 		else if (type.equals("ConditionNetwork"))
 		{
 			Set<Condition> conditions = readConditionsFromFile(conditionsFile);
-			ConditionNetwork c = new ConditionNetwork(name, conditions);
+			ConditionNetwork c = new ConditionNetwork(name, conditions, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
@@ -291,53 +315,56 @@ public class NetworkIO
 	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @return a ReferenceNetwork representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static ReferenceNetwork readReferenceNetworkFromDir(File dir) throws IOException
+	public static ReferenceNetwork readReferenceNetworkFromDir(File dir, NodeMapper nm) throws IOException
 	{
-		return (ReferenceNetwork) readInputNetworkFromDir(dir);
+		return (ReferenceNetwork) readInputNetworkFromDir(dir, nm);
 	}
 	
 	/**
 	 * Read a {@link ConditionNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @return a ConditionNetwork representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static ConditionNetwork readConditionNetworkFromDir(File dir) throws IOException
+	public static ConditionNetwork readConditionNetworkFromDir(File dir, NodeMapper nm) throws IOException
 	{
-		return (ConditionNetwork) readInputNetworkFromDir(dir);
+		return (ConditionNetwork) readInputNetworkFromDir(dir, nm);
 	}
 	
 	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param reference the ReferenceNetwork linked to the read output network
 	 * @param condNetworks the set of condition-specific networks linked to the read output network
 	 * @return a Network representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	private static Network readOutputNetworkFromDir(File dir, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
+	private static Network readOutputNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		
 		Set<Edge> edges = readEdgesFromFile(edgeFile);
-		Set<Node> nodes = readNodesFromFile(nodeFile);
+		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
 		
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
 		
 		if (type.equals("DifferentialNetwork"))
 		{
-			DifferentialNetwork d = new DifferentialNetwork(name, reference, condNetworks);
+			DifferentialNetwork d = new DifferentialNetwork(name, reference, condNetworks, nm);
 			d.setNodesAndEdges(nodes, edges);
 			return d;
 		}
@@ -346,7 +373,7 @@ public class NetworkIO
 			Set<Network> allNetworks = new HashSet<Network>();
 			allNetworks.add(reference);
 			allNetworks.addAll(condNetworks);
-			OverlappingNetwork o = new OverlappingNetwork(name, allNetworks);
+			OverlappingNetwork o = new OverlappingNetwork(name, allNetworks, nm);
 			o.setNodesAndEdges(nodes, edges);
 			return o;
 		}
@@ -358,30 +385,32 @@ public class NetworkIO
 	 * Read a {@link DifferentialNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param reference the ReferenceNetwork linked to this differential network
 	 * @param condNetworks the set of condition-specific networks linked to this differential network
 	 * @return a DifferentialNetwork representation of the nodes and edges in the files
 	 *
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static DifferentialNetwork readDifferentialNetworkFromDir(File dir, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
+	public static DifferentialNetwork readDifferentialNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
 	{
-		return (DifferentialNetwork) readOutputNetworkFromDir(dir, reference, condNetworks);
+		return (DifferentialNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks);
 	}
 	
 	/**
 	 * Read a {@link OverlappingNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param reference the ReferenceNetwork linked to this overlapping network
 	 * @param condNetworks the set of condition-specific networks linked to this overlapping network
 	 * @return a OverlappingNetwork representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static OverlappingNetwork readOverlappingNetworkFromDir(File dir, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
+	public static OverlappingNetwork readOverlappingNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException
 	{
-		return (OverlappingNetwork) readOutputNetworkFromDir(dir, reference, condNetworks);
+		return (OverlappingNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks);
 	}
 	
 
@@ -450,11 +479,12 @@ public class NetworkIO
 	 * Read all nodes from a file containing one node name per line
 	 * 
 	 * @param nodesFile the file containing the node data
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @return the set of nodes read from the file, or an empty set if no nodes were found
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Node> readNodesFromFile(File nodesFile) throws IOException
+	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm) throws IOException
 	{
 		Set<Node> nodes = new HashSet<Node>();
 
@@ -463,9 +493,13 @@ public class NetworkIO
 		
 		while (line != null)
 		{
-			// TODO : should we somehow check the line is not ridiculously long?
-			Node n = new Node(line);
-			nodes.add(n);
+			// TODO v2.0: this code now simply reads the node name, but could be made more general through NodeIO and Node IDs?
+			Node n = new Node(line.trim());
+			if (! nm.isContained(n, nodes))
+			{
+				nodes.add(n);
+			}
+			
 			line = reader.readLine();
 		}
 

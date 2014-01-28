@@ -3,6 +3,7 @@ package be.svlandeg.diffany.concepts;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.io.NetworkIO;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
@@ -21,6 +22,8 @@ public abstract class Network
 	protected Set<Edge> edges;
 
 	protected String name;
+	protected NodeMapper nm;
+	
 
 	/**
 	 * Create a new network with a specific name and sets of nodes and edges.
@@ -28,20 +31,30 @@ public abstract class Network
 	 * @param name the name of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name, Set<Node> nodes, Set<Edge> edges)
+	public Network(String name, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
 	{
+		if (nm == null)
+		{
+			String errormsg = "Please define a proper NodeMapper object!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		this.name = name;
+		this.nm = nm;
 		setNodesAndEdges(nodes, edges);
 	}
 
+	
 	/**
 	 * Create a new network with an empty set of nodes and edges.
 	 * @param name the name of this network (should be enforced to be unique within one project)
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name)
+	public Network(String name, NodeMapper nm)
 	{
-		this(name, new HashSet<Node>(), new HashSet<Edge>());
+		this(name, new HashSet<Node>(), new HashSet<Edge>(), nm);
 	}
 
 	/**
@@ -85,10 +98,9 @@ public abstract class Network
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
-	 * @param nm the node mapper object that defines equality between nodes for comparison purposes
 	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
-	public Set<Edge> getDirectedEdges(Node source, Node target, NodeMapper nm)
+	public Set<Edge> getDirectedEdges(Node source, Node target)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		if (source != null && target != null)
@@ -113,10 +125,9 @@ public abstract class Network
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
-	 * @param nm the node mapper object that defines equality between nodes for comparison purposes
 	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
-	public Set<Edge> getAllEdges(Node source, Node target, NodeMapper nm)
+	public Set<Edge> getAllEdges(Node source, Node target)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		if (source != null && target != null)
@@ -184,14 +195,17 @@ public abstract class Network
 
 	/**
 	 * Add an edge to this network, automatically also adding its source and target nodes if needed.
-	 * If the edge was already present, nothing happens
+	 * If the edge was already present, nothing happens 
+	 * 
 	 * @param edge a new adge in this network
 	 */
 	public void addEdge(Edge edge)
 	{
+		// TODO : edge comparison?
 		edges.add(edge);
-		nodes.add(edge.getSource());
-		nodes.add(edge.getTarget());
+		
+		addNode(edge.getSource());
+		addNode(edge.getTarget());
 	}
 	
 	/**
@@ -205,11 +219,16 @@ public abstract class Network
 
 	/**
 	 * Add a new (unconnected) node to this network. If it was already present, nothing happens.
+	 * The comparison is made through the NodeMapper object of this Network.
+	 * 
 	 * @param node a new node in this network
 	 */
 	public void addNode(Node node)
 	{
-		nodes.add(node);
+		if (! nm.isContained(node, nodes))
+		{
+			nodes.add(node);
+		}
 	}
 
 	

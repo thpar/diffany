@@ -4,7 +4,6 @@ import java.util.*;
 
 import be.svlandeg.diffany.concepts.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * This class provides generic methods useful for network cleaning before or
@@ -35,9 +34,9 @@ public class NetworkCleaning
 	 * @param nm the node mapper for the network
 	 * @param toLog whether or not to log important messages
 	 **/
-	public void fullOutputCleaning(Network net, NodeMapper nm, boolean toLog)
+	public void fullOutputCleaning(Network net, boolean toLog)
 	{
-		removeRedundantEdges(net, nm, toLog);
+		removeRedundantEdges(net, toLog);
 	}
 
 	/**
@@ -46,10 +45,9 @@ public class NetworkCleaning
 	 * then when the type, weight and negation are all equal.
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper for the network
 	 * @param toLog whether or not to log important messages
 	 **/
-	private void removeRedundantEdges(Network net, NodeMapper nm, boolean toLog)
+	private void removeRedundantEdges(Network net, boolean toLog)
 	{
 		if (toLog)
 		{
@@ -68,7 +66,7 @@ public class NetworkCleaning
 				String name2 = n2.getName();
 				if (name1.compareTo(name2) < 0)
 				{
-					Set<Edge> all_edges = net.getAllEdges(n1, n2, nm);
+					Set<Edge> all_edges = net.getAllEdges(n1, n2);
 					for (Edge et : all_edges)
 					{
 						for (Edge eb : all_edges)

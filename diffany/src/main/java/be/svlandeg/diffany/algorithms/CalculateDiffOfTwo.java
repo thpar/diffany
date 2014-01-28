@@ -54,7 +54,7 @@ public class CalculateDiffOfTwo
 		allOriginals.add(n1);
 		allOriginals.add(n2);
 		
-		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, allOriginals);
+		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, allOriginals, nm);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(n1, n2);
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
@@ -92,16 +92,16 @@ public class CalculateDiffOfTwo
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1, nm);
-				Set<Edge> back_referenceEdges = n1.getDirectedEdges(target1, source1, nm);
+				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1);
+				Set<Edge> back_referenceEdges = n1.getDirectedEdges(target1, source1);
 
 				// get the condition-specific edge
 				Set<Edge> conditionEdges = new HashSet<Edge>();
 				Set<Edge> back_conditionEdges = new HashSet<Edge>();
 				if (source2 != null && target2 != null)
 				{
-					conditionEdges = n2.getAllEdges(source2, target2, nm);
-					back_conditionEdges = n2.getDirectedEdges(target2, source2, nm);
+					conditionEdges = n2.getAllEdges(source2, target2);
+					back_conditionEdges = n2.getDirectedEdges(target2, source2);
 				}
 				
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
@@ -150,7 +150,7 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(overlap, nm, false);
+		cleaning.fullOutputCleaning(overlap, false);
 		return overlap;
 	}
 	

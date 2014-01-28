@@ -2,6 +2,8 @@ package be.svlandeg.diffany.concepts;
 
 import java.util.Set;
 
+import be.svlandeg.diffany.semantics.NodeMapper;
+
 
 /**
  * An overlapping network is the counterpart of a differential network: containing everything but the differential edges 
@@ -23,11 +25,13 @@ public class OverlappingNetwork extends Network
 	 * 
 	 * @param name the name of this network
 	 * @param originalNetworks the original networks (at least 2!)
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
+	 * 
 	 * @throws IllegalArgumentException when the list of original networks is null or contains less than 2 networks
 	 */
-	public OverlappingNetwork(String name, Set<Network> originalNetworks) throws IllegalArgumentException
+	public OverlappingNetwork(String name, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name);
+		super(name, nm);
 		if (originalNetworks == null || originalNetworks.size() < 2)
 		{
 			String errormsg = "Please define at least 2 original networks!";

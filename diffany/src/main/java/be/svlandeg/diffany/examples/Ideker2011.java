@@ -19,6 +19,16 @@ import be.svlandeg.diffany.semantics.*;
 public class Ideker2011 extends GenericExample
 {
 
+	private NodeMapper nm;
+	
+	/**
+	 * Constructor: generates a default {@link NodeMapper} object
+	 */
+	public Ideker2011()
+	{
+		nm = new DefaultNodeMapper();
+	}
+	
 	/**
 	 * Get a project with the networks as described in figure 3A of this paper.
 	 * @return an example project illustrating figure 1C.
@@ -29,7 +39,6 @@ public class Ideker2011 extends GenericExample
 		ReferenceNetwork r = getReferenceFigure3A();
 		Set<ConditionNetwork> c = getConditionFigure3A();
 		EdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
@@ -47,7 +56,7 @@ public class Ideker2011 extends GenericExample
 		nodes.put("E", new Node("E"));
 		nodes.put("F", new Node("F"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011");
+		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", nm);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("F"), true, 1.0));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 0.7));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
@@ -68,7 +77,7 @@ public class Ideker2011 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", conditions);
+		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

@@ -2,6 +2,8 @@ package be.svlandeg.diffany.concepts;
 
 import java.util.Set;
 
+import be.svlandeg.diffany.semantics.NodeMapper;
+
 /**
  * A differential network only contains differential edges between 2 (or more) networks,
  * one of which is always a 'static' reference network.
@@ -23,13 +25,15 @@ public class DifferentialNetwork extends Network
 	 * @param name the name of this network
 	 * @param reference the corresponding reference network
 	 * @param conditionNetworks the corresponding condition-specific networks
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
+	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public DifferentialNetwork(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks) 
+	public DifferentialNetwork(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, NodeMapper nm) 
 			throws IllegalArgumentException
 	{
-		super(name);
+		super(name, nm);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";

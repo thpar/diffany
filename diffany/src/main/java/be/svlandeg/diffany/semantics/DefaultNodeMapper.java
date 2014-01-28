@@ -2,18 +2,15 @@ package be.svlandeg.diffany.semantics;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 
 /**
- * This class provides a default implementation of a NodeMapper, defining nodes
- * as equal when there names are equal (ignoring case, i.e. using 'normalized'
- * names).
+ * This class provides a default implementation of a NodeMapper, defining nodes as equal when there names are equal (ignoring case, i.e. using 'normalized' names).
  * 
  * @author Sofie Van Landeghem
  * 
  */
-public class DefaultNodeMapper implements NodeMapper
+public class DefaultNodeMapper extends NodeMapper
 {
 
 	@Override
@@ -26,49 +23,6 @@ public class DefaultNodeMapper implements NodeMapper
 		return node1.getName(true).equals(node2.getName(true));
 	}
 
-	@Override
-	public Map<Node, Set<Node>> getAllEquals(Network network1, Network network2)
-	{
-		Map<Node, Set<Node>> allEquals = new HashMap<Node, Set<Node>>();
-		for (Node node1 : network1.getNodes())
-		{
-			Set<Node> equalNodes = new HashSet<Node>();
-			for (Node node2 : network2.getNodes())
-			{
-				if (areEqual(node1, node2))
-				{
-					equalNodes.add(node2);
-				}
-			}
-			allEquals.put(node1, equalNodes);
-		}
-		return allEquals;
-	}
-
-	@Override
-	public Set<Node> getAllNodes(Set<Network> networks)
-	{
-		Set<Node> allNodes = new HashSet<Node>();
-		for (Network network : networks)
-		{
-			for (Node node : network.getNodes())
-			{
-				boolean hasEqual = false;
-				for (Node compNode : allNodes)
-				{
-					if (areEqual(node, compNode))
-					{
-						hasEqual = true;
-					}
-				}
-				if (!hasEqual)
-				{
-					allNodes.add(node);
-				}
-			}
-		}
-		return allNodes;
-	}
 
 	@Override
 	public String getConsensusName(Set<Node> nodes) throws IllegalArgumentException
@@ -105,5 +59,6 @@ public class DefaultNodeMapper implements NodeMapper
 		// return lowercase otherwise
 		return normalized_names.iterator().next();
 	}
+
 
 }

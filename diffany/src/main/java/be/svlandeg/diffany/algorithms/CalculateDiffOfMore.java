@@ -65,7 +65,7 @@ public class CalculateDiffOfMore
 			unification.expandOntology(n.getEdges(), eo);
 		}
 
-		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditionNetworks);
+		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditionNetworks, nm);
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
@@ -135,8 +135,8 @@ public class CalculateDiffOfMore
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1, nm);
-				Set<Edge> back_referenceEdges = reference.getDirectedEdges(target1, source1, nm);
+				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
+				Set<Edge> back_referenceEdges = reference.getDirectedEdges(target1, source1);
 
 				// get all condition-specific edges (one for each condition network)
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
@@ -152,8 +152,8 @@ public class CalculateDiffOfMore
 					Node target2 = alltargets2.get(i);
 					if (! source2.getName().equals(EMPTY_NAME) && ! target2.getName().equals(EMPTY_NAME))
 					{
-						conditionEdges = condition.getAllEdges(source2, target2, nm);
-						back_conditionEdges = condition.getDirectedEdges(target2, source2, nm);
+						conditionEdges = condition.getAllEdges(source2, target2);
+						back_conditionEdges = condition.getDirectedEdges(target2, source2);
 					}
 					condlist.add(i, conditionEdges);
 					back_condlist.add(i, back_conditionEdges);
@@ -191,7 +191,7 @@ public class CalculateDiffOfMore
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(diff, nm, true);
+		cleaning.fullOutputCleaning(diff, true);
 		return diff;
 	}
 	

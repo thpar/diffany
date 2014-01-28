@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -13,11 +14,14 @@ import org.junit.Test;
 import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.io.NetworkIO;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /** 
  * Class that automatically tests the IO functionality of Diffany:
@@ -67,14 +71,16 @@ public class TestIO
 				
 		// The overlapping network (there should be only 1)
 		OverlappingNetwork oWriteNetwork = dWriteNetwork.getOverlappingNetwork();
+		
+		NodeMapper nm = new DefaultNodeMapper();
 			
 		// WRITING
 		try
 		{
-			NetworkIO.writeReferenceNetworkToDir(rWriteNetwork, rDir);
-			NetworkIO.writeConditionNetworkToDir(cWriteNetwork, cDir);
-			NetworkIO.writeDifferentialNetworkToDir(dWriteNetwork, dDir);
-			NetworkIO.writeOverlappingNetworkToDir(oWriteNetwork, oDir);
+			NetworkIO.writeReferenceNetworkToDir(rWriteNetwork, nm, rDir);
+			NetworkIO.writeConditionNetworkToDir(cWriteNetwork, nm, cDir);
+			NetworkIO.writeDifferentialNetworkToDir(dWriteNetwork, nm, dDir);
+			NetworkIO.writeOverlappingNetworkToDir(oWriteNetwork, nm, oDir);
 		}
 		catch(IOException io)
 		{
@@ -84,13 +90,26 @@ public class TestIO
 		// READING
 		try
 		{
-			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir);
-			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir);
+			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, nm);
+			assertEquals(3, rReadNetwork.getEdges().size());
+			assertEquals(5, rReadNetwork.getNodes().size());
+			
+			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, nm);
+			assertEquals(3, cReadNetwork.getEdges().size());
+			assertEquals(4, cReadNetwork.getNodes().size());
+			
 			Set<ConditionNetwork> cReadNetworks = new HashSet<ConditionNetwork>();
 			cReadNetworks.add(cReadNetwork);
 			
-			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, rReadNetwork, cReadNetworks);
-			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, rReadNetwork, cReadNetworks);
+			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, nm, rReadNetwork, cReadNetworks);
+			assertEquals(3, dReadNetwork.getEdges().size());
+			assertEquals(4, dReadNetwork.getNodes().size());
+			
+			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks);
+			assertEquals(2, oReadNetwork.getEdges().size());
+			assertEquals(3, oReadNetwork.getNodes().size());
+			
+			
 		}
 		catch(IOException io)
 		{

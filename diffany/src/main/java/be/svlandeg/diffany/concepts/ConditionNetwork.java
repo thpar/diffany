@@ -2,6 +2,8 @@ package be.svlandeg.diffany.concepts;
 
 import java.util.Set;
 
+import be.svlandeg.diffany.semantics.NodeMapper;
+
 /**
  * A kind of network that is condition-specific. There can be an unlimited
  * number of conditions specified, but there should be at least one.
@@ -16,16 +18,16 @@ public class ConditionNetwork extends Network
 	/**
 	 * Create a new condition-specific network.
 	 * 
-	 * @param conditions
-	 *            at least 1 condition describing the experimental conditions.
+	 * @param conditions at least 1 condition describing the experimental conditions.
 	 * @param name the name of this network
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * @throws IllegalArgumentException
 	 *             when the conditions are null or empty
 	 * 
 	 */
-	public ConditionNetwork(String name, Set<Condition> conditions) throws IllegalArgumentException
+	public ConditionNetwork(String name, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name);
+		super(name, nm);
 		if (conditions == null || conditions.isEmpty())
 		{
 			String errormsg = "Please define at least 1 condition!";

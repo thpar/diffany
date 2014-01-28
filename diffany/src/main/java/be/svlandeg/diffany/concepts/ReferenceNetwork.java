@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
+import be.svlandeg.diffany.semantics.NodeMapper;
+
 
 /**
  * A reference network is used as comparison against condition-dependent networks.
@@ -15,11 +17,12 @@ public class ReferenceNetwork extends Network
 	 * Create a new static reference network.
 	 * 
 	 * @param name the name of this network
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 */
-	public ReferenceNetwork(String name)
+	public ReferenceNetwork(String name, NodeMapper nm)
 	{
-		super(name);
+		super(name, nm);
 	}
 
 	/* (non-Javadoc)
@@ -28,7 +31,7 @@ public class ReferenceNetwork extends Network
 	@Override
 	public String getStringRepresentation()
 	{
-		return name + ": static reference network";
+		return name + ": input reference network";
 	}
 
 	

@@ -14,6 +14,17 @@ import be.svlandeg.diffany.semantics.*;
  */
 public class MultipleConditionTest extends GenericExample
 {
+	
+	private NodeMapper nm;
+	
+	/**
+	 * Constructor: generates a default {@link NodeMapper} object
+	 */
+	public MultipleConditionTest()
+	{
+		nm = new DefaultNodeMapper();
+	}
+	
 	/**
 	 * Get a project with some custom-defined networks.
 	 * @return an example project.
@@ -24,7 +35,6 @@ public class MultipleConditionTest extends GenericExample
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
 		EdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
@@ -43,7 +53,7 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference");
+		ReferenceNetwork network = new ReferenceNetwork("Reference", nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.7, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.8, false));
@@ -89,7 +99,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 1", conditions);
+		ConditionNetwork network = new ConditionNetwork("Condition 1", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -131,7 +141,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		

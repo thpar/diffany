@@ -14,6 +14,17 @@ import be.svlandeg.diffany.semantics.*;
  */
 public class ActivityFlowTest extends GenericExample
 {
+	
+	private NodeMapper nm;
+	
+	/**
+	 * Constructor: generates a default {@link NodeMapper} object
+	 */
+	public ActivityFlowTest()
+	{
+		nm = new DefaultNodeMapper();
+	}
+	
 	/**
 	 * Get a project with some custom-defined networks.
 	 * @return an example project.
@@ -24,7 +35,6 @@ public class ActivityFlowTest extends GenericExample
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		EdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
@@ -49,7 +59,7 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1");
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1", nm);
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
@@ -77,7 +87,7 @@ public class ActivityFlowTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

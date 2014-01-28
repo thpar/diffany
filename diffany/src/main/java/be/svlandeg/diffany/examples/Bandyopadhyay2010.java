@@ -1,10 +1,21 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.concepts.Condition;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /** 
  * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
@@ -15,6 +26,16 @@ import be.svlandeg.diffany.semantics.*;
 public class Bandyopadhyay2010 extends GenericExample
 {
 
+	private NodeMapper nm;
+	
+	/**
+	 * Constructor: generates a default {@link NodeMapper} object
+	 */
+	public Bandyopadhyay2010()
+	{
+		nm = new DefaultNodeMapper();
+	}
+	
 	/**
 	 * Get a project with the networks as described in figure 1C of this paper.
 	 * @return an example project illustrating figure 1C.
@@ -25,7 +46,6 @@ public class Bandyopadhyay2010 extends GenericExample
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
 		EdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, r, c, eo, nm);
 		return p;
 	}
@@ -44,7 +64,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		nodes.put("D", new Node("D"));
 		nodes.put("E", new Node("E"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Untreated Network");
+		ReferenceNetwork network = new ReferenceNetwork("Untreated Network", nm);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("E"), nodes.get("C"), true, 0.8));
@@ -64,7 +84,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Treated Network", conditions);
+		ConditionNetwork network = new ConditionNetwork("Treated Network", conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

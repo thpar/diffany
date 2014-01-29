@@ -13,7 +13,8 @@ public class RunProject
 	/**
 	 * Run a Diffany analysis, depending on the parameters provided on the commandline.
 	 * 
-	 * @param cmd
+	 * @param cmd the CommandLine object containing all parameters provided by the user
+	 * @throws IllegalArgumentException when a crucial argument is missing
 	 */
 	public void runAnalysis(CommandLine cmd)
 	{
@@ -22,6 +23,22 @@ public class RunProject
 		{
 			toLog = true;
 		}
+		
+		String refDir = cmd.getOptionValue(DiffanyOptions.refShort);
+		if (refDir == null)
+		{
+			throw new IllegalArgumentException("Fatal error: please provide a valid refDir argument!");
+		}
+		
+		String condDir = cmd.getOptionValue(DiffanyOptions.conShort);
+		if (condDir == null)
+		{
+			throw new IllegalArgumentException("Fatal error: please provide a valid refDir argument!");
+		}
+		
+		
+		
+		// TEST CODE
 		if (toLog)
 		{
 			System.out.println("Will log");

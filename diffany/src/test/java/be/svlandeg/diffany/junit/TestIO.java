@@ -14,7 +14,6 @@ import org.junit.Test;
 import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;

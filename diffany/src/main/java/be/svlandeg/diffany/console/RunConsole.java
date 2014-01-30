@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.console;
 
+import java.io.IOException;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,7 +27,6 @@ public class RunConsole
 		CommandLineParser parser = new BasicParser();
 		new RunConsole().runFromConsole(args, parser);
 	}
-	
 
 	/**
 	 * Run the Diffany algorithms from the console input, or print the help/version statement when appropriate.
@@ -39,18 +40,24 @@ public class RunConsole
 	public void runFromConsole(String[] args, CommandLineParser parser)
 	{
 		Options metaOpt = new MetaOptions().getMetaOptions();
-		CommandLine meta_cmd = parseOptions(args, parser, metaOpt);
-		if (meta_cmd != null)
+		CommandLine meta_cmd = parseOptions(args, parser, metaOpt, true);
+
+		Options diffOpt = new DiffanyOptions().getDiffanyOptions();
+		boolean metaPrinted = displayMetaData(meta_cmd, metaOpt, diffOpt);
+		if (!metaPrinted)
 		{
-			Options diffOpt = new DiffanyOptions().getDiffanyOptions();
-			boolean metaPrinted = displayMetaData(meta_cmd, metaOpt, diffOpt);
-			if (!metaPrinted)
+			CommandLine diff_cmd = parseOptions(args, parser, diffOpt, false);
+			if (diff_cmd != null)
 			{
-				CommandLine diff_cmd = parseOptions(args, parser, diffOpt);
-				if (diff_cmd != null)
-				{
-					new RunProject().runAnalysis(diff_cmd);
-				}
+				try
+                {
+                    new RunProject().runAnalysis(diff_cmd);
+                }
+                catch (IOException ex)
+                {
+                	System.err.println("Could not perform the required IO functionality: " + ex.getMessage());
+    				System.err.println("Run the program with -h or --help (only) to get the help information.");
+                }
 			}
 		}
 	}
@@ -61,23 +68,28 @@ public class RunConsole
 	 * @param args the input arguments provided on the commandline
 	 * @param parser the {@link CommandLineParser} object that can parse the input arguments
 	 * @param mOpt the {@link MetaOptions} defined for this program (e.g. help, version)
+	 * @param silent if true, ignore exceptions thrown
 	 * 
 	 * @return the parsed {@link CommandLine} object
 	 */
-	private CommandLine parseOptions(String[] args, CommandLineParser parser, Options options)
+	private CommandLine parseOptions(String[] args, CommandLineParser parser, Options options, boolean silent)
 	{
 		CommandLine cmd = null;
 		try
 		{
 			cmd = parser.parse(options, args);
-		} catch (ParseException ex)
+		}
+		catch (ParseException ex)
 		{
-			System.err.println("Could not properly parse the arguments: " + ex.getMessage());
+			if (! silent)
+			{
+				System.err.println("Could not properly parse the arguments: " + ex.getMessage());
+				System.err.println("Run the program with -h or --help (only) to get the help information.");
+			}
 		}
 
 		return cmd;
 	}
-
 
 	/**
 	 * Check whether meta data needs to be displayed, such as the help or version message.
@@ -99,15 +111,16 @@ public class RunConsole
 
 		boolean metaPrinted = false;
 
-		if (cmd.getOptions() != null && cmd.getOptions().length > 0)
+		if (cmd != null && cmd.getOptions() != null && cmd.getOptions().length > 0)
 		{
 			if (cmd.hasOption(MetaOptions.helpShort))
 			{
 				HelpFormatter formatter = new HelpFormatter();
-				//formatter.printHelp("java -jar Diffany_" + version + ".jar", metaOptions, true);
-				formatter.printHelp("java -jar Diffany_" + version + ".jar", diffanyOptions, true);
+				String header = "";
+				formatter.printHelp(130, "java -jar Diffany_" + version + ".jar", header, diffanyOptions, header, true);
 				metaPrinted = true;
-			} else if (cmd.hasOption(MetaOptions.versionShort))
+			}
+			else if (cmd.hasOption(MetaOptions.versionShort))
 			{
 				System.out.println("Diffany version: " + version);
 				metaPrinted = true;

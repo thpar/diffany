@@ -17,13 +17,16 @@ public class DiffanyOptions
 	
 	private Options options;
 	
-	protected static String modeShort = "m";
+	//protected static String modeShort = "m";
 	protected static String logShort = "l";
 	
 	protected static String refShort = "ref";
 	protected static String conShort = "cond";
 	protected static String diffShort = "diff";
 	protected static String overlapShort = "overlap";
+
+	protected static String diffnameShort = "name";
+	protected static String cutoffShort = "conf";
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -66,7 +69,7 @@ public class DiffanyOptions
 		boolean hasArgument = false;
 		Set<Option> allFlags = new HashSet<Option>();
 		
-		allFlags.add(new Option(logShort, "log", hasArgument, "display the log contents"));
+		allFlags.add(new Option(logShort, "log", hasArgument, "display a log file after running the algorithm"));
 		
 		return allFlags;
 	}
@@ -76,42 +79,49 @@ public class DiffanyOptions
 	 */
 	private Set<Option> getAllParameters()
 	{
-		boolean hasArgument = true;
 		Set<Option> allParameters = new HashSet<Option>();
 		
-		allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
+		//allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("reference");
+		OptionBuilder.withLongOpt("referenceDirectory");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired();
 		OptionBuilder.withDescription("the input directory containing the reference network");
 		allParameters.add(OptionBuilder.create(refShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("conditions");
-		OptionBuilder.hasArgs();
+		OptionBuilder.withLongOpt("conditionsDirectory");
+		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
-		OptionBuilder.withValueSeparator('|');
-		OptionBuilder.withDescription("the input directory containing the condition-specific network(s)");
+		//OptionBuilder.withValueSeparator('|');
+		OptionBuilder.withDescription("the input directory containing the condition-specific network");
 		allParameters.add(OptionBuilder.create(conShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("differential");
-		OptionBuilder.hasArgs();
+		OptionBuilder.withLongOpt("differentialDirectory");
+		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
-		OptionBuilder.withValueSeparator('|');
-		OptionBuilder.withDescription("the output directory containing the generated differential network(s)");
+		OptionBuilder.withDescription("the output directory which will contain the generated differential network");
 		allParameters.add(OptionBuilder.create(diffShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("overlap");
-		OptionBuilder.hasArgs();
+		OptionBuilder.withLongOpt("overlappingDirectory");
+		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
-		OptionBuilder.withValueSeparator('|');
-		OptionBuilder.withDescription("the output directory containing the generated overlap network(s)");
+		OptionBuilder.withDescription("the output directory which will contain the generated overlap network");
 		allParameters.add(OptionBuilder.create(overlapShort));
 
+		OptionBuilder.withLongOpt("networkOutputName");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the name of the generated differential network");
+		allParameters.add(OptionBuilder.create(diffnameShort));
+		
+		OptionBuilder.withLongOpt("confidenceMin");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the minimum confidence threshold for differential and overlap edges");
+		allParameters.add(OptionBuilder.create(cutoffShort));
+		
 		return allParameters;
 	}
 }

@@ -17,8 +17,6 @@ public class DiffanyOptions
 	
 	private Options options;
 	
-	protected static String helpShort = "h";
-	protected static String versionShort = "v";
 	protected static String modeShort = "m";
 	protected static String logShort = "l";
 	
@@ -42,7 +40,6 @@ public class DiffanyOptions
 	public Options getDiffanyOptions()
 	{
 		return options;
-
 	}
 	
 	/**
@@ -70,8 +67,6 @@ public class DiffanyOptions
 		Set<Option> allFlags = new HashSet<Option>();
 		
 		allFlags.add(new Option(logShort, "log", hasArgument, "display the log contents"));
-		allFlags.add(new Option(versionShort, "version", hasArgument, "print the version information and exit"));
-		allFlags.add(new Option(helpShort, "help", hasArgument, "print this help message"));
 		
 		return allFlags;
 	}
@@ -86,19 +81,17 @@ public class DiffanyOptions
 		
 		allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
 		
-		// TODO: make something required UNLESS the help/version or other meta parameters are given?!
-		
 		OptionBuilder.withArgName("dir");
 		OptionBuilder.withLongOpt("reference");
 		OptionBuilder.hasArgs(1);
-		//OptionBuilder.isRequired();
+		OptionBuilder.isRequired();
 		OptionBuilder.withDescription("the input directory containing the reference network");
 		allParameters.add(OptionBuilder.create(refShort));
 		
 		OptionBuilder.withArgName("dir");
 		OptionBuilder.withLongOpt("conditions");
 		OptionBuilder.hasArgs();
-		//OptionBuilder.isRequired(true);
+		OptionBuilder.isRequired(true);
 		OptionBuilder.withValueSeparator('|');
 		OptionBuilder.withDescription("the input directory containing the condition-specific network(s)");
 		allParameters.add(OptionBuilder.create(conShort));
@@ -106,7 +99,7 @@ public class DiffanyOptions
 		OptionBuilder.withArgName("dir");
 		OptionBuilder.withLongOpt("differential");
 		OptionBuilder.hasArgs();
-		//OptionBuilder.isRequired(true);
+		OptionBuilder.isRequired(true);
 		OptionBuilder.withValueSeparator('|');
 		OptionBuilder.withDescription("the output directory containing the generated differential network(s)");
 		allParameters.add(OptionBuilder.create(diffShort));
@@ -114,14 +107,12 @@ public class DiffanyOptions
 		OptionBuilder.withArgName("dir");
 		OptionBuilder.withLongOpt("overlap");
 		OptionBuilder.hasArgs();
-		//OptionBuilder.isRequired(true);
+		OptionBuilder.isRequired(true);
 		OptionBuilder.withValueSeparator('|');
 		OptionBuilder.withDescription("the output directory containing the generated overlap network(s)");
 		allParameters.add(OptionBuilder.create(overlapShort));
 
-		
 		return allParameters;
-		
 	}
 }
 

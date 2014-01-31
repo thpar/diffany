@@ -56,6 +56,7 @@ public class NetworkIO
 	protected static void writeNetworkToFiles(Network network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile) throws IOException
 	{
 		// EDGES
+		edgesFile.getParentFile().mkdirs();
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
 		for (Edge e : network.getEdges())
 		{
@@ -68,6 +69,7 @@ public class NetworkIO
 
 		// NODES
 		// TODO v2.0: this code now simply prints the node name, but could be made more general through NodeIO and Node IDs?
+		nodesFile.getParentFile().mkdirs();
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
 		
 		Set<Node> unduplicatedNodes = new HashSet<Node>();
@@ -94,6 +96,7 @@ public class NetworkIO
 		nodeWriter.close();
 		
 		// DEFINITION: NAME and TYPE (CLASS)
+		definitionFile.getParentFile().mkdirs();
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
 		
 		defWriter.append(name_field + "\t" + network.getName());
@@ -254,6 +257,7 @@ public class NetworkIO
 		
 		Set<Condition> conditions = network.getConditions();
 	
+		conditionsFile.getParentFile().mkdirs();
 		BufferedWriter writer = new BufferedWriter(new FileWriter(conditionsFile));
 		for (Condition c : conditions)
 		{

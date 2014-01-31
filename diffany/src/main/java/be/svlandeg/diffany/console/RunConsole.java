@@ -31,8 +31,7 @@ public class RunConsole
 	/**
 	 * Run the Diffany algorithms from the console input, or print the help/version statement when appropriate.
 	 * 
-	 * First, the commandline is checked for meta options such as 'help' or 'version'. In case of a hit, the appropriate information is printed.
-	 * If no meta options are provided, the commandline is parsed again for the Diffany arguments.
+	 * First, the commandline is checked for meta options such as 'help' or 'version'. In case of a hit, the appropriate information is printed. If no meta options are provided, the commandline is parsed again for the Diffany arguments.
 	 * 
 	 * @param args the input arguments provided on the commandline
 	 * @param parser the {@link CommandLineParser} object that can parse the input arguments
@@ -50,14 +49,13 @@ public class RunConsole
 			if (diff_cmd != null)
 			{
 				try
-                {
-                    new RunProject().runAnalysis(diff_cmd);
-                }
-                catch (IOException ex)
-                {
-                	System.err.println("Could not perform the required IO functionality: " + ex.getMessage());
-    				System.err.println("Run the program with -h or --help (only) to get the help information.");
-                }
+				{
+					new RunProject().runAnalysis(diff_cmd);
+				}
+				catch (IOException ex)
+				{
+					printError(ex);
+				}
 			}
 		}
 	}
@@ -83,8 +81,7 @@ public class RunConsole
 		{
 			if (! silent)
 			{
-				System.err.println("Could not properly parse the arguments: " + ex.getMessage());
-				System.err.println("Run the program with -h or --help (only) to get the help information.");
+				printError(ex);
 			}
 		}
 
@@ -92,15 +89,28 @@ public class RunConsole
 	}
 
 	/**
+	 * Print a user-friendly error message to the console.
+	 */
+	private void printError(Exception ex)
+	{
+		String customError = ".";
+		if (ex != null)
+		{
+			customError = ": " + ex.getMessage();
+		}
+		System.err.println("Problem running Diffany" + customError);
+		System.err.println("Run the program with -h or --help (only) to get the help information.");
+		System.err.println("Do not add undefined options.");
+	}
+
+	/**
 	 * Check whether meta data needs to be displayed, such as the help or version message.
 	 * 
-	 * If no request for meta data was issued, this method will return false, signaling the calling method 
-	 * that the commandline parameters should containc valid project data.
+	 * If no request for meta data was issued, this method will return false, signaling the calling method that the commandline parameters should containc valid project data.
 	 * 
 	 * @param cmd the parsed input arguments provided on the commandline
 	 * @param metaOptions the {@link MetaOptions} defined for this program (e.g. help, version)
-	 * @param diffanyOptions the {@link DiffanyOptions} object that defines the options of the actual Diffany program 
-	 * (this information is needed for printing the help message)
+	 * @param diffanyOptions the {@link DiffanyOptions} object that defines the options of the actual Diffany program (this information is needed for printing the help message)
 	 * 
 	 * @return whether or not a meta message was printed.
 	 */
@@ -117,7 +127,8 @@ public class RunConsole
 			{
 				HelpFormatter formatter = new HelpFormatter();
 				String header = "";
-				formatter.printHelp(130, "java -jar Diffany_" + version + ".jar", header, diffanyOptions, header, true);
+				int consoleSize = getSensibleLength();
+				formatter.printHelp(consoleSize, "java -jar Diffany_" + version + ".jar", header, diffanyOptions, header, true);
 				metaPrinted = true;
 			}
 			else if (cmd.hasOption(MetaOptions.versionShort))
@@ -127,6 +138,27 @@ public class RunConsole
 			}
 		}
 		return metaPrinted;
+	}
+
+	/**
+	 * Get an estimate of a proper printing width, depending on the OS
+	 * 
+	 * @return the length of the string we should be printing
+	 */
+	private int getSensibleLength()
+	{
+		String os = System.getProperty("os.name").toLowerCase();
+
+		//Windows
+		if (os.contains("win"))
+		{
+			// Windows Dos Terminal is of width 80 by default
+			return 80;
+		}
+		else
+		{
+			return 130;
+		}
 	}
 
 }

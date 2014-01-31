@@ -19,7 +19,7 @@ public class CalculateDiff
 	
 	protected boolean default_MIN = true;
 	
-	protected double default_cutoff = 0.0;
+	public double default_cutoff = 0.0;
 	protected static String diffnameprefix = "diff_";
 	protected static String overlapnameprefix = "overlap_";
 	
@@ -50,7 +50,11 @@ public class CalculateDiff
 	public DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo, 
 			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
-		if (reference == null || condition == null || eo == null || nm == null || diff_name == null)
+		if (diff_name == null)
+		{
+			return calculateDiffNetwork(reference, condition, eo, nm, cutoff, log);
+		}
+		if (reference == null || condition == null || eo == null || nm == null)
 		{
 			String errormsg = "Found null parameter in calculateDiffNetwork!";
 			throw new IllegalArgumentException(errormsg);

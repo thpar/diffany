@@ -33,45 +33,55 @@ public class RunProject
 	 * @throws IllegalArgumentException when a crucial argument is missing
 	 * @throws IOException when the provided directory arguments can not be read properly
 	 */
-	public void runAnalysis(CommandLine cmd) throws IOException
+	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
+		CalculateDiff diffAlgo = new CalculateDiff();
+
 		/** PARSE INPUT **/
 		boolean toLog = false;
 		if (cmd.hasOption(DiffanyOptions.logShort))
 		{
 			toLog = true;
 		}
-		
+
 		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
-		
-		double cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
-		
+
+		double cutoff = diffAlgo.default_cutoff;
+		if (cmd.hasOption(DiffanyOptions.cutoffShort))
+		{
+			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
+		}
+
 		Logger logger = new Logger();
-		
+
 		// TODO v2.0: adjustable
 		EdgeOntology eo = new DefaultEdgeOntology();
-		
+
 		// TODO v2.0: adjustable
 		NodeMapper nm = new DefaultNodeMapper();
-		
+
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
-		
+
 		File condDir = getRequiredDir(cmd, DiffanyOptions.conShort);
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
-		
+
 		/** THE ACTUAL ALGORITHM **/
-		CalculateDiff diffAlgo = new CalculateDiff();
+		logger.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		DifferentialNetwork diffNet = diffAlgo.calculateDiffNetwork(refNet, condNet, eo, nm, name, cutoff, logger);
 		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
-		
+
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
 		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
-		
+		logger.log("Writing the differential network to " + diffDir);
+
 		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
 		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
+		logger.log("Writing the overlap network to " + overlapDir);
 		
+		logger.log("Done !");
+
 		/** WRITE LOG OUTPUT **/
 		if (toLog)
 		{
@@ -81,7 +91,7 @@ public class RunProject
 			}
 		}
 	}
-	
+
 	/**
 	 * Retrieve a File object representing a directory given by a value on the command line
 	 * 
@@ -91,7 +101,7 @@ public class RunProject
 	 * @return the value of the key, represented as a directory object
 	 * @throws IllegalArgumentException when a crucial argument is missing
 	 */
-	private File getRequiredDir(CommandLine cmd, String key)
+	private File getRequiredDir(CommandLine cmd, String key) throws IllegalArgumentException
 	{
 		String refDir = cmd.getOptionValue(key);
 		if (refDir == null)
@@ -100,6 +110,5 @@ public class RunProject
 		}
 		return new File(refDir);
 	}
-		
 
 }

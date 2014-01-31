@@ -24,3 +24,44 @@
  - cf. package *be.svlandeg.diffany.algorithms*
  - The class **CalculateDiff** provides the methods to generate the differential networks from the input networks. Optional arguments are the minimal weight threshold (default 0.0) and the name of the output networks (by default 'diff\_XXX' and 'overlap\_XXX'
  - As part of the CalculateDiff algorithms, the methods from **NetworkCleaning** and **Unification** will be called.
+ 
+## Example code ####
+
+Parameters: String refLocation, String condLocation, String diffLocation, String overlapLocation
+	
+	
+		/** DEFINE THE ONTOLOGIES **/
+		EdgeOntology eo = new DefaultEdgeOntology();
+		NodeMapper nm = new DefaultNodeMapper();
+
+		/** READ THE INPUT NETWORKS **/
+		File refDir = new File(refLocation);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
+
+		File condDir = new File(condLocation);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
+
+		/** DEFINE THE RUN PARAMETERS **/
+		double cutoff = 0.0;
+		String name = "outputDiffany";
+		
+		/** THE ACTUAL ALGORITHM **/
+		Logger logger = new Logger();
+		CalculateDiff diffAlgo = new CalculateDiff();
+
+		DifferentialNetwork diffNet = diffAlgo.calculateDiffNetwork(refNet, condNet, eo, nm, name, cutoff, logger);
+		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
+
+		/** WRITE NETWORK OUTPUT **/
+		File diffDir = new File(diffLocation);
+		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
+
+		File overlapDir = new File(overlapLocation);
+		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
+
+		/** WRITE LOG OUTPUT **/
+		for (String msg : logger.getAllLogMessages())
+		{
+			System.out.println(msg);
+		}
+	

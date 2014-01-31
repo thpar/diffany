@@ -1,4 +1,4 @@
-# Diffany ####
+# Diffany Cytoscape plugin ####
 ## Installation ####
  - If not installed yet, Cytoscape 3 can be downloaded at the [Cytoscape homepage][1]
  - Download the Diffany app file (diffany-0.0.1-RC.jar) at the bottom of the [supplementary data][2]

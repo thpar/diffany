@@ -18,9 +18,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -44,7 +47,8 @@ import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
  * @author Thomas Van Parys
  *
  */
-public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, TableModelListener, ChangeListener{
+public class TabPane extends JPanel implements CytoPanelComponent, Observer, ActionListener, 
+									TableModelListener, ChangeListener, ListSelectionListener{
 
 	private static final long serialVersionUID = 1L;
 	private Model model;
@@ -125,6 +129,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		table.setFillsViewportHeight(true);
 		
 		selectionModel.addTableModelListener(this);
+		table.getSelectionModel().addListSelectionListener(this);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		panel.add(scrollPane, BorderLayout.CENTER);
@@ -247,6 +252,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		//triggered when cutoff spinner is changed
 		JSpinner spinner = (JSpinner)e.getSource();
 		this.model.getCurrentProject().setCutoff((Double)spinner.getValue());
+		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		
 		
 	}
 

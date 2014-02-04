@@ -6,9 +6,9 @@ import java.awt.Color;
 
 import org.junit.Test;
 
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /** 
  * Class that automatically tests the visualisation properties of the DefaultEdgeOntology.
@@ -152,7 +152,7 @@ public class TestVisual
 	 */
 	private void assertColorInSource(String type, Color c, EdgeOntology eo)
 	{
-		Color p = eo.getSourceEdgeStyle(type).getColor();
+		Color p = eo.getSourceEdgeDrawing().getEdgeStyle(type).getColor();
 		assertEquals(c, p);
 	}
 	
@@ -165,7 +165,7 @@ public class TestVisual
 	 */
 	private void assertColorInDifferential(String cat, Color c, EdgeOntology eo)
 	{
-		Color p = eo.getDifferentialEdgeStyle(cat).getColor();
+		Color p = eo.getDifferentialEdgeDrawing().getEdgeStyle(cat).getColor();
 		assertEquals(c, p);
 	}
 	
@@ -178,7 +178,7 @@ public class TestVisual
 	 */
 	private void assertArrowHeadInSource(String type, ArrowHead a, EdgeOntology eo)
 	{
-		ArrowHead p = eo.getSourceEdgeStyle(type).getArrowHead();
+		ArrowHead p = eo.getSourceEdgeDrawing().getEdgeStyle(type).getArrowHead();
 		assertEquals(p, a);
 	}
 	
@@ -191,7 +191,7 @@ public class TestVisual
 	 */
 	private void assertArrowHeadInDifferential(String cat, ArrowHead a, EdgeOntology eo)
 	{
-		ArrowHead p = eo.getDifferentialEdgeStyle(cat).getArrowHead();
+		ArrowHead p = eo.getDifferentialEdgeDrawing().getEdgeStyle(cat).getArrowHead();
 		assertEquals(a, p);
 	}
 	

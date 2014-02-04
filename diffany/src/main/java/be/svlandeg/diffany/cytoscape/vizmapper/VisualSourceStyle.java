@@ -9,10 +9,10 @@ import org.cytoscape.view.presentation.property.ArrowShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
-import be.svlandeg.diffany.concepts.VisualEdgeStyle;
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.visualstyle.EdgeStyle;
+import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /**
  * {@link VisualStyle} to be applied on source and overlap networks.
@@ -39,7 +39,7 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
 		
 		for (String type : interactionTypes) {
-			VisualEdgeStyle edgeStyle = edgeOntology.getSourceEdgeStyle(type);
+			EdgeStyle edgeStyle = edgeOntology.getSourceEdgeStyle(type);
 			
 			//edge color
 			Color paint = edgeStyle.getColor();

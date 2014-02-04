@@ -1,10 +1,9 @@
 package be.svlandeg.diffany.semantics;
 
-import java.awt.Color;
 import java.util.*;
 
 import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
+import be.svlandeg.diffany.visualstyle.EdgeDrawing;
 
 /**
  * This class takes care of the semantic interpretation of different edge types and their corresponding categories
@@ -107,6 +106,18 @@ public abstract class EdgeOntology
 	public abstract EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
 	
 	/**
+	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in a differential network
+	 * @return the EdgeDrawing object for the differential network(s)
+	 */
+	public abstract EdgeDrawing getDifferentialEdgeDrawing();
+	
+	/**
+	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in an input (reference or condition-dependent) or overlapping network
+	 * @return the EdgeDrawing object for the input and overlapping network(s) (i.e. all but the differential networks)
+	 */
+	public abstract EdgeDrawing getSourceEdgeDrawing();
+	
+	/**
 	 * Define a 'positive' category, like positive regulation
 	 * 
 	 * @param pos_cat the 'positive' category
@@ -188,7 +199,7 @@ public abstract class EdgeOntology
 	 * @param edgeType the original type of the edge in a network
 	 * @return whether or not this edge type is present in this ontology
 	 */
-	protected boolean isDefinedSourceType(String edgeType)
+	public boolean isDefinedSourceType(String edgeType)
 	{
 		if (edgeType == null)
 		{
@@ -205,7 +216,7 @@ public abstract class EdgeOntology
 	 * @param category the original category of the edge in a network
 	 * @return whether or not this edge category is present in this ontology
 	 */
-	protected boolean isDefinedSourceCat(String category)
+	public boolean isDefinedSourceCat(String category)
 	{
 		if (category == null)
 			 return false;
@@ -228,61 +239,7 @@ public abstract class EdgeOntology
 		return allDiffCategories.contains(category);
 	}
 	
-	/**
-	 * Define the Color object of an edge in a differential network, by edge category.
-	 * 
-	 * @param category the category of the edge interaction
-	 * @return the color of the edge
-	 */
-	protected abstract Color getDifferentialEdgeColor(String category);
 	
-	/**
-	 * Define the ArrowHead object of an edge in a differential network, by edge category.
-	 * 
-	 * @param category the category of the edge interaction
-	 * @return the arrowhead of the edge
-	 */
-	protected abstract ArrowHead getDifferentialEdgeArrowHead(String category);
-	
-	
-	/**
-	 * Define the full visual style of an edge in a differential network, by edge category.
-	 * 
-	 * @param category the category of the edge interaction
-	 * @return a VisualEdgeStyle object which specifies how the edge should be drawn
-	 */
-	public VisualEdgeStyle getDifferentialEdgeStyle(String category)
-	{
-		return new VisualEdgeStyle(getDifferentialEdgeColor(category), getDifferentialEdgeArrowHead(category));
-	}
-	
-	/**
-	 * Define the Color object of an edge in a 'normal' network (reference, condition-dependent or overlap).
-	 * 
-	 * @param edgeType the type of the edge interaction
-	 * @return the color of the edge
-	 */
-	protected abstract Color getSourceEdgeColor(String edgeType);
-	
-	/**
-	 * Define the ArrowHead object of an edge in a 'normal' network (reference, condition-dependent or overlap).
-	 * 
-	 * @param edgeType the type of the edge interaction
-	 * @return the arrowhead of the edge
-	 */
-	protected abstract ArrowHead getSourceEdgeArrowHead(String edgeType);
-	
-	/**
-	 * Define the visual style of an edge in a 'normal' network (reference, condition-dependent or overlap).
-	 * 
-	 * @param edgeType the type of the edge interaction
-	 * @return a VisualEdgeStyle object which specifies how the edge should be drawn
-	 */
-	public VisualEdgeStyle getSourceEdgeStyle(String edgeType)
-	{
-		return new VisualEdgeStyle(getSourceEdgeColor(edgeType), getSourceEdgeArrowHead(edgeType));
-	}
-
 
 	/**
 	 * Return all source (input) categories present in this ontology.

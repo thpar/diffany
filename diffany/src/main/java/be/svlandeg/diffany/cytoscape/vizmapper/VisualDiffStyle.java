@@ -10,10 +10,10 @@ import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
-import be.svlandeg.diffany.concepts.VisualEdgeStyle;
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.visualstyle.EdgeStyle;
+import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /**
  * {@link VisualStyle} to be applied on differential networks.
@@ -39,7 +39,7 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, Paint> edgeSelectedColorFunction,
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
 		for (String type : interactionTypes) {
-			VisualEdgeStyle edgeStyle = edgeOntology.getDifferentialEdgeStyle(type);
+			EdgeStyle edgeStyle = edgeOntology.getDifferentialEdgeStyle(type);
 			
 			//edge color
 			Color paint = edgeStyle.getColor();

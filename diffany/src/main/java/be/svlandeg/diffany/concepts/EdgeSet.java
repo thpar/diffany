@@ -3,22 +3,21 @@ package be.svlandeg.diffany.concepts;
 import java.util.*;
 
 /**
- * This class represents an edge set between two previously defined nodes: all edges between those nodes!
- * It knows which edges are from the reference network and from the condition-dependent networks,
- * and it knows the number of condition-specific networks.
+ * This class represents an edge set between two previously defined nodes: all edges between those nodes. It knows which edges are from the reference network and from the condition-dependent networks, and it knows the number of condition-specific networks.
  * 
  * @author Sofie Van Landeghem
  */
 public class EdgeSet
 {
-	
+
 	private Set<EdgeDefinition> referenceEdges;
 	private List<Set<EdgeDefinition>> conditionEdges;
 	private int conditionCount;
-	
+
 	/**
 	 * Constructor: generates a new EdgeSet
-	 * @param referenceEdges the reference edges 
+	 * 
+	 * @param referenceEdges the reference edges
 	 * @param conditionEdges the condition-specific edges, 1 set (may be empty) for each condition
 	 */
 	public EdgeSet(Set<Edge> referenceEdges, List<Set<Edge>> conditionEdges)
@@ -36,10 +35,10 @@ public class EdgeSet
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Constructor: generates an empty EdgeSet
+	 * 
 	 * @param conditionCount the number of condition-specific networks
 	 */
 	public EdgeSet(int conditionCount)
@@ -51,11 +50,12 @@ public class EdgeSet
 		{
 			conditionEdges.add(i, new HashSet<EdgeDefinition>());
 		}
-		
+
 	}
 
 	/**
 	 * Return all reference edges in this set
+	 * 
 	 * @return all reference edges in this set
 	 */
 	public Set<EdgeDefinition> getReferenceEdges()
@@ -65,16 +65,18 @@ public class EdgeSet
 
 	/**
 	 * Return all condition-specific edges in this set
+	 * 
 	 * @return all condition-specific edges in this set
 	 */
 	public List<Set<EdgeDefinition>> getConditionEdges()
 	{
 		return conditionEdges;
 	}
-	
+
 	/**
 	 * Return all condition-specific edges for one specific condition-dependent network in this set
-	 * @return all condition-specific edges 
+	 * 
+	 * @return all condition-specific edges
 	 */
 	public Set<EdgeDefinition> getConditionEdges(int conditionNR)
 	{
@@ -84,9 +86,10 @@ public class EdgeSet
 		}
 		return conditionEdges.get(conditionNR);
 	}
-	
+
 	/**
 	 * Return all edges in this set: both reference as well as condition-specific edges
+	 * 
 	 * @return all edges in this set
 	 */
 	public Set<EdgeDefinition> getAllEdges()
@@ -101,28 +104,31 @@ public class EdgeSet
 	}
 
 	/**
-	 * Get the number of condition-specific networks 
-	 * @return the number of condition-specific networks 
+	 * Get the number of condition-specific networks
+	 * 
+	 * @return the number of condition-specific networks
 	 */
 	public int getConditionCount()
 	{
 		return conditionCount;
 	}
-	
+
 	/**
 	 * Add a reference edge
+	 * 
 	 * @param e a new reference edge
 	 */
 	public void addReferenceEdge(EdgeDefinition e)
 	{
 		referenceEdges.add(e);
 	}
-	
+
 	/**
 	 * Add a condition-specific edge
+	 * 
 	 * @param e a new condition-specific edge
 	 * @param conditionNR the number of the condition-specific network
-	 * @throws 
+	 * @throws IllegalArgumentException when the number of the condition-specific network is invalid
 	 */
 	public void addConditionEdge(EdgeDefinition e, int conditionNR)
 	{
@@ -132,11 +138,11 @@ public class EdgeSet
 		}
 		conditionEdges.get(conditionNR).add(e);
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		String result = "Edge Set with reference edges: [" ;
+		String result = "Edge Set with reference edges: [";
 		for (EdgeDefinition e : referenceEdges)
 		{
 			result += e + " ";
@@ -145,7 +151,7 @@ public class EdgeSet
 		result += " and " + conditionCount + " conditions: ";
 		for (int i = 0; i < conditionCount; i++)
 		{
-			result += " [" ;
+			result += " [";
 			for (EdgeDefinition e : conditionEdges.get(i))
 			{
 				result += e + " ";
@@ -154,6 +160,5 @@ public class EdgeSet
 		}
 		return result;
 	}
-
 
 }

@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
+import be.svlandeg.diffany.visualstyle.DefaultDiffEdgeDrawing;
+import be.svlandeg.diffany.visualstyle.DefaultSourceEdgeDrawing;
+import be.svlandeg.diffany.visualstyle.EdgeDrawing;
+import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /**
  * This class provides initial suggestions to the user concerning edge type-to-category mappings.
@@ -14,18 +17,36 @@ import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 public class DefaultEdgeOntology extends TreeEdgeOntology
 {
 	
+	protected DefaultSourceEdgeDrawing sourceDraw;
+	protected DefaultDiffEdgeDrawing diffDraw;
+	
 
 	/**
 	 * Create a default edge ontology, with default edge categories and type-category mappings.
+	 * For drawing the edges, a {@link DefaultSourceEdgeDrawing} and a {@link DefaultDiffEdgeDrawing} are created.
 	 */
 	public DefaultEdgeOntology()
 	{
 		super ("increase_", "increases_", "decrease_", "decreases_", defineAllCategories());
+		sourceDraw = new DefaultSourceEdgeDrawing(this);
+		diffDraw = new DefaultDiffEdgeDrawing(this);
 		
 		insertDefaultParents();
 		insertDefaultMappings();
 		insertDefaultContrasts();
 		addDefaultPaintedParents();
+	}
+	
+	@Override
+	public EdgeDrawing getDifferentialEdgeDrawing()
+	{
+		return diffDraw;
+	}
+
+	@Override
+	public EdgeDrawing getSourceEdgeDrawing()
+	{
+		return sourceDraw;
 	}
 	
 	/**
@@ -127,24 +148,24 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	protected void addDefaultPaintedParents()
 	{
-		addColor("ptm", Color.BLUE);
-		addColor("colocalization", Color.YELLOW);
-		addColor("protein_dna_binding", Color.CYAN);
-		addColor("positive_regulation", Color.GREEN);
-		addColor("negative_regulation", Color.RED);
-		addColor("positive_genetic_interaction", Color.GREEN);
-		addColor("negative_genetic_interaction", Color.RED);
+		sourceDraw.addColor("ptm", Color.BLUE);
+		sourceDraw.addColor("colocalization", Color.YELLOW);
+		sourceDraw.addColor("protein_dna_binding", Color.CYAN);
+		sourceDraw.addColor("positive_regulation", Color.GREEN);
+		sourceDraw.addColor("negative_regulation", Color.RED);
+		sourceDraw.addColor("positive_genetic_interaction", Color.GREEN);
+		sourceDraw.addColor("negative_genetic_interaction", Color.RED);
 		
-		addArrowHead("regulation", ArrowHead.ARROW);
-		addArrowHead("positive_regulation", ArrowHead.ARROW);
-		addArrowHead("negative_regulation", ArrowHead.T);
-		addArrowHead("genetic_interaction", ArrowHead.NONE);
+		sourceDraw.addArrowHead("regulation", ArrowHead.ARROW);
+		sourceDraw.addArrowHead("positive_regulation", ArrowHead.ARROW);
+		sourceDraw.addArrowHead("negative_regulation", ArrowHead.T);
+		sourceDraw.addArrowHead("genetic_interaction", ArrowHead.NONE);
 		
-		addArrowHead("ptm", ArrowHead.DIAMOND);
-		addArrowHead("protein_dna_binding", ArrowHead.ARROW);
+		sourceDraw.addArrowHead("ptm", ArrowHead.DIAMOND);
+		sourceDraw.addArrowHead("protein_dna_binding", ArrowHead.ARROW);
 		
-		addArrowHead("colocalization", ArrowHead.NONE);
-		addArrowHead("coexpression", ArrowHead.NONE);
+		sourceDraw.addArrowHead("colocalization", ArrowHead.NONE);
+		sourceDraw.addArrowHead("coexpression", ArrowHead.NONE);
 	}
 
 	/**
@@ -390,5 +411,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("epistasis", "genetic_interaction", overwrite);
 		addSourceCategoryMapping("epistatic interaction", "genetic_interaction", overwrite);
 	}
+
+	
 
 }

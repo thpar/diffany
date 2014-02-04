@@ -1,17 +1,15 @@
 package be.svlandeg.diffany.semantics;
 
-import java.awt.Color;
 import java.util.*;
 
 import be.svlandeg.diffany.concepts.EdgeDefinition;
-import be.svlandeg.diffany.concepts.VisualEdgeStyle.ArrowHead;
 
 /**
  * This edge ontology is implemented as a tree structure.
  * 
  * @author Sofie Van Landeghem
  */
-public class TreeEdgeOntology extends EdgeOntology
+public abstract class TreeEdgeOntology extends EdgeOntology
 {
 	
 	protected Map<String, String> sourceCatHierarchy;
@@ -21,26 +19,11 @@ public class TreeEdgeOntology extends EdgeOntology
 	private String posPrefix_symm;
 	private String posPrefix_dir;
 	
-	protected static Color neg_diff_paint = Color.RED;
-	protected static Color pos_diff_paint = Color.GREEN;
-	protected static Color default_diff_paint = Color.GRAY;
-	
-	protected static ArrowHead neg_diff_ah = ArrowHead.ARROW;
-	protected static ArrowHead pos_diff_ah = ArrowHead.ARROW;
-	protected static ArrowHead default_diff_ah = ArrowHead.NONE;
-	
-	protected static Color neutral_source_paint = Color.LIGHT_GRAY;
-	protected static ArrowHead neutral_source_ah = ArrowHead.NONE;
-	
-	protected static ArrowHead symm_ah = ArrowHead.NONE;
-	
-	protected Map<String, Color> parentSourceCatToColor;
-	protected Map<String, ArrowHead> parentSourceCatToArrowHead;
-	
 
 	/**
-	 * Create a new ontology, defining the set of categories. and inserting
+	 * Create a new ontology, defining the set of categories. a
 	 * After the constructor is called, default edge-category mappings should be inserted!
+	 * 
 	 * @param posPrefix_symm the prefix to be used when a symmetrical interaction increases
 	 * @param posPrefix_dir the prefix to be used when a directed interaction increases
 	 * @param negPrefix_symm the prefix to be used when a symmetrical interaction decreases
@@ -55,8 +38,7 @@ public class TreeEdgeOntology extends EdgeOntology
 		this.negPrefix_dir = negPrefix_dir;
 		this.posPrefix_symm = posPrefix_symm;
 		this.posPrefix_dir = posPrefix_dir;
-		parentSourceCatToColor = new HashMap<String, Color>();
-		parentSourceCatToArrowHead = new HashMap<String, ArrowHead>();
+		
 		addSourceCategories(sourceCats);
 	}
 	
@@ -111,7 +93,7 @@ public class TreeEdgeOntology extends EdgeOntology
 	 * @param childCat the subclass category
 	 * @return the superclass category, or null if there is none
 	 */
-	protected String retrieveParent(String childCat)
+	public String retrieveParent(String childCat)
 	{
 		return sourceCatHierarchy.get(childCat);
 	}
@@ -667,151 +649,51 @@ public class TreeEdgeOntology extends EdgeOntology
 	}
 
 	
-	////////////// PAINT ALGORITHMS //////////////////////////////////
+	////////////// DIFFERENTIAL EDGE STATE //////////////////////////////////
+	
 	
 	/**
-	 * Assign a specific paint object to a source category (and its children)
-	 * 
-	 * @param parentCat a category (also representing its children)
-	 * @param p the Color object specifying its visual properties
-	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, 
-	 * or when the type is not defined in this ontology
+	 * Retrieve whether or not a certain differential category can be seen as a positive, directed edge
+	 * @param category the category of the edge interaction
+	 * @return whether or not a certain category can be seen as a positive, directed edge
 	 */
-	protected void addColor(String parentCat, Color p)
+	public boolean isPosDirected(String category)
 	{
-		if (parentCat == null || p == null)
-		{
-			String errormsg = "The provided parent category or the paint object should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (parentSourceCatToColor.containsKey(parentCat))
-		{
-			String errormsg = "The provided parent category ('" + parentCat + "') already has a mapped paint object!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (! isDefinedSourceCat(parentCat))
-		{
-			String errormsg = "The provided parent category ('" + parentCat + "') is not defined in this ontology!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		parentSourceCatToColor.put(parentCat, p);
+		return category.startsWith(posPrefix_dir);
+
 	}
 	
 	/**
-	 * Assign a specific arrowhead to a source category (and its children)
-	 * 
-	 * @param parentCat a category (also representing its children)
-	 * @param p the ArrowHead object specifying its visual properties
-	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, 
-	 * or when the type is not defined in this ontology
+	 * Retrieve whether or not a certain differential category can be seen as a negative, directed edge
+	 * @param category the category of the edge interaction
+	 * @return whether or not a certain differential category can be seen as a negative, directed edge
 	 */
-	protected void addArrowHead(String parentCat, ArrowHead p)
+	public boolean isNegDirected(String category)
 	{
-		if (parentCat == null || p == null)
-		{
-			String errormsg = "The provided parent category or the ArrowHead object should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (parentSourceCatToArrowHead.containsKey(parentCat))
-		{
-			String errormsg = "The provided parent category ('" + parentCat + "') already has a mapped ArrowHead object!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (! isDefinedSourceCat(parentCat))
-		{
-			String errormsg = "The provided parent category ('" + parentCat + "') is not defined in this ontology!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		parentSourceCatToArrowHead.put(parentCat, p);
+		return category.startsWith(negPrefix_dir);
+
 	}
 	
-	@Override
-	public ArrowHead getDifferentialEdgeArrowHead(String category)
+	/**
+	 * Retrieve whether or not a certain category can be seen as a negative, symmetrical edge
+	 * @param category the category of the edge interaction
+	 * @return whether or not a certain category can be seen as a negative, symmetrical edge
+	 */
+	public boolean isNegSymm(String category)
 	{
-		if (category == null)
-		{
-			return default_diff_ah;
-		}
-		if (category.startsWith(posPrefix_dir))
-		{
-			return pos_diff_ah;
-		}
-		if (category.startsWith(negPrefix_dir))
-		{
-			return neg_diff_ah;
-		}
-		if (category.startsWith(negPrefix_symm) || category.startsWith(posPrefix_symm))
-		{
-			return symm_ah;
-		}
-		return default_diff_ah;
+		return category.startsWith(negPrefix_symm);
+
 	}
 	
-	
-	@Override
-	public Color getDifferentialEdgeColor(String category)
+	/**
+	 * Retrieve whether or not a certain category can be seen as a positive, symmetrical edge
+	 * @param category the category of the edge interaction
+	 * @return whether or not a certain category can be seen as a positive, symmetrical edge
+	 */
+	public boolean isPosSymm(String category)
 	{
-		if (category == null)
-		{
-			return default_diff_paint;
-		}
-		if (category.startsWith(posPrefix_dir) || category.startsWith(posPrefix_symm))
-		{
-			return pos_diff_paint;
-		}
-		if (category.startsWith(negPrefix_symm) || category.startsWith(negPrefix_dir))
-		{
-			return neg_diff_paint;
-		}
-		return default_diff_paint;
-	}
-	
-	@Override
-	protected ArrowHead getSourceEdgeArrowHead(String edgeType)
-	{
-		if (isDefinedSourceType(edgeType))
-		{
-			String childCat = getSourceCategory(edgeType);
-			ArrowHead foundArrowHead = parentSourceCatToArrowHead.get(childCat);
-			while (foundArrowHead == null && childCat != null)
-			{
-				String parentCat = retrieveParent(childCat);
-				foundArrowHead = parentSourceCatToArrowHead.get(parentCat);
-				childCat = parentCat;
-			}
-			if (foundArrowHead != null)
-			{
-				return foundArrowHead;
-			}
-			if (isSymmetricalSourceType(edgeType))
-			{
-				return symm_ah;
-			}
-		}
-		return neutral_source_ah;
-	}
-	
-	@Override
-	protected Color getSourceEdgeColor(String edgeType)
-	{
-		if (isDefinedSourceType(edgeType))
-		{
-			String childCat = getSourceCategory(edgeType);
-			Color foundColor = parentSourceCatToColor.get(childCat);
-			
-			while (foundColor == null && childCat != null)
-			{
-				String parentCat = retrieveParent(childCat);
-				foundColor = parentSourceCatToColor.get(parentCat);
-				
-				childCat = parentCat;
-			}
-			if (foundColor != null)
-			{
-				return foundColor;
-			}
-		}
-		return neutral_source_paint;
+		return category.startsWith(posPrefix_symm);
+
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -29,7 +30,10 @@ import javax.swing.event.TableModelListener;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -54,11 +58,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private Model model;
 	private JComboBox collectionDropDown;
 	private CollectionDropDownModel collectionModel;
-	private SelectionTableModel selectionModel;
+	private SelectionTableModel networkTableModel;
 
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
 	private JButton runButton;
+	private JTable table;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the models.
@@ -117,18 +122,20 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		panel.add(collPanel, BorderLayout.NORTH);
 		
-		selectionModel = new SelectionTableModel();
+		networkTableModel = new SelectionTableModel();
 		if (model.getSelectedCollection() !=null){
-			selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+			networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
 		}
-		JTable table = new JTable(selectionModel);
+		table = new JTable(networkTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
 		table.getColumnModel().getColumn(0).setPreferredWidth(20);
 		table.getColumnModel().getColumn(2).setPreferredWidth(20);
 		table.setFillsViewportHeight(true);
 		
-		selectionModel.addTableModelListener(this);
+		networkTableModel.addTableModelListener(this);
+		
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(this);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -200,9 +207,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
 		if (model.getSelectedCollection() !=null){
-			this.selectionModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+			this.networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
 		} else {
-			this.selectionModel.clear();
+			this.networkTableModel.clear();
 		}
 	}
 
@@ -237,8 +244,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	public void refreshCyProject(){
 		CyProject cyProject = model.getCurrentProject();
-		cyProject.setConditionalNetworks(this.selectionModel.getConditionalNetworks());
-		cyProject.setReferenceNetwork(this.selectionModel.getReferenceNetwork());
+		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
+		cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
 		this.runButton.setEnabled(cyProject.canExecute());
 		
 		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
@@ -257,9 +264,17 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-		
-		
+		//triggered when a row gets selected
+		int row = table.getSelectedRow();
+		if (row>=0){
+			NetworkEntry selectedEntry = networkTableModel.getNetworkEntry(row);
+			CyNetwork selectedNetwork = selectedEntry.getNetwork();
+			CyNetworkViewManager viewManager = model.getServices().getCyNetworkViewManager();
+			Collection<CyNetworkView> cyViews = viewManager.getNetworkViews(selectedNetwork);
+			for (CyNetworkView cyView : cyViews){
+				model.getServices().getCyApplicationManager().setCurrentNetworkView(cyView);
+			}
+		}
 	}
 
 	

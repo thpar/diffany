@@ -222,4 +222,8 @@ public class SelectionTableModel extends AbstractTableModel{
 		this.referenceRow = -1;
 		this.fireTableDataChanged();
 	}
+	
+	public NetworkEntry getNetworkEntry(int row){
+		return this.networkEntries.get(row);		
+	}
 }

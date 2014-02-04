@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.util.Set;
 
-import org.cytoscape.model.CyEdge;
 import org.cytoscape.view.presentation.property.ArrowShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.vizmap.VisualStyle;
@@ -39,7 +38,7 @@ public class VisualDiffStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, Paint> edgeSelectedColorFunction,
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
 		for (String type : interactionTypes) {
-			EdgeStyle edgeStyle = edgeOntology.getDifferentialEdgeStyle(type);
+			EdgeStyle edgeStyle = edgeOntology.getDifferentialEdgeDrawing().getEdgeStyle(type);
 			
 			//edge color
 			Color paint = edgeStyle.getColor();

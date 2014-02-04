@@ -39,7 +39,7 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 			DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction) {
 		
 		for (String type : interactionTypes) {
-			EdgeStyle edgeStyle = edgeOntology.getSourceEdgeStyle(type);
+			EdgeStyle edgeStyle = edgeOntology.getSourceEdgeDrawing().getEdgeStyle(type);
 			
 			//edge color
 			Color paint = edgeStyle.getColor();

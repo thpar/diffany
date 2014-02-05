@@ -333,6 +333,20 @@ public class CyProject{
 		return views;
 	}
 
+	
+	/**
+	 * Checks the default edge and node tables of the networks in this project for a given SUID.
+	 * 
+	 * @return true if one of the tables in use has the given SUID
+	 */
+	public boolean containsTableId(long suid){
+		Set<Long> idSet = new HashSet<Long>();
+		for (CyNetwork net : this.getAllNetworks()){
+			idSet.add(net.getDefaultEdgeTable().getSUID());
+			idSet.add(net.getDefaultNodeTable().getSUID());
+		}
+		return idSet.contains(suid);
+	}
 
 	/**
 	 * Returns the execution mode for this project: Reference against all conditional networks, one at a time or all at once.

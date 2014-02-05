@@ -9,6 +9,7 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedListener;
+import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
@@ -92,6 +93,8 @@ public class CyActivator extends AbstractCyActivator
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());
 		registerService(context,model, NetworkDestroyedListener.class, new Properties());
+		registerService(context,model, RowsSetListener.class, new Properties());
+		
 		
 		//Register session handlers
 		registerService(context, new SessionListener(model),SessionLoadedListener.class, new Properties() );

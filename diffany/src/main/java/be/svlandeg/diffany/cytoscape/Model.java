@@ -11,9 +11,14 @@ import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedEvent;
 import org.cytoscape.model.events.NetworkDestroyedListener;
+import org.cytoscape.model.events.RowsSetEvent;
+import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 
+import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 import be.svlandeg.diffany.internal.CyActivator;
@@ -25,7 +30,9 @@ import be.svlandeg.diffany.internal.Services;
  * @author Thomas Van Parys
  *
  */
-public class Model extends Observable implements NetworkAddedListener, NetworkDestroyedListener{
+public class Model extends Observable implements NetworkAddedListener, 
+												 NetworkDestroyedListener,
+												 RowsSetListener{
 
 	/**
 	 * A collection of all Cytoscape services that were registered in the {@link CyActivator}
@@ -183,6 +190,23 @@ public class Model extends Observable implements NetworkAddedListener, NetworkDe
 	 */
 	public JFrame getParentWindow(){
 		return this.swingApplication;
+	}
+
+
+	@Override
+	public void handleEvent(RowsSetEvent e) {
+		//triggered when one or more rows change in a CyTable
+		
+		//check if the row is part of a table we care about				
+		//if yes, refresh the visual styles and reapply them on the views
+		Long suid = e.getSource().getSUID();
+		if (this.currentProject.containsTableId(suid)){
+			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(this, this.getCurrentProject());
+			TaskIterator it = tf.createTaskIterator();
+			DialogTaskManager dtm = services.getDialogTaskManager();
+			dtm.execute(it);		
+		}
+		
 	}
 
 	

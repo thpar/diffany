@@ -155,7 +155,7 @@ public class RunProjectTask implements Task {
 		
 		CyLayoutAlgorithm layout = model.getServices().getCyLayoutAlgorithmManager().getLayout("force-directed");
 		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
-		TaskManager tm = model.getServices().getTaskManager();
+		TaskManager<?, ?> tm = model.getServices().getTaskManager();
 		tm.execute(it);
 		
 		return cyNet;

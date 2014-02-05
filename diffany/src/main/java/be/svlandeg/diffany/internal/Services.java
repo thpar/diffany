@@ -29,7 +29,7 @@ public class Services {
 	private CyNetworkManager cyNetworkManager;
 	private CyNetworkViewFactory cyNetworkViewFactory;
 	private CyNetworkViewManager cyNetworkViewManager;
-	private TaskManager taskManager;
+	private TaskManager<?, ?> taskManager;
 	private CyRootNetworkManager cyRootNetworkManager;
 	private DialogTaskManager dialogTaskManager;
 	private VisualMappingManager visualMappingManager;
@@ -89,13 +89,13 @@ public class Services {
 	}
 
 
-	public void setTaskManager(TaskManager taskManager) {
+	public void setTaskManager(TaskManager<?, ?> taskManager) {
 		this.taskManager = taskManager;
 		
 	}
 
 
-	public TaskManager getTaskManager() {
+	public TaskManager<?, ?> getTaskManager() {
 		return taskManager;
 	}
 

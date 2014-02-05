@@ -55,7 +55,7 @@ public class LoadExampleTask implements Task{
 		CyNetworkViewFactory viewFactory = services.getCyNetworkViewFactory();
 		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
 		CyLayoutAlgorithm layout = services.getCyLayoutAlgorithmManager().getLayout("force-directed");
-		TaskManager tm = services.getTaskManager();
+		TaskManager<?, ?> tm = services.getTaskManager();
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		
 		CyNetwork cyRefNet = bridge.createCyNetwork(refNet, services.getCyNetworkFactory());

@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.util.Set;
 
-import org.cytoscape.model.CyEdge;
 import org.cytoscape.view.presentation.property.ArrowShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
+import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
 import be.svlandeg.diffany.internal.Services;

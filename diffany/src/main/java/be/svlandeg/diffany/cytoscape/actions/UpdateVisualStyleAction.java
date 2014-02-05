@@ -42,7 +42,7 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 
 		if (tf.isReady()){
 			TaskIterator it = tf.createTaskIterator();			
-			TaskManager tm = model.getServices().getTaskManager();
+			TaskManager<?, ?> tm = model.getServices().getTaskManager();
 			tm.execute(it);
 		}
 

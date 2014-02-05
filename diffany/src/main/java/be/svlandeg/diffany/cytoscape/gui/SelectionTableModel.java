@@ -10,7 +10,6 @@ import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyRow;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import be.svlandeg.diffany.cytoscape.NetworkEntry;

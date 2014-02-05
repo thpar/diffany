@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
@@ -14,7 +13,10 @@ import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.internal.Services;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 
 

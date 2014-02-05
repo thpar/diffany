@@ -289,6 +289,6 @@ public class CyNetworkBridge {
 	 * @return the value of the weight column, or null if the column doesn't exist.
 	 */
 	private Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
-		return cyNetwork.getRow(cyEdge).get(this.WEIGHT, Double.class);
+		return cyNetwork.getRow(cyEdge).get(WEIGHT, Double.class);
 	}
 }

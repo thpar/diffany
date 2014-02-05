@@ -74,7 +74,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		
 		cats.put("coexpression", true);
 		
-		cats.put("protein_dna_binding", false);
+		cats.put("protein-dna_binding", false);
 		cats.put("transcription", false);
 		
 		cats.put("ptm", false);
@@ -109,7 +109,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceParent("synthetic_lethality", "negative_genetic_interaction");
 		
 		putSourceParent("ppi", "colocalization");
-		putSourceParent("transcription", "protein_dna_binding");
+		putSourceParent("transcription", "protein-dna_binding");
 		
 		putSourceParent("phosphorylation", "ptm");
 		putSourceParent("dephosphorylation", "ptm");
@@ -150,7 +150,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		sourceDraw.addColor("ptm", Color.BLUE);
 		sourceDraw.addColor("colocalization", Color.YELLOW);
-		sourceDraw.addColor("protein_dna_binding", Color.CYAN);
+		sourceDraw.addColor("protein-dna_binding", Color.CYAN);
 		sourceDraw.addColor("positive_regulation", Color.GREEN);
 		sourceDraw.addColor("negative_regulation", Color.RED);
 		sourceDraw.addColor("positive_genetic_interaction", Color.GREEN);
@@ -162,7 +162,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		sourceDraw.addArrowHead("genetic_interaction", ArrowHead.NONE);
 		
 		sourceDraw.addArrowHead("ptm", ArrowHead.DIAMOND);
-		sourceDraw.addArrowHead("protein_dna_binding", ArrowHead.ARROW);
+		sourceDraw.addArrowHead("protein-dna_binding", ArrowHead.ARROW);
 		
 		sourceDraw.addArrowHead("colocalization", ArrowHead.NONE);
 		sourceDraw.addArrowHead("coexpression", ArrowHead.NONE);
@@ -226,56 +226,27 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("dehydroxylate", "dehydroxylation", overwrite);
 		
 		addSourceCategoryMapping("ptm", "ptm", overwrite);
-		addSourceCategoryMapping("post-translational modification", "ptm", overwrite);
 		addSourceCategoryMapping("post-translational_modification", "ptm", overwrite);
-		addSourceCategoryMapping("post_translational_modification", "ptm", overwrite);
-		addSourceCategoryMapping("post_translational modification", "ptm", overwrite);
-		addSourceCategoryMapping("post-translational-modification", "ptm", overwrite);
-		addSourceCategoryMapping("post translational modification", "ptm", overwrite);
-		addSourceCategoryMapping("posttranslational modification", "ptm", overwrite);
-		addSourceCategoryMapping("posttranslationalmodification", "ptm", overwrite);
 
 		// binding and other symmetricals
 		
 		addSourceCategoryMapping("complex", "ppi", overwrite);
 		addSourceCategoryMapping("complex formation", "ppi", overwrite);
-		addSourceCategoryMapping("complex-formation", "ppi", overwrite);
-		addSourceCategoryMapping("complex_formation", "ppi", overwrite);
-		addSourceCategoryMapping("complexformation", "ppi", overwrite);
 		addSourceCategoryMapping("ppi", "ppi", overwrite);
 		addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
-		addSourceCategoryMapping("proteinprotein interaction", "ppi", overwrite);
-		addSourceCategoryMapping("proteinproteininteraction", "ppi", overwrite);
-		addSourceCategoryMapping("protein-protein binding", "ppi", overwrite);
-		addSourceCategoryMapping("proteinprotein binding", "ppi", overwrite);
-		addSourceCategoryMapping("proteinproteinbinding", "ppi", overwrite);
 		addSourceCategoryMapping("binds", "ppi", overwrite);
 		addSourceCategoryMapping("bind", "ppi", overwrite);
 		addSourceCategoryMapping("binding", "ppi", overwrite);
 		
-		addSourceCategoryMapping("protein_dna_binding", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein dna binding", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein-dna_binding", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein-dna binding", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein_dna_interaction", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein dna interaction", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein-dna_interaction", "protein_dna_binding", overwrite);
-		addSourceCategoryMapping("protein-dna interaction", "protein_dna_binding", overwrite);
+		addSourceCategoryMapping("protein-dna binding", "protein-dna_binding", overwrite);
 		
 		addSourceCategoryMapping("transcription", "transcription", overwrite);
 		addSourceCategoryMapping("transcribes", "transcription", overwrite);
 		addSourceCategoryMapping("transcribe", "transcription", overwrite);
 		addSourceCategoryMapping("tf", "transcription", overwrite);
 		addSourceCategoryMapping("transcription factor", "transcription", overwrite);
-		addSourceCategoryMapping("transcription-factor", "transcription", overwrite);
-		addSourceCategoryMapping("transcription_factor", "transcription", overwrite);
-		addSourceCategoryMapping("transcriptionfactor", "transcription", overwrite);
-		addSourceCategoryMapping("transcription factor binding", "transcription", overwrite);
 		addSourceCategoryMapping("transcription-factor binding", "transcription", overwrite);
-		addSourceCategoryMapping("transcription_factor binding", "transcription", overwrite);
 		addSourceCategoryMapping("tf binding", "transcription", overwrite);
-		addSourceCategoryMapping("tf-binding", "transcription", overwrite);
-		addSourceCategoryMapping("tf_binding", "transcription", overwrite);
 		
 		addSourceCategoryMapping("coexpression", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpressed", "coexpression", overwrite);
@@ -288,7 +259,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("colocalized", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalizes", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalize", "colocalization", overwrite);
-		addSourceCategoryMapping("colocaliz with", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalizes with", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalisation", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalised", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalises", "colocalization", overwrite);
@@ -306,30 +277,12 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 
 		// positive regulation category and common synonyms
 		addSourceCategoryMapping("positive regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positive_regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positive-regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positiveregulation", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positive reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positive-reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positive_reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positivereg", "positive_regulation", overwrite);
 		addSourceCategoryMapping("pos regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("pos_regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("pos-regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("posregulation", "positive_regulation", overwrite);
 		addSourceCategoryMapping("pos reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("pos-reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("pos_reg", "positive_regulation", overwrite);
-		addSourceCategoryMapping("posreg", "positive_regulation", overwrite);
 		addSourceCategoryMapping("pos", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positive", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positively regulates", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positively_regulates", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positively-regulates", "positive_regulation", overwrite);
-		addSourceCategoryMapping("positivelyregulates", "positive_regulation", overwrite);
-		addSourceCategoryMapping("upregulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("up-regulation", "positive_regulation", overwrite);
-		addSourceCategoryMapping("up regulation", "positive_regulation", overwrite);
 		
 		addSourceCategoryMapping("catalysis", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyses", "catalysis", overwrite);
@@ -338,70 +291,34 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 
 		// negative regulation category and common synonyms
 		addSourceCategoryMapping("negative regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negative_regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negative-regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negativeregulation", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negative reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negative_reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negative-reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negativereg", "negative_regulation", overwrite);
 		addSourceCategoryMapping("neg regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("neg_regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("neg-regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negregulation", "negative_regulation", overwrite);
 		addSourceCategoryMapping("neg reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("neg_reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("neg-reg", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negreg", "negative_regulation", overwrite);
 		addSourceCategoryMapping("neg", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negative", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negatively regulates", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negatively_regulates", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negatively-regulates", "negative_regulation", overwrite);
-		addSourceCategoryMapping("negativelyregulates", "negative_regulation", overwrite);
 		addSourceCategoryMapping("downregulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("down-regulation", "negative_regulation", overwrite);
-		addSourceCategoryMapping("down regulation", "negative_regulation", overwrite);
 		
 		addSourceCategoryMapping("inhibits", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibit", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibition", "inhibition", overwrite);
 		
 		// genetic interactions
-		addSourceCategoryMapping("positive_genetic_interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("positive genetic interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("positive-genetic-interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("positive gi", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("alleviating gi", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("alleviating genetic_interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("alleviating_genetic_interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("alleviating-genetic-interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("positive_epistatic_interaction", "positive_genetic_interaction", overwrite);
+		addSourceCategoryMapping("alleviating genetic interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("positive epistatic interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("positive-epistatic-interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("alleviating_epistatic_interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("alleviating epistatic interaction", "positive_genetic_interaction", overwrite);
-		addSourceCategoryMapping("alleviating-epistatic-interaction", "positive_genetic_interaction", overwrite);
 		
-		addSourceCategoryMapping("negative_genetic_interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("negative genetic interaction", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("negative-genetic-interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("negative gi", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("aggrevating_genetic_interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating genetic interaction", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("aggrevating-genetic-interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating gi", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("negative_epistatic_interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("negative epistatic interaction", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("negative-epistatic-interaction", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("aggrevating_epistatic_interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating epistatic interaction", "negative_genetic_interaction", overwrite);
-		addSourceCategoryMapping("aggrevating-epistatic-interaction", "negative_genetic_interaction", overwrite);
 		
-		addSourceCategoryMapping("synthetic_lethality", "synthetic_lethality", overwrite);
 		addSourceCategoryMapping("synthetic lethality", "synthetic_lethality", overwrite);
-		addSourceCategoryMapping("synthetic-lethality", "synthetic_lethality", overwrite);
-		addSourceCategoryMapping("synthetically_lethal", "synthetic_lethality", overwrite);
 		addSourceCategoryMapping("synthetically lethal", "synthetic_lethality", overwrite);
 		addSourceCategoryMapping("sl", "synthetic_lethality", overwrite);
 		

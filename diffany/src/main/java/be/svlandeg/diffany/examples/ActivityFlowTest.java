@@ -61,16 +61,17 @@ public class ActivityFlowTest extends GenericExample
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1", nm);
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
+		// non-alphanumerical chars (punctuation, spaces, ...) should be ignored!
+		network.addEdge(new Edge(" positi ve reg ulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 1, false));
 		
-		network.addEdge(new Edge("negative regulation", nodes.get("M"), nodes.get("N"), false, 5, false));
+		network.addEdge(new Edge("negative-regulation", nodes.get("M"), nodes.get("N"), false, 5, false));
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), true, 4, true));
+		network.addEdge(new Edge("positive___regulation", nodes.get("X"), nodes.get("Y"), true, 4, true));
 		
-		network.addEdge(new Edge("negative regulation", nodes.get("G"), nodes.get("H"), true, 3, true));
+		network.addEdge(new Edge("negativeregulation", nodes.get("G"), nodes.get("H"), true, 3, true));
 		
-		network.addEdge(new Edge("negative regulation", nodes.get("J"), nodes.get("K"), true, 2, false));
+		network.addEdge(new Edge("negative_-_regulation", nodes.get("J"), nodes.get("K"), true, 2, false));
 		return network;
 	}
 	

@@ -18,12 +18,14 @@ public abstract class EdgeOntology
 
 	public static final String VOID_TYPE = EdgeDefinition.getVoidEdge().getType().toLowerCase();
 
-	protected Map<String, String> mapSourceTypeToCategory;
-	
+	// edge types are stored in their canonical version (i.e. no punctuation, ascii-only)
+	// when querying this map, always run the key through getCanonicalForm(edgeType) !
+	protected Map<String, String> mapCanSourceTypeToCategory;
+
 	protected static Boolean default_symmetry = false;
 	protected Map<String, Boolean> allSourceCategories;
 	protected Set<String> allDiffCategories;
-	
+
 	protected Set<String> posSourceCats;
 	protected Set<String> negSourceCats;
 
@@ -36,13 +38,13 @@ public abstract class EdgeOntology
 		posSourceCats = new HashSet<String>();
 		negSourceCats = new HashSet<String>();
 	}
-	
+
 	/**
 	 * Retrieve all the elements in this ontology that are root (i.e. do not have a parent)
 	 * @return all root elements in this ontology
 	 */
 	public abstract Set<String> retrieveAllSourceRootCats();
-	
+
 	/**
 	 * Determine whether or not two categories are related to eachother as child (sub) - parent (super)
 	 * @param childCat the subclass category
@@ -50,7 +52,7 @@ public abstract class EdgeOntology
 	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated, 0 if equal)
 	 */
 	public abstract int isSourceChildOf(String childCat, String parentCat);
-	
+
 	/**
 	 * Return the common parent of two categories, or null if there is none
 	 * @param childCat1 the first child (sub) category
@@ -58,7 +60,7 @@ public abstract class EdgeOntology
 	 * @return the common parent (super) category, or null if there is none such
 	 */
 	public abstract String commonSourceParent(String childCat1, String childCat2);
-	
+
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
@@ -73,12 +75,12 @@ public abstract class EdgeOntology
 	public EdgeDefinition getDifferentialEdge(SingleEdgeSet edgeset, double cutoff) throws IllegalArgumentException
 	{
 		EdgeDefinition refEdge = edgeset.getReferenceEdge();
-		
+
 		List<EdgeDefinition> conEdges = edgeset.getConditionEdges();
-			
+
 		return getDifferentialEdge(refEdge, conEdges, cutoff);
 	}
-	
+
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
@@ -104,19 +106,19 @@ public abstract class EdgeOntology
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
 	public abstract EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
-	
+
 	/**
 	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in a differential network
 	 * @return the EdgeDrawing object for the differential network(s)
 	 */
 	public abstract EdgeDrawing getDifferentialEdgeDrawing();
-	
+
 	/**
 	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in an input (reference or condition-dependent) or overlapping network
 	 * @return the EdgeDrawing object for the input and overlapping network(s) (i.e. all but the differential networks)
 	 */
 	public abstract EdgeDrawing getSourceEdgeDrawing();
-	
+
 	/**
 	 * Define a 'positive' category, like positive regulation
 	 * 
@@ -125,15 +127,15 @@ public abstract class EdgeOntology
 	 */
 	public void addPosSourceCat(String pos_cat) throws IllegalArgumentException
 	{
-		if (! isDefinedSourceCat(pos_cat))
+		if (!isDefinedSourceCat(pos_cat))
 		{
 			String errormsg = "The positive category is not defined in this ontology!";
 			throw new IllegalArgumentException(errormsg);
-			
+
 		}
 		posSourceCats.add(pos_cat);
 	}
-	
+
 	/**
 	 * Define a 'negative' category, like negative regulation
 	 * 
@@ -142,14 +144,13 @@ public abstract class EdgeOntology
 	 */
 	public void addNegSourceCat(String neg_cat) throws IllegalArgumentException
 	{
-		if (! isDefinedSourceCat(neg_cat))
+		if (!isDefinedSourceCat(neg_cat))
 		{
 			String errormsg = "The negative category is not defined in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		negSourceCats.add(neg_cat);
 	}
-	
 
 	/**
 	 * Private method that increments a specific type in a category-to-count hashmap.
@@ -189,7 +190,21 @@ public abstract class EdgeOntology
 	 */
 	public String getSourceCategory(String edgeType)
 	{
-		return mapSourceTypeToCategory.get(edgeType.toLowerCase());
+		return mapCanSourceTypeToCategory.get(getCanonicalForm(edgeType));
+	}
+
+	/**
+	 * Return the canonical form of an edge type. This form is obtained by transforming to lower case, removing all punctuation characters 
+	 * and retaining only alphanumerical characters. This enables straightforward matching of spelling variants.
+	 * 
+	 * @param edgeType the original type of the edge in a network
+	 * @return the canonical form of the edgeType
+	 */
+	protected String getCanonicalForm(String edgeType)
+	{
+		String result = edgeType.toLowerCase();
+		result = result.replaceAll("[^a-z0-9]+", "");
+		return result;
 	}
 
 	/**
@@ -208,7 +223,7 @@ public abstract class EdgeOntology
 		String cat = getSourceCategory(edgeType);
 		return isDefinedSourceCat(cat);
 	}
-	
+
 	/**
 	 * Check whether a certain edge category is present in this ontology.
 	 * Matching is done independent of upper/lower casing.
@@ -219,10 +234,10 @@ public abstract class EdgeOntology
 	public boolean isDefinedSourceCat(String category)
 	{
 		if (category == null)
-			 return false;
+			return false;
 		return allSourceCategories.containsKey(category);
 	}
-	
+
 	/**
 	 * Check whether a certain edge category is present in this ontology.
 	 * Matching is done independent of upper/lower casing.
@@ -238,8 +253,6 @@ public abstract class EdgeOntology
 		}
 		return allDiffCategories.contains(category);
 	}
-	
-	
 
 	/**
 	 * Return all source (input) categories present in this ontology.
@@ -258,7 +271,6 @@ public abstract class EdgeOntology
 	{
 		return allDiffCategories;
 	}
-	
 
 	/**
 	 * Add a differential category (casing independent)
@@ -286,7 +298,7 @@ public abstract class EdgeOntology
 			addDiffCategory(c);
 		}
 	}
-	
+
 	/**
 	 * Retrieve the symmetry state of a source edgeType in this ontology
 	 * @param edgeType the source edgeType
@@ -294,7 +306,7 @@ public abstract class EdgeOntology
 	 */
 	public boolean isSymmetricalSourceType(String edgeType)
 	{
-		if (edgeType == null || ! isDefinedSourceType(edgeType))
+		if (edgeType == null || !isDefinedSourceType(edgeType))
 		{
 			return default_symmetry;
 		}
@@ -334,30 +346,32 @@ public abstract class EdgeOntology
 			addSourceCategory(c, categories.get(c));
 		}
 	}
-	
 
 	/**
-	 * Create a new mapping from edge type to category. Matching is done independent of upper/lower casing.
+	 * Create a new mapping from edge type to category. Matching is done independent of upper/lower casing, 
+	 * considering only alphanumerical characters with the method {@link getCanonicalForm()}.
 	 * 
-	 * @param edgeType the original edge type - should not have been defined in this ontology before
+	 * @param edgeType the original edge type - its canonical form should not have been defined in this ontology before
 	 * @param category the category to be assigned to this edge type
 	 * @param overwrite determines whether or not this function may overwrite previous mappings of the same edge type
-	 * @throws IllegalArgumentException when the edge type was already mapped in this ontology and overwrite is off,
+	 * 
+	 * @throws IllegalArgumentException when the canonical form of the edge type was already mapped in this ontology and overwrite is off,
 	 * or when the specified category is not part of this ontology
 	 */
 	public void addSourceCategoryMapping(String edgeType, String category, boolean overwrite) throws IllegalArgumentException
 	{
+		String canType = getCanonicalForm(edgeType);
 		if (!allSourceCategories.containsKey(category.toLowerCase()))
 		{
 			String errormsg = "The provided edge category ('" + category + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!overwrite && mapSourceTypeToCategory.containsKey(edgeType.toLowerCase()))
+		if (!overwrite && mapCanSourceTypeToCategory.containsKey(canType))
 		{
 			String errormsg = "The provided edge type is already mapped to a category!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		mapSourceTypeToCategory.put(edgeType.toLowerCase(), category.toLowerCase());
+		mapCanSourceTypeToCategory.put(canType, category.toLowerCase());
 	}
 
 	/**
@@ -371,16 +385,8 @@ public abstract class EdgeOntology
 		allDiffCategories = new HashSet<String>();
 		allDiffCategories.add(VOID_TYPE);
 
-		mapSourceTypeToCategory = new HashMap<String, String>();
+		mapCanSourceTypeToCategory = new HashMap<String, String>();
 		addSourceCategoryMapping(VOID_TYPE, VOID_TYPE, false);
-	}
-
-	/**
-	 * Remove all type-category mappings (keeping all defined categories).
-	 */
-	protected void removeAllSourceCategoryMappings()
-	{
-		mapSourceTypeToCategory = new HashMap<String, String>();
 	}
 
 }

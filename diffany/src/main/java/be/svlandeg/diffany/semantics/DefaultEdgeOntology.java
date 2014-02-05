@@ -16,10 +16,9 @@ import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
  */
 public class DefaultEdgeOntology extends TreeEdgeOntology
 {
-	
+
 	protected DefaultSourceEdgeDrawing sourceDraw;
 	protected DefaultDiffEdgeDrawing diffDraw;
-	
 
 	/**
 	 * Create a default edge ontology, with default edge categories and type-category mappings.
@@ -27,16 +26,16 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	public DefaultEdgeOntology()
 	{
-		super ("increase_", "increases_", "decrease_", "decreases_", defineAllCategories());
+		super("increase_", "increases_", "decrease_", "decreases_", defineAllCategories());
 		sourceDraw = new DefaultSourceEdgeDrawing(this);
 		diffDraw = new DefaultDiffEdgeDrawing(this);
-		
+
 		insertDefaultParents();
 		insertDefaultMappings();
 		insertDefaultContrasts();
 		addDefaultPaintedParents();
 	}
-	
+
 	@Override
 	public EdgeDrawing getDifferentialEdgeDrawing()
 	{
@@ -48,7 +47,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		return sourceDraw;
 	}
-	
+
 	/**
 	 * Define all categories to be used in this EdgeOntology
 	 * 
@@ -57,12 +56,12 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	protected static Map<String, Boolean> defineAllCategories()
 	{
 		Map<String, Boolean> cats = new HashMap<String, Boolean>();
-		
+
 		cats.put("genetic_interaction", true);
 		cats.put("positive_genetic_interaction", true);
 		cats.put("negative_genetic_interaction", true);
 		cats.put("synthetic_lethality", true);
-		
+
 		cats.put("regulation", false);
 		cats.put("positive_regulation", false);
 		cats.put("catalysis", false);
@@ -71,12 +70,12 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 
 		cats.put("ppi", true);
 		cats.put("colocalization", true);
-		
+
 		cats.put("coexpression", true);
-		
+
 		cats.put("protein-dna_binding", false);
 		cats.put("transcription", false);
-		
+
 		cats.put("ptm", false);
 		cats.put("phosphorylation", false);
 		cats.put("dephosphorylation", false);
@@ -90,7 +89,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		cats.put("deubiquitination", false);
 		cats.put("methylation", false);
 		cats.put("demethylation", false);
-		
+
 		return cats;
 	}
 
@@ -103,14 +102,14 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceParent("negative_regulation", "regulation");
 		putSourceParent("catalysis", "positive_regulation");
 		putSourceParent("inhibition", "negative_regulation");
-		
+
 		putSourceParent("positive_genetic_interaction", "genetic_interaction");
 		putSourceParent("negative_genetic_interaction", "genetic_interaction");
 		putSourceParent("synthetic_lethality", "negative_genetic_interaction");
-		
+
 		putSourceParent("ppi", "colocalization");
 		putSourceParent("transcription", "protein-dna_binding");
-		
+
 		putSourceParent("phosphorylation", "ptm");
 		putSourceParent("dephosphorylation", "ptm");
 		putSourceParent("ubiquitination", "ptm");
@@ -124,7 +123,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceParent("glycosylation", "ptm");
 		putSourceParent("deglycosylation", "ptm");
 	}
-	
+
 	/**
 	 * Provide some default pos/neg categories, like positive and negative regulation.
 	 * Each of these categories should have at least one neutral (grand)parent!
@@ -133,16 +132,16 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		addPosSourceCat("positive_regulation");
 		addPosSourceCat("catalysis");
-		
+
 		addNegSourceCat("negative_regulation");
 		addNegSourceCat("inhibition");
-		
+
 		addPosSourceCat("positive_genetic_interaction");
-		
+
 		addNegSourceCat("negative_genetic_interaction");
 		addNegSourceCat("synthetic_lethality");
 	}
-	
+
 	/**
 	 * Provide a default mapping edge type to category mapping.
 	 */
@@ -155,15 +154,15 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		sourceDraw.addColor("negative_regulation", Color.RED);
 		sourceDraw.addColor("positive_genetic_interaction", Color.GREEN);
 		sourceDraw.addColor("negative_genetic_interaction", Color.RED);
-		
+
 		sourceDraw.addArrowHead("regulation", ArrowHead.ARROW);
 		sourceDraw.addArrowHead("positive_regulation", ArrowHead.ARROW);
 		sourceDraw.addArrowHead("negative_regulation", ArrowHead.T);
 		sourceDraw.addArrowHead("genetic_interaction", ArrowHead.NONE);
-		
+
 		sourceDraw.addArrowHead("ptm", ArrowHead.DIAMOND);
 		sourceDraw.addArrowHead("protein-dna_binding", ArrowHead.ARROW);
-		
+
 		sourceDraw.addArrowHead("colocalization", ArrowHead.NONE);
 		sourceDraw.addArrowHead("coexpression", ArrowHead.NONE);
 	}
@@ -175,71 +174,18 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		boolean overwrite = false;
 
-		// PTM
-		
-		addSourceCategoryMapping("methylation", "methylation", overwrite);
-		addSourceCategoryMapping("methylates", "methylation", overwrite);
-		addSourceCategoryMapping("methylate", "methylation", overwrite);
-		
-		addSourceCategoryMapping("demethylation", "demethylation", overwrite);
-		addSourceCategoryMapping("demethylates", "demethylation", overwrite);
-		addSourceCategoryMapping("demethylate", "demethylation", overwrite);
-		
-		addSourceCategoryMapping("phosphorylation", "phosphorylation", overwrite);
-		addSourceCategoryMapping("phosphorylates", "phosphorylation", overwrite);
-		addSourceCategoryMapping("phosphorylate", "phosphorylation", overwrite);
-		
-		addSourceCategoryMapping("dephosphorylation", "dephosphorylation", overwrite);
-		addSourceCategoryMapping("dephosphorylates", "dephosphorylation", overwrite);
-		addSourceCategoryMapping("dephosphorylate", "dephosphorylation", overwrite);
-		
-		addSourceCategoryMapping("ubiquitination", "ubiquitination", overwrite);
-		addSourceCategoryMapping("ubiquitinates", "ubiquitination", overwrite);
-		addSourceCategoryMapping("ubiquitinate", "ubiquitination", overwrite);
-		
-		addSourceCategoryMapping("deubiquitination", "deubiquitination", overwrite);
-		addSourceCategoryMapping("deubiquitinates", "deubiquitination", overwrite);
-		addSourceCategoryMapping("deubiquitinate", "deubiquitination", overwrite);
-		
-		addSourceCategoryMapping("deglycosylation", "deglycosylation", overwrite);
-		addSourceCategoryMapping("deglycosylates", "deglycosylation", overwrite);
-		addSourceCategoryMapping("deglycosylate", "deglycosylation", overwrite);
-		
-		addSourceCategoryMapping("glycosylation", "glycosylation", overwrite);
-		addSourceCategoryMapping("glycosylates", "glycosylation", overwrite);
-		addSourceCategoryMapping("glycosylate", "glycosylation", overwrite);
-		
-		addSourceCategoryMapping("deacetylation", "deacetylation", overwrite);
-		addSourceCategoryMapping("deacetylates", "deacetylation", overwrite);
-		addSourceCategoryMapping("deacetylate", "deacetylation", overwrite);
-		
-		addSourceCategoryMapping("acetylation", "acetylation", overwrite);
-		addSourceCategoryMapping("acetylates", "acetylation", overwrite);
-		addSourceCategoryMapping("acetylate", "acetylation", overwrite);
-		
-		addSourceCategoryMapping("hydroxylation", "hydroxylation", overwrite);
-		addSourceCategoryMapping("hydroxylates", "hydroxylation", overwrite);
-		addSourceCategoryMapping("hydroxylate", "hydroxylation", overwrite);
-		
-		addSourceCategoryMapping("dehydroxylation", "dehydroxylation", overwrite);
-		addSourceCategoryMapping("dehydroxylates", "dehydroxylation", overwrite);
-		addSourceCategoryMapping("dehydroxylate", "dehydroxylation", overwrite);
-		
-		addSourceCategoryMapping("ptm", "ptm", overwrite);
-		addSourceCategoryMapping("post-translational_modification", "ptm", overwrite);
+		// binding, coexpression, colocalization
 
-		// binding and other symmetricals
-		
-		addSourceCategoryMapping("complex", "ppi", overwrite);
-		addSourceCategoryMapping("complex formation", "ppi", overwrite);
 		addSourceCategoryMapping("ppi", "ppi", overwrite);
 		addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
-		addSourceCategoryMapping("binds", "ppi", overwrite);
+		addSourceCategoryMapping("complex", "ppi", overwrite);
+		addSourceCategoryMapping("complex formation", "ppi", overwrite);
 		addSourceCategoryMapping("bind", "ppi", overwrite);
+		addSourceCategoryMapping("binds", "ppi", overwrite);
 		addSourceCategoryMapping("binding", "ppi", overwrite);
-		
+
 		addSourceCategoryMapping("protein-dna binding", "protein-dna_binding", overwrite);
-		
+
 		addSourceCategoryMapping("transcription", "transcription", overwrite);
 		addSourceCategoryMapping("transcribes", "transcription", overwrite);
 		addSourceCategoryMapping("transcribe", "transcription", overwrite);
@@ -247,33 +193,121 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("transcription factor", "transcription", overwrite);
 		addSourceCategoryMapping("transcription-factor binding", "transcription", overwrite);
 		addSourceCategoryMapping("tf binding", "transcription", overwrite);
-		
+
 		addSourceCategoryMapping("coexpression", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpressed", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpresses", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpress", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpr", "coexpression", overwrite);
 		addSourceCategoryMapping("coexpresses with", "coexpression", overwrite);
-		
+
 		addSourceCategoryMapping("colocalization", "colocalization", overwrite);
-		addSourceCategoryMapping("colocalized", "colocalization", overwrite);
-		addSourceCategoryMapping("colocalizes", "colocalization", overwrite);
-		addSourceCategoryMapping("colocalize", "colocalization", overwrite);
-		addSourceCategoryMapping("colocalizes with", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalisation", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalized", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalised", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalizes", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalises", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalize", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalise", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalizing", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalising", "colocalization", overwrite);
+		addSourceCategoryMapping("colocalizes with", "colocalization", overwrite);
 		addSourceCategoryMapping("colocalises with", "colocalization", overwrite);
+		addSourceCategoryMapping("coloc", "colocalization", overwrite);
+		
+		// PTM
+
+		addSourceCategoryMapping("methylation", "methylation", overwrite);
+		addSourceCategoryMapping("methylates", "methylation", overwrite);
+		addSourceCategoryMapping("methylate", "methylation", overwrite);
+		addSourceCategoryMapping("methylating", "methylation", overwrite);
+		addSourceCategoryMapping("meth", "methylation", overwrite);
+
+		addSourceCategoryMapping("demethylation", "demethylation", overwrite);
+		addSourceCategoryMapping("demethylates", "demethylation", overwrite);
+		addSourceCategoryMapping("demethylate", "demethylation", overwrite);
+		addSourceCategoryMapping("demethylating", "demethylation", overwrite);
+		addSourceCategoryMapping("demeth", "demethylation", overwrite);
+
+		addSourceCategoryMapping("phosphorylation", "phosphorylation", overwrite);
+		addSourceCategoryMapping("phosphorylates", "phosphorylation", overwrite);
+		addSourceCategoryMapping("phosphorylate", "phosphorylation", overwrite);
+		addSourceCategoryMapping("phosphorylating", "phosphorylation", overwrite);
+		addSourceCategoryMapping("phosph", "phosphorylation", overwrite);
+		addSourceCategoryMapping("phos", "phosphorylation", overwrite);
+
+		addSourceCategoryMapping("dephosphorylation", "dephosphorylation", overwrite);
+		addSourceCategoryMapping("dephosphorylates", "dephosphorylation", overwrite);
+		addSourceCategoryMapping("dephosphorylate", "dephosphorylation", overwrite);
+		addSourceCategoryMapping("dephosphorylating", "dephosphorylation", overwrite);
+		addSourceCategoryMapping("dephosph", "dephosphorylation", overwrite);
+		addSourceCategoryMapping("dephos", "dephosphorylation", overwrite);
+
+		addSourceCategoryMapping("ubiquitination", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinates", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinate", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinating", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinylation", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinylates", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinylate", "ubiquitination", overwrite);
+		addSourceCategoryMapping("ubiquitinylating", "ubiquitination", overwrite);
+
+		addSourceCategoryMapping("deubiquitination", "deubiquitination", overwrite);
+		addSourceCategoryMapping("deubiquitinates", "deubiquitination", overwrite);
+		addSourceCategoryMapping("deubiquitinate", "deubiquitination", overwrite);
+		addSourceCategoryMapping("deubiquitinating", "deubiquitination", overwrite);
+
+		addSourceCategoryMapping("glycosylation", "glycosylation", overwrite);
+		addSourceCategoryMapping("glycosylates", "glycosylation", overwrite);
+		addSourceCategoryMapping("glycosylate", "glycosylation", overwrite);
+		addSourceCategoryMapping("glycosylating", "glycosylation", overwrite);
+		addSourceCategoryMapping("glyc", "glycosylation", overwrite);
+		
+		addSourceCategoryMapping("deglycosylation", "deglycosylation", overwrite);
+		addSourceCategoryMapping("deglycosylates", "deglycosylation", overwrite);
+		addSourceCategoryMapping("deglycosylate", "deglycosylation", overwrite);
+		addSourceCategoryMapping("deglycosylating", "deglycosylation", overwrite);
+		addSourceCategoryMapping("deglyc", "deglycosylation", overwrite);
+
+		addSourceCategoryMapping("acetylation", "acetylation", overwrite);
+		addSourceCategoryMapping("acetylates", "acetylation", overwrite);
+		addSourceCategoryMapping("acetylate", "acetylation", overwrite);
+		addSourceCategoryMapping("acetylating", "acetylation", overwrite);
+
+		addSourceCategoryMapping("deacetylation", "deacetylation", overwrite);
+		addSourceCategoryMapping("deacetylates", "deacetylation", overwrite);
+		addSourceCategoryMapping("deacetylate", "deacetylation", overwrite);
+		addSourceCategoryMapping("deacetylating", "deacetylation", overwrite);
+
+		addSourceCategoryMapping("hydroxylation", "hydroxylation", overwrite);
+		addSourceCategoryMapping("hydroxylates", "hydroxylation", overwrite);
+		addSourceCategoryMapping("hydroxylate", "hydroxylation", overwrite);
+		addSourceCategoryMapping("hydroxylating", "hydroxylation", overwrite);
+		addSourceCategoryMapping("hydrox", "hydroxylation", overwrite);
+
+		addSourceCategoryMapping("dehydroxylation", "dehydroxylation", overwrite);
+		addSourceCategoryMapping("dehydroxylates", "dehydroxylation", overwrite);
+		addSourceCategoryMapping("dehydroxylate", "dehydroxylation", overwrite);
+		addSourceCategoryMapping("dehydroxylating", "dehydroxylation", overwrite);
+		addSourceCategoryMapping("dehydrox", "dehydroxylation", overwrite);
+
+		addSourceCategoryMapping("ptm", "ptm", overwrite);
+		addSourceCategoryMapping("post-translational_modification", "ptm", overwrite);
 
 		// regulation category and common synonyms
 		addSourceCategoryMapping("regulation", "regulation", overwrite);
 		addSourceCategoryMapping("regulates", "regulation", overwrite);
 		addSourceCategoryMapping("regulate", "regulation", overwrite);
+		addSourceCategoryMapping("regulating", "regulation", overwrite);
 		addSourceCategoryMapping("influence", "regulation", overwrite);
 		addSourceCategoryMapping("influences", "regulation", overwrite);
+		addSourceCategoryMapping("influencing", "regulation", overwrite);
 		addSourceCategoryMapping("effect", "regulation", overwrite);
 		addSourceCategoryMapping("effects", "regulation", overwrite);
+		addSourceCategoryMapping("effecting", "regulation", overwrite);
+		addSourceCategoryMapping("affect", "regulation", overwrite);
+		addSourceCategoryMapping("affects", "regulation", overwrite);
+		addSourceCategoryMapping("affecting", "regulation", overwrite);
 
 		// positive regulation category and common synonyms
 		addSourceCategoryMapping("positive regulation", "positive_regulation", overwrite);
@@ -283,9 +317,15 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("pos", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positive", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positively regulates", "positive_regulation", overwrite);
-		
+		addSourceCategoryMapping("positively regulating", "positive_regulation", overwrite);
+		addSourceCategoryMapping("upregulation", "positive_regulation", overwrite);
+
 		addSourceCategoryMapping("catalysis", "catalysis", overwrite);
+		addSourceCategoryMapping("catalyzis", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyses", "catalysis", overwrite);
+		addSourceCategoryMapping("catalyzes", "catalysis", overwrite);
+		addSourceCategoryMapping("catalysing", "catalysis", overwrite);
+		addSourceCategoryMapping("catalyzing", "catalysis", overwrite);
 		addSourceCategoryMapping("catalysation", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyzation", "catalysis", overwrite);
 
@@ -297,12 +337,14 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("neg", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negative", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negatively regulates", "negative_regulation", overwrite);
+		addSourceCategoryMapping("negatively regulating", "negative_regulation", overwrite);
 		addSourceCategoryMapping("downregulation", "negative_regulation", overwrite);
-		
-		addSourceCategoryMapping("inhibits", "inhibition", overwrite);
+
 		addSourceCategoryMapping("inhibit", "inhibition", overwrite);
+		addSourceCategoryMapping("inhibits", "inhibition", overwrite);
+		addSourceCategoryMapping("inhibiting", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibition", "inhibition", overwrite);
-		
+
 		// genetic interactions
 		addSourceCategoryMapping("positive genetic interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("positive gi", "positive_genetic_interaction", overwrite);
@@ -310,25 +352,26 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("alleviating genetic interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("positive epistatic interaction", "positive_genetic_interaction", overwrite);
 		addSourceCategoryMapping("alleviating epistatic interaction", "positive_genetic_interaction", overwrite);
-		
+
 		addSourceCategoryMapping("negative genetic interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("negative gi", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating genetic interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating gi", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("negative epistatic interaction", "negative_genetic_interaction", overwrite);
 		addSourceCategoryMapping("aggrevating epistatic interaction", "negative_genetic_interaction", overwrite);
-		
+
 		addSourceCategoryMapping("synthetic lethality", "synthetic_lethality", overwrite);
+		addSourceCategoryMapping("synth lethality", "synthetic_lethality", overwrite);
 		addSourceCategoryMapping("synthetically lethal", "synthetic_lethality", overwrite);
+		addSourceCategoryMapping("synth lethal", "synthetic_lethality", overwrite);
 		addSourceCategoryMapping("sl", "synthetic_lethality", overwrite);
-		
+
 		addSourceCategoryMapping("genetic_interaction", "genetic_interaction", overwrite);
+		addSourceCategoryMapping("genetically_interacting", "genetic_interaction", overwrite);
 		addSourceCategoryMapping("gi", "genetic_interaction", overwrite);
 		addSourceCategoryMapping("epistatic", "genetic_interaction", overwrite);
 		addSourceCategoryMapping("epistasis", "genetic_interaction", overwrite);
 		addSourceCategoryMapping("epistatic interaction", "genetic_interaction", overwrite);
 	}
-
-	
 
 }

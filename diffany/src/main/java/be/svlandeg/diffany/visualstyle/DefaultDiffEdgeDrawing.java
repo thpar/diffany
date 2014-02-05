@@ -23,6 +23,9 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	
 	protected static ArrowHead symm_ah = ArrowHead.NONE;
 	
+	protected static double min_weight = 0;
+	protected static double max_weight = 50;
+	
 	
 	/**
 	 * Create a new DefaultDiffEdgeDrawing object, given a specific EdgeOntology object.
@@ -73,5 +76,20 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 		}
 		return default_paint;
 	}
+
+
+	@Override
+    public double getMaxWeight()
+    {
+		// TODO v2.0: is this reasonable?
+	    return max_weight;
+    }
+
+
+	@Override
+    public double getMinWeight()
+    {
+	    return min_weight;
+    }
 
 }

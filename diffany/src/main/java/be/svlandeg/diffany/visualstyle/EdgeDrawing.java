@@ -47,5 +47,21 @@ public abstract class EdgeDrawing
 	{
 		return new EdgeStyle(getEdgeColor(category), getEdgeArrowHead(category));
 	}
+	
+	/** 
+	 * For visualisation purposes, weights need to be scaled up to a certain maximum.
+	 * Beyond that maximum, all edge weights (ie edge thickness) will be the same
+	 *  
+	 * @return the upper boundary of weights used to define the maximal edge thickness
+	 */
+	public abstract double getMaxWeight();
+	
+	/** 
+	 * For visualisation purposes, weights need to be scaled from a certain minimum.
+	 * From that minimum on (INCLUSIVE), all edges will be considered to be non-existing or void.
+	 *  
+	 * @return the lower boundary of weights used to define the minimum edge thickness (ie. 0)
+	 */
+	public abstract double getMinWeight();
 
 }

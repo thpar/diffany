@@ -24,7 +24,7 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	protected static ArrowHead symm_ah = ArrowHead.NONE;
 	
 	protected static double min_weight = 0;
-	protected static double max_weight = 50;
+	protected static double max_weight = 20;
 	
 	
 	/**

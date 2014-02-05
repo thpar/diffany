@@ -24,7 +24,7 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 	protected static Color neutral_paint = Color.LIGHT_GRAY;
 	
 	protected static double min_weight = 0;
-	protected static double max_weight = 50;
+	protected static double max_weight = 20;
 
 	/**
 	 * Create a new DefaultSourceEdgeDrawing object, given a specific EdgeOntology object.

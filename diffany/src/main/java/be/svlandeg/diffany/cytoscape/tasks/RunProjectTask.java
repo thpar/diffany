@@ -121,17 +121,18 @@ public class RunProjectTask implements Task {
 	 */
 	private void runAlgorithm() throws InvalidProjectException{
 		Project project = cyProject.getProject();
+		int runId = cyProject.getCurrentRunConfigID();
 		
 		switch(cyProject.getMode()){
 		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, cyProject.getCutoff());
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, runId, cyProject.getCutoff());
 			break;
 		case REF_TO_ALL:	
-			new CalculateDiff().calculateOneDifferentialNetwork(project, cyProject.getCutoff());
+			new CalculateDiff().calculateOneDifferentialNetwork(project, runId, cyProject.getCutoff());
 			break;
 		}
 		
-		addDifferentialNetworks(project.getDifferentialNetworks(), cyProject);
+		addDifferentialNetworks(project.getRunConfiguration(runId).getDifferentialNetworks(), cyProject);
 		displayReport(project.getLogger());
 	}
 

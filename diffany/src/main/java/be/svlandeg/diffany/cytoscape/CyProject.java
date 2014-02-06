@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jws.Oneway;
+
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
@@ -12,6 +14,7 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.internal.Services;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -29,6 +32,7 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  */
 public class CyProject{
 
+	//TODO Project should become parent class of CyProject	
 	private Project project;
 	
 	/**
@@ -48,7 +52,7 @@ public class CyProject{
 	
 	private CyNetwork referenceNetwork;
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
-	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();;
+	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();
 
 	private EdgeOntology edgeOntology = new DefaultEdgeOntology();
 	private NodeMapper nodeMapper = new DefaultNodeMapper();
@@ -89,6 +93,7 @@ public class CyProject{
 		}
 	}
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
+	private int currentRunConfigID;
 	
 	/**
 	 * Construct empty project
@@ -159,8 +164,10 @@ public class CyProject{
 			condNets.add(condNet);			
 		}
 		
-		this.project = new Project(this.getName(), refNet, condNets, this.getEdgeOntology(), this.getNodeMapper());
-		
+		project = new Project(name, this.getEdgeOntology(), this.getNodeMapper());
+		RunConfiguration rc = new RunConfiguration (refNet, condNets);
+		currentRunConfigID = project.addRunConfiguration(rc);
+				
 		return project;
 	}
 
@@ -392,5 +399,16 @@ public class CyProject{
 		
 		
 	}
+
+	/**
+	 * Temporary solution to retrieve the ID of the lastly created {@link RunConfiguration}
+	 * 
+	 * @return ID of the {@link RunConfiguration} created with the last getProject(). 
+	 */
+	public int getCurrentRunConfigID() {
+		return currentRunConfigID;
+	}
+	
+	
 	
 }

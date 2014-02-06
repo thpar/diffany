@@ -19,7 +19,7 @@ import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
-import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 
 /**
  * Task to load example {@link Project}s into Cytoscape.

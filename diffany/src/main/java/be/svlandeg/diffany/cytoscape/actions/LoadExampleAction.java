@@ -8,8 +8,8 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.cytoscape.tasks.LoadExampleTaskFactory;
-import be.svlandeg.diffany.internal.Services;
 
 /**
  * Action that load {@link CyNetwork}s into a Cytoscape session, based on a given {@link Project}.

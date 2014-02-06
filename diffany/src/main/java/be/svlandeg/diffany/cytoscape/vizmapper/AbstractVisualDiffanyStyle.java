@@ -21,7 +21,7 @@ import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
 
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
-import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**

@@ -31,7 +31,13 @@ public class Project
 	
 	protected Logger logger;
 
+	// runs by IDs
 	protected Map<Integer, RunConfiguration> runs;
+	
+	// all networks in the project, by ID
+	protected Map<Integer, ReferenceNetwork> refNetworks;
+	protected Map<Integer, ConditionNetwork> condNetworks;
+	protected Map<Integer, DifferentialNetwork> diffNetworks;
 
 	/**
 	 * Create a new project with a node mapper and an edge ontology that can interpret the differential edges.
@@ -56,14 +62,17 @@ public class Project
 		
 		logger = new Logger();
 		runs = new HashMap<Integer, RunConfiguration>();
+		refNetworks = new HashMap<Integer, ReferenceNetwork>();
+		condNetworks = new HashMap<Integer, ConditionNetwork>();
+		diffNetworks = new HashMap<Integer, DifferentialNetwork>();
 	}
 	
 	/**
-	 * Get the RunConfiguration by its unique ID
+	 * Get a specific RunConfiguration by its unique ID
 	 * 
 	 * @param configurationID the (unique) ID of the configuration
 	 * @return the corresponding RunConfiguration
-	 * @ throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
+	 * @throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
 	 */
 	public RunConfiguration getRunConfiguration(int configurationID) throws IllegalArgumentException
 	{
@@ -76,12 +85,15 @@ public class Project
 	}
 	
 	/**
-	 * Add a new RunConfiguration to this project
-	 * @param rc the new  new RunConfiguration
+	 * Add a new RunConfiguration to this project. 
+	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param rc the new RunConfiguration
 	 * @return the unique ID assigned to the RunConfiguration in this project
 	 */
 	public int addRunConfiguration(RunConfiguration rc)
 	{
+		// TODO: how should the runconfiguration talk to the sets of networks in the project?!
 		int nextID;
 		if (runs.keySet().isEmpty())
 		{
@@ -92,6 +104,123 @@ public class Project
 			nextID = Collections.max(runs.keySet()) + 1;
 		}
 		runs.put(nextID, rc);
+		return nextID;
+	}
+	
+	/**
+	 * Get a specific ReferenceNetwork by its unique ID
+	 * 
+	 * @param refID the (unique) ID of the reference network
+	 * @return the corresponding ReferenceNetwork
+	 * @throws IllegalArgumentException if the ID is invalid (i.e. non-existing)
+	 */
+	public ReferenceNetwork getReferenceNetwork(int refID) throws IllegalArgumentException
+	{
+		if (! refNetworks.containsKey(refID))
+		{
+			String errormsg = "Unknown reference network ID " + refID + " in Project " + name;
+			throw new IllegalArgumentException(errormsg);
+		}
+		return refNetworks.get(refID);
+	}
+	
+	/**
+	 * Add a new ReferenceNetwork to this project
+	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param ref the new ReferenceNetwork
+	 * @return the unique ID assigned to the ReferenceNetwork in this project
+	 */
+	public int addReferenceNetwork(ReferenceNetwork ref)
+	{
+		int nextID;
+		if (refNetworks.keySet().isEmpty())
+		{
+			nextID = 1;
+		}
+		else
+		{
+			nextID = Collections.max(refNetworks.keySet()) + 1;
+		}
+		refNetworks.put(nextID, ref);
+		return nextID;
+	}
+	
+	/**
+	 * Get a specific ConditionNetwork by its unique ID
+	 * 
+	 * @param condID the (unique) ID of the condition-specific network
+	 * @return the corresponding ConditionNetwork
+	 * @throws IllegalArgumentException if the ID is invalid (i.e. non-existing)
+	 */
+	public ConditionNetwork getConditionNetwork(int condID) throws IllegalArgumentException
+	{
+		if (! condNetworks.containsKey(condID))
+		{
+			String errormsg = "Unknown condition-specific network ID " + condID + " in Project " + name;
+			throw new IllegalArgumentException(errormsg);
+		}
+		return condNetworks.get(condID);
+	}
+	
+	/**
+	 * Add a new ConditionNetwork to this project
+	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param cond the new ConditionNetwork
+	 * @return the unique ID assigned to the ConditionNetwork in this project
+	 */
+	public int addConditionNetwork(ConditionNetwork cond)
+	{
+		int nextID;
+		if (condNetworks.keySet().isEmpty())
+		{
+			nextID = 1;
+		}
+		else
+		{
+			nextID = Collections.max(condNetworks.keySet()) + 1;
+		}
+		condNetworks.put(nextID, cond);
+		return nextID;
+	}
+	
+	/**
+	 * Get a specific DifferentialNetwork by its unique ID
+	 * 
+	 * @param configurationID the (unique) ID of the configuration
+	 * @return the corresponding RunConfiguration
+	 * @throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
+	 */
+	public DifferentialNetwork getDifferentialNetwork(int diffID) throws IllegalArgumentException
+	{
+		if (! diffNetworks.containsKey(diffID))
+		{
+			String errormsg = "Unknown configuration ID " + diffID + " in Project " + name;
+			throw new IllegalArgumentException(errormsg);
+		}
+		return diffNetworks.get(diffID);
+	}
+	
+	/**
+	 * Add a new DifferentialNetwork to this project
+	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param diff the new DifferentialNetwork
+	 * @return the unique ID assigned to the DifferentialNetwork in this project
+	 */
+	public int addDifferentialNetwork(DifferentialNetwork diff)
+	{
+		int nextID;
+		if (diffNetworks.keySet().isEmpty())
+		{
+			nextID = 1;
+		}
+		else
+		{
+			nextID = Collections.max(diffNetworks.keySet()) + 1;
+		}
+		diffNetworks.put(nextID, diff);
 		return nextID;
 	}
 
@@ -122,6 +251,16 @@ public class Project
 		this.edgeOntology = edgeOntology;
 
 	}
+	
+	/**
+	 * Get the edge ontology of this project, which can translate edge types to categories and assign semantics to the categories.
+	 * 
+	 * @return the edge ontology used in this project (should not be null)
+	 */
+	public EdgeOntology getEdgeOntology()
+	{
+		return edgeOntology;
+	}
 
 	/**
 	 * Set the node mapper for this project.
@@ -138,17 +277,6 @@ public class Project
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.nodeMapper = nodeMapper;
-	}
-
-
-	/**
-	 * Get the edge ontology of this project, which can translate edge types to categories and assign semantics to the categories.
-	 * 
-	 * @return the edge ontology used in this project (should not be null)
-	 */
-	public EdgeOntology getEdgeOntology()
-	{
-		return edgeOntology;
 	}
 
 	/**

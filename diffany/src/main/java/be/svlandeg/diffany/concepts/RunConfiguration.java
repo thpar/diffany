@@ -21,26 +21,10 @@ public class RunConfiguration
 	protected Set<ConditionNetwork> conditions;
 	protected Set<DifferentialNetwork> differentials;
 	
-	/**
-	 * Create a new configuration with a reference network, set of condition-specific networks, and (optionally)
-	 * differential networks
-	 * 
-	 * @param reference the reference network (not null!)
-	 * @param conditions the condition-specific networks (at least 1!)
-	 * @param differentials the differential networks (not null!)
-	 * 
-	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
-	 */
-	public RunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, Set<DifferentialNetwork> differentials) throws IllegalArgumentException
-	{
-		setReference(reference);
-		setConditions(conditions);
-		setDifferentials(differentials);
-	}
 	
 	/**
 	 * Create a new configuration with a reference network and a set of condition-specific networks. 
-	 * The set of differential networks will be empty but can be calculated with the CalculateDiff class.
+	 * The set of (output) differential networks is initialized to be empty.
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
@@ -49,7 +33,9 @@ public class RunConfiguration
 	 */
 	public RunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
 	{
-		this(reference, conditions, new HashSet<DifferentialNetwork>());
+		setReference(reference);
+		setConditions(conditions);
+		differentials = new HashSet<DifferentialNetwork>();
 	}
 	
 	/**
@@ -87,23 +73,7 @@ public class RunConfiguration
 		this.reference = reference;
 
 	}
-	
-	/**
-	 * Initialize the set of differential networks in this configuration
-	 * 
-	 * @param differentials the differential networks (not null!)
-	 * @throws IllegalArgumentException if the set is null
-	 */
-	private void setDifferentials(Set<DifferentialNetwork> differentials) throws IllegalArgumentException
-	{
-		if (differentials == null)
-		{
-			String errormsg = "The set of differential networks should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.differentials = differentials;
 
-	}
 
 	/**
 	 * Add a differential network to this configuration.

@@ -18,11 +18,11 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
+import be.svlandeg.diffany.cytoscape.internal.CyActivator;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualDiffStyle;
 import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
-import be.svlandeg.diffany.internal.CyActivator;
-import be.svlandeg.diffany.internal.Services;
 
 /**
  * Model that keeps track of all settings and selections within the Cytoscape App.

@@ -19,7 +19,7 @@ import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
-import be.svlandeg.diffany.internal.Services;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 
 /**
  * Task to load example {@link Project}s into Cytoscape.
@@ -31,6 +31,7 @@ public class LoadExampleTask implements Task{
 
 	private Services services;
 	private Project exampleProject ;
+	private int runConfigurationID;
 	
 	/**
 	 * Construct a new task from a {@link Project}. The resulting networks and 
@@ -38,17 +39,19 @@ public class LoadExampleTask implements Task{
 	 * 
 	 * @param services the app {@link Services}
 	 * @param exampleProject {@link Project} to be used as example input.
+	 * @param runConfigurationID id of the example configuration to run in the project
 	 */
-	public LoadExampleTask(Services services, Project exampleProject) {
+	public LoadExampleTask(Services services, Project exampleProject, int runConfigurationID) {
 		this.services = services;
 		this.exampleProject = exampleProject;
+		this.runConfigurationID = runConfigurationID;
 	}
 
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		
-		ReferenceNetwork refNet = exampleProject.getReferenceNetwork();
-		Collection<ConditionNetwork> condNets = exampleProject.getConditionNetworks();
+		ReferenceNetwork refNet = exampleProject.getRunConfiguration(runConfigurationID).getReferenceNetwork();
+		Collection<ConditionNetwork> condNets = exampleProject.getRunConfiguration(runConfigurationID).getConditionNetworks();
 		
 		CyNetworkManager networkManager = services.getCyNetworkManager();
 		CyRootNetworkManager rootNetworkManager = services.getCyRootNetworkManager();

@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.internal;
+package be.svlandeg.diffany.cytoscape.internal;
 
 import java.util.Properties;
 
@@ -25,6 +25,7 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 
+import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.SessionListener;
 import be.svlandeg.diffany.cytoscape.actions.LoadExampleAction;
@@ -85,10 +86,17 @@ public class CyActivator extends AbstractCyActivator
 		registerAllServices(context, runProjectAction, new Properties());
 		
 		//register actions to import the projects defined in the examples package
+		Bandyopadhyay2010 example1 = new Bandyopadhyay2010();
+		Project exampleProject1 = example1.getProjectFigure1C();
 		registerAllServices(context, new LoadExampleAction(services,"Bandyopadhyay2010", 
-				new Bandyopadhyay2010().getProjectFigure1C()), new Properties());
+				exampleProject1, example1.getTestConfiguration1C(exampleProject1)), 
+				new Properties());
+		
+		Ideker2011 example2 = new Ideker2011();
+		Project exampleProject2 = example2.getProjectFigure3A();
 		registerAllServices(context, new LoadExampleAction(services,"Ideker2011", 
-				new Ideker2011().getProjectFigure3A()), new Properties());
+				exampleProject2, example2.getTestConfiguration3A(exampleProject2)), 
+				new Properties());
 		
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());

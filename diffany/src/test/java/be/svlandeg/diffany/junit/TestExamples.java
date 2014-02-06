@@ -36,10 +36,11 @@ public class TestExamples
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
 		double cutoff = 0.0;
 		Project p = ex.getProjectFigure1C();
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		int ID = ex.getTestConfiguration1C(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network
@@ -70,10 +71,11 @@ public class TestExamples
 		Ideker2011 ex = new Ideker2011();
 		double cutoff = 0.0;
 		Project p = ex.getProjectFigure3A();
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		int ID = ex.getTestConfiguration3A(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network
@@ -105,10 +107,11 @@ public class TestExamples
 		ActivityFlowTest ex = new ActivityFlowTest();
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		int ID = ex.getTestConfiguration(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network
@@ -144,10 +147,11 @@ public class TestExamples
 		ProcessTest ex = new ProcessTest();
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		int ID = ex.getTestConfiguration(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network
@@ -182,10 +186,11 @@ public class TestExamples
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
-		new CalculateDiff().calculateOneDifferentialNetwork(p, cutoff);
+		int ID = ex.getTestConfiguration(p);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network
@@ -223,10 +228,11 @@ public class TestExamples
 		ConflictingEdgesTest ex = new ConflictingEdgesTest();
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
-		new CalculateDiff().calculateOneDifferentialNetwork(p, cutoff);
+		int ID = ex.getTestConfiguration(p);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff);
 		
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = p.getRunConfiguration(ID).getDifferentialNetworks();
 		assertEquals(1, dNetworks.size());
 		
 		// Testing the edges in the differential network

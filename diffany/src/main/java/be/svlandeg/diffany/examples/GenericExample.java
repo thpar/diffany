@@ -7,6 +7,7 @@ import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.io.EdgeIO;
 
 /**
@@ -31,21 +32,24 @@ public abstract class GenericExample
 	/**
 	 * Print an entire project.
 	 * @param p the project to be printed
+	 * @param configurationID the ID of the RunConfiguration
 	 */
-	protected void printAllNetworks(Project p)
+	protected void printAllNetworks(Project p, int configurationID)
 	{
+		RunConfiguration rc = p.getRunConfiguration(configurationID);
+		
 		System.out.println("Reference network : ");
-		ReferenceNetwork r = p.getReferenceNetwork();
+		ReferenceNetwork r = rc.getReferenceNetwork();
 		printNetwork(r);
 
 		System.out.println("Condition-specific network(s) : ");
-		Collection<ConditionNetwork> cnetworks = p.getConditionNetworks();
+		Collection<ConditionNetwork> cnetworks = rc.getConditionNetworks();
 		for (ConditionNetwork c : cnetworks)
 		{
 			printNetwork(c);
 		}
 		System.out.println("Differential network(s) : ");
-		Collection<DifferentialNetwork> dnetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dnetworks = rc.getDifferentialNetworks();
 		for (DifferentialNetwork d : dnetworks)
 		{
 			printNetwork(d);

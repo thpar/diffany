@@ -1,18 +1,21 @@
 package be.svlandeg.diffany.concepts;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import be.svlandeg.diffany.io.ProjectIO;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * A project consists of a selection of networks and all analyses performed on these networks within the current session. 
- * It should contain exactly 1 reference network, at least 1 condition-specific network, 
- * and it may contain 1 or more differential networks.
- * Additionally, a project links to an ontology that defines the semantics of edge types.
+ * A project consists of a number of input and output networks within a certain session. 
+ * 
+ * It contains one or more {@link RunConfiguration}s which is a subset of networks that can together
+ * be used as input for the Diffany algorithms.
+ * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types,
+ * and a {@link NodeMapper} that establishes equality of nodes across networks.
+ * Finally, a Logger instance keeps a logfile of all runs in the project.
  * 
  * Project data can be saved and loaded through the {@link ProjectIO} class.
  * 
@@ -28,24 +31,18 @@ public class Project
 	
 	protected Logger logger;
 
-	protected ReferenceNetwork reference;
-	protected Set<ConditionNetwork> conditions;
-	protected Set<DifferentialNetwork> differentials;
+	protected Map<Integer, RunConfiguration> runs;
 
 	/**
-	 * Create a new project with a reference network, set of condition-specific networks, 
-	 * differential networks, a node mapper and an edge ontology that can interpret the differential edges.
+	 * Create a new project with a node mapper and an edge ontology that can interpret the differential edges.
 	 * 
 	 * @param name the name of this project (not null!)
-	 * @param reference the reference network (not null!)
-	 * @param conditions the condition-specific networks (at least 1!)
-	 * @param differentials the differential networks (not null!)
 	 * @param edgeOntology the edge ontology (not null!)
 	 * @param nodeMapper the node mapper (not null!)
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public Project(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditions, Set<DifferentialNetwork> differentials, EdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
+	public Project(String name, EdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -54,33 +51,50 @@ public class Project
 		}
 		this.name = name;
 		
-		setReference(reference);
-		setConditions(conditions);
-		setDifferentials(differentials);
 		setEdgeOntology(edgeOntology);
 		setNodeMapper(nodeMapper);
 		
 		logger = new Logger();
-	}
-
-	/**
-	 * Create a new project with a reference network, a set of condition-specific networks, 
-	 * a node mapper and  and an edge ontology that can interpret the differential edges. 
-	 * The set of differential networks will be empty but can be calculated with the CalculateDiff class.
-	 * 
-	 * @param name the name of this project (not null!)
-	 * @param reference the reference network (not null!)
-	 * @param conditions the condition-specific networks (at least 1!)
-	 * @param edgeOntology the edge ontology (not null!)
-	 * @param nodeMapper the node mapper (not null!)
-	 * 
-	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
-	 */
-	public Project(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology edgeOntology, NodeMapper nodeMapper)
-	{
-		this(name, reference, conditions, new HashSet<DifferentialNetwork>(), edgeOntology, nodeMapper);
+		runs = new HashMap<Integer, RunConfiguration>();
 	}
 	
+	/**
+	 * Get the RunConfiguration by its unique ID
+	 * 
+	 * @param configurationID the (unique) ID of the configuration
+	 * @return the corresponding RunConfiguration
+	 * @ throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
+	 */
+	public RunConfiguration getRunConfiguration(int configurationID) throws IllegalArgumentException
+	{
+		if (! runs.containsKey(configurationID))
+		{
+			String errormsg = "Unknown configuration ID " + configurationID + " in Project " + name;
+			throw new IllegalArgumentException(errormsg);
+		}
+		return runs.get(configurationID);
+	}
+	
+	/**
+	 * Add a new RunConfiguration to this project
+	 * @param rc the new  new RunConfiguration
+	 * @return the unique ID assigned to the RunConfiguration in this project
+	 */
+	public int addRunConfiguration(RunConfiguration rc)
+	{
+		int nextID;
+		if (runs.keySet().isEmpty())
+		{
+			nextID = 1;
+		}
+		else
+		{
+			nextID = Collections.max(runs.keySet()) + 1;
+		}
+		runs.put(nextID, rc);
+		return nextID;
+	}
+
 	/**
 	 * Return the name of this project
 	 * @return the name of this project
@@ -126,68 +140,6 @@ public class Project
 		this.nodeMapper = nodeMapper;
 	}
 
-	/**
-	 * Set the condition-specific networks in this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
-	 * 
-	 * @param conditions the condition-specific networks (not null or empty!)
-	 * @throws IllegalArgumentException if the set is null or empty
-	 */
-	private void setConditions(Set<ConditionNetwork> conditions) throws IllegalArgumentException
-	{
-		if (conditions == null || conditions.isEmpty())
-		{
-			String errormsg = "The set of condition-specific networks should not be null or empty!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.conditions = conditions;
-
-	}
-
-	/**
-	 * Set the reference network of this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
-	 * 
-	 * @param reference the reference network
-	 * @throws IllegalArgumentException if the network is null
-	 */
-	private void setReference(ReferenceNetwork reference) throws IllegalArgumentException
-	{
-		if (reference == null)
-		{
-			String errormsg = "The reference network should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.reference = reference;
-
-	}
-
-	/**
-	 * Initialize the set of differential networks in this project
-	 * 
-	 * @param differentials the differential networks (not null!)
-	 * @throws IllegalArgumentException if the set is null
-	 */
-	private void setDifferentials(Set<DifferentialNetwork> differentials) throws IllegalArgumentException
-	{
-		if (differentials == null)
-		{
-			String errormsg = "The set of differential networks should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.differentials = differentials;
-
-	}
-
-	/**
-	 * Add a differential network to this project.
-	 * 
-	 * @param differential a new differential network
-	 */
-	public void addDifferential(DifferentialNetwork differential)
-	{
-		differentials.add(differential);
-	}
 
 	/**
 	 * Get the edge ontology of this project, which can translate edge types to categories and assign semantics to the categories.
@@ -208,37 +160,6 @@ public class Project
 		return nodeMapper;
 	}
 
-	/**
-	 * Get the reference network of this project, against which the condition
-	 * dependent network(s) will be compared to.
-	 * 
-	 * @return the reference network in this project (should not be null)
-	 */
-	public ReferenceNetwork getReferenceNetwork()
-	{
-		return reference;
-	}
-
-	/**
-	 * Get the condition-dependent network(s): 1 or many. 
-	 * Should there be 0 condition-dependent networks, the complete project is invalid/incomplete.
-	 * 
-	 * @return the condition-dependent networks in this project (1 or more, never null or empty))
-	 */
-	public Collection<ConditionNetwork> getConditionNetworks()
-	{
-		return conditions;
-	}
-
-	/**
-	 * Get the differential networks in the project: 0, 1 or more
-	 * 
-	 * @return the differential networks in this project (if any, otherwise empty set, but never null)
-	 */
-	public Collection<DifferentialNetwork> getDifferentialNetworks()
-	{
-		return differentials;
-	}
 	
 	/**
 	 * Get the logger object, that contains all log messages from the last run.

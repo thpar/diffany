@@ -12,6 +12,7 @@ import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;
@@ -37,17 +38,28 @@ public class Bandyopadhyay2010 extends GenericExample
 	}
 	
 	/**
-	 * Get a project with the networks as described in figure 1C of this paper.
+	 * Get a custom project.
 	 * @return an example project illustrating figure 1C.
 	 */
 	public Project getProjectFigure1C()
 	{
 		String name = "Bandyopadhyay2010_fig1C";
+		EdgeOntology eo = new DefaultEdgeOntology();
+		Project p = new Project(name, eo, nm);
+		return p;
+	}
+	
+	/**
+	 * Add some custom-defined networks to the project.
+	 * @return the resulting configuration ID.
+	 */
+	public int getTestConfiguration1C(Project p)
+	{
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
-		EdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, r, c, eo, nm);
-		return p;
+		RunConfiguration rc = new RunConfiguration (r, c);
+		int ID = p.addRunConfiguration(rc);
+		return ID;
 	}
 
 
@@ -110,12 +122,13 @@ public class Bandyopadhyay2010 extends GenericExample
 		
 		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
 		Project p = ex.getProjectFigure1C();
+		int ID = ex.getTestConfiguration1C(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		System.out.println("");
-		ex.printAllNetworks(p);
+		ex.printAllNetworks(p, ID);
 	}
 	
 }

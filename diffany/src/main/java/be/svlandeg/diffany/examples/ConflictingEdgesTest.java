@@ -26,17 +26,28 @@ public class ConflictingEdgesTest extends GenericExample
 	}
 	
 	/**
-	 * Get a project with some custom-defined networks.
+	 * Get a custom project.
 	 * @return an example project.
 	 */
 	public Project getTestProject()
 	{
 		String name = "Conflict_test";
+		EdgeOntology eo = new DefaultEdgeOntology();
+		Project p = new Project(name, eo, nm);
+		return p;
+	}
+	
+	/**
+	 * Add some custom-defined networks to the project.
+	 * @return the resulting configuration ID.
+	 */
+	public int getTestConfiguration(Project p)
+	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
-		EdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, r, c, eo, nm);
-		return p;
+		RunConfiguration rc = new RunConfiguration (r, c);
+		int ID = p.addRunConfiguration(rc);
+		return ID;
 	}
 	
 	/**
@@ -118,12 +129,13 @@ public class ConflictingEdgesTest extends GenericExample
 		
 		System.out.println("Defining network for conflict test");
 		Project p = ex.getTestProject();
+		int ID = ex.getTestConfiguration(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
 		
 		System.out.println("");
-		ex.printAllNetworks(p);
+		ex.printAllNetworks(p, ID);
 		
 		System.out.println("Logs:");
 		for (String l : p.getLogger().getAllLogMessages())

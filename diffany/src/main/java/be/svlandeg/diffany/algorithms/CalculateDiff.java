@@ -176,11 +176,12 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
+	 * @param configurationID the configuration ID of the configuration that needs to be run
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID) throws IllegalArgumentException
 	{
-		calculateAllPairwiseDifferentialNetworks(p, default_cutoff);
+		calculateAllPairwiseDifferentialNetworks(p, configurationID, default_cutoff);
 	}
 	
 	/**
@@ -194,21 +195,24 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
+	 * @param configurationID the configuration ID of the configuration that needs to be run
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, double cutoff) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, double cutoff) throws IllegalArgumentException
 	{
-		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger();
 		log.clean();
-		for (ConditionNetwork c : p.getConditionNetworks())
+		
+		RunConfiguration rc = p.getRunConfiguration(configurationID);
+		ReferenceNetwork r = rc.getReferenceNetwork();
+		for (ConditionNetwork c : rc.getConditionNetworks())
 		{
 			log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
 			DifferentialNetwork diff = calculateDiffNetwork(r, c, eo, nm, cutoff, log);
-			p.addDifferential(diff);
+			rc.addDifferential(diff);
 		}
 		log.log("Done!");
 	}
@@ -371,11 +375,12 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
+	 * @param configurationID the configuration ID of the configuration that needs to be run
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int configurationID) throws IllegalArgumentException
 	{
-		calculateOneDifferentialNetwork(p, default_cutoff);
+		calculateOneDifferentialNetwork(p, configurationID, default_cutoff);
 	}
 	
 	/**
@@ -389,21 +394,25 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
+	 * @param configurationID the configuration ID of the configuration that needs to be run
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, double cutoff) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int configurationID, double cutoff) throws IllegalArgumentException
 	{
-		ReferenceNetwork r = p.getReferenceNetwork();
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger();
 		log.clean();
-		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(p.getConditionNetworks());
+		
+		RunConfiguration rc = p.getRunConfiguration(configurationID);
+		ReferenceNetwork r = rc.getReferenceNetwork();
+		
+		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(rc.getConditionNetworks());
 		log.log("Calculating the differential and overlap network between " + r.getName() + " and " 
 				+ cs.size() + " condition-dependent network(s)");
 		DifferentialNetwork diff = calculateDiffNetwork(r, cs, eo, nm, log);
-		p.addDifferential(diff);
+		rc.addDifferential(diff);
 		log.log("Done!");
 	}
 }

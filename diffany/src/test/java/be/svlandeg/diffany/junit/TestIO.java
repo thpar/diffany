@@ -17,6 +17,7 @@ import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.io.NetworkIO;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -55,17 +56,20 @@ public class TestIO
 		
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
 		Project p = ex.getProjectFigure1C();
+		int ID = ex.getTestConfiguration1C(p);
 		double cutoff = 0.0;
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
+		
+		RunConfiguration rc = p.getRunConfiguration(ID);
 		
 		// The reference network
-		ReferenceNetwork rWriteNetwork = p.getReferenceNetwork();
+		ReferenceNetwork rWriteNetwork = rc.getReferenceNetwork();
 		
 		// The condition-dependent network (there is only 1 in that specific project)
-		ConditionNetwork cWriteNetwork = p.getConditionNetworks().iterator().next();
+		ConditionNetwork cWriteNetwork = rc.getConditionNetworks().iterator().next();
 		
 		// There is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = p.getDifferentialNetworks();
+		Collection<DifferentialNetwork> dNetworks = rc.getDifferentialNetworks();
 		DifferentialNetwork dWriteNetwork = dNetworks.iterator().next();
 				
 		// The overlapping network (there should be only 1)

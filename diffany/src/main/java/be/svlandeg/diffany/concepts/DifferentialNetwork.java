@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.concepts;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import be.svlandeg.diffany.semantics.NodeMapper;
@@ -23,8 +24,8 @@ public class DifferentialNetwork extends Network
 	 * and 1 or more condition-specific networks
 	 * 
 	 * @param name the name of this network
-	 * @param reference the corresponding reference network
-	 * @param conditionNetworks the corresponding condition-specific networks
+	 * @param reference the corresponding reference network (not null!)
+	 * @param conditionNetworks the corresponding condition-specific networks (not null or empty!)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
@@ -46,6 +47,36 @@ public class DifferentialNetwork extends Network
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.conditionNetworks = conditionNetworks;
+	}
+	
+	/**
+	 * Create a new differential network, referring to exactly one static reference network and one condition-specific network
+	 * 
+	 * @param name the name of this network
+	 * @param reference the corresponding reference network (not null!)
+	 * @param conditionNetwork the corresponding condition-specific network (not null!)
+	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
+	 * 
+	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
+	 * or when the reference network is null
+	 */
+	public DifferentialNetwork(String name, ReferenceNetwork reference, ConditionNetwork conditionNetwork, NodeMapper nm) 
+			throws IllegalArgumentException
+	{
+		super(name, nm);
+		if (reference == null)
+		{
+			String errormsg = "Please define at least 1 reference network!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		this.reference = reference;
+		if (conditionNetwork == null)
+		{
+			String errormsg = "Please define a non-null condition-specific network!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		conditionNetworks = new HashSet<ConditionNetwork>();
+		conditionNetworks.add(conditionNetwork);
 	}
 	
 	/**

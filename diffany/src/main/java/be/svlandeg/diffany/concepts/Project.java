@@ -1,9 +1,7 @@
 package be.svlandeg.diffany.concepts;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import be.svlandeg.diffany.io.ProjectIO;
@@ -121,19 +119,18 @@ public class Project
 	 */
 	public void registerSourceNetwork(Network source)
 	{
-		// TODO v1.1 update the edge ontology
-	}
-	
-	
-	/**
-	 * Register a new DifferentialNetwork to this project, updating the EdgeOntology and NodeMapper instances.
-	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
-	 * 
-	 * @param diff the new DifferentialNetwork that will be used within this project
-	 */
-	public void registerDifferentialNetwork(DifferentialNetwork diff)
-	{
-		// TODO v1.1 update the edge ontology
+		for (Edge e : source.getEdges())
+		{
+			String edgeType = e.getType();
+			if (! edgeOntology.isDefinedSourceType(edgeType))
+			{
+				boolean symmetrical = e.isSymmetrical();
+				
+				// add the new edge type as its own separate (singleton) source category
+				edgeOntology.addSourceCategory(edgeType, symmetrical);
+				edgeOntology.addSourceCategoryMapping(edgeType, edgeType, false);
+			}
+		}
 	}
 
 	/**

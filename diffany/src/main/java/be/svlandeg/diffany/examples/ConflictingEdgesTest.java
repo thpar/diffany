@@ -138,7 +138,7 @@ public class ConflictingEdgesTest extends GenericExample
 		ex.printAllNetworks(p, ID);
 		
 		System.out.println("Logs:");
-		for (String l : p.getLogger().getAllLogMessages())
+		for (String l : p.getLogger(ID).getAllLogMessages())
 		{
 			System.out.println(l);
 		}

@@ -30,26 +30,31 @@
 Parameters: String refLocation, String condLocation, String diffLocation, String overlapLocation
 	
 	
-		/** DEFINE THE ONTOLOGIES **/
+		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
 		EdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
+		Project p = new Project("testProject", eo, nm);
 
 		/** READ THE INPUT NETWORKS **/
 		File refDir = new File(refLocation);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
+		p.registerSourceNetwork(refNet);
 
 		File condDir = new File(condLocation);
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
+		p.registerSourceNetwork(condNet);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
-		String name = "outputDiffany";
+		RunConfiguration rc = new RunConfiguration(refNet, condNet);
+		int rcID = p.addRunConfiguration(rc);
 		
 		/** THE ACTUAL ALGORITHM **/
-		Logger logger = new Logger();
 		CalculateDiff diffAlgo = new CalculateDiff();
+		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff);
 
-		DifferentialNetwork diffNet = diffAlgo.calculateDiffNetwork(refNet, condNet, eo, nm, name, cutoff, logger);
+		// In this case, there will be exactly one DifferentialNetwork
+		DifferentialNetwork diffNet = rc.getDifferentialNetworks().iterator().next();
 		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
@@ -60,6 +65,7 @@ Parameters: String refLocation, String condLocation, String diffLocation, String
 		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
 
 		/** WRITE LOG OUTPUT **/
+		Logger logger = p.getLogger(rcID);
 		for (String msg : logger.getAllLogMessages())
 		{
 			System.out.println(msg);

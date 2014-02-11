@@ -19,6 +19,10 @@
  - A **NodeMapper** needs to be defined to define when two Nodes across networks are equal. By default, this is determined by comparing the canonical node names through Node.getName(true) in DefaultNodeMapper. This can be customized by making a custom implementation of NodeMapper.
  - An **EdgeOntology** provides the semantic interpretation of the interaction (edge) types. Through this ontology, it becomes possible to define synonyms/abbreviations (e.g. 'post-translational modification' and 'ptm') as well as sub- and superclasses (e.g. 'phosphorylation' and 'ptm'). The EdgeOntology heavily defines the output of the differential algorithms. A comprehensive set of interaction types is already defined in DefaultEdgeOntolgy and can be further extended.
 
+## Project ####
+ - a **Project** keeps track of all ontologies as well as a set of RunConfigurations, i.e. meaningful combinations of reference and condition-specific networks that can be used as input for the Diffany algorithms
+ - Each **RunConfiguration** should be added to the project, and the unique ID assigned to it can be used to run the configuration and retrieve the log file afterwards
+
 ## Algorithm ####
 
  - cf. package *be.svlandeg.diffany.algorithms*

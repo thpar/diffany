@@ -133,7 +133,7 @@ public class RunProjectTask implements Task {
 		}
 		
 		addDifferentialNetworks(project.getRunConfiguration(runId).getDifferentialNetworks(), cyProject);
-		displayReport(project.getLogger());
+		displayReport(project.getLogger(runId));
 	}
 
 	/**

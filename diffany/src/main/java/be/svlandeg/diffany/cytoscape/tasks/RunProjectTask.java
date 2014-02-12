@@ -29,7 +29,7 @@ import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
-import be.svlandeg.diffany.cytoscape.InvalidProjectException;
+import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
 
 /**
@@ -116,24 +116,23 @@ public class RunProjectTask implements Task {
 	/**
 	 * Select the correct run mode and run the {@link CyProject}
 	 * 
-	 * @throws InvalidProjectException thrown when a {@link Project} can not yet be constructed from 
+	 * @throws InvalidRunConfigurationException thrown when a {@link Project} can not yet be constructed from 
 	 * the information in the {@link CyProject}
 	 */
-	private void runAlgorithm() throws InvalidProjectException{
-		Project project = cyProject.getProject();
-		int runId = cyProject.getCurrentRunConfigID();
+	private void runAlgorithm() throws InvalidRunConfigurationException{
+		int runId = cyProject.generateRunConfiguration();
 		
 		switch(cyProject.getMode()){
 		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(project, runId, cyProject.getCutoff());
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject, runId, cyProject.getCutoff());
 			break;
 		case REF_TO_ALL:	
-			new CalculateDiff().calculateOneDifferentialNetwork(project, runId, cyProject.getCutoff());
+			new CalculateDiff().calculateOneDifferentialNetwork(cyProject, runId, cyProject.getCutoff());
 			break;
 		}
 		
-		addDifferentialNetworks(project.getRunConfiguration(runId).getDifferentialNetworks(), cyProject);
-		displayReport(project.getLogger(runId));
+		addDifferentialNetworks(cyProject.getRunConfiguration(runId).getDifferentialNetworks(), cyProject);
+		displayReport(cyProject.getLogger(runId));
 	}
 
 	/**

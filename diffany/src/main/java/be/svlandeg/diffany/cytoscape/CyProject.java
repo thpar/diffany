@@ -16,8 +16,6 @@ import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
 
 
 
@@ -28,10 +26,7 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  * @author Thomas Van Parys
  *
  */
-public class CyProject{
-
-	//TODO Project should become parent class of CyProject	
-	private Project project;
+public class CyProject extends Project{
 	
 	/**
 	 * Internal class to link a differential network to its overlap counterpart.
@@ -52,14 +47,11 @@ public class CyProject{
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
 	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();
 
-	private EdgeOntology edgeOntology = new DefaultEdgeOntology();
-	private NodeMapper nodeMapper = new DefaultNodeMapper();
 
 	/**
 	 * Default project name
 	 */
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
-	private String name = DEFAULT_PROJECT_NAME;
 	
 	private double cutoff = 0;
 	
@@ -91,12 +83,12 @@ public class CyProject{
 		}
 	}
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
-	private int currentRunConfigID;
 	
 	/**
 	 * Construct empty project
 	 */
 	public CyProject(){
+		super(DEFAULT_PROJECT_NAME, new DefaultEdgeOntology(), new DefaultNodeMapper());
 	}
 	
 	/**
@@ -143,33 +135,34 @@ public class CyProject{
 
 
 	/**
-	 * Generates a {@link Project} from current information.
+	 * Generates a {@link RunConfiguration} and adds it to the {@link Project}
 	 * 
-	 * @return a newly constructed {@link Project}
-	 * @throws InvalidProjectException is thrown when not all necessary parameters are there to construct the {@link Project}
+	 * @return the ID of the generated {@link RunConfiguration}
+	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
-	public Project getProject() throws InvalidProjectException{
+	public int generateRunConfiguration() throws InvalidRunConfigurationException{
 		if (!canExecute()){
-			throw new InvalidProjectException();
+			throw new InvalidRunConfigurationException();
 		}
 		
 		CyNetworkBridge bridge = new CyNetworkBridge();
-		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), this.edgeOntology, this.nodeMapper);
+		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), 
+				this.edgeOntology, this.nodeMapper);
 		
 		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, this.edgeOntology, this.nodeMapper);
+			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, 
+					this.edgeOntology, this.nodeMapper);
 			condNets.add(condNet);			
 		}
 		
-		project = new Project(name, this.getEdgeOntology(), this.getNodeMapper());
 		RunConfiguration rc = new RunConfiguration (refNet, condNets);
-		currentRunConfigID = project.addRunConfiguration(rc);
+		int runConfigID = this.addRunConfiguration(rc);
 				
-		return project;
+		return runConfigID;
 	}
 
-
+	
 
 	
 
@@ -182,55 +175,7 @@ public class CyProject{
 		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
 	}
 
-	/**
-	 * Get the {@link EdgeOntology}.
-	 * 
-	 * @return the edge ontology defined for this project
-	 */
-	public EdgeOntology getEdgeOntology() {
-		return edgeOntology;
-	}
-
-	/**
-	 * Set the {@link EdgeOntology}.
-	 * @param edgeOntology the edge ontology defined for this project
-	 */
-	public void setEdgeOntology(EdgeOntology edgeOntology) {
-		this.edgeOntology = edgeOntology;
-	}
-
-	/**
-	 * Get the {@link NodeMapper}.
-	 * @return node mapper defined for this project
-	 */
-	public NodeMapper getNodeMapper() {
-		return nodeMapper;
-	}
-
-	/**
-	 * Set the {@link NodeMapper}.
-	 * @param nodeMapper node mapper defined for this project
-	 */
-	public void setNodeMapper(NodeMapper nodeMapper) {
-		this.nodeMapper = nodeMapper;
-	}
-
-	/**
-	 * Get the project name
-	 * @return the project name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Set the project name
-	 * @param name the project name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	
 	/**
 	 * Add a pair of resulting networks to the {@link CyProject}, probably after the algoritm has been run.
 	 * A result pair consists of a differential network and its overlap counterpart.
@@ -398,15 +343,6 @@ public class CyProject{
 		
 	}
 
-	/**
-	 * Temporary solution to retrieve the ID of the lastly created {@link RunConfiguration}
-	 * 
-	 * @return ID of the {@link RunConfiguration} created with the last getProject(). 
-	 */
-	public int getCurrentRunConfigID() {
-		return currentRunConfigID;
-	}
-	
 	
 	
 }

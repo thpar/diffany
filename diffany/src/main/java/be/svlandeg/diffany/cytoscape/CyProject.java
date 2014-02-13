@@ -6,10 +6,18 @@ import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 
 import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Network;
+import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.concepts.RunConfiguration;
@@ -20,8 +28,7 @@ import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 
 /**
- * The CyProject keeps the GUI settings for the current project and is able to generate a 
- * {@link Project} object to execute the algorithm.
+ * TODO: update documentation
  * 
  * @author Thomas Van Parys
  *
@@ -47,48 +54,22 @@ public class CyProject extends Project{
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
 	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();
 
-
-	/**
-	 * Default project name
-	 */
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	
-	private double cutoff = 0;
+	/**
+	 * A project keeps tracks of information about one collection of {@link CyNetwork}s
+	 */
+	private CyRootNetwork collection;
+	private int latestRunConfigID;
+
 	
 	/**
-	 * Allows for switching between algorithm execution modes.
-	 * 
-	 * @author Thomas Van Parys
-	 *
+	 * Construct empty project, named after the collection
 	 */
-	public enum ComparisonMode{
-		/**
-		 * The reference network gets compared against each condition network separately
-		 */
-		REF_PAIRWISE,
-		/**
-		 * The reference network gets compared against all condition networks at once
-		 */
-		REF_TO_ALL;
-		
-		@Override
-		public String toString(){
-			switch(this){
-			default:
-			case REF_PAIRWISE:
-				return "Pairwise";
-			case REF_TO_ALL:
-				return "One to all";
-			}
-		}
-	}
-	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
-	
-	/**
-	 * Construct empty project
-	 */
-	public CyProject(){
-		super(DEFAULT_PROJECT_NAME, new DefaultEdgeOntology(), new DefaultNodeMapper());
+	public CyProject(CyRootNetwork collection){
+		super(collection.getRow(collection).get(CyNetwork.NAME, String.class), 
+				new DefaultEdgeOntology(), new DefaultNodeMapper());
+		this.collection = collection;
 	}
 	
 	/**
@@ -133,7 +114,18 @@ public class CyProject extends Project{
 		this.conditionalNetworks = conditionalNetworks;
 	}
 
-
+	/**
+	 * Add a conditional network to this {@link CyProject}
+	 * @param conditionalNetwork
+	 */
+	public void addConditionalNetwork(CyNetwork conditionalNetwork){
+		this.conditionalNetworks.add(conditionalNetwork);
+	}
+	
+	private void addResultPair(CyNetwork cyDiffNet, CyNetwork cyOverlapNet) {
+		this.resultNetworks.add(new CyNetworkPair(cyDiffNet, cyOverlapNet));
+	}
+	
 	/**
 	 * Generates a {@link RunConfiguration} and adds it to the {@link Project}
 	 * 
@@ -158,7 +150,9 @@ public class CyProject extends Project{
 		
 		RunConfiguration rc = new RunConfiguration (refNet, condNets);
 		int runConfigID = this.addRunConfiguration(rc);
-				
+		
+		this.latestRunConfigID = runConfigID;
+		
 		return runConfigID;
 	}
 
@@ -175,17 +169,6 @@ public class CyProject extends Project{
 		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
 	}
 
-	
-	/**
-	 * Add a pair of resulting networks to the {@link CyProject}, probably after the algoritm has been run.
-	 * A result pair consists of a differential network and its overlap counterpart.
-	 * 
-	 * @param diffNet the resulting differential network
-	 * @param overlapNet its overlapping counterpart
-	 */
-	public void addResultPair(CyNetwork diffNet, CyNetwork overlapNet) {
-		this.resultNetworks.add(new CyNetworkPair(diffNet, overlapNet));
-	}
 	
 	/**
 	 * Get the set of resulting network pairs.
@@ -300,48 +283,99 @@ public class CyProject extends Project{
 		return idSet.contains(suid);
 	}
 
-	/**
-	 * Returns the execution mode for this project: Reference against all conditional networks, one at a time or all at once.
-	 * @return execution (or comparison) mode of the project
-	 */
-	public ComparisonMode getMode() {
-		return mode;
-	}
-
-	/**
-	 * Set the comparison mode for this project.
-	 * 
-	 * @param mode
-	 */
-	public void setMode(ComparisonMode mode) {
-		this.mode = mode;
-	}
-
-	/**
-	 * Get the edge cutoff.
-	 * @return the edge cutoff.
-	 */
-	public double getCutoff() {
-		return cutoff;
-	}
-	
-	/**
-	 * Set the edge cutoff
-	 * @param cutoff the edge cutoff
-	 */
-	public void setCutoff(double cutoff) {
-		this.cutoff = cutoff;
-	}
 
 	/**
 	 * Iterates the {@link CyNetwork}s in the project and removes those that 
 	 * have been destroyed in the Cytoscape session.
 	 */
 	public void removeDestroyedNetworks() {
-		// TODO Auto-generated method stub
-		
+		// TODO delete networks from the project when destroyed
 		
 	}
+
+	/**
+	 * 
+	 * @return network collection containing the {@link CyNetwork}s for this project.
+	 */
+	public CyRootNetwork getCollection() {
+		return collection;
+	}
+
+	/**
+	 * @return the ID of the {@link RunConfiguration} that was generated and added to the {@link Project} 
+	 * the last.
+	 */
+	public int getLatestRunConfigID() {
+		return latestRunConfigID;
+	}
+
+	@Override
+	public String toString() {
+		return this.getName();
+	}
+
+	/**
+	 * After running a {@link RunConfiguration}, the newly generated differential and overlap networks
+	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProct}
+	 */
+	public void update(Services services) {
+		RunConfiguration runConfig = this.getRunConfiguration(latestRunConfigID);
+		this.addDifferentialNetworks(runConfig.getDifferentialNetworks(), services);
+	}
+	
+	
+	/**
+	 * Convert and add the resulting networks after running the algorithm. Add these networks to the set of 
+	 * results of this {@link CyProject}
+	 * 
+	 * @param differentialNetworks
+	 * @param cyProject
+	 */
+	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, Services services) {
+		CyNetworkBridge bridge = new CyNetworkBridge();
+		for (DifferentialNetwork network : differentialNetworks){
+			
+			//add the diffnet
+			CyNetwork cyDiffNet = this.addCyNetwork(bridge, network, services);
+			
+			//add the overlap
+			OverlappingNetwork overlap = network.getOverlappingNetwork();
+			CyNetwork cyOverlapNet = this.addCyNetwork(bridge, overlap, services);
+			
+			this.addResultPair(cyDiffNet, cyOverlapNet);
+		}
+		
+	}
+	
+	
+
+	/**
+	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
+	 * with Cytoscape as a {@link CySubNetwork} of the currently selected Network Collection.
+	 * 
+	 * 
+	 * @param bridge the {@link Network} to {@link CyNetwork} convertor
+	 * @param network the {@link Network} to be added
+	 * @return the created and added {@link CyNetwork}
+	 */
+	private CyNetwork addCyNetwork(CyNetworkBridge bridge, Network network, Services services){
+		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
+		
+		services.getCyNetworkManager().addNetwork(cyNet);
+		
+		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNet);
+		services.getCyNetworkViewManager().addNetworkView(cyView);
+		
+		CyLayoutAlgorithm layout = services.getCyLayoutAlgorithmManager().getLayout("force-directed");
+		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
+		TaskManager<?, ?> tm = services.getTaskManager();
+		tm.execute(it);
+		
+		return cyNet;
+	}
+	
+	
+	
 
 	
 	

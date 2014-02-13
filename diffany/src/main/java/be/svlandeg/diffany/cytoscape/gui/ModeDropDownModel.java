@@ -5,6 +5,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 import be.svlandeg.diffany.cytoscape.CyProject;
+import be.svlandeg.diffany.cytoscape.Model;
 
 /**
  * Model for the {@link JComboBox} displaying available alorithm modes.
@@ -16,21 +17,21 @@ public class ModeDropDownModel extends AbstractListModel implements ComboBoxMode
 
 	
 	private static final long serialVersionUID = 1L;
-	private CyProject.ComparisonMode selected;
+	private Model.ComparisonMode selected;
 	
 	@Override
 	public int getSize() {
-		return CyProject.ComparisonMode.values().length;
+		return Model.ComparisonMode.values().length;
 	}
 
 	@Override
 	public Object getElementAt(int index) {
-		return CyProject.ComparisonMode.values()[index];
+		return Model.ComparisonMode.values()[index];
 	}
 
 	@Override
 	public void setSelectedItem(Object anItem) {
-		this.selected = (CyProject.ComparisonMode)anItem;
+		this.selected = (Model.ComparisonMode)anItem;
 	}
 
 	@Override

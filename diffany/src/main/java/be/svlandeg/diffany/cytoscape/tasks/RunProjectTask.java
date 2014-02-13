@@ -122,64 +122,19 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidRunConfigurationException{
 		int runId = cyProject.generateRunConfiguration();
 		
-		switch(cyProject.getMode()){
+		switch(model.getMode()){
 		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject, runId, cyProject.getCutoff());
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject, runId, model.getCutoff());
 			break;
 		case REF_TO_ALL:	
-			new CalculateDiff().calculateOneDifferentialNetwork(cyProject, runId, cyProject.getCutoff());
+			new CalculateDiff().calculateOneDifferentialNetwork(cyProject, runId, model.getCutoff());
 			break;
 		}
 		
-		addDifferentialNetworks(cyProject.getRunConfiguration(runId).getDifferentialNetworks(), cyProject);
+		cyProject.update(model.getServices());
 		displayReport(cyProject.getLogger(runId));
 	}
 
-	/**
-	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
-	 * with Cytoscape as a {@link CySubNetwork} of the currently selected Network Collection.
-	 * 
-	 * 
-	 * @param bridge the {@link Network} to {@link CyNetwork} convertor
-	 * @param network the {@link Network} to be added
-	 * @return the created and added {@link CyNetwork}
-	 */
-	private CyNetwork addCyNetwork(CyNetworkBridge bridge, Network network){
-		CyRootNetwork collection = model.getSelectedCollection();
-		
-		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
-		model.getServices().getCyNetworkManager().addNetwork(cyNet);
-		
-		CyNetworkView cyView = model.getServices().getCyNetworkViewFactory().createNetworkView(cyNet);
-		model.getServices().getCyNetworkViewManager().addNetworkView(cyView);
-		
-		CyLayoutAlgorithm layout = model.getServices().getCyLayoutAlgorithmManager().getLayout("force-directed");
-		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
-		TaskManager<?, ?> tm = model.getServices().getTaskManager();
-		tm.execute(it);
-		
-		return cyNet;
-	}
 	
-	/**
-	 * Convert and add the resulting networks after running the algorithm.
-	 * 
-	 * @param differentialNetworks
-	 * @param cyProject
-	 */
-	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, CyProject cyProject) {
-		CyNetworkBridge bridge = new CyNetworkBridge();
-		for (DifferentialNetwork network : differentialNetworks){
-			
-			//add the diffnet
-			CyNetwork cyDiffNet = this.addCyNetwork(bridge, network);
-						
-			//add the overlap
-			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetwork cyOverlapNet = this.addCyNetwork(bridge, overlap);
-			
-			cyProject.addResultPair(cyDiffNet, cyOverlapNet);
-		}
-		
-	}
+	
 }

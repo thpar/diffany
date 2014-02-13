@@ -38,7 +38,7 @@ public class CopyLayout extends AbstractLayoutAlgorithm{
 			Object layoutContext, Set<View<CyNode>> nodesToLayOut,
 			String layoutAttribute) {
 		
-		CopyLayoutTask task = new CopyLayoutTask(model.getCurrentProject(), 
+		CopyLayoutTask task = new CopyLayoutTask(model.getSelectedProject(), 
 				NAME, networkView, nodesToLayOut, layoutAttribute, undo);
 		TaskIterator it = new TaskIterator();
 		it.append(task);

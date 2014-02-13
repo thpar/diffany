@@ -38,8 +38,8 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.CyProject;
-import be.svlandeg.diffany.cytoscape.CyProject.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.Model.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
@@ -57,7 +57,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private static final long serialVersionUID = 1L;
 	private Model model;
 	private JComboBox collectionDropDown;
-	private CollectionDropDownModel collectionModel;
+	private ProjectDropDownModel collectionModel;
 	private SelectionTableModel networkTableModel;
 
 	private final String COLLECTION_ACTION = "collection";
@@ -86,9 +86,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		JPanel runPanel = new JPanel();
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runButton = new JButton(new RunProjectAction(model));
-		runButton.setEnabled(model.getCurrentProject().canExecute());
+		runButton.setEnabled(model.getSelectedProject().canExecute());
 		
-		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
+		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getSelectedProject())));
 		runPanel.add(runButton);
 		
 		
@@ -107,8 +107,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
 		
-		collectionModel = new CollectionDropDownModel();
-		collectionModel.refresh(model.getNetworkCollections());
+		collectionModel = new ProjectDropDownModel(model);
+		collectionModel.refresh();
 		collectionDropDown = new JComboBox(collectionModel);
 		collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
@@ -123,8 +123,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.add(collPanel, BorderLayout.NORTH);
 		
 		networkTableModel = new SelectionTableModel();
-		if (model.getSelectedCollection() !=null){
-			networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		if (model.getSelectedProject() !=null){
+			networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
 		}
 		table = new JTable(networkTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
@@ -159,7 +159,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		ModeDropDownModel modeDropDownModel = new ModeDropDownModel();
 		JComboBox modeDropDown = new JComboBox(modeDropDownModel);
 		
-		modeDropDown.setSelectedItem(model.getCurrentProject().getMode());
+		modeDropDown.setSelectedItem(model.getMode());
 		modeDropDown.setActionCommand(MODE_ACTION);
 		modeDropDown.addActionListener(this);
 		modePanel.add(modeDropDown);
@@ -167,7 +167,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.add(modePanel);
 		
 		JPanel cutoffPanel = new JPanel();
-		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCurrentProject().getCutoff(),
+		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCutoff(),
 				0, 1000, 0.01);
 		JSpinner cutoffSpinner = new JSpinner(spinModel);
 		cutoffPanel.add(new JLabel("Cutoff"));
@@ -203,11 +203,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void update(Observable o, Object arg) {
 		//triggered on model update
-		this.collectionModel.refresh(model.getNetworkCollections());
+		this.collectionModel.refresh();
 		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
-		if (model.getSelectedCollection() !=null){
-			this.networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		if (model.getSelectedProject() !=null){
+			this.networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
 		} else {
 			this.networkTableModel.clear();
 		}
@@ -220,16 +220,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			//triggered on collection dropdown action
 			JComboBox source = (JComboBox)e.getSource();
 			Object selected = source.getSelectedItem();
-			if (selected instanceof NetworkEntry){
-				NetworkEntry entry = (NetworkEntry)selected;
-				model.setSelectedCollection((CyRootNetwork)entry.getNetwork());							
+			if (selected instanceof CyProject){
+				CyProject entry = (CyProject)selected;
+				model.setSelectedProject(entry);							
 			} else {
-				model.setSelectedCollection(null);
+				model.setSelectedProject(null);
 			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
-			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();
-			model.getCurrentProject().setMode(mode);
+			ComparisonMode mode = (Model.ComparisonMode)source.getSelectedItem();
+			model.setMode(mode);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * Reads the selections in the GUI and reflects them in the current {@link CyProject} object.
 	 */
 	public void refreshCyProject(){
-		CyProject cyProject = model.getCurrentProject();
+		CyProject cyProject = model.getSelectedProject();
 		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
 		cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
 		this.runButton.setEnabled(cyProject.canExecute());
@@ -258,7 +258,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void stateChanged(ChangeEvent e) {
 		//triggered when cutoff spinner is changed
 		JSpinner spinner = (JSpinner)e.getSource();
-		this.model.getCurrentProject().setCutoff((Double)spinner.getValue());
+		this.model.setCutoff((Double)spinner.getValue());
 		
 	}
 

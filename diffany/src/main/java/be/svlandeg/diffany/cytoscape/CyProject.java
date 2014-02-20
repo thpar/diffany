@@ -54,12 +54,11 @@ public class CyProject{
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
 	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();
 
-	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	
 	/**
 	 * The Project used to run the algorithm and keep track of the ontologies
 	 */
-	Project project;
+	private Project project;
 	/**
 	 * A project keeps tracks of information about one collection of {@link CyNetwork}s
 	 */
@@ -91,6 +90,9 @@ public class CyProject{
 	 */
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
 		this.referenceNetwork = referenceNetwork;
+		if (referenceNetwork != null){
+			this.registerReferenceNetwork(referenceNetwork);			
+		}
 	}
 
 	/**
@@ -116,15 +118,11 @@ public class CyProject{
 	 */
 	public void setConditionalNetworks(Set<CyNetwork> conditionalNetworks) {
 		this.conditionalNetworks = conditionalNetworks;
+		for (CyNetwork condNet : conditionalNetworks){
+			this.registerConditionNetwork(condNet);
+		}
 	}
 
-	/**
-	 * Add a conditional network to this {@link CyProject}
-	 * @param conditionalNetwork
-	 */
-	public void addConditionalNetwork(CyNetwork conditionalNetwork){
-		this.conditionalNetworks.add(conditionalNetwork);
-	}
 	
 	private void addResultPair(CyNetwork cyDiffNet, CyNetwork cyOverlapNet) {
 		this.resultNetworks.add(new CyNetworkPair(cyDiffNet, cyOverlapNet));
@@ -386,8 +384,28 @@ public class CyProject{
 		return project;
 	}
 	
-	
-	
+	/**
+	 * When a network gets added or is altered in any way, the {@link Project} needs
+	 * to be notified of this, in order to be able to update its ontologies.
+	 * 
+	 * @param network the {@link CyNetwork} containing new information
+	 */
+	private void registerReferenceNetwork(CyNetwork network){
+		CyNetworkBridge bridge = new CyNetworkBridge();
+		ReferenceNetwork net = bridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		this.project.registerSourceNetwork(net);
+	}
+	/**
+	 * When a network gets added or is altered in any way, the {@link Project} needs
+	 * to be notified of this, in order to be able to update its ontologies.
+	 * 
+	 * @param network the {@link CyNetwork} containing new information
+	 */
+	private void registerConditionNetwork(CyNetwork network){
+		CyNetworkBridge bridge = new CyNetworkBridge();
+		ConditionNetwork net = bridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		this.project.registerSourceNetwork(net);
+	}
 
 	
 	

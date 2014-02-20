@@ -41,7 +41,7 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	{
 		if (category == null)
 		{
-			String errormsg = "The provided source type ('" + category + "') should not be null!";
+			String errormsg = "The provided differential type ('" + category + "') should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		if (teo.isPosDirected(category))
@@ -64,7 +64,7 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	{
 		if (category == null)
 		{
-			String errormsg = "The provided source type ('" + category + "') should not be null!";
+			String errormsg = "The provided differential type ('" + category + "') should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		if (teo.isPosDirected(category) || teo.isPosSymm(category))

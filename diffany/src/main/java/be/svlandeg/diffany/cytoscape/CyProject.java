@@ -319,7 +319,6 @@ public class CyProject{
 
 	@Override
 	public String toString() {
-		System.out.println("Loading name: " + this.getName());
 		return this.getName();
 	}
 

@@ -218,10 +218,17 @@ public class Model extends Observable implements NetworkAddedListener,
 		//triggered when one or more rows change in a CyTable
 		
 		//check if the row is part of a table we care about				
-		//if yes, refresh the visual styles and reapply them on the views
+		//if yes, refresh the visual styles and re-apply them on the views
 		Long suid = e.getSource().getSUID();
+		
 		if (this.selectedProject.containsTableId(suid)){
-			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(this, this.getSelectedProject());
+			CyNetwork net = this.selectedProject.getNetworkByTableId(suid);
+			if (this.selectedProject.isReferenceNetwork(net)){
+				this.selectedProject.registerReferenceNetwork(net);
+			} else if (this.selectedProject.isConditionalNetwork(net)){
+				this.selectedProject.registerConditionNetwork(net);
+			}
+			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(this, this.selectedProject);
 			TaskIterator it = tf.createTaskIterator();
 			DialogTaskManager dtm = services.getDialogTaskManager();
 			dtm.execute(it);		

@@ -313,6 +313,30 @@ public class CyProject{
 		return idSet.contains(suid);
 	}
 
+	public CyNetwork getNetworkByTableId(Long suid) {
+		CyNetwork foundNet = null;
+		for (CyNetwork net : this.getAllNetworks()){
+			if (net.getDefaultEdgeTable().getSUID() == suid){
+				foundNet = net;
+			}
+		}
+		return foundNet;
+	}
+	
+	public boolean isSourceNetwork(CyNetwork net){
+		return this.getAllSourceNetworks().contains(net);
+	}
+	public boolean isDiffNetwork(CyNetwork net){
+		return this.getAllDifferentialNetworks().contains(net);
+	}
+	public boolean isReferenceNetwork(CyNetwork net){
+		return net == this.referenceNetwork;
+	}
+	public boolean isConditionalNetwork(CyNetwork net){
+		return this.conditionalNetworks.contains(net);
+	}
+	
+
 
 	/**
 	 * Iterates the {@link CyNetwork}s in the project and removes those that 
@@ -418,7 +442,7 @@ public class CyProject{
 	 * 
 	 * @param network the {@link CyNetwork} containing new information
 	 */
-	private void registerReferenceNetwork(CyNetwork network){
+	public void registerReferenceNetwork(CyNetwork network){
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		ReferenceNetwork net = bridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
 		this.project.registerSourceNetwork(net);
@@ -429,12 +453,13 @@ public class CyProject{
 	 * 
 	 * @param network the {@link CyNetwork} containing new information
 	 */
-	private void registerConditionNetwork(CyNetwork network){
+	public void registerConditionNetwork(CyNetwork network){
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		ConditionNetwork net = bridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
 		this.project.registerSourceNetwork(net);
 	}
 
+	
 	
 	
 }

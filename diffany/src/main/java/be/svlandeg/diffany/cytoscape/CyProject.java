@@ -193,6 +193,21 @@ public class CyProject{
 		return interactions;
 	}
 	
+	public Set<String> getAllSourceInteractions(){
+		Set<String> interactions = new HashSet<String>();
+		for (CyNetwork net : getAllSourceNetworks()){
+			interactions.addAll(this.getInteractions(net));
+		}
+		return interactions;
+	}
+	public Set<String> getAllDifferentialInteractions(){
+		Set<String> interactions = new HashSet<String>();
+		for (CyNetwork net : getAllDifferentialNetworks()){
+			interactions.addAll(this.getInteractions(net));
+		}
+		return interactions;
+	}
+	
 	/**
 	 * Get all interactions within a single network
 	 *   
@@ -231,6 +246,26 @@ public class CyProject{
 		return networks;
 	}
 	
+	private Set<CyNetwork> getAllSourceNetworks(){
+		Set<CyNetwork> networks = new HashSet<CyNetwork>();
+		if (this.referenceNetwork !=null){
+			networks.add(this.referenceNetwork);			
+		}
+		for (CyNetwork conNet : this.conditionalNetworks){
+			networks.add(conNet);
+		}
+		for (CyNetworkPair netPair : this.resultNetworks){
+			networks.add(netPair.overlapNet);
+		}
+		return networks;
+	}
+	private Set<CyNetwork> getAllDifferentialNetworks(){
+		Set<CyNetwork> networks = new HashSet<CyNetwork>();
+		for (CyNetworkPair netPair : this.resultNetworks){
+			networks.add(netPair.diffNet);
+		}
+		return networks;
+	}
 	/**
 	 * Returns all {@link CyNetworkView}s that correspond to the source networks (reference, conditional and overlap) in this project.
 	 * @param services the collection of Cytoscape services.
@@ -240,16 +275,9 @@ public class CyProject{
 		Set<CyNetworkView> views = new HashSet<CyNetworkView>();
 
 		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
-		if (this.referenceNetwork !=null){
-			Collection<CyNetworkView> refViews = viewManager.getNetworkViews(referenceNetwork);
-			views.addAll(refViews);			
-		}
 		
-		for (CyNetwork condNet : conditionalNetworks){
-			views.addAll(viewManager.getNetworkViews(condNet));
-		}
-		for (CyNetworkPair resPair : resultNetworks){
-			views.addAll(viewManager.getNetworkViews(resPair.overlapNet));
+		for (CyNetwork net : this.getAllSourceNetworks()){
+			views.addAll(viewManager.getNetworkViews(net));
 		}
 		return views;
 	}
@@ -264,8 +292,8 @@ public class CyProject{
 
 		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
 		
-		for (CyNetworkPair resPair : resultNetworks){
-			views.addAll(viewManager.getNetworkViews(resPair.diffNet));
+		for (CyNetwork net : this.getAllDifferentialNetworks()){
+			views.addAll(viewManager.getNetworkViews(net));
 		}
 		return views;
 	}

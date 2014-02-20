@@ -135,7 +135,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	
 	/**
 	 * Returns the current {@link CyProject}.
-	 * @return the current {@link CyProject}
+	 * @return the current {@link CyProject}. null when no project has been selected yet or no collections are loaded at all.
 	 */
 	public CyProject getSelectedProject() {
 		return selectedProject;

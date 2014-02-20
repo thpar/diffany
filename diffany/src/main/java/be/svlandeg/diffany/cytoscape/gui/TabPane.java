@@ -63,6 +63,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
 	private JButton runButton;
+	private JButton updateVizButton;
 	private JTable table;
 	
 	/**
@@ -80,17 +81,25 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		this.add(createNetworkSelectionPanel());
-		
+
 		this.add(createOptionPanel());
-		
+
 		JPanel runPanel = new JPanel();
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runButton = new JButton(new RunProjectAction(model));
-		runButton.setEnabled(model.getSelectedProject().canExecute());
+		updateVizButton = new JButton(new UpdateVisualStyleAction(model));
 		
-		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getSelectedProject())));
+		runPanel.add(updateVizButton);
 		runPanel.add(runButton);
 		
+		CyProject selectedProject = model.getSelectedProject();
+		if (selectedProject!=null){
+			runButton.setEnabled(model.getSelectedProject().canExecute());
+			updateVizButton.setEnabled(true);
+		} else {
+			runButton.setEnabled(false);
+			updateVizButton.setEnabled(false);
+		}
 		
 		this.add(runPanel);
 	}
@@ -103,12 +112,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the network list.
 	 */
 	private Component createNetworkSelectionPanel(){
+
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
 		
 		collectionModel = new ProjectDropDownModel(model);
 		collectionModel.refresh();
+		
 		collectionDropDown = new JComboBox(collectionModel);
 		collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
@@ -222,9 +233,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			Object selected = source.getSelectedItem();
 			if (selected instanceof CyProject){
 				CyProject entry = (CyProject)selected;
-				model.setSelectedProject(entry);							
+				model.setSelectedProject(entry);
+				this.updateVizButton.setEnabled(true);
 			} else {
 				model.setSelectedProject(null);
+				this.updateVizButton.setEnabled(false);
 			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
@@ -235,7 +248,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		// triggered when the data of the table has changed
+		// triggered when the data of the network selection table has changed
 		this.refreshCyProject();
 	}
 	

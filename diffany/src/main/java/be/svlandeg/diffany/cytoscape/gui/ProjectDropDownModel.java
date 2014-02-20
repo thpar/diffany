@@ -28,7 +28,7 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 	
 	private boolean empty = true;
 	
-	private List<CyProject> entries;
+	private List<CyProject> entries = new ArrayList<CyProject>();
 	
 	private CyProject selectedEntry;
 

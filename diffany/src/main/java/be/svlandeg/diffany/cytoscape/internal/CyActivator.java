@@ -47,7 +47,7 @@ public class CyActivator extends AbstractCyActivator
 
 	@Override
 	public void start(BundleContext context) throws Exception{
-
+		
 		//load all needed services
 		Services services = new Services();
 		services.setCyApplicationManager(getService(context, CyApplicationManager.class));
@@ -68,7 +68,6 @@ public class CyActivator extends AbstractCyActivator
 				getService(context, VisualMappingFunctionFactory.class,"(mapping.type=passthrough)"));
 
 		services.setCyLayoutAlgorithmManager(getService(context, CyLayoutAlgorithmManager.class));
-
 		
 		CySwingApplication swingApplication = getService(context, CySwingApplication.class);
 		
@@ -78,8 +77,8 @@ public class CyActivator extends AbstractCyActivator
 		
 		//Create and register the control panel
 		TabPane sidePane = new TabPane(model);
-		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
+		registerService(context,sidePane,CytoPanelComponent.class, new Properties());
 		
 		//register action to run the current Diffany project
 		RunProjectAction runProjectAction = new RunProjectAction(model,"Run Diffany project");
@@ -112,6 +111,7 @@ public class CyActivator extends AbstractCyActivator
 		CopyLayout copyLayout = new CopyLayout(model);
 		Properties myLayoutProps = new Properties();
 		registerService(context,copyLayout,CyLayoutAlgorithm.class, myLayoutProps);
+		
 	}
 
 }

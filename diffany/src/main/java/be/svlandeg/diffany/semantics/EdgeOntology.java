@@ -22,12 +22,11 @@ public abstract class EdgeOntology
 	// when querying this map, always run the key through getCanonicalForm(edgeType) !
 	protected Map<String, String> mapCanSourceTypeToCategory;
 
-	protected static Boolean default_symmetry = false;
 	protected Map<String, Boolean> allSourceCategories;
-	protected Set<String> allDiffCategories;
-
 	protected Set<String> posSourceCats;
 	protected Set<String> negSourceCats;
+	
+	protected static Boolean default_symmetry = false;
 
 	/**
 	 * Create an empty ontology, with no edge categories or any mapping defined
@@ -229,30 +228,17 @@ public abstract class EdgeOntology
 	 * Matching is done independent of upper/lower casing.
 	 * 
 	 * @param category the original category of the edge in a network
-	 * @return whether or not this edge category is present in this ontology
+	 * @return whether or not this edge category is present in this ontology (will always be false when the category is null)
 	 */
 	public boolean isDefinedSourceCat(String category)
-	{
-		if (category == null)
-			return false;
-		return allSourceCategories.containsKey(category);
-	}
-
-	/**
-	 * Check whether a certain edge category is present in this ontology.
-	 * Matching is done independent of upper/lower casing.
-	 * 
-	 * @param category the category of the edge in a (differential) network
-	 * @return whether or not this edge category is present in this ontology
-	 */
-	protected boolean isDefinedDiffCategory(String category)
 	{
 		if (category == null)
 		{
 			return false;
 		}
-		return allDiffCategories.contains(category);
+		return allSourceCategories.containsKey(category);
 	}
+
 
 	/**
 	 * Return all source (input) categories present in this ontology.
@@ -263,41 +249,6 @@ public abstract class EdgeOntology
 		return allSourceCategories.keySet();
 	}
 
-	/**
-	 * Return all differential categories present in this ontology.
-	 * @return the set of categories mapped in this ontology.
-	 */
-	public Set<String> getAllDiffCategories()
-	{
-		return allDiffCategories;
-	}
-
-	/**
-	 * Add a differential category (casing independent)
-	 * @param category the category that should be added to this ontology
-	 * @throws IllegalArgumentException when the category is null
-	 */
-	protected void addDiffCategory(String category) throws IllegalArgumentException
-	{
-		if (category == null)
-		{
-			String errormsg = "The differential category should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		allDiffCategories.add(category.toLowerCase());
-	}
-
-	/**
-	 * Add a number of differential categories (casing independent)
-	 * @param categories the categories that should be added to this ontology
-	 */
-	protected void addDiffCategories(Set<String> categories)
-	{
-		for (String c : categories)
-		{
-			addDiffCategory(c);
-		}
-	}
 
 	/**
 	 * Retrieve the symmetry state of a source edgeType in this ontology
@@ -316,8 +267,10 @@ public abstract class EdgeOntology
 
 	/**
 	 * Add a source category (casing independent)
+	 * 
 	 * @param category the category that should be added to this ontology
 	 * @param symmetric whether or not the category is symmetric
+	 * 
 	 * @throws IllegalArgumentException when the category is null
 	 */
 	public void addSourceCategory(String category, boolean symmetric) throws IllegalArgumentException
@@ -352,7 +305,7 @@ public abstract class EdgeOntology
 	 * considering only alphanumerical characters with the method {@link getCanonicalForm()}.
 	 * 
 	 * @param edgeType the original edge type - its canonical form should not have been defined in this ontology before
-	 * @param category the category to be assigned to this edge type
+	 * @param category the category to be assigned to this edge type - this category should already exist in this ontology!
 	 * @param overwrite determines whether or not this function may overwrite previous mappings of the same edge type
 	 * 
 	 * @throws IllegalArgumentException when the canonical form of the edge type was already mapped in this ontology and overwrite is off,
@@ -381,9 +334,6 @@ public abstract class EdgeOntology
 	{
 		allSourceCategories = new HashMap<String, Boolean>();
 		allSourceCategories.put(VOID_TYPE, true);
-
-		allDiffCategories = new HashSet<String>();
-		allDiffCategories.add(VOID_TYPE);
 
 		mapCanSourceTypeToCategory = new HashMap<String, String>();
 		addSourceCategoryMapping(VOID_TYPE, VOID_TYPE, false);

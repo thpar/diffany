@@ -23,29 +23,35 @@ public abstract class EdgeDrawing
 	/**
 	 * Define the Color object of an edge by edge category.
 	 * 
-	 * @param category the category of the edge interaction
+	 * @param edgeType the type of the edge interaction
+	 * 
 	 * @return the color of the edge
+	 * @throws IllegalArgumentException when the provided category is null or undefined in the edgeOntology
 	 */
-	protected abstract Color getEdgeColor(String category);
+	protected abstract Color getEdgeColor(String edgeType) throws IllegalArgumentException;
 	
 	/**
 	 * Define the ArrowHead object of an edge by edge category.
 	 * 
-	 * @param category the category of the edge interaction
+	 * @param edgeType the type of the edge interaction
+	 * 
 	 * @return the arrowhead of the edge
+	 * @throws IllegalArgumentException when the provided category is null or undefined in the edgeOntology
 	 */
-	protected abstract ArrowHead getEdgeArrowHead(String category);
+	protected abstract ArrowHead getEdgeArrowHead(String edgeType) throws IllegalArgumentException;
 	
 	
 	/**
 	 * Define the full visual style of an edge by edge category.
 	 * 
-	 * @param category the category of the edge interaction
+	 * @param edgeType the type of the edge interaction
+	 * 
 	 * @return a EdgeStyle object which specifies how the edge should be drawn
+	 * @throws IllegalArgumentException when the provided category is null or undefined in the edgeOntology
 	 */
-	public EdgeStyle getEdgeStyle(String category)
+	public EdgeStyle getEdgeStyle(String edgeType) throws IllegalArgumentException
 	{
-		return new EdgeStyle(getEdgeColor(category), getEdgeArrowHead(category));
+		return new EdgeStyle(getEdgeColor(edgeType), getEdgeArrowHead(edgeType));
 	}
 	
 	/** 

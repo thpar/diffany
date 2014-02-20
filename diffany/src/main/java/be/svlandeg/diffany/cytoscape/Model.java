@@ -1,6 +1,8 @@
 package be.svlandeg.diffany.cytoscape;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
@@ -40,19 +42,55 @@ public class Model extends Observable implements NetworkAddedListener,
 	private Services services;
 	
 	/**
-	 * The current project
+	 * The currently selected project
 	 */
-	private CyProject currentProject = new CyProject();
+	private CyProject selectedProject;
 
 	/**
-	 * Network collection that's currently selected
+	 * All projects, one for each network collection
 	 */
-	private CyRootNetwork selectedCollection;
+	private Map<CyRootNetwork, CyProject> projects = new HashMap<CyRootNetwork, CyProject>();
+	
 	
 	private VisualSourceStyle sourceStyle;
 	private VisualDiffStyle diffStyle;
 
 	private JFrame swingApplication;
+	
+	/**
+	 * Allows for switching between algorithm execution modes.
+	 * 
+	 * @author Thomas Van Parys
+	 *
+	 */
+	public enum ComparisonMode{
+		/**
+		 * The reference network gets compared against each condition network separately
+		 */
+		REF_PAIRWISE,
+		/**
+		 * The reference network gets compared against all condition networks at once
+		 */
+		REF_TO_ALL;
+		
+		@Override
+		public String toString(){
+			switch(this){
+			default:
+			case REF_PAIRWISE:
+				return "Pairwise";
+			case REF_TO_ALL:
+				return "One to all";
+			}
+		}
+	}
+	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
+
+	private double cutoff = 0;
+
+	
+
+	
 	
 	/**
 	 * Construct a new model and adds the app services to it
@@ -66,24 +104,6 @@ public class Model extends Observable implements NetworkAddedListener,
 	}
 	
 
-	/**
-	 * Iterates over all networks in the current cytoscape session and returns the set of network collections.
-	 * 
-	 * @return the set of network collections.
-	 */
-	public Set<CyRootNetwork> getNetworkCollections(){
-		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
-		CyRootNetworkManager rootNetManager = services.getCyRootNetworkManager();
-		
-		Set<CyRootNetwork> set = new HashSet<CyRootNetwork>();
-		
-		for (CyNetwork net : allNetworks){
-			set.add(rootNetManager.getRootNetwork(net));
-		}
-		
-		return set;
-	}
-	
 	/**
 	 * Returns the {@link CyNetwork} with given name.
 	 * Returns null if no such network exists.
@@ -114,22 +134,12 @@ public class Model extends Observable implements NetworkAddedListener,
 	
 	/**
 	 * Returns the current {@link CyProject}.
-	 * @return the current {@link CyProject}
+	 * @return the current {@link CyProject}. null when no project has been selected yet or no collections are loaded at all.
 	 */
-	public CyProject getCurrentProject() {
-		return currentProject;
+	public CyProject getSelectedProject() {
+		return selectedProject;
 	}
 	
-	
-	/**
-	 * The collection of networks (aka the {@link CyRootNetwork}) that will be
-	 * used for the algorithm. 
-	 * @return The collection of networks (aka the {@link CyRootNetwork}) that will be used for the algorithm. Returns null
-	 * if no collection has been selected (yet).
-	 */
-	public CyRootNetwork getSelectedCollection() {
-		return selectedCollection;
-	}
 
 	/**
 	 * Set the collection of networks (aka the {@link CyRootNetwork}) that will be
@@ -139,8 +149,8 @@ public class Model extends Observable implements NetworkAddedListener,
 	 * 
 	 * @param selectedCollection
 	 */
-	public void setSelectedCollection(CyRootNetwork selectedCollection) {
-		this.selectedCollection = selectedCollection;
+	public void setSelectedProject(CyProject selectedProject) {
+		this.selectedProject = selectedProject;
 		setChanged();
 		notifyObservers();
 	}
@@ -149,6 +159,15 @@ public class Model extends Observable implements NetworkAddedListener,
 	@Override
 	public void handleEvent(NetworkAddedEvent e) {
 		//triggered on network added
+		
+		//add new project if needed
+		CyRootNetworkManager rootNetManager = services.getCyRootNetworkManager();
+		Set<CyRootNetwork> collections = projects.keySet();
+		CyRootNetwork rootNet = rootNetManager.getRootNetwork(e.getNetwork());
+		if (!collections.contains(rootNet)){
+			this.addProject(new CyProject(rootNet));
+		}
+		
 		setChanged();
 		notifyObservers();
 	}
@@ -156,6 +175,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	@Override
 	public void handleEvent(NetworkDestroyedEvent e) {
 		//triggered on network destroyed
+		//TODO: destroyed networks should be removed from their projects
 		setChanged();
 		notifyObservers();
 	}
@@ -200,8 +220,8 @@ public class Model extends Observable implements NetworkAddedListener,
 		//check if the row is part of a table we care about				
 		//if yes, refresh the visual styles and reapply them on the views
 		Long suid = e.getSource().getSUID();
-		if (this.currentProject.containsTableId(suid)){
-			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(this, this.getCurrentProject());
+		if (this.selectedProject.containsTableId(suid)){
+			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(this, this.getSelectedProject());
 			TaskIterator it = tf.createTaskIterator();
 			DialogTaskManager dtm = services.getDialogTaskManager();
 			dtm.execute(it);		
@@ -209,5 +229,47 @@ public class Model extends Observable implements NetworkAddedListener,
 		
 	}
 
+
+	public Collection<CyProject> getProjects() {
+		return projects.values();
+	}
 	
+	
+	public void addProject(CyProject project){
+		this.projects.put(project.getCollection(), project);
+	}
+
+
+	/**
+	 * Returns the execution mode for this project: Reference against all conditional networks, one at a time or all at once.
+	 * @return execution (or comparison) mode of the project
+	 */
+	public ComparisonMode getMode() {
+		return mode;
+	}
+
+	
+
+	public void setMode(ComparisonMode mode) {
+		this.mode = mode;
+	}
+
+
+	/**
+	 * Get the edge cutoff.
+	 * @return the edge cutoff.
+	 */
+	public double getCutoff() {
+		return cutoff;
+	}
+	
+	/**
+	 * Set the edge cutoff
+	 * @param cutoff the edge cutoff
+	 */
+	public void setCutoff(double cutoff) {
+		this.cutoff  = cutoff;
+	}
+
+
 }

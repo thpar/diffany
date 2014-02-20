@@ -30,6 +30,16 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 	 * @param model the Diffany {@link Model}
 	 * @param cyProject {@link CyProject} containing the {@link CyNetwork}s to update.
 	 */
+	public UpdateVisualStyleAction(Model model){
+		super(BUTTON_TITLE);
+		this.model = model;
+	}
+	
+	/**
+	 * 
+	 * @param model the Diffany {@link Model}
+	 * @param cyProject {@link CyProject} containing the {@link CyNetwork}s to update.
+	 */
 	public UpdateVisualStyleAction(Model model, CyProject cyProject){
 		super(BUTTON_TITLE);
 		this.model = model;
@@ -38,7 +48,12 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
+		UpdateVisualStyleTaskFactory tf;
+		if (cyProject != null){
+			tf = new UpdateVisualStyleTaskFactory(model, cyProject);			
+		} else {
+			tf = new UpdateVisualStyleTaskFactory(model, model.getSelectedProject());			
+		}
 
 		if (tf.isReady()){
 			TaskIterator it = tf.createTaskIterator();			

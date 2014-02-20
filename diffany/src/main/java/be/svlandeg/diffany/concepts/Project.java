@@ -9,9 +9,9 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * A project consists of a number of input and output networks within a certain session. 
+ * A project consists of a number of Diffany runs and the ontology settings within one user session.
  * 
- * It contains one or more {@link RunConfiguration}s which is a subset of networks that can together
+ * Specifically, it contains one or more {@link RunConfiguration}s which is a subset of networks that can together
  * be used as input for the Diffany algorithms.
  * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types,
  * and a {@link NodeMapper} that establishes equality of nodes across networks.
@@ -29,15 +29,11 @@ public class Project
 	protected EdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
 	
-	protected Logger logger;
-
-	// runs by IDs
+	// runs by Configuration IDs
 	protected Map<Integer, RunConfiguration> runs;
 	
-	// all networks in the project, by ID
-	protected Map<Integer, ReferenceNetwork> refNetworks;
-	protected Map<Integer, ConditionNetwork> condNetworks;
-	protected Map<Integer, DifferentialNetwork> diffNetworks;
+	// loggers by Configuration ID
+	protected Map<Integer, Logger> runLogs;
 
 	/**
 	 * Create a new project with a node mapper and an edge ontology that can interpret the differential edges.
@@ -60,11 +56,8 @@ public class Project
 		setEdgeOntology(edgeOntology);
 		setNodeMapper(nodeMapper);
 		
-		logger = new Logger();
 		runs = new HashMap<Integer, RunConfiguration>();
-		refNetworks = new HashMap<Integer, ReferenceNetwork>();
-		condNetworks = new HashMap<Integer, ConditionNetwork>();
-		diffNetworks = new HashMap<Integer, DifferentialNetwork>();
+		runLogs = new HashMap<Integer, Logger>();
 	}
 	
 	/**
@@ -93,7 +86,6 @@ public class Project
 	 */
 	public int addRunConfiguration(RunConfiguration rc)
 	{
-		// TODO: how should the runconfiguration talk to the sets of networks in the project?!
 		int nextID;
 		if (runs.keySet().isEmpty())
 		{
@@ -104,124 +96,41 @@ public class Project
 			nextID = Collections.max(runs.keySet()) + 1;
 		}
 		runs.put(nextID, rc);
+		runLogs.put(nextID, new Logger());
 		return nextID;
 	}
 	
 	/**
-	 * Get a specific ReferenceNetwork by its unique ID
-	 * 
-	 * @param refID the (unique) ID of the reference network
-	 * @return the corresponding ReferenceNetwork
-	 * @throws IllegalArgumentException if the ID is invalid (i.e. non-existing)
+	 * Get the logger for a specific runconfiguration. The logs will be empty if the runconfiguration was not deployed.
+	 * @return the logs of a specific run configuration.
 	 */
-	public ReferenceNetwork getReferenceNetwork(int refID) throws IllegalArgumentException
+	public Logger getLogger(int configurationID)
 	{
-		if (! refNetworks.containsKey(refID))
-		{
-			String errormsg = "Unknown reference network ID " + refID + " in Project " + name;
-			throw new IllegalArgumentException(errormsg);
-		}
-		return refNetworks.get(refID);
+		return runLogs.get(configurationID);
 	}
 	
-	/**
-	 * Add a new ReferenceNetwork to this project
-	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
-	 * 
-	 * @param ref the new ReferenceNetwork
-	 * @return the unique ID assigned to the ReferenceNetwork in this project
-	 */
-	public int addReferenceNetwork(ReferenceNetwork ref)
-	{
-		int nextID;
-		if (refNetworks.keySet().isEmpty())
-		{
-			nextID = 1;
-		}
-		else
-		{
-			nextID = Collections.max(refNetworks.keySet()) + 1;
-		}
-		refNetworks.put(nextID, ref);
-		return nextID;
-	}
 	
 	/**
-	 * Get a specific ConditionNetwork by its unique ID
+	 * Register a new source network to this project, updating the EdgeOntology and NodeMapper instances.
+	 * A source network is a reference, condition-specific, or an overlapping network.
+	 * There is NO check whether or not this network was added previously.
 	 * 
-	 * @param condID the (unique) ID of the condition-specific network
-	 * @return the corresponding ConditionNetwork
-	 * @throws IllegalArgumentException if the ID is invalid (i.e. non-existing)
+	 * @param source the new Network that will be used within this project
 	 */
-	public ConditionNetwork getConditionNetwork(int condID) throws IllegalArgumentException
+	public void registerSourceNetwork(Network source)
 	{
-		if (! condNetworks.containsKey(condID))
+		for (Edge e : source.getEdges())
 		{
-			String errormsg = "Unknown condition-specific network ID " + condID + " in Project " + name;
-			throw new IllegalArgumentException(errormsg);
+			String edgeType = e.getType();
+			if (! edgeOntology.isDefinedSourceType(edgeType))
+			{
+				boolean symmetrical = e.isSymmetrical();
+				
+				// add the new edge type as its own separate (singleton) source category
+				edgeOntology.addSourceCategory(edgeType, symmetrical);
+				edgeOntology.addSourceCategoryMapping(edgeType, edgeType, false);
+			}
 		}
-		return condNetworks.get(condID);
-	}
-	
-	/**
-	 * Add a new ConditionNetwork to this project
-	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
-	 * 
-	 * @param cond the new ConditionNetwork
-	 * @return the unique ID assigned to the ConditionNetwork in this project
-	 */
-	public int addConditionNetwork(ConditionNetwork cond)
-	{
-		int nextID;
-		if (condNetworks.keySet().isEmpty())
-		{
-			nextID = 1;
-		}
-		else
-		{
-			nextID = Collections.max(condNetworks.keySet()) + 1;
-		}
-		condNetworks.put(nextID, cond);
-		return nextID;
-	}
-	
-	/**
-	 * Get a specific DifferentialNetwork by its unique ID
-	 * 
-	 * @param configurationID the (unique) ID of the configuration
-	 * @return the corresponding RunConfiguration
-	 * @throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
-	 */
-	public DifferentialNetwork getDifferentialNetwork(int diffID) throws IllegalArgumentException
-	{
-		if (! diffNetworks.containsKey(diffID))
-		{
-			String errormsg = "Unknown configuration ID " + diffID + " in Project " + name;
-			throw new IllegalArgumentException(errormsg);
-		}
-		return diffNetworks.get(diffID);
-	}
-	
-	/**
-	 * Add a new DifferentialNetwork to this project
-	 * There is NO check whether or not this network was added previously, it will simply be duplicated with a new ID!
-	 * 
-	 * @param diff the new DifferentialNetwork
-	 * @return the unique ID assigned to the DifferentialNetwork in this project
-	 */
-	public int addDifferentialNetwork(DifferentialNetwork diff)
-	{
-		int nextID;
-		if (diffNetworks.keySet().isEmpty())
-		{
-			nextID = 1;
-		}
-		else
-		{
-			nextID = Collections.max(diffNetworks.keySet()) + 1;
-		}
-		diffNetworks.put(nextID, diff);
-		return nextID;
 	}
 
 	/**
@@ -288,14 +197,5 @@ public class Project
 		return nodeMapper;
 	}
 
-	
-	/**
-	 * Get the logger object, that contains all log messages from the last run.
-	 * @return the logger object of this project.
-	 */
-	public Logger getLogger()
-	{
-		return logger;
-	}
 
 }

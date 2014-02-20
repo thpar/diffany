@@ -12,23 +12,23 @@ import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
  */
 public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 {
-	
+
 	protected static Color neg_paint = Color.RED;
 	protected static Color pos_paint = Color.GREEN;
 	protected static Color default_paint = Color.GRAY;
-	
+
 	protected static ArrowHead neg_ah = ArrowHead.ARROW;
 	protected static ArrowHead pos_ah = ArrowHead.ARROW;
 	protected static ArrowHead default_ah = ArrowHead.NONE;
-	
+
 	protected static ArrowHead symm_ah = ArrowHead.NONE;
-	
+
 	protected static double min_weight = 0;
 	protected static double max_weight = 20;
-	
-	
+
 	/**
 	 * Create a new DefaultDiffEdgeDrawing object, given a specific EdgeOntology object.
+	 * 
 	 * @param teo the TreeEdgeOntology that can semantically interpret the interaction types
 	 */
 	public DefaultDiffEdgeDrawing(TreeEdgeOntology teo)
@@ -36,13 +36,13 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 		super(teo);
 	}
 
-	
 	@Override
 	public ArrowHead getEdgeArrowHead(String category)
 	{
 		if (category == null)
 		{
-			return default_ah;
+			String errormsg = "The provided source type ('" + category + "') should not be null!";
+			throw new IllegalArgumentException(errormsg);
 		}
 		if (teo.isPosDirected(category))
 		{
@@ -58,13 +58,14 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 		}
 		return default_ah;
 	}
-	
+
 	@Override
 	public Color getEdgeColor(String category)
 	{
 		if (category == null)
 		{
-			return default_paint;
+			String errormsg = "The provided source type ('" + category + "') should not be null!";
+			throw new IllegalArgumentException(errormsg);
 		}
 		if (teo.isPosDirected(category) || teo.isPosSymm(category))
 		{
@@ -77,19 +78,17 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 		return default_paint;
 	}
 
-
 	@Override
-    public double getMaxWeight()
-    {
+	public double getMaxWeight()
+	{
 		// TODO v2.0: is this reasonable?
-	    return max_weight;
-    }
-
+		return max_weight;
+	}
 
 	@Override
-    public double getMinWeight()
-    {
-	    return min_weight;
-    }
+	public double getMinWeight()
+	{
+		return min_weight;
+	}
 
 }

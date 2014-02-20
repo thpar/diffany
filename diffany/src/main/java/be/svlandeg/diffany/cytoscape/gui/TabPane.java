@@ -38,9 +38,8 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
 import be.svlandeg.diffany.cytoscape.CyProject;
-import be.svlandeg.diffany.cytoscape.CyProject.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.Model;
-import be.svlandeg.diffany.cytoscape.NetworkEntry;
+import be.svlandeg.diffany.cytoscape.Model.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
@@ -57,12 +56,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private static final long serialVersionUID = 1L;
 	private Model model;
 	private JComboBox collectionDropDown;
-	private CollectionDropDownModel collectionModel;
+	private ProjectDropDownModel collectionModel;
 	private SelectionTableModel networkTableModel;
 
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
 	private JButton runButton;
+	private JButton updateVizButton;
 	private JTable table;
 	
 	/**
@@ -80,17 +80,25 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
 		this.add(createNetworkSelectionPanel());
-		
+
 		this.add(createOptionPanel());
-		
+
 		JPanel runPanel = new JPanel();
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runButton = new JButton(new RunProjectAction(model));
-		runButton.setEnabled(model.getCurrentProject().canExecute());
+		updateVizButton = new JButton(new UpdateVisualStyleAction(model));
 		
-		runPanel.add(new JButton(new UpdateVisualStyleAction(model, model.getCurrentProject())));
+		runPanel.add(updateVizButton);
 		runPanel.add(runButton);
 		
+		CyProject selectedProject = model.getSelectedProject();
+		if (selectedProject!=null){
+			runButton.setEnabled(model.getSelectedProject().canExecute());
+			updateVizButton.setEnabled(true);
+		} else {
+			runButton.setEnabled(false);
+			updateVizButton.setEnabled(false);
+		}
 		
 		this.add(runPanel);
 	}
@@ -103,12 +111,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return {@link JPanel} containing the network list.
 	 */
 	private Component createNetworkSelectionPanel(){
+
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
 		
-		collectionModel = new CollectionDropDownModel();
-		collectionModel.refresh(model.getNetworkCollections());
+		collectionModel = new ProjectDropDownModel(model);
+		collectionModel.refresh();
+		
 		collectionDropDown = new JComboBox(collectionModel);
 		collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
@@ -123,8 +133,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.add(collPanel, BorderLayout.NORTH);
 		
 		networkTableModel = new SelectionTableModel();
-		if (model.getSelectedCollection() !=null){
-			networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		if (model.getSelectedProject() !=null){
+			networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
 		}
 		table = new JTable(networkTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
@@ -159,7 +169,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		ModeDropDownModel modeDropDownModel = new ModeDropDownModel();
 		JComboBox modeDropDown = new JComboBox(modeDropDownModel);
 		
-		modeDropDown.setSelectedItem(model.getCurrentProject().getMode());
+		modeDropDown.setSelectedItem(model.getMode());
 		modeDropDown.setActionCommand(MODE_ACTION);
 		modeDropDown.addActionListener(this);
 		modePanel.add(modeDropDown);
@@ -167,7 +177,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.add(modePanel);
 		
 		JPanel cutoffPanel = new JPanel();
-		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCurrentProject().getCutoff(),
+		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCutoff(),
 				0, 1000, 0.01);
 		JSpinner cutoffSpinner = new JSpinner(spinModel);
 		cutoffPanel.add(new JLabel("Cutoff"));
@@ -203,11 +213,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void update(Observable o, Object arg) {
 		//triggered on model update
-		this.collectionModel.refresh(model.getNetworkCollections());
+		this.collectionModel.refresh();
 		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
-		if (model.getSelectedCollection() !=null){
-			this.networkTableModel.refresh(model.getSelectedCollection().getSubNetworkList());			
+		if (model.getSelectedProject() !=null){
+			this.networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
 		} else {
 			this.networkTableModel.clear();
 		}
@@ -220,22 +230,24 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			//triggered on collection dropdown action
 			JComboBox source = (JComboBox)e.getSource();
 			Object selected = source.getSelectedItem();
-			if (selected instanceof NetworkEntry){
-				NetworkEntry entry = (NetworkEntry)selected;
-				model.setSelectedCollection((CyRootNetwork)entry.getNetwork());							
+			if (selected instanceof CyProject){
+				CyProject entry = (CyProject)selected;
+				model.setSelectedProject(entry);
+				this.updateVizButton.setEnabled(true);
 			} else {
-				model.setSelectedCollection(null);
+				model.setSelectedProject(null);
+				this.updateVizButton.setEnabled(false);
 			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();
-			ComparisonMode mode = (CyProject.ComparisonMode)source.getSelectedItem();
-			model.getCurrentProject().setMode(mode);
+			ComparisonMode mode = (Model.ComparisonMode)source.getSelectedItem();
+			model.setMode(mode);
 		}
 	}
 
 	@Override
 	public void tableChanged(TableModelEvent e) {
-		// triggered when the data of the table has changed
+		// triggered when the data of the network selection table has changed
 		this.refreshCyProject();
 	}
 	
@@ -243,9 +255,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * Reads the selections in the GUI and reflects them in the current {@link CyProject} object.
 	 */
 	public void refreshCyProject(){
-		CyProject cyProject = model.getCurrentProject();
-		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
+		CyProject cyProject = model.getSelectedProject();
 		cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
+		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
 		this.runButton.setEnabled(cyProject.canExecute());
 		
 		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
@@ -258,7 +270,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void stateChanged(ChangeEvent e) {
 		//triggered when cutoff spinner is changed
 		JSpinner spinner = (JSpinner)e.getSource();
-		this.model.getCurrentProject().setCutoff((Double)spinner.getValue());
+		this.model.setCutoff((Double)spinner.getValue());
 		
 	}
 

@@ -7,7 +7,7 @@ package be.svlandeg.diffany.cytoscape;
  * @author Thomas Van Parys
  *
  */
-public class InvalidProjectException extends Exception {
+public class InvalidRunConfigurationException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

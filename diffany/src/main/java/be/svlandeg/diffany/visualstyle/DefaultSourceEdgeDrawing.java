@@ -57,8 +57,11 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 			{
 				return foundColor;
 			}
+			return neutral_paint;
 		}
-		return neutral_paint;
+		String errormsg = "The provided source type ('" + edgeType + "') is not known in the edge ontology!";
+		errormsg += " Make sure to register all source networks to the Project before running the visualisation.";
+		throw new IllegalArgumentException(errormsg);
 	}
 
 	@Override
@@ -82,8 +85,11 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 			{
 				return symm_ah;
 			}
+			return neutral_ah;
 		}
-		return neutral_ah;
+		String errormsg = "The provided source type ('" + edgeType + "') is not known in the edge ontology!";
+		errormsg += " Make sure to register all source networks to the Project before running the visualisation.";
+		throw new IllegalArgumentException(errormsg);
 	}
 
 	/**
@@ -93,7 +99,7 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 	 * @param p the Color object specifying its visual properties
 	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, or when the type is not defined in this ontology
 	 */
-	public void addColor(String parentCat, Color p)
+	public void addColor(String parentCat, Color p) throws IllegalArgumentException
 	{
 		if (parentCat == null || p == null)
 		{
@@ -120,7 +126,7 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 	 * @param p the ArrowHead object specifying its visual properties
 	 * @throws IllegalArgumentException when the either of the arguments are null, when the type was previously assigned to a paint object, or when the type is not defined in this ontology
 	 */
-	public void addArrowHead(String parentCat, ArrowHead p)
+	public void addArrowHead(String parentCat, ArrowHead p) throws IllegalArgumentException
 	{
 		if (parentCat == null || p == null)
 		{

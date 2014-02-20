@@ -6,8 +6,16 @@ import java.awt.Color;
 
 import org.junit.Test;
 
+import be.svlandeg.diffany.concepts.Condition;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /** 
@@ -26,8 +34,24 @@ public class TestVisual
 	public void testAll()
 	{
 		EdgeOntology eo = new DefaultEdgeOntology();
+		NodeMapper nm = new DefaultNodeMapper();
+		Project p = new Project("testProject", eo, nm);
 		
 		// ****** SOURCE NETWORK ****** //
+		
+		ReferenceNetwork ref = new ReferenceNetwork("testRef", nm);
+		ref.addEdge(new Edge("somethingRandom", new Node("A"), new Node("B"), true));
+		ref.addEdge(new Edge("increase", new Node("C"), new Node("D"), true));
+		ref.addEdge(new Edge("ppiptm", new Node("E"), new Node("F"), true));
+		ref.addEdge(new Edge("increasewhatever", new Node("G"), new Node("H"), true));
+		p.registerSourceNetwork(ref);
+		
+		Condition c = new Condition("sample condition");
+		ConditionNetwork cn = new ConditionNetwork("testCon", c, nm);
+		cn.addEdge(new Edge("increase_ppi", new Node("I"), new Node("J"), true));
+		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
+		p.registerSourceNetwork(cn);
+		
 		
 		// process types
 		assertColorInSource("ppi" , Color.YELLOW, eo);
@@ -71,7 +95,6 @@ public class TestVisual
 		assertColorInSource("increase_ppi", Color.LIGHT_GRAY, eo);
 		assertColorInSource("somethingrandom", Color.LIGHT_GRAY, eo);
 		assertColorInSource("neutral", Color.LIGHT_GRAY, eo);
-		assertColorInSource(null, Color.LIGHT_GRAY, eo);
 		
 		assertArrowHeadInSource("somethingRandom", ArrowHead.NONE, eo);
 		assertArrowHeadInSource("increase", ArrowHead.NONE, eo);
@@ -80,7 +103,6 @@ public class TestVisual
 		assertArrowHeadInSource("increase_ppi", ArrowHead.NONE, eo);
 		assertArrowHeadInSource("somethingrandom", ArrowHead.NONE, eo);
 		assertArrowHeadInSource("neutral", ArrowHead.NONE, eo);
-		assertArrowHeadInSource(null, ArrowHead.NONE, eo);
 		
 		// ****** DIFFERENTIAL NETWORK ****** //
 		
@@ -127,7 +149,6 @@ public class TestVisual
 		assertColorInDifferential("ptm", Color.GRAY, eo);
 		assertColorInDifferential("regulate", Color.GRAY, eo);
 		assertColorInDifferential("neutral", Color.GRAY, eo);
-		assertColorInDifferential(null, Color.GRAY, eo);
 		
 		assertArrowHeadInDifferential("regulates", ArrowHead.NONE, eo);
 		assertArrowHeadInDifferential("somethingRandom", ArrowHead.NONE, eo);
@@ -139,7 +160,6 @@ public class TestVisual
 		assertArrowHeadInDifferential("ptm", ArrowHead.NONE, eo);
 		assertArrowHeadInDifferential("regulate", ArrowHead.NONE, eo);
 		assertArrowHeadInDifferential("neutral", ArrowHead.NONE, eo);
-		assertArrowHeadInDifferential(null, ArrowHead.NONE, eo);
 	}
 	
 	

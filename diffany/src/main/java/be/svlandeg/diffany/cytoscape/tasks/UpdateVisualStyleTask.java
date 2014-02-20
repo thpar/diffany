@@ -41,7 +41,7 @@ public class UpdateVisualStyleTask implements Task {
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		
 		Set<String> interactions = cyProject.getAllInteractions();
-		EdgeOntology ontology = cyProject.getEdgeOntology();
+		EdgeOntology ontology = cyProject.getProject().getEdgeOntology();
 		
 		model.getSourceStyle().updateInteractionMappings(interactions, ontology);
 		model.getDiffStyle().updateInteractionMappings(interactions, ontology);

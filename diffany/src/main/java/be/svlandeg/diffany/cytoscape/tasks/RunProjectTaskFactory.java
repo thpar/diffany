@@ -28,15 +28,15 @@ public class RunProjectTaskFactory implements TaskFactory {
 	public TaskIterator createTaskIterator() {
 		TaskIterator it = new TaskIterator();
 		
-		it.append(new RunProjectTask(model, model.getCurrentProject()));
-		it.append(new UpdateVisualStyleTask(model, model.getCurrentProject()));
+		it.append(new RunProjectTask(model, model.getSelectedProject()));
+		it.append(new UpdateVisualStyleTask(model, model.getSelectedProject()));
 		
 		return it;
 	}
 
 	@Override
 	public boolean isReady() {
-		return model.getCurrentProject().canExecute();
+		return model.getSelectedProject().canExecute();
 	}
 
 }

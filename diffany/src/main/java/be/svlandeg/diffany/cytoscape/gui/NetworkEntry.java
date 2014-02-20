@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.cytoscape;
+package be.svlandeg.diffany.cytoscape.gui;
 
 import org.cytoscape.model.CyNetwork;
 

@@ -12,8 +12,6 @@ import javax.swing.table.AbstractTableModel;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
-import be.svlandeg.diffany.cytoscape.NetworkEntry;
-
 /**
  * The model for the list of available networks in the selected collection.
  * 

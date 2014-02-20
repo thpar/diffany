@@ -40,7 +40,6 @@ import org.cytoscape.work.swing.DialogTaskManager;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.Model.ComparisonMode;
-import be.svlandeg.diffany.cytoscape.NetworkEntry;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;

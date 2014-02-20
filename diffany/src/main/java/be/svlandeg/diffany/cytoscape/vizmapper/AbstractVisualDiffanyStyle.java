@@ -97,12 +97,6 @@ public abstract class AbstractVisualDiffanyStyle {
 		//edge default style
 		
 		//edge basic mappings
-		VisualMappingFunctionFactory vmffC = services.getVisualMappingFunctionFactory("continuous");
-		ContinuousMapping<Double, Double> edgeWidthMapping = (ContinuousMapping<Double, Double>)vmffC.createVisualMappingFunction(CyNetworkBridge.WEIGHT, Double.class, BasicVisualLexicon.EDGE_WIDTH);
-		edgeWidthMapping.addPoint(0d, new BoundaryRangeValues<Double>(0.0d,0.0d,0.0d));
-		edgeWidthMapping.addPoint(10d, new BoundaryRangeValues<Double>(30d,30d,30d));
-		vis.addVisualMappingFunction(edgeWidthMapping);
-		
 		PassthroughMapping<String, ?> edgeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
 		vis.addVisualMappingFunction(edgeLabelMapping);
 		

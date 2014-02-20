@@ -124,15 +124,15 @@ public class RunProjectTask implements Task {
 		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject, runId, model.getCutoff());
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, model.getCutoff());
 			break;
 		case REF_TO_ALL:	
-			new CalculateDiff().calculateOneDifferentialNetwork(cyProject, runId, model.getCutoff());
+			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, model.getCutoff());
 			break;
 		}
 		
 		cyProject.update(model.getServices());
-		displayReport(cyProject.getLogger(runId));
+		displayReport(cyProject.getProject().getLogger(runId));
 	}
 
 	

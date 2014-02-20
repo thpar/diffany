@@ -33,7 +33,7 @@ import be.svlandeg.diffany.semantics.DefaultNodeMapper;
  * @author Thomas Van Parys
  *
  */
-public class CyProject extends Project{
+public class CyProject{
 	
 	/**
 	 * Internal class to link a differential network to its overlap counterpart.
@@ -57,6 +57,10 @@ public class CyProject extends Project{
 	public static final String DEFAULT_PROJECT_NAME = "New Project";
 	
 	/**
+	 * The Project used to run the algorithm and keep track of the ontologies
+	 */
+	Project project;
+	/**
 	 * A project keeps tracks of information about one collection of {@link CyNetwork}s
 	 */
 	private CyRootNetwork collection;
@@ -67,9 +71,9 @@ public class CyProject extends Project{
 	 * Construct empty project, named after the collection
 	 */
 	public CyProject(CyRootNetwork collection){
-		super(collection.getRow(collection).get(CyNetwork.NAME, String.class), 
-				new DefaultEdgeOntology(), new DefaultNodeMapper());
 		this.collection = collection;
+		String name = collection.getRow(collection).get(CyNetwork.NAME, String.class);
+		this.project = new Project(name, new DefaultEdgeOntology(), new DefaultNodeMapper());
 	}
 	
 	/**
@@ -139,17 +143,17 @@ public class CyProject extends Project{
 		
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), 
-				this.edgeOntology, this.nodeMapper);
+				project.getEdgeOntology(), project.getNodeMapper());
 		
 		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
 			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, 
-					this.edgeOntology, this.nodeMapper);
+					project.getEdgeOntology(), project.getNodeMapper());
 			condNets.add(condNet);			
 		}
 		
 		RunConfiguration rc = new RunConfiguration (refNet, condNets);
-		int runConfigID = this.addRunConfiguration(rc);
+		int runConfigID = project.addRunConfiguration(rc);
 		
 		this.latestRunConfigID = runConfigID;
 		
@@ -308,9 +312,14 @@ public class CyProject extends Project{
 	public int getLatestRunConfigID() {
 		return latestRunConfigID;
 	}
+	
+	public String getName(){
+		return this.project.getName();
+	}
 
 	@Override
 	public String toString() {
+		System.out.println("Loading name: " + this.getName());
 		return this.getName();
 	}
 
@@ -319,7 +328,7 @@ public class CyProject extends Project{
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProct}
 	 */
 	public void update(Services services) {
-		RunConfiguration runConfig = this.getRunConfiguration(latestRunConfigID);
+		RunConfiguration runConfig = project.getRunConfiguration(latestRunConfigID);
 		this.addDifferentialNetworks(runConfig.getDifferentialNetworks(), services);
 	}
 	
@@ -372,6 +381,10 @@ public class CyProject extends Project{
 		tm.execute(it);
 		
 		return cyNet;
+	}
+
+	public Project getProject() {
+		return project;
 	}
 	
 	

@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.cytoscape.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,14 +48,34 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 
 	public void refresh(){
 		int oldSize = this.entries.size();
+		//add new projects
 		for (CyProject project : model.getProjects()){
-			entries.add(project);
+			if (!entries.contains(project)){
+				entries.add(project);				
+			}
 		}
 		
-		if (model.getProjects().size() == 0){
+		//remove deleted projects
+		Set<CyProject> toRemove = new HashSet<CyProject>();
+		for (CyProject entry : entries){
+			if (!model.getProjects().contains(entry)){
+				toRemove.add(entry);
+			}
+		}
+		entries.removeAll(toRemove);
+		
+		if (!entries.contains(this.selectedEntry)){
+			this.selectedEntry = null;
+		}
+		
+		if (entries.size() == 0){
 			empty = true;
 		} else {
 			empty = false;
+			//set an entry as selected
+			if (this.selectedEntry == null){
+				this.selectedEntry = entries.get(0);
+			}
 		}
 		this.fireContentsChanged(this, 0, oldSize);
 	}

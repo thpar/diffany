@@ -62,9 +62,9 @@ public class LoadExampleTask implements Task{
 		CyNetworkBridge bridge = new CyNetworkBridge();
 		
 		CyNetwork cyRefNet = bridge.createCyNetwork(refNet, services.getCyNetworkFactory());
-		networkManager.addNetwork(cyRefNet);
 		CyRootNetwork collection = rootNetworkManager.getRootNetwork(cyRefNet);
 		collection.getRow(collection).set(CyRootNetwork.NAME, exampleProject.getName());
+		networkManager.addNetwork(cyRefNet);
 		
 		CyNetworkView refView = viewFactory.createNetworkView(cyRefNet);
 		viewManager.addNetworkView(refView);

@@ -28,7 +28,8 @@ import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 
 /**
- * TODO: update documentation
+ * The CyProject keeps track of all project specific settings. It is linked to a Collection ({@link CyRootNetwork} at the one
+ * hand, and one {@link Project} at the other. 
  * 
  * @author Thomas Van Parys
  *
@@ -394,43 +395,16 @@ public class CyProject{
 		for (DifferentialNetwork network : differentialNetworks){
 			
 			//add the diffnet
-			CyNetwork cyDiffNet = this.addCyNetwork(bridge, network, services);
+			CyNetwork cyDiffNet = bridge.addCyNetwork(network, this.collection, services);
 			
 			//add the overlap
 			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetwork cyOverlapNet = this.addCyNetwork(bridge, overlap, services);
+			CyNetwork cyOverlapNet = bridge.addCyNetwork(overlap, this.collection, services);
 			
 			this.addResultPair(cyDiffNet, cyOverlapNet);
-		}
-		
+		}	
 	}
 	
-	
-
-	/**
-	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
-	 * with Cytoscape as a {@link CySubNetwork} of the currently selected Network Collection.
-	 * 
-	 * 
-	 * @param bridge the {@link Network} to {@link CyNetwork} convertor
-	 * @param network the {@link Network} to be added
-	 * @return the created and added {@link CyNetwork}
-	 */
-	private CyNetwork addCyNetwork(CyNetworkBridge bridge, Network network, Services services){
-		CyNetwork cyNet = bridge.createCyNetwork(network, collection);
-		
-		services.getCyNetworkManager().addNetwork(cyNet);
-		
-		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNet);
-		services.getCyNetworkViewManager().addNetworkView(cyView);
-		
-		CyLayoutAlgorithm layout = services.getCyLayoutAlgorithmManager().getLayout("force-directed");
-		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
-		TaskManager<?, ?> tm = services.getTaskManager();
-		tm.execute(it);
-		
-		return cyNet;
-	}
 
 	public Project getProject() {
 		return project;

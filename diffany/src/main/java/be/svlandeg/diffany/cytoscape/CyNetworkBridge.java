@@ -17,6 +17,10 @@ import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.view.layout.CyLayoutAlgorithm;
+import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 
 import be.svlandeg.diffany.concepts.Condition;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
@@ -25,6 +29,7 @@ import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -291,4 +296,33 @@ public class CyNetworkBridge {
 	private Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
 		return cyNetwork.getRow(cyEdge).get(WEIGHT, Double.class);
 	}
+	
+	
+	/**
+	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
+	 * with Cytoscape as a {@link CySubNetwork} of the given Collection.
+	 * 
+	 * 
+	 * @param network the {@link Network} to be added
+	 * @param collection the {@link CyRootNetwork} the new network should belong to.
+	 * @return the created and added {@link CyNetwork}
+	 */
+	public CyNetwork addCyNetwork(Network network, CyRootNetwork collection, Services services){
+		CyNetwork cyNet = this.createCyNetwork(network, collection);
+		
+		services.getCyNetworkManager().addNetwork(cyNet);
+		
+		CyNetworkView cyView = services.getCyNetworkViewFactory().createNetworkView(cyNet);
+		services.getCyNetworkViewManager().addNetworkView(cyView);
+		
+		CyLayoutAlgorithm layout = services.getCyLayoutAlgorithmManager().getLayout("force-directed");
+		TaskIterator it = layout.createTaskIterator(cyView, layout.createLayoutContext(), CyLayoutAlgorithm.ALL_NODE_VIEWS, null);
+		TaskManager<?, ?> tm = services.getTaskManager();
+		tm.execute(it);
+		
+		return cyNet;
+	}
+	
+	
+	
 }

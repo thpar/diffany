@@ -51,6 +51,8 @@ public class CyProject{
 		public CyNetwork overlapNet;
 	}
 	
+	//currently selected networks. These are used to update the VisualStyles and
+	//to construct the run configuration.
 	private CyNetwork referenceNetwork;
 	private Set<CyNetwork> conditionalNetworks = new HashSet<CyNetwork>();
 	private Set<CyNetworkPair> resultNetworks = new HashSet<CyNetworkPair>();
@@ -86,7 +88,8 @@ public class CyProject{
 	}
 
 	/**
-	 * Set the referenceNetwork for this project
+	 * Set the referenceNetwork for this project. Register it with the {@link Project}
+	 * 
 	 * @param referenceNetwork
 	 */
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
@@ -97,7 +100,8 @@ public class CyProject{
 	}
 
 	/**
-	 * Remove a conditional network from the list
+	 * Remove a conditional network from the list.
+	 * 
 	 * @param cyNetwork network to be removed
 	 */
 	public void removeConditionalNetwork(CyNetwork cyNetwork){
@@ -114,7 +118,7 @@ public class CyProject{
 	}
 
 	/**
-	 * Set the set of conditional networks for this project
+	 * Set the set of conditional networks for this project. Register them with the {@link Project}
 	 * @param conditionalNetworks set of conditional networks for this project
 	 */
 	public void setConditionalNetworks(Set<CyNetwork> conditionalNetworks) {
@@ -124,7 +128,14 @@ public class CyProject{
 		}
 	}
 
-	
+	/**
+	 * Add a resulting differential network, paired with an overlap network to this project.
+	 * Registration with the {@link Project} is not needed as this should already be aware of the structure
+	 * of output networks.
+	 * 
+	 * @param cyDiffNet
+	 * @param cyOverlapNet
+	 */
 	private void addResultPair(CyNetwork cyDiffNet, CyNetwork cyOverlapNet) {
 		this.resultNetworks.add(new CyNetworkPair(cyDiffNet, cyOverlapNet));
 	}
@@ -140,13 +151,12 @@ public class CyProject{
 			throw new InvalidRunConfigurationException();
 		}
 		
-		CyNetworkBridge bridge = new CyNetworkBridge();
-		ReferenceNetwork refNet = bridge.getReferenceNetwork(this.getReferenceNetwork(), 
+		ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
 				project.getEdgeOntology(), project.getNodeMapper());
 		
 		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = bridge.getConditionNetwork(cyCondNet, 
+			ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
 					project.getEdgeOntology(), project.getNodeMapper());
 			condNets.add(condNet);			
 		}
@@ -183,8 +193,11 @@ public class CyProject{
 	
 	/**
 	 * Iterates over all {@link CyNetwork}s and creates a {@link Set} of all the used
-	 * interactions (both from source as differential networks). This set can be used to define the visual mappings. 
+	 * interactions, both from source as differential networks.
 	 * @return a Set of all used interactions in this project.
+	 * 
+	 * @deprecated There is no use case where you need all interactions. 
+	 * Use getAllSourceInteractions() or getAllDifferentialInteractions() instead.
 	 */
 	public Set<String> getAllInteractions(){
 		Set<String> interactions = new HashSet<String>();
@@ -194,6 +207,10 @@ public class CyProject{
 		return interactions;
 	}
 	
+	/**
+	 * Gathers the set of interactions (edge types) for all currently selected source networks.
+	 * @return a set of interactions currently used in the source networks of this project
+	 */
 	public Set<String> getAllSourceInteractions(){
 		Set<String> interactions = new HashSet<String>();
 		for (CyNetwork net : getAllSourceNetworks()){
@@ -201,6 +218,11 @@ public class CyProject{
 		}
 		return interactions;
 	}
+	
+	/**
+	 * Gathers the set of interactions (edge types) for all currently selected differential networks.
+	 * @return a set of interactions currently used in the differential networks of this project
+	 */
 	public Set<String> getAllDifferentialInteractions(){
 		Set<String> interactions = new HashSet<String>();
 		for (CyNetwork net : getAllDifferentialNetworks()){
@@ -216,6 +238,7 @@ public class CyProject{
 	 * @return a Set of all used interactions in the given {@link CyNetwork}
 	 */
 	private Collection<String> getInteractions(CyNetwork net) {
+		//TODO cache the interactions instead of iterating all edges every time
 		Set<String> interactions = new HashSet<String>();
 		for (CyEdge edge : net.getEdgeList()){
 			String type = net.getRow(edge).get(CyEdge.INTERACTION, String.class);
@@ -247,6 +270,12 @@ public class CyProject{
 		return networks;
 	}
 	
+	/**
+	 * Returns all {@link CyNetwork}s in this project currently used as source. 
+	 * This includes the reference network, the list of conditional networks and the generated (or loaded) overlap networks
+	 *  
+	 * @return all {@link CyNetwork}s in this project, used as source.
+	 */
 	private Set<CyNetwork> getAllSourceNetworks(){
 		Set<CyNetwork> networks = new HashSet<CyNetwork>();
 		if (this.referenceNetwork !=null){
@@ -260,6 +289,12 @@ public class CyProject{
 		}
 		return networks;
 	}
+	
+	/**
+	 * Returns all {@link CyNetwork}s in this project currently used as differential network.
+	 *  
+	 * @return all differential {@link CyNetwork}s in this project.
+	 */
 	private Set<CyNetwork> getAllDifferentialNetworks(){
 		Set<CyNetwork> networks = new HashSet<CyNetwork>();
 		for (CyNetworkPair netPair : this.resultNetworks){
@@ -314,25 +349,53 @@ public class CyProject{
 		return idSet.contains(suid);
 	}
 
+	/**
+	 * Returns the network in this project with default (edge or node) table with given suid.
+	 * 
+	 * @param suid the id of a default edge or node table
+	 * @return the network with the default edge or node table with given suid. 
+	 * Returns null if the table is not used in this project.
+	 */
 	public CyNetwork getNetworkByTableId(Long suid) {
 		CyNetwork foundNet = null;
 		for (CyNetwork net : this.getAllNetworks()){
-			if (net.getDefaultEdgeTable().getSUID() == suid){
+			if (net.getDefaultEdgeTable().getSUID() == suid || 
+					net.getDefaultNodeTable().getSUID() == suid){
 				foundNet = net;
 			}
 		}
 		return foundNet;
 	}
 	
+	/**
+	 * @param net {@link CyNetwork} to be checked.
+	 * @return true if the given {@link CyNetwork} is used as source network 
+	 */
 	public boolean isSourceNetwork(CyNetwork net){
 		return this.getAllSourceNetworks().contains(net);
 	}
+	
+	/**
+	 * @param net {@link CyNetwork} to be checked.
+	 * @return true if the given {@link CyNetwork} is used as differential network 
+	 */
+
 	public boolean isDiffNetwork(CyNetwork net){
 		return this.getAllDifferentialNetworks().contains(net);
 	}
+	
+	/**
+	 * @param net {@link CyNetwork} to be checked.
+	 * @return true if the given {@link CyNetwork} is the reference network 
+	 */
 	public boolean isReferenceNetwork(CyNetwork net){
 		return net == this.referenceNetwork;
 	}
+	
+	/**
+	 * @param net {@link CyNetwork} to be checked.
+	 * @return true if the given {@link CyNetwork} is a conditional network 
+	 */
 	public boolean isConditionalNetwork(CyNetwork net){
 		return this.conditionalNetworks.contains(net);
 	}
@@ -350,7 +413,7 @@ public class CyProject{
 
 	/**
 	 * 
-	 * @return network collection containing the {@link CyNetwork}s for this project.
+	 * @return network collection (@link {@link CyRootNetwork}) containing the {@link CyNetwork}s for this project.
 	 */
 	public CyRootNetwork getCollection() {
 		return collection;
@@ -364,6 +427,10 @@ public class CyProject{
 		return latestRunConfigID;
 	}
 	
+	/**
+	 * Returns the name of this project. Delegated to the name of the {@link Project}.
+	 * @return
+	 */
 	public String getName(){
 		return this.project.getName();
 	}
@@ -374,6 +441,7 @@ public class CyProject{
 	}
 
 	/**
+	 * Updates this {@link CyProject} after a run.
 	 * After running a {@link RunConfiguration}, the newly generated differential and overlap networks
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProct}
 	 */
@@ -384,52 +452,53 @@ public class CyProject{
 	
 	
 	/**
-	 * Convert and add the resulting networks after running the algorithm. Add these networks to the set of 
-	 * results of this {@link CyProject}
+	 * Convert and add the resulting networks after running the algorithm. 
+	 * Add these networks to the set of results of this {@link CyProject}
 	 * 
 	 * @param differentialNetworks
-	 * @param cyProject
+	 * @param services 
 	 */
 	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, Services services) {
-		CyNetworkBridge bridge = new CyNetworkBridge();
 		for (DifferentialNetwork network : differentialNetworks){
 			
 			//add the diffnet
-			CyNetwork cyDiffNet = bridge.addCyNetwork(network, this.collection, services);
+			CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(network, this.collection, services);
 			
 			//add the overlap
 			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetwork cyOverlapNet = bridge.addCyNetwork(overlap, this.collection, services);
+			CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlap, this.collection, services);
 			
 			this.addResultPair(cyDiffNet, cyOverlapNet);
 		}	
 	}
 	
-
+	/**
+	 * The actual {@link Project} that executes the algorithm.
+	 * 
+	 * @return The actual {@link Project} that executes the algorithm.
+	 */
 	public Project getProject() {
 		return project;
 	}
 	
 	/**
-	 * When a network gets added or is altered in any way, the {@link Project} needs
+	 * When a reference network gets added or is altered in any way, the {@link Project} needs
 	 * to be notified of this, in order to be able to update its ontologies.
 	 * 
 	 * @param network the {@link CyNetwork} containing new information
 	 */
 	public void registerReferenceNetwork(CyNetwork network){
-		CyNetworkBridge bridge = new CyNetworkBridge();
-		ReferenceNetwork net = bridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		ReferenceNetwork net = CyNetworkBridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
 		this.project.registerSourceNetwork(net);
 	}
 	/**
-	 * When a network gets added or is altered in any way, the {@link Project} needs
+	 * When a condition network gets added or is altered in any way, the {@link Project} needs
 	 * to be notified of this, in order to be able to update its ontologies.
 	 * 
 	 * @param network the {@link CyNetwork} containing new information
 	 */
 	public void registerConditionNetwork(CyNetwork network){
-		CyNetworkBridge bridge = new CyNetworkBridge();
-		ConditionNetwork net = bridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		ConditionNetwork net = CyNetworkBridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
 		this.project.registerSourceNetwork(net);
 	}
 

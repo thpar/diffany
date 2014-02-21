@@ -34,7 +34,7 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * Conversion class that takes the appropriate Cytoscape Factories and uses them
+ * Static conversion class that takes the appropriate Cytoscape Factories and uses them
  * to create given concepts. The other way around, it enables existing {@link CyNetwork}s to
  * be converted to the project's {@link Network} concept. 
  * 
@@ -58,20 +58,15 @@ public class CyNetworkBridge {
 	 */
 	public static String NEGATED = "negated";
 	
-	/**
-	 * Construct new bridge object
-	 */
-	public CyNetworkBridge(){
-	}
 	
 	/**
 	 * Creates a {@link CyNetwork} from a {@link Network} and adds it to Cytoscape.
 	 * 
 	 * @param network the {@link Network} to be added in Cytoscape
-	 * @param collection the {@link CyRootNetwork} to link the new {@link Network} to
+	 * @param collection the {@link CyRootNetwork} to put new {@link CyNetwork} in
 	 * @return the newly created and added {@link CyNetwork}
 	 */
-	public CyNetwork createCyNetwork(Network network, CyRootNetwork collection){
+	public static CyNetwork createCyNetwork(Network network, CyRootNetwork collection){
 		CySubNetwork cyNetwork = collection.addSubNetwork();
 		return createCyNetwork(network, cyNetwork);
 	}
@@ -83,17 +78,18 @@ public class CyNetworkBridge {
 	 * @param factory the {@link CyNetworkFactory} to create a fresh {@link CyNetwork}
 	 * @return the newly created and added {@link CyNetwork}
 	 */
-	public CyNetwork createCyNetwork(Network network, CyNetworkFactory factory){
+	public static CyNetwork createCyNetwork(Network network, CyNetworkFactory factory){
 		return createCyNetwork(network, factory.createNetwork());
 	}
+	
 	/**
 	 * Converts a {@link Network} to a given {@link CyNetwork}
 	 * 
 	 * @param network input {@link Network} 
-	 * @param cyNetwork the new network, created by the {@link CyNetworkFactory}
+	 * @param cyNetwork the new network, created by a {@link CyNetworkFactory} or {@link CyRootNetwork}
 	 * @return {@link CyNetwork} that can be added to Cytoscape using a {@link CyNetworkManager}
 	 */
-	private CyNetwork createCyNetwork(Network network, CyNetwork cyNetwork){
+	private static CyNetwork createCyNetwork(Network network, CyNetwork cyNetwork){
 		
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
 		
@@ -122,10 +118,8 @@ public class CyNetworkBridge {
 			Node from = edge.getSource();
 			Node to = edge.getTarget();
 			
-			CyTable table = cyNetwork.getDefaultNodeTable();
-			final String pk = table.getPrimaryKey().getName();
-			CyNode fromNode = nodeToCyNode(from, cyNetwork, table, pk);
-			CyNode toNode = nodeToCyNode(to, cyNetwork, table, pk);
+			CyNode fromNode = findCyNodeByNode(from, cyNetwork);
+			CyNode toNode = findCyNodeByNode(to, cyNetwork);
 			
 			CyEdge newEdge = cyNetwork.addEdge(fromNode, toNode, !edge.isSymmetrical());
 			cyNetwork.getRow(newEdge).set(WEIGHT, edge.getWeight());
@@ -138,15 +132,17 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * Takes a {@link Node} and converts it to a {@link CyNode}, using the normalized_name column.
+	 * Takes a {@link Node} and looks it up in the given {@link CyNetwork}, using the normalized_name column.
 	 * 
-	 * @param node
-	 * @param cyNetwork
-	 * @param table
-	 * @param pk
-	 * @return
+	 * @param node {@link Node} to be converted
+	 * @param cyNetwork the {@link CyNetwork} to search in
+	 * @return the {@link CyNode} with the same normalized name as the {@link Node}.
+	 * Returns null if no match was found.
 	 */
-	private CyNode nodeToCyNode(Node node, CyNetwork cyNetwork, CyTable table, String pk){
+	private static CyNode findCyNodeByNode(Node node, CyNetwork cyNetwork){
+		CyTable table = cyNetwork.getDefaultNodeTable();
+		final String pk = table.getPrimaryKey().getName();
+		
 		CyNode cyNode = null;
 		Collection<CyRow> matches = table.getMatchingRows(NORMALIZED_NAME, node.getName(true));
 		for (final CyRow row : matches){
@@ -157,7 +153,7 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * To distinguish between the two types of networks
+	 * To distinguish between two types of source networks
 	 * 
 	 * @author Thomas Van Parys
 	 *
@@ -167,8 +163,7 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * Gets the {@link CyNetwork} from Cytoscape
-	 * and creates a {@link Network} out of it.
+	 * Gets the {@link CyNetwork} from Cytoscape and creates a {@link ReferenceNetwork} out of it.
 	 * 
 	 * @param network the "shared name" of the network in the network table.
 	 * @param edgeOntology will determine which edge types are considered symmetrical
@@ -176,13 +171,12 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public ReferenceNetwork getReferenceNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+	public static ReferenceNetwork getReferenceNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
 		return (ReferenceNetwork)getNetwork(network, NetworkType.REFERENCE, edgeOntology, nodeMapper);
 	}
 	
 	/**
-	 * Gets the {@link CyNetwork} from Cytoscape
-	 * and creates a {@link Network} out of it.
+	 * Gets the {@link CyNetwork} from Cytoscape and creates a {@link ConditionNetwork} out of it.
 	 * 
 	 * @param network the "shared name" of the network in the network table.
 	 * @param edgeOntology will determine which edge types are considered symmetrical
@@ -190,7 +184,7 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public ConditionNetwork getConditionNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+	public static ConditionNetwork getConditionNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
 		return (ConditionNetwork)getNetwork(network, NetworkType.CONDITION, edgeOntology, nodeMapper);
 	}
 	
@@ -205,10 +199,10 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	private Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+	private static Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology, NodeMapper nodeMapper){
 		
 		Network network = null;
-		String netName = this.getName(cyNetwork, cyNetwork);
+		String netName = getName(cyNetwork, cyNetwork);
 		switch(type){
 		case REFERENCE: 
 			network = new ReferenceNetwork(netName, nodeMapper);
@@ -224,7 +218,7 @@ public class CyNetworkBridge {
 		List<CyNode> cyNodes = cyNetwork.getNodeList();
 		Map<Long, Node> nodeMap = new HashMap<Long, Node>();
 		for (CyNode cyNode : cyNodes){
-			String nodeName = this.getName(cyNetwork, cyNode);
+			String nodeName = getName(cyNetwork, cyNode);
 			Node node = new Node(nodeName);
 			nodeMap.put(cyNode.getSUID(), node);
 		}
@@ -237,15 +231,15 @@ public class CyNetworkBridge {
 			Node fromNode = nodeMap.get(nodeFromID);
 			Node toNode = nodeMap.get(nodeToID);
 			
-			String interaction = this.getInteraction(cyNetwork, cyEdge);
+			String interaction = getInteraction(cyNetwork, cyEdge);
 			
 			boolean isSymmetrical = edgeOntology.isSymmetricalSourceType(interaction);
 			
 			Edge edge = new Edge(interaction, fromNode, toNode, isSymmetrical);
-			if (this.getWeight(cyNetwork, cyEdge) !=null){
-				edge.setWeight(this.getWeight(cyNetwork, cyEdge));				
+			if (getWeight(cyNetwork, cyEdge) !=null){
+				edge.setWeight(getWeight(cyNetwork, cyEdge));				
 			}
-			edge.makeNegated(this.isNegated(cyNetwork, cyEdge));
+			edge.makeNegated(isNegated(cyNetwork, cyEdge));
 			edgeSet.add(edge);
 		}
 		
@@ -261,39 +255,39 @@ public class CyNetworkBridge {
 	 * @param cyEdge
 	 * @return true if the NEGATED column contains "true"
 	 */
-	private boolean isNegated(CyNetwork cyNetwork, CyEdge cyEdge) {
+	private static boolean isNegated(CyNetwork cyNetwork, CyEdge cyEdge) {
 		Boolean negated = cyNetwork.getRow(cyEdge).get(NEGATED, Boolean.class);
 		return negated !=null && negated;
 	}
 
 	/**
-	 * Get the value of the NAME column.
+	 * Get the value of the NAME column. Works for all CyObjects with a name.
 	 * 
 	 * @param cyNetwork the network containing the node
 	 * @param cyObject the object 
 	 * @return a string representing the object's name
 	 */
-	private String getName(CyNetwork cyNetwork, CyIdentifiable cyObject) {
+	private static String getName(CyNetwork cyNetwork, CyIdentifiable cyObject) {
 		return cyNetwork.getRow(cyObject).get(CyNetwork.NAME, String.class);
 	}
 	/**
-	 * Get the value of the INTERACTION column
+	 * Get the value of the INTERACTION column for a given edge.
 	 * 
 	 * @param cyNetwork
 	 * @param cyEdge
 	 * @return
 	 */
-	private String getInteraction(CyNetwork cyNetwork, CyEdge cyEdge){
+	private static String getInteraction(CyNetwork cyNetwork, CyEdge cyEdge){
 		return cyNetwork.getRow(cyEdge).get(CyEdge.INTERACTION, String.class);
 	}
 	/**
-	 * Get the value of the WEIGHT column
+	 * Get the value of the WEIGHT column for a given edge.
 	 * 
 	 * @param cyNetwork
 	 * @param cyEdge
 	 * @return the value of the weight column, or null if the column doesn't exist.
 	 */
-	private Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
+	private static Double getWeight(CyNetwork cyNetwork, CyEdge cyEdge){
 		return cyNetwork.getRow(cyEdge).get(WEIGHT, Double.class);
 	}
 	
@@ -307,8 +301,8 @@ public class CyNetworkBridge {
 	 * @param collection the {@link CyRootNetwork} the new network should belong to.
 	 * @return the created and added {@link CyNetwork}
 	 */
-	public CyNetwork addCyNetwork(Network network, CyRootNetwork collection, Services services){
-		CyNetwork cyNet = this.createCyNetwork(network, collection);
+	public static CyNetwork addCyNetwork(Network network, CyRootNetwork collection, Services services){
+		CyNetwork cyNet = createCyNetwork(network, collection);
 		
 		services.getCyNetworkManager().addNetwork(cyNet);
 		

@@ -13,7 +13,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 /**
- * The model for the list of available networks in the selected collection.
+ * The model for the table of available networks in the selected collection.
  * 
  * @author Thomas Van Parys
  *
@@ -119,6 +119,10 @@ public class SelectionTableModel extends AbstractTableModel{
 		}
 	}
 
+	/**
+	 * Set the given row to contain the reference network
+	 * @param row row number of reference network
+	 */
 	private void setReference(int row){
 		int oldRefRow = this.referenceRow;
 		if (oldRefRow != -1){
@@ -220,6 +224,12 @@ public class SelectionTableModel extends AbstractTableModel{
 		this.fireTableDataChanged();
 	}
 	
+	/**
+	 * Get the entry at given row
+	 * 
+	 * @param row
+	 * @return 
+	 */
 	public NetworkEntry getNetworkEntry(int row){
 		return this.networkEntries.get(row);		
 	}

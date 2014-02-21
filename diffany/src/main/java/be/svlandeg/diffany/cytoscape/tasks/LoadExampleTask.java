@@ -34,7 +34,7 @@ public class LoadExampleTask implements Task{
 	private int runConfigurationID;
 	
 	/**
-	 * Construct a new task from a {@link Project}. The resulting networks and 
+	 * Construct a new task from to load networks from a {@link Project}. The resulting networks and 
 	 * project settings will be ignored. Only the source networks are loaded and constructed. 
 	 * 
 	 * @param services the app {@link Services}
@@ -59,9 +59,8 @@ public class LoadExampleTask implements Task{
 		CyNetworkViewManager viewManager = services.getCyNetworkViewManager();
 		CyLayoutAlgorithm layout = services.getCyLayoutAlgorithmManager().getLayout("force-directed");
 		TaskManager<?, ?> tm = services.getTaskManager();
-		CyNetworkBridge bridge = new CyNetworkBridge();
 		
-		CyNetwork cyRefNet = bridge.createCyNetwork(refNet, services.getCyNetworkFactory());
+		CyNetwork cyRefNet = CyNetworkBridge.createCyNetwork(refNet, services.getCyNetworkFactory());
 		CyRootNetwork collection = rootNetworkManager.getRootNetwork(cyRefNet);
 		collection.getRow(collection).set(CyRootNetwork.NAME, exampleProject.getName());
 		networkManager.addNetwork(cyRefNet);
@@ -73,7 +72,7 @@ public class LoadExampleTask implements Task{
 		tm.execute(it);
 		
 		for (ConditionNetwork condNet : condNets){
-			CyNetwork cyCondNet = bridge.createCyNetwork(condNet, collection);
+			CyNetwork cyCondNet = CyNetworkBridge.createCyNetwork(condNet, collection);
 			networkManager.addNetwork(cyCondNet);
 			CyNetworkView condView = viewFactory.createNetworkView(cyCondNet);
 			viewManager.addNetworkView(condView);

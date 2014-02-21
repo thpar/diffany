@@ -1,8 +1,10 @@
 package be.svlandeg.diffany.cytoscape;
 
+import be.svlandeg.diffany.concepts.RunConfiguration;
+
 /**
  * Get throws when a {@link CyProject} doesn't have enough
- * input data to create a new {@link Project}
+ * input data to create a new {@link RunConfiguration}
  * 
  * @author Thomas Van Parys
  *

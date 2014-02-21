@@ -27,13 +27,14 @@ import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
 
 /**
- * This Task gathers information from the model and creates and runs a new {@link Project}
+ * This Task gathers information from the model and runs the {@link Project}
  * 
  * @author Thomas Van Parys
  *
@@ -70,6 +71,27 @@ public class RunProjectTask implements Task {
 		
 	}
 	
+	/**
+	 * Generates the {@link RunConfiguration}, selects the correct run mode and runs the {@link Project}
+	 * 
+	 * @throws InvalidRunConfigurationException thrown when a {@link RunConfiguration} can not yet be constructed from 
+	 * the information in the {@link CyProject}
+	 */
+	private void runAlgorithm() throws InvalidRunConfigurationException{
+		int runId = cyProject.generateRunConfiguration();
+		
+		switch(model.getMode()){
+		case REF_PAIRWISE:
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, model.getCutoff());
+			break;
+		case REF_TO_ALL:	
+			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, model.getCutoff());
+			break;
+		}
+		
+		cyProject.update(model.getServices());
+		displayReport(cyProject.getProject().getLogger(runId));
+	}
 	
 	/**
 	 * Read the log from the {@link Project} and display it as a dialog.
@@ -113,27 +135,6 @@ public class RunProjectTask implements Task {
 		
 	}
 
-	/**
-	 * Select the correct run mode and run the {@link CyProject}
-	 * 
-	 * @throws InvalidRunConfigurationException thrown when a {@link Project} can not yet be constructed from 
-	 * the information in the {@link CyProject}
-	 */
-	private void runAlgorithm() throws InvalidRunConfigurationException{
-		int runId = cyProject.generateRunConfiguration();
-		
-		switch(model.getMode()){
-		case REF_PAIRWISE:
-			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, model.getCutoff());
-			break;
-		case REF_TO_ALL:	
-			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, model.getCutoff());
-			break;
-		}
-		
-		cyProject.update(model.getServices());
-		displayReport(cyProject.getProject().getLogger(runId));
-	}
 
 	
 	

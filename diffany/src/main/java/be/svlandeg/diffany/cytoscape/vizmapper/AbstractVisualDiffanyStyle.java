@@ -25,8 +25,8 @@ import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
- * A {@link VisualStyle} wrapper with default values for all Diffany styles. All new styles within this app
- * should extend this class.
+ * A {@link VisualStyle} wrapper with default values for all Diffany styles. 
+ * All new styles within this app should extend this class.
  * 
  * @author Thomas Van Parys
  *
@@ -42,6 +42,7 @@ public abstract class AbstractVisualDiffanyStyle {
 	 * The {@link VisualStyle} itself.
 	 */
 	protected VisualStyle vis;
+	
 	/**
 	 * App services
 	 */
@@ -112,6 +113,9 @@ public abstract class AbstractVisualDiffanyStyle {
 	
 	/**
 	 * Add visual mappings according to the networks contained in the given {@link CyProject}
+	 * 
+	 * @param interactions list of edge types that should be mapped on color and shape
+	 * @param ontology the {@link EdgeOntology} to determine visual properties of each edge
 	 */
 	public void updateInteractionMappings(Set<String> interactions, EdgeOntology ontology) {
 		
@@ -124,6 +128,7 @@ public abstract class AbstractVisualDiffanyStyle {
 		DiscreteMapping<String, ArrowShape> edgeTargetArrowFunction = (DiscreteMapping<String, ArrowShape>)vmffD.createVisualMappingFunction(CyEdge.INTERACTION, String.class, 
 				BasicVisualLexicon.EDGE_TARGET_ARROW_SHAPE);
 		
+		//this is overwritten by each type of VisualStyle
 		this.addInteractionMappings(interactions, ontology, 
 				edgeColorFunction, 
 				edgeSelectedColorFunction,
@@ -140,9 +145,11 @@ public abstract class AbstractVisualDiffanyStyle {
 	 * Add mappings to the VizMapper according to the edges used in the project. All found edge interaction types
 	 * are mapped to a visual style using the given {@link EdgeOntology}
 	 * 
-	 * @param interactionTypes All interactions used in the networks of the project.
-	 * @param edgeOntology
-	 * @param edgeColorFunction
+	 * @param interactionTypes list of edge types that should be mapped on color and shape
+	 * @param edgeOntology the {@link EdgeOntology} to determine visual properties of each edge
+	 * @param edgeColorFunction edge type to color mapping
+	 * @param edgeSelectedColorFunction edge type to selected color mapping
+	 * @param edgeTargetArrowFunction edge type to arrow head mapping
 	 */
 	protected abstract void addInteractionMappings(Set<String> interactionTypes, EdgeOntology edgeOntology, 
 			DiscreteMapping<String, Paint> edgeColorFunction, 

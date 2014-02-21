@@ -12,7 +12,7 @@ import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.cytoscape.tasks.LoadExampleTaskFactory;
 
 /**
- * Action that load {@link CyNetwork}s into a Cytoscape session, based on a given {@link Project}.
+ * Action that loads example {@link CyNetwork}s into a Cytoscape session, based on a given {@link Project}.
  * 
  * @author Thomas Van Parys
  *
@@ -26,7 +26,7 @@ public class LoadExampleAction extends AbstractCyAction{
 	
 	/**
 	 * Load an example {@link Project} into the current Cytoscape session. 
-	 * Project settings are ignored. Only the input networks are read and translated to {@link CyNetwork}s.
+	 * Project settings are ignored. Only the input networks are read and translated into {@link CyNetwork}s.
 	 * 
 	 * @param services the Cytoscape {@link Services}s
 	 * @param name display name in the menu

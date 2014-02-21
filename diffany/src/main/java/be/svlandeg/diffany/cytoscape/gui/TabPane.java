@@ -66,7 +66,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private JTable table;
 	
 	/**
-	 * Create {@link JPanel} and register as {@link Observer} for the models.
+	 * Create {@link JPanel} and register as {@link Observer} for the model.
 	 * @param model
 	 */
 	public TabPane(Model model){
@@ -76,6 +76,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		createTabPaneContent();
 	}
 	
+	/**
+	 * Create the content of the complete panel and adds it to this side bar. 
+	 */
 	private void createTabPaneContent(){
 		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		
@@ -107,8 +110,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	
 	/**
-	 * Creates the panel containing the network list
-	 * @return {@link JPanel} containing the network list.
+	 * Creates the panel containing the dropdown list with {@link CyProject}s and the table
+	 * containin the networks.
+	 * 
+	 * @return {@link JPanel} containing the project and network lists.
 	 */
 	private Component createNetworkSelectionPanel(){
 
@@ -117,7 +122,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
 		
 		collectionModel = new ProjectDropDownModel(model);
-		collectionModel.refresh();
 		
 		collectionDropDown = new JComboBox(collectionModel);
 		collectionDropDown.setEnabled(collectionModel.hasEntries());

@@ -28,6 +28,7 @@ import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
 
 /**
  * Model that keeps track of all settings and selections within the Cytoscape App.
+ * It also acts as listener for Cytoscape events.
  *  
  * @author Thomas Van Parys
  *
@@ -51,10 +52,9 @@ public class Model extends Observable implements NetworkAddedListener,
 	 */
 	private Map<CyRootNetwork, CyProject> projects = new HashMap<CyRootNetwork, CyProject>();
 	
-	
 	private VisualSourceStyle sourceStyle;
 	private VisualDiffStyle diffStyle;
-
+	
 	private JFrame swingApplication;
 	
 	/**
@@ -88,12 +88,11 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	private double cutoff = 0;
 
-	
 
 	
-	
 	/**
-	 * Construct a new model and adds the app services to it
+	 * Construct a new model and adds the app services to it. 
+	 * Visual styles are initially registered with the VizMapper at this point.
 	 * @param services the app services
 	 */
 	public Model(Services services){
@@ -104,23 +103,6 @@ public class Model extends Observable implements NetworkAddedListener,
 	}
 	
 
-	/**
-	 * Returns the {@link CyNetwork} with given name.
-	 * Returns null if no such network exists.
-	 * 
-	 * @param id the network name
-	 * @return {@link CyNetwork} with given id
-	 */
-	public CyNetwork getNetworkByName(String id){
-		Set<CyNetwork> allNetworks = services.getCyNetworkManager().getNetworkSet();
-		for (CyNetwork net : allNetworks){
-			String name = net.getRow(net).get(CyNetwork.NAME, String.class);
-			if (name.equals(id)){
-				return net;
-			}
-		}
-		return null;
-	}
 	
 	/**
 	 * Gives access to a subset of the services offered in this context, as loaded in the {@link CyActivator}
@@ -142,12 +124,11 @@ public class Model extends Observable implements NetworkAddedListener,
 	
 
 	/**
-	 * Set the collection of networks (aka the {@link CyRootNetwork}) that will be
-	 * used for the algorithm.
+	 * Set the current {@link CyProject}. 
 	 * 
 	 * This change will trigger an update with all observers.
 	 * 
-	 * @param selectedCollection
+	 * @param selectedProject 
 	 */
 	public void setSelectedProject(CyProject selectedProject) {
 		this.selectedProject = selectedProject;
@@ -236,12 +217,20 @@ public class Model extends Observable implements NetworkAddedListener,
 		
 	}
 
-
+	/**
+	 * Get a list of all loaded {@link CyProject}s
+	 * @return a list of all loaded {@link CyProject}s
+	 */
 	public Collection<CyProject> getProjects() {
 		return projects.values();
 	}
 	
-	
+	/**
+	 * Add a new {@link CyProject}. This happens only when a new network is added
+	 * to the Cytoscape session as a new collection.
+	 * 
+	 * @param project
+	 */
 	public void addProject(CyProject project){
 		this.projects.put(project.getCollection(), project);
 	}
@@ -256,7 +245,10 @@ public class Model extends Observable implements NetworkAddedListener,
 	}
 
 	
-
+	/**
+	 * Set the execution mode for the next run.
+	 * @param mode {@link ComparisonMode}
+	 */
 	public void setMode(ComparisonMode mode) {
 		this.mode = mode;
 	}

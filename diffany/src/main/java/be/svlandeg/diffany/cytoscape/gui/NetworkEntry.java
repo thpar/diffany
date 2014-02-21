@@ -20,12 +20,6 @@ public class NetworkEntry {
 	private static final String UNKNOWN = "network unknown";
 	
 	/**
-	 * Construct empty entry
-	 */
-	public NetworkEntry() {
-	}
-	
-	/**
 	 * Returns a new entry, based on given {@link CyNetwork}
 	 * @param network
 	 */

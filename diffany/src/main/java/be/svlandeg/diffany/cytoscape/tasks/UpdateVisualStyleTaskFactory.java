@@ -18,7 +18,7 @@ public class UpdateVisualStyleTaskFactory implements TaskFactory {
 	private CyProject cyProject;
 	
 	/**
-	 * Construct a new factory.
+	 * Construct a new factory to create {@link UpdateVisualStyleTask}s
 	 * 
 	 * @param model Diffany {@link Model}
 	 * @param project the {@link CyProject} containing the used {@link CyNetwork}s.

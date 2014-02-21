@@ -8,7 +8,7 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 
 /**
- * Model for the {@link JComboBox} displaying available alorithm modes.
+ * Model for the {@link JComboBox} displaying available algorithm modes.
  *  
  * @author Thomas Van Parys
  *

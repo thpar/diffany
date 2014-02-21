@@ -15,7 +15,7 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 
 /**
- * Model for the {@link JComboBox} that shows the list of available network collections (or {@link CyRootNetwork}) in 
+ * Model for the {@link JComboBox} that shows the list of available {@link CyProject}s in 
  * this session. 
  * 
  * @author Thomas Van Parys
@@ -38,14 +38,19 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 	/**
 	 * TODO: update documentation
 	 * 
-	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and refreshes the 
+	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and populates (refreshes) the 
 	 * list of network collections (which on creation will probably be empty).
 	 * 
 	 */
 	public ProjectDropDownModel(Model model) {
 		this.model = model;
+		this.refresh();
 	}
 
+	/**
+	 * Refreshes this model, based on the {@link CyProject}s in the {@link Model}.
+	 * Also makes sure the selected project exists and notifies the GUI of the changes.
+	 */
 	public void refresh(){
 		int oldSize = this.entries.size();
 		//add new projects

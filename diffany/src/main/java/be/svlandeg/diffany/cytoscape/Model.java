@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
+import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
+import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
@@ -17,6 +19,7 @@ import org.cytoscape.model.events.RowsSetEvent;
 import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -35,7 +38,8 @@ import be.svlandeg.diffany.cytoscape.vizmapper.VisualSourceStyle;
  */
 public class Model extends Observable implements NetworkAddedListener, 
 												 NetworkDestroyedListener,
-												 RowsSetListener{
+												 RowsSetListener,
+												 SetCurrentNetworkViewListener{
 
 	/**
 	 * A collection of all Cytoscape services that were registered in the {@link CyActivator}
@@ -87,6 +91,8 @@ public class Model extends Observable implements NetworkAddedListener,
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
 
 	private double cutoff = 0;
+
+	private CyNetwork networkInFocus;
 
 
 	
@@ -270,5 +276,27 @@ public class Model extends Observable implements NetworkAddedListener,
 		this.cutoff  = cutoff;
 	}
 
+	@Override
+	public void handleEvent(SetCurrentNetworkViewEvent e) {
+		//triggered when a CyView gets selected
+		CyNetworkView view = e.getNetworkView();
+		CyNetwork net = view.getModel();
+		CyRootNetwork collection = services.getCyRootNetworkManager().getRootNetwork(net);
+		this.networkInFocus = net;
+		this.setSelectedProject(this.projects.get(collection));
+	}
+
+
+	/**
+	 * The network of which the view is in focus.
+	 * 
+	 * @return The network of which the view is in focus. Null if there is no network to focus.
+	 */
+	public CyNetwork getNetworkInFocus() {
+		return networkInFocus;
+	}
+	
+
 
 }
+

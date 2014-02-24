@@ -31,7 +31,6 @@ import javax.swing.event.TableModelListener;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
@@ -138,7 +137,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		networkTableModel = new SelectionTableModel();
 		if (model.getSelectedProject() !=null){
-			networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
+			networkTableModel.refresh(model.getSelectedProject());			
 		}
 		table = new JTable(networkTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
@@ -151,6 +150,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(this);
+		
+		CyNetwork focused = model.getNetworkInFocus();
+		if (focused !=null){
+			int focusRow = networkTableModel.getRowNumber(focused);
+			if (focusRow >=0){
+				table.setRowSelectionInterval(focusRow, focusRow);				
+			}
+		}
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		panel.add(scrollPane, BorderLayout.CENTER);
@@ -221,7 +228,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		this.collectionDropDown.setEnabled(collectionModel.hasEntries());
 		
 		if (model.getSelectedProject() !=null){
-			this.networkTableModel.refresh(model.getSelectedProject().getCollection().getSubNetworkList());			
+			this.networkTableModel.refresh(model.getSelectedProject());
+			
+			CyNetwork focused = model.getNetworkInFocus();
+			if (focused !=null){
+				int focusRow = networkTableModel.getRowNumber(focused);
+				if (focusRow >=0){
+					table.setRowSelectionInterval(focusRow, focusRow);					
+				}
+			}
 		} else {
 			this.networkTableModel.clear();
 		}
@@ -290,6 +305,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			for (CyNetworkView cyView : cyViews){
 				model.getServices().getCyApplicationManager().setCurrentNetworkView(cyView);
 			}
+			table.setRowSelectionInterval(row, row);
 		}
 	}
 

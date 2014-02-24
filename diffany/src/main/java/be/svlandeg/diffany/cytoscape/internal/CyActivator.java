@@ -3,6 +3,7 @@ package be.svlandeg.diffany.cytoscape.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.model.CyNetworkFactory;
@@ -102,6 +103,7 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context,model, NetworkDestroyedListener.class, new Properties());
 		registerService(context,model, RowsSetListener.class, new Properties());
 		
+		registerService(context,model, SetCurrentNetworkViewListener.class, new Properties());
 		
 		//Register session handlers
 		registerService(context, new SessionListener(model),SessionLoadedListener.class, new Properties() );

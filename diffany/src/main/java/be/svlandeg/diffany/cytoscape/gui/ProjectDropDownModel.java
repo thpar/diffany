@@ -69,6 +69,8 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 		}
 		entries.removeAll(toRemove);
 		
+		this.selectedEntry = model.getSelectedProject();
+		
 		if (!entries.contains(this.selectedEntry)){
 			this.selectedEntry = null;
 		}

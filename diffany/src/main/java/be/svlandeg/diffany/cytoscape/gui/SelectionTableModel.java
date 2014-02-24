@@ -12,6 +12,8 @@ import javax.swing.table.AbstractTableModel;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
+import be.svlandeg.diffany.cytoscape.CyProject;
+
 /**
  * The model for the table of available networks in the selected collection.
  * 
@@ -145,7 +147,9 @@ public class SelectionTableModel extends AbstractTableModel{
 	 * 
 	 * @param list of {@link CySubNetwork}s to be displayed.
 	 */
-	public void refresh(List<CySubNetwork> subNets) {
+	public void refresh(CyProject project) {
+		List<CySubNetwork> subNets = project.getCollection().getSubNetworkList();
+		
 		Map<CyNetwork, NetworkEntry> oldMap = entryMap;
 		
 		networkEntries = new ArrayList<NetworkEntry>();
@@ -163,14 +167,23 @@ public class SelectionTableModel extends AbstractTableModel{
 					}
 				} else {
 					NetworkEntry entry = new NetworkEntry(subNet);
-					entry.setSelected(false);
-					entry.setReference(false);
+					entry.setSelected(
+							project.isConditionalNetwork(subNet) ||
+							project.isReferenceNetwork(subNet));
 					networkEntries.add(entry);
 					entryMap.put(subNet, entry);
+					if (project.isReferenceNetwork(subNet)){
+						this.referenceRow = networkEntries.indexOf(entry); 
+						entry.setReference(true);
+					} else {
+						entry.setReference(false);
+					}
 				}
 				
 			}
 		}
+		
+
 		this.fireTableDataChanged();
 	}
 	
@@ -232,5 +245,20 @@ public class SelectionTableModel extends AbstractTableModel{
 	 */
 	public NetworkEntry getNetworkEntry(int row){
 		return this.networkEntries.get(row);		
+	}
+	
+	/**
+	 * Get the row number of a given {@link CyNetwork}
+	 * 
+	 * @param net the {@link CyNetwork} to retrieve the row number of
+	 * @return row number of given {@link CyNetwork}. Returns -1 if no network was found.
+	 */
+	public int getRowNumber(CyNetwork net){
+		NetworkEntry entry = entryMap.get(net);
+		if (entry !=null){
+			return networkEntries.indexOf(entry);			
+		} else {
+			return -1;
+		}
 	}
 }

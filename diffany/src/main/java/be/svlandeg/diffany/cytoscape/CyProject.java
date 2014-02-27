@@ -7,16 +7,11 @@ import java.util.Set;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
-import org.cytoscape.model.subnetwork.CySubNetwork;
-import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
-import org.cytoscape.work.TaskIterator;
-import org.cytoscape.work.TaskManager;
 
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
@@ -161,8 +156,7 @@ public class CyProject{
 			condNets.add(condNet);			
 		}
 		
-		RunConfiguration rc = new RunConfiguration (refNet, condNets);
-		int runConfigID = project.addRunConfiguration(rc);
+		int runConfigID = project.addRunConfiguration(refNet, condNets);
 		
 		this.latestRunConfigID = runConfigID;
 		

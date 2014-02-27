@@ -19,14 +19,14 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  */
 public class CalculateDiffOfMore
 {
-	
+
 	protected NetworkCleaning cleaning;
 	protected Unification unification;
-	
+
 	protected CalculateDiffOfTwo twoProcessor;
 	protected static String EMPTY_NAME = "*empty*";
 	protected Logger log;
-	
+
 	/**
 	 * Constructor, which also initializes the functionality for cleaning/unifying a network.
 	 */
@@ -37,7 +37,7 @@ public class CalculateDiffOfMore
 		unification = new Unification(log);
 		this.log = log;
 	}
-	
+
 	/**
 	 * Calculate the differential network between the reference and condition-specific networks. 
 	 * The overlapping network should be calculated independently!
@@ -51,15 +51,14 @@ public class CalculateDiffOfMore
 	 * 
 	 * @return the differential network between the two    
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, EdgeOntology eo, 
-			NodeMapper nm, String diff_name, double cutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, EdgeOntology eo, NodeMapper nm, String diff_name, double cutoff)
 	{
 		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
-		
+
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
-		
+
 		for (Network n : allOriginals)
 		{
 			unification.expandOntology(n.getEdges(), eo);
@@ -101,7 +100,6 @@ public class CalculateDiffOfMore
 					allsources2.add(new Node(EMPTY_NAME));
 				}
 			}
-			
 
 			for (Node target1 : allNodes) // target node in reference network
 			{
@@ -134,57 +132,94 @@ public class CalculateDiffOfMore
 					}
 				}
 
-				// get the reference edge
-				Set<Edge> referenceEdges = reference.getAllEdges(source1, target1);
-				Set<Edge> back_referenceEdges = reference.getDirectedEdges(target1, source1);
+				// get the reference edges
+				Set<Edge> allRefs = reference.getAllEdges(source1, target1);
 
-				// get all condition-specific edges (one for each condition network)
+				// get all condition-specific edges
 				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
-				ArrayList<Set<Edge>> back_condlist = new ArrayList<Set<Edge>>();
-				
+
 				for (int i = 0; i < listedConditions.size(); i++)
 				{
 					Set<Edge> conditionEdges = new HashSet<Edge>();
-					Set<Edge> back_conditionEdges = new HashSet<Edge>();
-					
+
 					ConditionNetwork condition = listedConditions.get(i);
 					Node source2 = allsources2.get(i);
 					Node target2 = alltargets2.get(i);
-					if (! source2.getName().equals(EMPTY_NAME) && ! target2.getName().equals(EMPTY_NAME))
+					if (!source2.getName().equals(EMPTY_NAME) && !target2.getName().equals(EMPTY_NAME))
 					{
 						conditionEdges = condition.getAllEdges(source2, target2);
-						back_conditionEdges = condition.getDirectedEdges(target2, source2);
 					}
 					condlist.add(i, conditionEdges);
-					back_condlist.add(i, back_conditionEdges);
-				}	
-				EdgeSet es = new EdgeSet(referenceEdges, condlist);
-				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es, source1, target1, true);
-				
-				for (String root : edgeSets.keySet())
+				}
+
+				for (String root : eo.retrieveAllSourceRootCats())
 				{
-					SingleEdgeSet ses = edgeSets.get(root);
-					EdgeDefinition diff_edge_def = eo.getDifferentialEdge(ses, cutoff);
-	
+					boolean symm = eo.isSymmetricalSourceCat(root);
+					Set<EdgeDefinition> rootRefs = new HashSet<EdgeDefinition>();
+					for (Edge e : allRefs)
+					{
+						String type = e.getType();
+						if (eo.isSourceChildOf(type, root) > -1)
+						{
+							rootRefs.add(e);
+						}
+					}
+					if (rootRefs.isEmpty())
+					{
+						rootRefs.add(EdgeDefinition.getVoidEdge(symm));
+					}
+					if (rootRefs.size() > 1)
+					{
+						throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
+					}
+					Set<EdgeDefinition> rootCons = new HashSet<EdgeDefinition>();
+					for (int i = 0; i < listedConditions.size(); i++)
+					{
+						Set<EdgeDefinition> thisRootCons = new HashSet<EdgeDefinition>();
+						for (Edge e : condlist.get(i))
+						{
+							String type = e.getType();
+							if (eo.isSourceChildOf(type, root) > -1)
+							{
+								thisRootCons.add(e);
+							}
+						}
+						if (thisRootCons.isEmpty())
+						{
+							thisRootCons.add(EdgeDefinition.getVoidEdge(symm));
+						}
+						if (thisRootCons.size() > 1)
+						{
+							for(EdgeDefinition e : thisRootCons)
+							{
+								System.out.println(" e " + e);
+							}
+							throw new IllegalArgumentException("Found more than 1 condition edge in " + listedConditions.get(i).getName() + " for semantic root " + root);
+							
+						}
+						rootCons.add(thisRootCons.iterator().next());
+					}
+					EdgeDefinition diff_edge_def = eo.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
+
 					String sourceconsensus = nm.getConsensusName(allSources);
 					String targetconsensus = nm.getConsensusName(allTargets);
-					
+
 					// non-void differential edge
-					if (diff_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+					if (diff_edge_def.getType() != EdgeOntology.VOID_SYMMETRICAL_TYPE && diff_edge_def.getType() != EdgeOntology.VOID_DIRECTED_TYPE
+							&& sourceconsensus != null && targetconsensus != null)
 					{
 						if (!allDiffNodes.containsKey(sourceconsensus))
 						{
 							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
 						}
 						Node sourceresult = allDiffNodes.get(sourceconsensus);
-						
+
 						if (!allDiffNodes.containsKey(targetconsensus))
 						{
 							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
 						}
 						Node targetresult = allDiffNodes.get(targetconsensus);
-						
+
 						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 						diff.addEdge(edgediff);
 					}
@@ -194,8 +229,7 @@ public class CalculateDiffOfMore
 		cleaning.fullOutputCleaning(diff, true);
 		return diff;
 	}
-	
-	
+
 	/**
 	 * Calculate the overlapping network between a set of networks. 
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
@@ -208,30 +242,29 @@ public class CalculateDiffOfMore
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, 
-			NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
 	{
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
-		
+
 		int numberOfNetworks = listedNetworks.size();
 		int first = 0;
 		int second = 1;
-		
+
 		Network firstN = listedNetworks.get(first);
 		Network secondN = listedNetworks.get(second);
 		OverlappingNetwork overlapTmp = twoProcessor.calculateOverlappingNetwork(firstN, secondN, eo, nm, overlapping_name, cutoff, minOperator);
 		second++;
-		
+
 		while (second < numberOfNetworks)
-		{	
+		{
 			secondN = listedNetworks.get(second);
 			overlapTmp = twoProcessor.calculateOverlappingNetwork(overlapTmp, secondN, eo, nm, overlapping_name, cutoff, minOperator);
 			second++;
 		}
 		return overlapTmp;
 	}
-	
+
 	/**
 	 * Return one single node from a collection, assuming that there will only be 1
 	 * @param nodes the set of nodes
@@ -252,5 +285,4 @@ public class CalculateDiffOfMore
 		return nodes.iterator().next();
 	}
 
-	
 }

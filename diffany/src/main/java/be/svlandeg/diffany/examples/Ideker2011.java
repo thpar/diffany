@@ -49,8 +49,7 @@ public class Ideker2011 extends GenericExample
 	{
 		ReferenceNetwork r = getReferenceFigure3A();
 		Set<ConditionNetwork> c = getConditionFigure3A();
-		RunConfiguration rc = new RunConfiguration (r, c);
-		int ID = p.addRunConfiguration(rc);
+		int ID = p.addRunConfiguration(r, c);
 		return ID;
 	}
 

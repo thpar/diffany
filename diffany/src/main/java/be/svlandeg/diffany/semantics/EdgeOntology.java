@@ -16,13 +16,14 @@ import be.svlandeg.diffany.visualstyle.EdgeDrawing;
 public abstract class EdgeOntology
 {
 
-	public static final String VOID_TYPE = EdgeDefinition.getVoidEdge().getType().toLowerCase();
+	public static final String VOID_SYMMETRICAL_TYPE = EdgeDefinition.getVoidEdge(true).getType().toLowerCase();
+	public static final String VOID_DIRECTED_TYPE = EdgeDefinition.getVoidEdge(false).getType().toLowerCase();
 
 	// edge types are stored in their canonical version (i.e. no punctuation, ascii-only)
 	// when querying this map, always run the key through getCanonicalForm(edgeType) !
 	protected Map<String, String> mapCanSourceTypeToCategory;
 
-	protected Map<String, Boolean> allSourceCategories;
+	protected Map<String, Boolean> allSourceCategories;		// categories and their symmetry
 	protected Set<String> posSourceCats;
 	protected Set<String> negSourceCats;
 	
@@ -59,26 +60,6 @@ public abstract class EdgeOntology
 	 * @return the common parent (super) category, or null if there is none such
 	 */
 	public abstract String commonSourceParent(String childCat1, String childCat2);
-
-	/**
-	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
-	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
-	 * 
-	 * @param EdgeSet the edge definition in the reference and condition-specific networks (can include EdgeDefinition.getVoidEdge()),
-	 * but should only have 1 edge per network!
-	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential network
-	 * 
-	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
-	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
-	 */
-	public EdgeDefinition getDifferentialEdge(SingleEdgeSet edgeset, double cutoff) throws IllegalArgumentException
-	{
-		EdgeDefinition refEdge = edgeset.getReferenceEdge();
-
-		List<EdgeDefinition> conEdges = edgeset.getConditionEdges();
-
-		return getDifferentialEdge(refEdge, conEdges, cutoff);
-	}
 
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
@@ -248,12 +229,27 @@ public abstract class EdgeOntology
 	{
 		return allSourceCategories.keySet();
 	}
+	
+	/**
+	 * Retrieve the symmetry state of a source edge category in this ontology
+	 * @param edgeCat the source edge category
+	 * @return the symmetry state of the source category
+	 */
+	public boolean isSymmetricalSourceCat(String edgeCat)
+	{
+		if (edgeCat == null || !allSourceCategories.containsKey(edgeCat))
+		{
+			String errormsg = "The source category should not be null or undefined!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		return allSourceCategories.get(edgeCat.toLowerCase());
+	}
 
 
 	/**
 	 * Retrieve the symmetry state of a source edgeType in this ontology
 	 * @param edgeType the source edgeType
-	 * @return the symmetry state of the source category
+	 * @return the symmetry state of the corresponding source category
 	 */
 	public boolean isSymmetricalSourceType(String edgeType)
 	{
@@ -333,10 +329,12 @@ public abstract class EdgeOntology
 	protected void removeAllCategoriesAndMappings()
 	{
 		allSourceCategories = new HashMap<String, Boolean>();
-		allSourceCategories.put(VOID_TYPE, true);
+		allSourceCategories.put(VOID_SYMMETRICAL_TYPE, true);
+		allSourceCategories.put(VOID_DIRECTED_TYPE, false);
 
 		mapCanSourceTypeToCategory = new HashMap<String, String>();
-		addSourceCategoryMapping(VOID_TYPE, VOID_TYPE, false);
+		addSourceCategoryMapping(VOID_SYMMETRICAL_TYPE, VOID_SYMMETRICAL_TYPE, false);
+		addSourceCategoryMapping(VOID_DIRECTED_TYPE, VOID_DIRECTED_TYPE, false);
 	}
 
 }

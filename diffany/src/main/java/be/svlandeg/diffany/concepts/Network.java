@@ -148,6 +148,25 @@ public abstract class Network
 	}
 	
 	/**
+	 * Get all edge definitions (both symmetric and assymetric) in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network between target-source, these will be added too.
+	 * 
+	 * @param source the required source node 
+	 * @param target the required target node
+	 * @return the set of edge definitions between these two nodes (can be empty, but not null)
+	 */
+	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target)
+	{
+		Set<EdgeDefinition> resultEdgeDefinitions = new HashSet<EdgeDefinition>();
+		Set<Edge> resultEdges = getAllEdges(source, target);
+		for (Edge e : resultEdges)
+		{
+			resultEdgeDefinitions.add(e);
+		}
+		return resultEdgeDefinitions;
+	}
+	
+	/**
 	 * Get all edges in this network between two nodes with a specific name, assuming these names are unique. 
 	 * In case there are symmetrical edges in this network between target-source, these will also be added if addSyms is true.
 	 * 

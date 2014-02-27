@@ -16,11 +16,11 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  */
 public class CalculateDiffOfTwo
 {
-	
+
 	protected NetworkCleaning cleaning;
 	protected Unification unification;
 	protected Logger log;
-	
+
 	/**
 	 * Constructor, which also initializes the functionality for cleaning/unifying a network.
 	 * @param log the logger that records logging messages
@@ -31,7 +31,7 @@ public class CalculateDiffOfTwo
 		unification = new Unification(log);
 		this.log = log;
 	}
-	
+
 	/**
 	 * Calculate the overlapping network between two networks.
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
@@ -47,13 +47,12 @@ public class CalculateDiffOfTwo
 	 *      
 	 * TODO v2.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, 
-			NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
 	{
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.add(n1);
 		allOriginals.add(n2);
-		
+
 		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, allOriginals, nm);
 
 		Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(n1, n2);
@@ -92,58 +91,86 @@ public class CalculateDiffOfTwo
 				}
 
 				// get the reference edge
-				Set<Edge> referenceEdges = n1.getAllEdges(source1, target1);
-				Set<Edge> back_referenceEdges = n1.getDirectedEdges(target1, source1);
+				Set<Edge> allRefs = n1.getAllEdges(source1, target1);
 
 				// get the condition-specific edge
-				Set<Edge> conditionEdges = new HashSet<Edge>();
-				Set<Edge> back_conditionEdges = new HashSet<Edge>();
+				Set<Edge> allConds = new HashSet<Edge>();
 				if (source2 != null && target2 != null)
 				{
-					conditionEdges = n2.getAllEdges(source2, target2);
-					back_conditionEdges = n2.getDirectedEdges(target2, source2);
+					allConds = n2.getAllEdges(source2, target2);
 				}
-				
-				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
-				ArrayList<Set<Edge>> back_condlist = new ArrayList<Set<Edge>>();
-				condlist.add(conditionEdges);
-				back_condlist.add(back_conditionEdges);
-				EdgeSet es = new EdgeSet(referenceEdges, condlist);
-				EdgeSet back_es = new EdgeSet(back_referenceEdges, back_condlist);
-				Map<String, SingleEdgeSet> edgeSets = cleaning.fullInputCleaning(eo, es, back_es, source1, target1, false);
-				
-				for (String root : edgeSets.keySet())
+
+				for (String root : eo.retrieveAllSourceRootCats())
 				{
-					SingleEdgeSet ses = edgeSets.get(root);
-					
-					Set<EdgeDefinition> allEdges = ses.getAllEdges();
+					boolean symm = eo.isSymmetricalSourceCat(root);
+					Set<EdgeDefinition> rootN1s = new HashSet<EdgeDefinition>();
+					for (Edge e : allRefs)
+					{
+						String type = e.getType();
+						if (eo.isSourceChildOf(type, root) > -1)
+						{
+							rootN1s.add(e);
+						}
+					}
+					if (rootN1s.isEmpty())
+					{
+						rootN1s.add(EdgeDefinition.getVoidEdge(symm));
+					}
+					if (rootN1s.size() > 1)
+					{
+						throw new IllegalArgumentException("Found more than 1 edge in " + n1.getName() + " for semantic root " + root);
+					}
+					Set<EdgeDefinition> rootN2s = new HashSet<EdgeDefinition>();
+
+					for (Edge e : allConds)
+					{
+						String type = e.getType();
+						if (eo.isSourceChildOf(type, root) > -1)
+						{
+							rootN2s.add(e);
+						}
+					}
+					if (rootN2s.isEmpty())
+					{
+						rootN2s.add(EdgeDefinition.getVoidEdge(symm));
+					}
+					if (rootN2s.size() > 1)
+					{
+						throw new IllegalArgumentException("Found more than 1 edge in " + n2.getName() + " for semantic root " + root);
+					}
+
+					Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
+					allEdges.add(rootN1s.iterator().next());
+					allEdges.add(rootN2s.iterator().next());
+							
 					EdgeDefinition overlap_edge_def = eo.getOverlapEdge(allEdges, cutoff, minOperator);
-	
+
 					Set<Node> allSources = new HashSet<Node>();
 					allSources.add(source1);
 					allSources.add(source2);
 					String sourceconsensus = nm.getConsensusName(allSources);
-					
+
 					Set<Node> allTargets = new HashSet<Node>();
 					allTargets.add(target1);
 					allTargets.add(target2);
 					String targetconsensus = nm.getConsensusName(allTargets);
-					
+
 					// non-void overlapping edge
-					if (overlap_edge_def.getType() != EdgeOntology.VOID_TYPE && sourceconsensus != null && targetconsensus != null)
+					if (overlap_edge_def.getType() != EdgeOntology.VOID_SYMMETRICAL_TYPE && overlap_edge_def.getType() != EdgeOntology.VOID_DIRECTED_TYPE
+							&& sourceconsensus != null && targetconsensus != null)
 					{
 						if (!allDiffNodes.containsKey(sourceconsensus))
 						{
 							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
 						}
 						Node sourceresult = allDiffNodes.get(sourceconsensus);
-						
+
 						if (!allDiffNodes.containsKey(targetconsensus))
 						{
 							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
 						}
 						Node targetresult = allDiffNodes.get(targetconsensus);
-						
+
 						Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
 						overlap.addEdge(overlapdiff);
 					}
@@ -153,7 +180,6 @@ public class CalculateDiffOfTwo
 		cleaning.fullOutputCleaning(overlap, false);
 		return overlap;
 	}
-	
 
 	/**
 	 * Return one single node from a collection, assuming that there will only be 1

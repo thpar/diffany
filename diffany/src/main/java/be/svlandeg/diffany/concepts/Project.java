@@ -2,8 +2,11 @@ package be.svlandeg.diffany.concepts;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import be.svlandeg.diffany.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.io.ProjectIO;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -95,11 +98,39 @@ public class Project
 	 * Add a new RunConfiguration to this project. 
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
-	 * @param rc the new RunConfiguration
+	 * @param reference the reference network (not null!)
+	 * @param condition the condition-specific networks (not null!)
+	 * 
 	 * @return the unique ID assigned to the RunConfiguration in this project
 	 */
-	public int addRunConfiguration(RunConfiguration rc)
+	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition)
 	{
+		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
+		cs.add(condition);
+		return addRunConfiguration(reference, cs);
+	}
+	
+	/**
+	 * Add a new RunConfiguration to this project. 
+	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param reference the reference network (not null!)
+	 * @param conditions the condition-specific networks (at least 1!)
+	 * 
+	 * @return the unique ID assigned to the RunConfiguration in this project
+	 */
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
+	{
+		Logger logger = new Logger();
+		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, true);
+		Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
+		for (ConditionNetwork conNet : conditions)
+		{
+			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, true);
+			cleanConditions.add(cleanCon);
+		}
+		
+		RunConfiguration rc = new RunConfiguration(cleanRef, cleanConditions);
 		int nextID;
 		if (runs.keySet().isEmpty())
 		{
@@ -110,7 +141,7 @@ public class Project
 			nextID = Collections.max(runs.keySet()) + 1;
 		}
 		runs.put(nextID, rc);
-		runLogs.put(nextID, new Logger());
+		runLogs.put(nextID, logger);
 		return nextID;
 	}
 	

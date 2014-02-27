@@ -12,7 +12,6 @@ import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.io.NetworkIO;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -65,8 +64,7 @@ public class RunProject
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
 
 		/** THE ACTUAL ALGORITHM **/
-		RunConfiguration rc = new RunConfiguration(refNet, condNet);
-		Integer rcID = p.addRunConfiguration(rc);
+		Integer rcID = p.addRunConfiguration(refNet, condNet);
 		Logger l = p.getLogger(rcID);
 		
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());

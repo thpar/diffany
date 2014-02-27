@@ -43,14 +43,14 @@ public class ExampleCode
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
-		RunConfiguration rc = new RunConfiguration(refNet, condNet);
-		int rcID = p.addRunConfiguration(rc);
+		int rcID = p.addRunConfiguration(refNet, condNet);
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
 		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff);
 
 		// In this case, there will be exactly one DifferentialNetwork
+		RunConfiguration rc = p.getRunConfiguration(rcID);
 		DifferentialNetwork diffNet = rc.getDifferentialNetworks().iterator().next();
 		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
 

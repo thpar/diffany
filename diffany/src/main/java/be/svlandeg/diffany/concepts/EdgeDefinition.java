@@ -13,8 +13,9 @@ import be.svlandeg.diffany.io.EdgeIO;
  */
 public class EdgeDefinition
 {
+	protected static String VOID_DIRECT_TYPE = "*nodirectedtype*";
+	protected static String VOID_SYMM_TYPE = "*nosymmetricaltype*";
 	
-	protected static String VOID_TYPE = "*notype*";
 	protected static String DEFAULT_TYPE = "unspecified_connection";
 	protected static double DEFAULT_WEIGHT = 1.0;
 	protected static boolean DEFAULT_SYMM = true;
@@ -65,12 +66,19 @@ public class EdgeDefinition
 
 	/**
 	 * Obtain a void edge, for the purpose of being able to compare it to existing edges.
-	 * @return a void edge (weight == 0, symmetrical == true)
+	 * 
+	 * @param symmetrical whether or not the edge should be symmetrical
+	 * @return a void edge (weight == 0)
 	 */
-	public static EdgeDefinition getVoidEdge()
+	public static EdgeDefinition getVoidEdge(boolean symmetrical)
 	{
-		return new EdgeDefinition(VOID_TYPE , DEFAULT_SYMM, 0, DEFAULT_NEG);
+		if (symmetrical)
+		{
+			return new EdgeDefinition(VOID_SYMM_TYPE , true, 0, DEFAULT_NEG);
+		}
+		return new EdgeDefinition(VOID_DIRECT_TYPE , false, 0, DEFAULT_NEG);
 	}
+	
 	
 	/**
 	 * Obtain a default edge, equal to the one assigned when calling an empty constructor.

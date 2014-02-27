@@ -39,24 +39,6 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Create a new configuration with one reference network and one condition-specific networks. 
-	 * The set of (output) differential networks is initialized to be empty.
-	 * 
-	 * @param reference the reference network (not null!)
-	 * @param condition the condition-specific network (not null!)
-	 * 
-	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
-	 */
-	public RunConfiguration(ReferenceNetwork reference, ConditionNetwork condition)
-	{
-		setReference(reference);
-		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
-		cs.add(condition);
-		setConditions(cs);
-		differentials = new HashSet<DifferentialNetwork>();
-	}
-	
-	/**
 	 * Set the condition-specific networks in this configuration.
 	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
 	 * 

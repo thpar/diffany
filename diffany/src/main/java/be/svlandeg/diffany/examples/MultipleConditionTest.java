@@ -1,10 +1,21 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.concepts.Condition;
+import be.svlandeg.diffany.concepts.ConditionNetwork;
+import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.semantics.EdgeOntology;
+import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * Testing class that tries to simulate a use-case of calculating a differential network
@@ -45,8 +56,7 @@ public class MultipleConditionTest extends GenericExample
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
-		RunConfiguration rc = new RunConfiguration (r, c);
-		int ID = p.addRunConfiguration(rc);
+		int ID = p.addRunConfiguration(r, c);
 		return ID;
 	}
 

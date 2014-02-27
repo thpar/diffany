@@ -12,7 +12,6 @@ import be.svlandeg.diffany.concepts.Edge;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;
@@ -57,8 +56,7 @@ public class Bandyopadhyay2010 extends GenericExample
 	{
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
-		RunConfiguration rc = new RunConfiguration (r, c);
-		int ID = p.addRunConfiguration(rc);
+		int ID = p.addRunConfiguration(r, c);
 		return ID;
 	}
 

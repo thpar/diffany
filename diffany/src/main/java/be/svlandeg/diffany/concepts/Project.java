@@ -123,15 +123,15 @@ public class Project
 	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
 	{
 		Logger logger = new Logger();
+		registerSourceNetwork(reference, logger);
 		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, true);
-		registerSourceNetwork(cleanRef, logger);
 		
 		Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 		for (ConditionNetwork conNet : conditions)
 		{
+			registerSourceNetwork(conNet, logger);
 			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, true);
 			cleanConditions.add(cleanCon);
-			registerSourceNetwork(cleanCon, logger);
 		}
 		
 		RunConfiguration rc = new RunConfiguration(cleanRef, cleanConditions);

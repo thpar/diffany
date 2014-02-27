@@ -48,7 +48,6 @@ public class Unification
 		for (Edge e : edges)
 		{
 			String sourceType = e.getType();
-			//System.out.println("registering " + sourceType);
 			String sourceClass = eo.getSourceCategory(sourceType);
 			
 			boolean symmetrical = e.isSymmetrical();
@@ -70,14 +69,13 @@ public class Unification
 		for (String type : theseTypes.keySet())
 		{
 			boolean symmetryNow = theseTypes.get(type);
-			boolean symmetryNew = symmetryNow;
 			
 			// so far unknown type in the ontology
 			if (! existingTypes.containsKey(type))
 			{
+				eo.addSourceCategory(type, symmetryNow, true);
 				eo.addSourceCategoryMapping(type, type, false);
 				log.log(" Unknown type " + type + " added to the edge ontology");
-				//System.out.println(" Unknown type " + type + " added to the edge ontology");
 			}
 			// type already existed in the ontology
 			else
@@ -85,12 +83,11 @@ public class Unification
 				boolean symmetryOld = existingTypes.get(type);
 				
 				// only symmetrical when all input edges of this type are ánd the previous definition is
-				symmetryNew = symmetryNow && symmetryOld;
+				boolean symmetryNew = symmetryNow && symmetryOld;
 				eo.addSourceCategory(type, symmetryNew, true);
 				if (symmetryNew != symmetryOld)
 				{
 					log.log(" Edge type " + type + " changed from directed to symmetrical");
-					//System.out.println(" Edge type " + type + " changed from directed to symmetrical");
 				}
 			}
 			

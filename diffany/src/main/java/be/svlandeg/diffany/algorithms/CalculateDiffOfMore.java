@@ -185,10 +185,6 @@ public class CalculateDiffOfMore
 						}
 						if (thisRootCons.size() > 1)
 						{
-							for(EdgeDefinition e : thisRootCons)
-							{
-								System.out.println(" e " + e);
-							}
 							throw new IllegalArgumentException("Found more than 1 condition edge in " + listedConditions.get(i).getName() + " for semantic root " + root);
 							
 						}

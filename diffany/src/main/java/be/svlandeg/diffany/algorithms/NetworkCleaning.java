@@ -12,7 +12,6 @@ import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.io.EdgeIO;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -168,7 +167,6 @@ public class NetworkCleaning
 	 */
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
-		System.out.println("cleaning ref " + net);
 		Set<Node> allNodes = net.getNodes();
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
 		for (Node source : allNodes)
@@ -184,10 +182,6 @@ public class NetworkCleaning
 					resultNet.addEdge(new Edge(source, target, def));
 				}
 			}
-		}
-		for (Edge e : resultNet.getEdges())
-		{
-			System.out.println(EdgeIO.writeToTab(e));
 		}
 		return resultNet;
 	}

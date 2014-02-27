@@ -10,15 +10,17 @@ import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
 import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
+import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.concepts.RunConfiguration;
 import be.svlandeg.diffany.io.NetworkIO;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * This class can run the Diffany algorithms from a {@link org.apache.commons.cli.CommandLine} object.
+ * Currently, only pairwise comparisons are supported, with 1 reference network and 1 condition-dependent network.
  * 
  * @author Sofie Van Landeghem
  */
@@ -36,6 +38,10 @@ public class RunProject
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
+		
+		// TODO v2.0: make ontologies adjustable
+		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology(), new DefaultNodeMapper());
+		NodeMapper nm = p.getNodeMapper();
 
 		/** PARSE INPUT **/
 		boolean toLog = false;
@@ -51,15 +57,7 @@ public class RunProject
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
-
-		Logger logger = new Logger();
-
-		// TODO v2.0: adjustable
-		EdgeOntology eo = new DefaultEdgeOntology();
-
-		// TODO v2.0: adjustable
-		NodeMapper nm = new DefaultNodeMapper();
-
+		
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
 
@@ -67,25 +65,34 @@ public class RunProject
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
 
 		/** THE ACTUAL ALGORITHM **/
-		logger.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
-		DifferentialNetwork diffNet = diffAlgo.calculateDiffNetwork(refNet, condNet, eo, nm, name, cutoff, logger);
+		RunConfiguration rc = new RunConfiguration(refNet, condNet);
+		Integer rcID = p.addRunConfiguration(rc);
+		Logger l = p.getLogger(rcID);
+		
+		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
+		
+		// TODO v2.0: allow to change mode
+		diffAlgo.calculateOneDifferentialNetwork(p, rcID, name, cutoff);
+		
+		// TODO v2.0: check number of differential networks generated
+		DifferentialNetwork diffNet = p.getRunConfiguration(rcID).getDifferentialNetworks().iterator().next();
 		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
 		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
-		logger.log("Writing the differential network to " + diffDir);
+		l.log("Writing the differential network to " + diffDir);
 
 		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
 		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
-		logger.log("Writing the overlap network to " + overlapDir);
+		l.log("Writing the overlap network to " + overlapDir);
 		
-		logger.log("Done !");
+		l.log("Done !");
 
 		/** WRITE LOG OUTPUT **/
 		if (toLog)
 		{
-			for (String msg : logger.getAllLogMessages())
+			for (String msg : l.getAllLogMessages())
 			{
 				System.out.println(msg);
 			}

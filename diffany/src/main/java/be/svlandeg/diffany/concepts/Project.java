@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import be.svlandeg.diffany.io.ProjectIO;
+import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -34,6 +36,18 @@ public class Project
 	
 	// loggers by Configuration ID
 	protected Map<Integer, Logger> runLogs;
+	
+	/**
+	 * Create a new project with a default node mapper and a default edge ontology that can interpret the differential edges.
+	 * 
+	 * @param name the name of this project (not null!)
+	 * 
+	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
+	 */
+	public Project(String name) throws IllegalArgumentException
+	{
+		this(name, new DefaultEdgeOntology(), new DefaultNodeMapper());
+	}
 
 	/**
 	 * Create a new project with a node mapper and an edge ontology that can interpret the differential edges.

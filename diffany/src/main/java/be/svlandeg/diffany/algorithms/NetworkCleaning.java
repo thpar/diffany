@@ -134,22 +134,10 @@ public class NetworkCleaning
 	 */
 	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
-		Set<Node> allNodes = net.getNodes();
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getConditions(), nm);
-		for (Node source : allNodes)
-		{
-			resultNet.addNode(source);
-			for (Node target : allNodes)
-			{
-				resultNet.addNode(target);
-				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(source, target);
-				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(resultNet, eo, edges, source, target, toLog);
-				for (EdgeDefinition def : cleanedEdges.values())
-				{
-					resultNet.addEdge(new Edge(source, target, def));
-				}
-			}
-		}
+		Set<Edge> edges = cleanEdges(net, nm, eo, toLog);
+		Set<Node> nodes = net.getNodes();
+		resultNet.setNodesAndEdges(nodes, edges);
 		return resultNet;
 	}
 	
@@ -167,24 +155,41 @@ public class NetworkCleaning
 	 */
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
-		Set<Node> allNodes = net.getNodes();
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
+		Set<Edge> edges = cleanEdges(net, nm, eo, toLog);
+		Set<Node> nodes = net.getNodes();
+		resultNet.setNodesAndEdges(nodes, edges);
+		return resultNet;
+	}
+	
+	/**
+	 * 
+	 * @param net
+	 * @param nm
+	 * @param eo
+	 * @param toLog
+	 * @return
+	 */
+	protected Set<Edge> cleanEdges(Network net, NodeMapper nm, EdgeOntology eo, boolean toLog)
+	{
+		Set<Node> allNodes = net.getNodes();
+		Set<Edge> resultEdges = new HashSet<Edge>();
 		for (Node source : allNodes)
 		{
-			resultNet.addNode(source);
 			for (Node target : allNodes)
 			{
-				resultNet.addNode(target);
 				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(source, target);
-				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(resultNet, eo, edges, source, target, toLog);
+				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, edges, source, target, toLog);
 				for (EdgeDefinition def : cleanedEdges.values())
 				{
-					resultNet.addEdge(new Edge(source, target, def));
+					resultEdges.add(new Edge(source, target, def));
 				}
 			}
 		}
-		return resultNet;
+		return resultEdges;
 	}
+	
+	
 
 	/**
 	 * Clean an input network:

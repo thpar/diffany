@@ -41,7 +41,7 @@ public class Unification
 	 * @param edges the set of edges in the input network
 	 * @param eo the edge ontology
 	 */
-	public void expandOntology(Set<Edge> edges, EdgeOntology eo)
+	public void expandEdgeOntology(Set<Edge> edges, EdgeOntology eo)
 	{
 		Map<String, Boolean> theseTypes = new HashMap<String, Boolean>();
 		Map<String, Boolean> existingTypes = new HashMap<String, Boolean>();

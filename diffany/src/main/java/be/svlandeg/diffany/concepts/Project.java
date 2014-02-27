@@ -168,7 +168,7 @@ public class Project
 	 */
 	public void registerSourceNetwork(Network source, Logger logger)
 	{
-		new Unification(logger).expandOntology(source.getEdges(), edgeOntology);
+		new Unification(logger).expandEdgeOntology(source.getEdges(), edgeOntology);
 	}
 
 	/**

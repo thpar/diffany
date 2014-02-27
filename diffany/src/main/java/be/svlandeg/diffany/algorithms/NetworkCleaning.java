@@ -12,6 +12,7 @@ import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.Network;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.io.EdgeIO;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -32,6 +33,11 @@ public class NetworkCleaning
 	 */
 	public NetworkCleaning(Logger log)
 	{
+		if (log == null)
+		{
+			String errormsg = "The logger should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.log = log;
 	}
 
@@ -162,6 +168,7 @@ public class NetworkCleaning
 	 */
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
+		System.out.println("cleaning ref " + net);
 		Set<Node> allNodes = net.getNodes();
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
 		for (Node source : allNodes)
@@ -177,6 +184,10 @@ public class NetworkCleaning
 					resultNet.addEdge(new Edge(source, target, def));
 				}
 			}
+		}
+		for (Edge e : resultNet.getEdges())
+		{
+			System.out.println(EdgeIO.writeToTab(e));
 		}
 		return resultNet;
 	}
@@ -215,34 +226,43 @@ public class NetworkCleaning
 	 *
 	 * @param eo the edge ontology
 	 * @param oldEdges the original set of input edges
-	 * @return all input edges grouped by edge root category (a void edge for categories that are not present in the data)
+	 * @return all input edges grouped by edge root category 
 	 */
 	protected Map<String, Set<EdgeDefinition>> resolveEdgesPerRoot(EdgeOntology eo, Set<EdgeDefinition> oldEdges)
 	{
 		Map<String, Set<EdgeDefinition>> mappedEdges = new HashMap<String, Set<EdgeDefinition>>();
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 
-		for (String root : roots)
+		for (EdgeDefinition refE : oldEdges)
 		{
-			boolean symm = eo.isSymmetricalSourceCat(root);
-			Set<EdgeDefinition> subGroupEdges = new HashSet<EdgeDefinition>();
-
-			// Determine which reference edges belong to this root
-			for (EdgeDefinition refE : oldEdges)
+			String edgeType = refE.getType();
+			String edgeClass = eo.getSourceCategory(edgeType);
+			
+			int foundRoot = 0;
+			
+			for (String root : roots)
 			{
-				String edgeType = refE.getType();
-				String edgeClass = eo.getSourceCategory(edgeType);
 				boolean belongsToRoot = eo.isSourceChildOf(edgeClass, root) >= 0;
 				if (belongsToRoot)
 				{
-					subGroupEdges.add(refE);
+					foundRoot++;
+					if (! mappedEdges.containsKey(root))
+					{
+						mappedEdges.put(root, new HashSet<EdgeDefinition>());
+					}
+					mappedEdges.get(root).add(refE);
 				}
 			}
-			if (subGroupEdges.isEmpty())
+			if (foundRoot == 0)
 			{
-				subGroupEdges.add(EdgeDefinition.getVoidEdge(symm));
+				String errorMsg = " Edge source type " + edgeType + " could not be linked to a semantic root category in the edge ontology";
+				throw new IllegalArgumentException(errorMsg);
 			}
-			mappedEdges.put(root, subGroupEdges);
+			if (foundRoot > 1)
+			{
+				String errorMsg = " Edge source type " + edgeType + " could be linked to more than one semantic root category in the edge ontology";
+				throw new IllegalArgumentException(errorMsg);
+			}
 		}
 
 		return mappedEdges;

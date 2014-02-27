@@ -12,6 +12,7 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.DifferentialNetwork;
+import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.OverlappingNetwork;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
@@ -483,7 +484,9 @@ public class CyProject{
 	 */
 	public void registerReferenceNetwork(CyNetwork network){
 		ReferenceNetwork net = CyNetworkBridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
-		this.project.registerSourceNetwork(net);
+		
+		// The logger object is needed as argument, but it's content will not be shown
+		this.project.registerSourceNetwork(net, new Logger());
 	}
 	/**
 	 * When a condition network gets added or is altered in any way, the {@link Project} needs
@@ -493,7 +496,9 @@ public class CyProject{
 	 */
 	public void registerConditionNetwork(CyNetwork network){
 		ConditionNetwork net = CyNetworkBridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
-		this.project.registerSourceNetwork(net);
+		
+		// The logger object is needed as argument, but it's content will not be shown
+		this.project.registerSourceNetwork(net, new Logger());
 	}
 
 	

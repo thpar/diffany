@@ -25,38 +25,76 @@ public class Unification
 	 */
 	public Unification(Logger log)
 	{
+		if (log == null)
+		{
+			String errormsg = "The logger should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.log = log;
 	}
 	
 	/**
-	 * Expand an existing edge ontology to cover all interaction types from the input data
+	 * Expand an existing edge ontology to cover all interaction types from the input data.
+	 * Adjust the directionality when need be (e.g. when seeing directed edges for a type that was thought to be symmetrical).
+	 * Important events are logged.
+	 * 
 	 * @param edges the set of edges in the input network
 	 * @param eo the edge ontology
 	 */
 	public void expandOntology(Set<Edge> edges, EdgeOntology eo)
 	{
-		Map<String, Boolean> newTypes = new HashMap<String, Boolean>();
+		Map<String, Boolean> theseTypes = new HashMap<String, Boolean>();
+		Map<String, Boolean> existingTypes = new HashMap<String, Boolean>();
 		for (Edge e : edges)
 		{
 			String sourceType = e.getType();
+			//System.out.println("registering " + sourceType);
 			String sourceClass = eo.getSourceCategory(sourceType);
-			if (sourceClass == null)
+			
+			boolean symmetrical = e.isSymmetrical();
+			if (theseTypes.containsKey(sourceType))
 			{
-				boolean symmetrical = e.isSymmetrical();
-				if (newTypes.containsKey(sourceType))
-				{
-					// only symmetrical when all input edges of this type are
-					symmetrical = symmetrical && newTypes.get(sourceType);
-				}
-				newTypes.put(sourceType, symmetrical);
+				// only symmetrical when all input edges of this type are
+				symmetrical = symmetrical && theseTypes.get(sourceType);
+			}
+			theseTypes.put(sourceType, symmetrical);
+			
+			// known type
+			if (sourceClass != null)
+			{
+				boolean previousSymmetry = eo.isSymmetricalSourceType(sourceType);
+				existingTypes.put(sourceType, previousSymmetry);
 			}
 		}
 		
-		for (String type : newTypes.keySet())
+		for (String type : theseTypes.keySet())
 		{
-			eo.addSourceCategory(type, newTypes.get(type));
-			eo.addSourceCategoryMapping(type, type, false);
-			log.log(" Unknown type " + type + " added to the edge ontology");
+			boolean symmetryNow = theseTypes.get(type);
+			boolean symmetryNew = symmetryNow;
+			
+			// so far unknown type in the ontology
+			if (! existingTypes.containsKey(type))
+			{
+				eo.addSourceCategoryMapping(type, type, false);
+				log.log(" Unknown type " + type + " added to the edge ontology");
+				//System.out.println(" Unknown type " + type + " added to the edge ontology");
+			}
+			// type already existed in the ontology
+			else
+			{
+				boolean symmetryOld = existingTypes.get(type);
+				
+				// only symmetrical when all input edges of this type are ánd the previous definition is
+				symmetryNew = symmetryNow && symmetryOld;
+				eo.addSourceCategory(type, symmetryNew, true);
+				if (symmetryNew != symmetryOld)
+				{
+					log.log(" Edge type " + type + " changed from directed to symmetrical");
+					//System.out.println(" Edge type " + type + " changed from directed to symmetrical");
+				}
+			}
+			
 		}
+		
 	}
 }

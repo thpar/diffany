@@ -38,7 +38,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		this.posPrefix_symm = posPrefix_symm;
 		this.posPrefix_dir = posPrefix_dir;
 
-		addSourceCategories(sourceCats);
+		addSourceCategories(sourceCats, false);
 	}
 
 	////////////// TREE ALGORITHMS //////////////////////////////////

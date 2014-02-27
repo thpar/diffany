@@ -35,11 +35,9 @@ public class ExampleCode
 		/** READ THE INPUT NETWORKS **/
 		File refDir = new File(refLocation);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
-		p.registerSourceNetwork(refNet);
 
 		File condDir = new File(condLocation);
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
-		p.registerSourceNetwork(condNet);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;

@@ -44,15 +44,14 @@ public class TestVisual
 		ref.addEdge(new Edge("increase", new Node("C"), new Node("D"), true));
 		ref.addEdge(new Edge("ppiptm", new Node("E"), new Node("F"), true));
 		ref.addEdge(new Edge("increasewhatever", new Node("G"), new Node("H"), true));
-		p.registerSourceNetwork(ref);
 		
 		Condition c = new Condition("sample condition");
 		ConditionNetwork cn = new ConditionNetwork("testCon", c, nm);
 		cn.addEdge(new Edge("increase_ppi", new Node("I"), new Node("J"), true));
 		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
-		p.registerSourceNetwork(cn);
 		
-		
+		p.addRunConfiguration(ref, cn);
+
 		// process types
 		assertColorInSource("ppi" , Color.YELLOW, eo);
 		assertColorInSource("ptm" , Color.BLUE, eo);

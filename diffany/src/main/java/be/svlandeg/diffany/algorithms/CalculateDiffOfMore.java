@@ -59,11 +59,6 @@ public class CalculateDiffOfMore
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
 
-		for (Network n : allOriginals)
-		{
-			unification.expandOntology(n.getEdges(), eo);
-		}
-
 		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditionNetworks, nm);
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);

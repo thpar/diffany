@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.algorithms.NetworkCleaning;
+import be.svlandeg.diffany.algorithms.Unification;
 import be.svlandeg.diffany.io.ProjectIO;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
@@ -111,7 +112,7 @@ public class Project
 	}
 	
 	/**
-	 * Add a new RunConfiguration to this project. 
+	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
 	 * @param reference the reference network (not null!)
@@ -123,11 +124,14 @@ public class Project
 	{
 		Logger logger = new Logger();
 		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, true);
+		registerSourceNetwork(cleanRef, logger);
+		
 		Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 		for (ConditionNetwork conNet : conditions)
 		{
 			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, true);
 			cleanConditions.add(cleanCon);
+			registerSourceNetwork(cleanCon, logger);
 		}
 		
 		RunConfiguration rc = new RunConfiguration(cleanRef, cleanConditions);
@@ -162,20 +166,9 @@ public class Project
 	 * 
 	 * @param source the new Network that will be used within this project
 	 */
-	public void registerSourceNetwork(Network source)
+	public void registerSourceNetwork(Network source, Logger logger)
 	{
-		for (Edge e : source.getEdges())
-		{
-			String edgeType = e.getType();
-			if (! edgeOntology.isDefinedSourceType(edgeType))
-			{
-				boolean symmetrical = e.isSymmetrical();
-				
-				// add the new edge type as its own separate (singleton) source category
-				edgeOntology.addSourceCategory(edgeType, symmetrical);
-				edgeOntology.addSourceCategoryMapping(edgeType, edgeType, false);
-			}
-		}
+		new Unification(logger).expandOntology(source.getEdges(), edgeOntology);
 	}
 
 	/**

@@ -54,8 +54,8 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				allRoots.add(cat);
 			}
 		}
-		allRoots.remove(VOID_DIRECTED_CAT);
-		allRoots.remove(VOID_SYMMETRICAL_CAT);
+		allRoots.remove(getVoidCategory(true));
+		allRoots.remove(getVoidCategory(false));
 		return allRoots;
 	}
 
@@ -144,7 +144,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 		String parent = retrieveCatParent(childCat);
 
-		// TODO: will this loop without stop when a category is its own parent?
 		while (parent != null)
 		{
 			depth++;
@@ -305,7 +304,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		{
 			int depth = 0;
 			String cat = getSourceCategory(e.getType());
-			if (cat.equals(VOID_SYMMETRICAL_CAT) || cat.equals(VOID_DIRECTED_CAT))
+			if (cat.equals(getVoidCategory(true)) || cat.equals(getVoidCategory(false)))
 			{
 				countEmpty++;
 			}
@@ -328,7 +327,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		}
 		if (countEmpty == countEdges)
 		{
-			allCommonParents.put(VOID_SYMMETRICAL_CAT, 0);
+			allCommonParents.put(getVoidCategory(true), 0);
 			return allCommonParents;
 		}
 		if (excludeEmpty)
@@ -567,11 +566,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		String baseType = firstNeutralParent;
 		boolean unspecified = false;
 
-		String VOID_CAT = VOID_SYMMETRICAL_CAT;
-		if (!conSymm)
-		{
-			VOID_CAT = VOID_DIRECTED_CAT;
-		}
+		String VOID_CAT = getVoidCategory(conSymm);
 
 		for (EdgeDefinition conEdge : conEdges2)
 		{

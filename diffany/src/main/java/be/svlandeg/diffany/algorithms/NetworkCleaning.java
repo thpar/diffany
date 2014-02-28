@@ -157,30 +157,34 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * TODO
+	 * Clean an input network:
+	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
-	 * @param resultNet
-	 * @param nm
-	 * @param eo
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper
+	 * @param eo the edge ontology
+	 * 
+	 * @return a cleaned network representing the same semantic information
 	 */
-	protected void fullInputCleaning(Network resultNet, NodeMapper nm, EdgeOntology eo)
+	protected void fullInputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
 		// make edges directed when defined as such by the edge ontology
-		Set<Node> nodes = resultNet.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(resultNet.getEdges(), eo);
-		resultNet.setNodesAndEdges(nodes, edges);
+		Set<Node> nodes = net.getNodes();
+		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		cleanEdges(resultNet, nm, eo);
+		cleanEdges(net, nm, eo);
 	}
 
 	/**
-	 * TODO
+	 * For each node pair and each semantic root category, resolve conflicts by calling {@link cleanEdgesBetweenNodes}.
+	 * This method also removes redundant symmetrical edges at the end.
 	 * 
-	 * @param net
-	 * @param nm
-	 * @param eo
-	 * @return
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper
+	 * @param eo the edge ontology
 	 */
 	protected void cleanEdges(Network net, NodeMapper nm, EdgeOntology eo)
 	{
@@ -206,8 +210,7 @@ public class NetworkCleaning
 
 	/**
 	 * Clean an input network:
-	 * Group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
-	 * (either all symmetric or all directed), and resolve conflicts within a root category.
+	 * Group all input edges into subclasses per root category of the EdgeOntology, resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology

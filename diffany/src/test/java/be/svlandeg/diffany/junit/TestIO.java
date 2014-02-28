@@ -27,8 +27,6 @@ import be.svlandeg.diffany.semantics.NodeMapper;
  * Class that automatically tests the IO functionality of Diffany:
  * writing/reading networks and projects to/from file.
  * 
- * TODO test reading
- * 
  * @author Sofie Van Landeghem
  */
 public class TestIO

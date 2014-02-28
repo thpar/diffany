@@ -179,10 +179,8 @@ public class EdgeDefinition
 	{
 		if (weight < 0.0)
 		{
-			//TODO v1.1
-			//String errormsg = "The edge weight should be positive!";
-			//throw new IllegalArgumentException(errormsg);
-			return false;
+			String errormsg = "The edge weight should be positive!";
+			throw new IllegalArgumentException(errormsg);
 		}
 		return true;
 	}

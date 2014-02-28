@@ -220,7 +220,7 @@ public abstract class Network
 	 */
 	public void addEdge(Edge edge)
 	{
-		// TODO : edge comparison?
+		// TODO v2.0: edge comparison? Or leave it to the cleaning step?
 		edges.add(edge);
 		
 		addNode(edge.getSource());

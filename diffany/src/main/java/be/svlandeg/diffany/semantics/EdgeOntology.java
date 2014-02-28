@@ -16,8 +16,8 @@ import be.svlandeg.diffany.visualstyle.EdgeDrawing;
 public abstract class EdgeOntology
 {
 
-	protected final String VOID_SYMMETRICAL_CAT;
-	protected final String VOID_DIRECTED_CAT;
+	private final String VOID_SYMMETRICAL_CAT;
+	private final String VOID_DIRECTED_CAT;
 
 	// edge types are stored in their canonical version (i.e. no punctuation, ascii-only)
 	// when querying this map, always run the key through getCanonicalForm(edgeType) !
@@ -43,31 +43,33 @@ public abstract class EdgeOntology
 	}
 	
 	/**
-	 * TODO
-	 * @param edgeType
-	 * @return
+	 * Retrieve a void edge type
+	 * 
+	 * @param symmetrical whether or not the edge type should be symmetrical 
+	 * @return the void edge type
 	 */
-	public boolean isVoidType(String edgeType, boolean symmetrical)
+	public String getVoidType(boolean symmetrical)
 	{
 		if (symmetrical)
 		{
-			return getCanonicalForm(edgeType).equals(getCanonicalForm(VOID_SYMMETRICAL_CAT));
+			return getCanonicalForm(VOID_SYMMETRICAL_CAT);
 		}
-		return getCanonicalForm(edgeType).equals(getCanonicalForm(VOID_DIRECTED_CAT));
+		return getCanonicalForm(VOID_DIRECTED_CAT);
 	}
 	
 	/**
-	 * TODO
-	 * @param edgeType
-	 * @return
+	 * Retrieve a void edge category
+	 * 
+	 * @param symmetrical whether or not the edge category should be symmetrical 
+	 * @return the void edge category
 	 */
-	public boolean isVoidCategory(String edgeCat, boolean symmetrical)
+	public String getVoidCategory(boolean symmetrical)
 	{
 		if (symmetrical)
 		{
-			return edgeCat.equals(VOID_SYMMETRICAL_CAT);
+			return VOID_SYMMETRICAL_CAT;
 		}
-		return edgeCat.equals(VOID_DIRECTED_CAT);
+		return VOID_DIRECTED_CAT;
 	}
 
 	/**

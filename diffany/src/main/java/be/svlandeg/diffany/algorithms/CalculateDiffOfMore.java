@@ -151,7 +151,6 @@ public class CalculateDiffOfMore
 
 				for (String root : roots)
 				{
-					System.out.println(source1 + "-" + target1 + " : " + root);
 					boolean aRef = true;
 					boolean symm = eo.isSymmetricalSourceCat(root);
 					Set<EdgeDefinition> rootRefs = new HashSet<EdgeDefinition>();
@@ -202,7 +201,6 @@ public class CalculateDiffOfMore
 					}
 					if (atLeastOneCon || aRef)
 					{
-						System.out.println("calculating");
 						EdgeDefinition diff_edge_def = eo.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
 
 						String sourceconsensus = nm.getConsensusName(allSources);

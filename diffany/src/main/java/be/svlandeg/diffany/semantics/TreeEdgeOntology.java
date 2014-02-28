@@ -490,14 +490,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
-		System.out.println(" ");
-		System.out.println("differential?");
-		System.out.println("refEdge " + refEdge);
-		for (EdgeDefinition conEdge : conEdges)
-		{
-			System.out.println("conEdge " + conEdge);
-		}
-		
 		EdgeDefinition diff_edge = new EdgeDefinition();
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
@@ -640,8 +632,8 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				{
 					countUp++;
 				}
-				boolean refNeutral = !(negSourceCats.contains(refCat)) || posSourceCats.contains(refCat);
-				boolean conNeutral = !(negSourceCats.contains(conCat)) || posSourceCats.contains(conCat);
+				boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
+				boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
 
 				if ((refNeutral && !conNeutral) || (conNeutral && !refNeutral))
 				{
@@ -695,7 +687,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge(conSymm);
 		}
 		diff_edge.setWeight(diffWeight);
-		System.out.println(" diff_edge " + diff_edge);
 		return diff_edge;
 	}
 

@@ -296,7 +296,7 @@ public class NetworkCleaning
 	 */
 	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
 	{
-		// TODO v2.0: should we also take into account whether or not one of the edges is more specific?
+		// TODO v2.0: should we also take into account whether or not one of the edges is more specific / negated?
 		double maxWeight = 0.0;
 		int numberOriginal = 0;
 
@@ -316,7 +316,7 @@ public class NetworkCleaning
 			{
 				if (numberOriginal > 1)
 				{
-					logger.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
+					logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
 				}
 				return e;
 			}

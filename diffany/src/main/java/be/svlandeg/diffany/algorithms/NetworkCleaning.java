@@ -24,20 +24,20 @@ import be.svlandeg.diffany.semantics.NodeMapper;
 public class NetworkCleaning
 {
 
-	private Logger log;
+	private Logger logger;
 
 	/**
 	 * Create a new cleaning object, which can log important messages.
-	 * @param log the logger object
+	 * @param logger the logger object
 	 */
-	public NetworkCleaning(Logger log)
+	public NetworkCleaning(Logger logger)
 	{
-		if (log == null)
+		if (logger == null)
 		{
 			String errormsg = "The logger should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		this.log = log;
+		this.logger = logger;
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class NetworkCleaning
 	{
 		if (toLog)
 		{
-			log.log(" Removing redundant symmetrical edges from the output");
+			logger.log(" Removing redundant symmetrical edges from the output");
 		}
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
@@ -123,7 +123,7 @@ public class NetworkCleaning
 	/**
 	 * Clean an input condition-specific network:
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality 
-	 * (either all symmetric or all directed), and resolve conflicts within a root category.
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
@@ -135,16 +135,14 @@ public class NetworkCleaning
 	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getConditions(), nm);
-		Set<Edge> edges = cleanEdges(net, nm, eo, toLog);
-		Set<Node> nodes = net.getNodes();
-		resultNet.setNodesAndEdges(nodes, edges);
+		fullInputCleaning(resultNet, nm, eo, toLog);
 		return resultNet;
 	}
 	
 	/**
 	 * Clean an input reference network:
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality 
-	 * (either all symmetric or all directed), and resolve conflicts within a root category.
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
@@ -156,10 +154,26 @@ public class NetworkCleaning
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
-		Set<Edge> edges = cleanEdges(net, nm, eo, toLog);
-		Set<Node> nodes = net.getNodes();
-		resultNet.setNodesAndEdges(nodes, edges);
+		fullInputCleaning(resultNet, nm, eo, toLog);
 		return resultNet;
+	}
+	
+	/**
+	 * 
+	 * @param resultNet
+	 * @param nm
+	 * @param eo
+	 * @param toLog
+	 */
+	protected void fullInputCleaning(Network resultNet, NodeMapper nm, EdgeOntology eo, boolean toLog)
+	{
+		// make edges directed when defined as such by the edge ontology
+		Set<Node> nodes = resultNet.getNodes();
+		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(resultNet.getEdges(), eo);
+		resultNet.setNodesAndEdges(nodes, edges);
+		
+		// clean edges per semantic category
+		cleanEdges(resultNet, nm, eo, toLog);
 	}
 	
 	/**
@@ -170,10 +184,11 @@ public class NetworkCleaning
 	 * @param toLog
 	 * @return
 	 */
-	protected Set<Edge> cleanEdges(Network net, NodeMapper nm, EdgeOntology eo, boolean toLog)
+	protected void cleanEdges(Network net, NodeMapper nm, EdgeOntology eo, boolean toLog)
 	{
 		Set<Node> allNodes = net.getNodes();
-		Set<Edge> resultEdges = new HashSet<Edge>();
+		Set<Edge> newEdges = new HashSet<Edge>();
+		
 		for (Node source : allNodes)
 		{
 			for (Node target : allNodes)
@@ -182,11 +197,11 @@ public class NetworkCleaning
 				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, edges, source, target, toLog);
 				for (EdgeDefinition def : cleanedEdges.values())
 				{
-					resultEdges.add(new Edge(source, target, def));
+					newEdges.add(new Edge(source, target, def));
 				}
 			}
 		}
-		return resultEdges;
+		net.setNodesAndEdges(allNodes, newEdges);
 	}
 	
 	
@@ -206,7 +221,7 @@ public class NetworkCleaning
 	 * 
 	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
 	 */
-	public Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<EdgeDefinition> oldEdges, Node source, Node target, boolean toLog)
+	protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<EdgeDefinition> oldEdges, Node source, Node target, boolean toLog)
 	{
 		Map<String, Set<EdgeDefinition>> mappedNormalEdges = resolveEdgesPerRoot(eo, oldEdges);
 		Map<String, EdgeDefinition> mappedSingleEdges = new HashMap<String, EdgeDefinition>();
@@ -300,13 +315,13 @@ public class NetworkCleaning
 			{
 				if (toLog)
 				{
-					log.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
+					logger.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
 				}
 				return e;
 			}
 		}
 		String msg = "Could not resolve the set of edges to one.";
-		log.log("Fatal error: " + msg);
+		logger.log("Fatal error: " + msg);
 		throw new RuntimeException(msg);
 	}
 

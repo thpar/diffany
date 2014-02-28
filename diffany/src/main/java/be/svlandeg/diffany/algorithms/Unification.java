@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.algorithms;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,6 +93,40 @@ public class Unification
 			}
 			
 		}
+		
+	}
+
+	/**
+	 * Use the directionality of edge types as recorded in the edge ontology to 'fix' a set of edges.
+	 * Specifically, symmetrical edges that should be directed, will be split into 2.
+	 * 
+	 * @param oldEdges the old set of edges
+	 * @param eo the edge ontology defining the semantics of edge types
+	 * @return the new, unified set of edges adhering to the edge ontology
+	 */
+	public Set<Edge> unifyEdgeDirection(Set<Edge> oldEdges, EdgeOntology eo)
+	{
+		Set<Edge> newEdges = new HashSet<Edge>();
+		
+		for (Edge e : oldEdges)
+		{
+			String type = e.getType();
+			boolean shouldBeSymmetrical = eo.isSymmetricalSourceType(type);
+			boolean isSymmetrical = e.isSymmetrical();
+			if (isSymmetrical && !shouldBeSymmetrical)
+			{
+				// source-target: make directed
+				e.makeSymmetrical(shouldBeSymmetrical);
+				newEdges.add(e);
+				
+				// make new directed target-source edge
+				Edge newE = new Edge(e.getTarget(), e.getSource(), e);
+				newEdges.add(newE);
+			}
+			
+		}
+		
+		return newEdges;
 		
 	}
 }

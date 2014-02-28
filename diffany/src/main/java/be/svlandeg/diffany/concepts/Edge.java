@@ -2,7 +2,6 @@ package be.svlandeg.diffany.concepts;
 
 import be.svlandeg.diffany.io.EdgeIO;
 
-
 /**
  * Class that represents an edge in a network: an edge has a source and target node
  * and can have a certain weight. It is symmetrical or not, and may or may not be negated.
@@ -16,9 +15,11 @@ public class Edge extends EdgeDefinition
 
 	protected Node source;
 	protected Node target;
-	
+
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
+	 * The EdgeDefinition object is not kept as such, its fields are copied (to make sure there is no dependency)
+	 * 
 	 * @param source the source node
 	 * @param target the target node
 	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
@@ -30,6 +31,7 @@ public class Edge extends EdgeDefinition
 
 	/**
 	 * Create a new edge with specified source and target nodes, direction and weight
+	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
 	 * @param target the target node
@@ -47,6 +49,7 @@ public class Edge extends EdgeDefinition
 
 	/**
 	 * Create a new edge with default weight of 1.0
+	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
 	 * @param target the target node
@@ -57,9 +60,10 @@ public class Edge extends EdgeDefinition
 	{
 		this(type, source, target, symmetrical, DEFAULT_WEIGHT, negated);
 	}
-	
+
 	/**
 	 * Create a new edge, which will be defined as not negated.
+	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
 	 * @param target the target node
@@ -73,6 +77,7 @@ public class Edge extends EdgeDefinition
 
 	/**
 	 * Create a new edge with default weight of 1.0 and negation off
+	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
 	 * @param target the target node
@@ -83,12 +88,11 @@ public class Edge extends EdgeDefinition
 		this(type, source, target, symmetrical, DEFAULT_WEIGHT, DEFAULT_NEG);
 	}
 
-	
-
 	/**
 	 * Get the source node of this edge
-	 * When the edge is symmetrical, source and target will be defined consistently, 
+	 * When the edge is symmetrical, source and target will be defined consistently,
 	 * though they can be used interchangeably in upstream code.
+	 * 
 	 * @return the source node of this edge
 	 */
 	public Node getSource()
@@ -98,21 +102,20 @@ public class Edge extends EdgeDefinition
 
 	/**
 	 * Get the target node of this edge
-	 * When the edge is symmetrical, source and target will be defined consistently, 
+	 * When the edge is symmetrical, source and target will be defined consistently,
 	 * though they can be used interchangeably in upstream code.
+	 * 
 	 * @return the target node of this edge
 	 */
 	public Node getTarget()
 	{
 		return target;
 	}
-	
-	
+
 	@Override
 	public String toString()
 	{
 		return EdgeIO.writeToTab(this);
 	}
-
 
 }

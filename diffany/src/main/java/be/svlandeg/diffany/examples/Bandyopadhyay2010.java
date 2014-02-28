@@ -9,6 +9,7 @@ import be.svlandeg.diffany.algorithms.CalculateDiff;
 import be.svlandeg.diffany.concepts.Condition;
 import be.svlandeg.diffany.concepts.ConditionNetwork;
 import be.svlandeg.diffany.concepts.Edge;
+import be.svlandeg.diffany.concepts.Logger;
 import be.svlandeg.diffany.concepts.Node;
 import be.svlandeg.diffany.concepts.Project;
 import be.svlandeg.diffany.concepts.ReferenceNetwork;
@@ -127,6 +128,13 @@ public class Bandyopadhyay2010 extends GenericExample
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID);
+		
+		System.out.println("Log:");
+		Logger logger = p.getLogger(ID);
+		for (String log : logger.getAllLogMessages())
+		{
+			System.out.println(log);
+		}
 	}
 	
 }

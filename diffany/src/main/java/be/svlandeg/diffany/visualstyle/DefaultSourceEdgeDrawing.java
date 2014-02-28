@@ -48,7 +48,7 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 			
 			while (foundColor == null && childCat != null)
 			{
-				String parentCat = teo.retrieveParent(childCat);
+				String parentCat = teo.retrieveCatParent(childCat);
 				foundColor = parentCatToColor.get(parentCat);
 				
 				childCat = parentCat;
@@ -73,7 +73,7 @@ public class DefaultSourceEdgeDrawing extends TreeEdgeDrawing
 			ArrowHead foundArrowHead = parentCatToArrowHead.get(childCat);
 			while (foundArrowHead == null && childCat != null)
 			{
-				String parentCat = teo.retrieveParent(childCat);
+				String parentCat = teo.retrieveCatParent(childCat);
 				foundArrowHead = parentCatToArrowHead.get(parentCat);
 				childCat = parentCat;
 			}

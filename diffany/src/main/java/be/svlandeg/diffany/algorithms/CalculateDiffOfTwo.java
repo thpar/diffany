@@ -59,6 +59,8 @@ public class CalculateDiffOfTwo
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
+		
+		Set<String> roots = eo.retrieveAllSourceRootCats();
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -100,14 +102,14 @@ public class CalculateDiffOfTwo
 					allConds = n2.getAllEdges(source2, target2);
 				}
 
-				for (String root : eo.retrieveAllSourceRootCats())
+				for (String root : roots)
 				{
 					boolean symm = eo.isSymmetricalSourceCat(root);
 					Set<EdgeDefinition> rootN1s = new HashSet<EdgeDefinition>();
 					for (Edge e : allRefs)
 					{
 						String type = e.getType();
-						if (eo.isSourceChildOf(type, root) > -1)
+						if (eo.isSourceTypeChildOf(type, root) > -1)
 						{
 							rootN1s.add(e);
 						}
@@ -125,7 +127,7 @@ public class CalculateDiffOfTwo
 					for (Edge e : allConds)
 					{
 						String type = e.getType();
-						if (eo.isSourceChildOf(type, root) > -1)
+						if (eo.isSourceTypeChildOf(type, root) > -1)
 						{
 							rootN2s.add(e);
 						}
@@ -156,8 +158,7 @@ public class CalculateDiffOfTwo
 					String targetconsensus = nm.getConsensusName(allTargets);
 
 					// non-void overlapping edge
-					if (overlap_edge_def.getType() != EdgeOntology.VOID_SYMMETRICAL_TYPE && overlap_edge_def.getType() != EdgeOntology.VOID_DIRECTED_TYPE
-							&& sourceconsensus != null && targetconsensus != null)
+					if (overlap_edge_def.getWeight() > 0 && sourceconsensus != null && targetconsensus != null)
 					{
 						if (!allDiffNodes.containsKey(sourceconsensus))
 						{

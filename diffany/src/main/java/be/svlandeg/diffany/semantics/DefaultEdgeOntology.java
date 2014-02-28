@@ -98,30 +98,30 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	protected void insertDefaultParents()
 	{
-		putSourceParent("positive_regulation", "regulation");
-		putSourceParent("negative_regulation", "regulation");
-		putSourceParent("catalysis", "positive_regulation");
-		putSourceParent("inhibition", "negative_regulation");
+		putSourceCatParent("positive_regulation", "regulation");
+		putSourceCatParent("negative_regulation", "regulation");
+		putSourceCatParent("catalysis", "positive_regulation");
+		putSourceCatParent("inhibition", "negative_regulation");
 
-		putSourceParent("positive_genetic_interaction", "genetic_interaction");
-		putSourceParent("negative_genetic_interaction", "genetic_interaction");
-		putSourceParent("synthetic_lethality", "negative_genetic_interaction");
+		putSourceCatParent("positive_genetic_interaction", "genetic_interaction");
+		putSourceCatParent("negative_genetic_interaction", "genetic_interaction");
+		putSourceCatParent("synthetic_lethality", "negative_genetic_interaction");
 
-		putSourceParent("ppi", "colocalization");
-		putSourceParent("transcription", "protein-dna_binding");
+		putSourceCatParent("ppi", "colocalization");
+		putSourceCatParent("transcription", "protein-dna_binding");
 
-		putSourceParent("phosphorylation", "ptm");
-		putSourceParent("dephosphorylation", "ptm");
-		putSourceParent("ubiquitination", "ptm");
-		putSourceParent("deubiquitination", "ptm");
-		putSourceParent("methylation", "ptm");
-		putSourceParent("demethylation", "ptm");
-		putSourceParent("hydroxylation", "ptm");
-		putSourceParent("dehydroxylation", "ptm");
-		putSourceParent("acetylation", "ptm");
-		putSourceParent("deacetylation", "ptm");
-		putSourceParent("glycosylation", "ptm");
-		putSourceParent("deglycosylation", "ptm");
+		putSourceCatParent("phosphorylation", "ptm");
+		putSourceCatParent("dephosphorylation", "ptm");
+		putSourceCatParent("ubiquitination", "ptm");
+		putSourceCatParent("deubiquitination", "ptm");
+		putSourceCatParent("methylation", "ptm");
+		putSourceCatParent("demethylation", "ptm");
+		putSourceCatParent("hydroxylation", "ptm");
+		putSourceCatParent("dehydroxylation", "ptm");
+		putSourceCatParent("acetylation", "ptm");
+		putSourceCatParent("deacetylation", "ptm");
+		putSourceCatParent("glycosylation", "ptm");
+		putSourceCatParent("deglycosylation", "ptm");
 	}
 
 	/**

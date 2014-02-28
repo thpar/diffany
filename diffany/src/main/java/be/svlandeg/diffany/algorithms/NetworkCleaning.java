@@ -174,7 +174,6 @@ public class NetworkCleaning
 		cleanEdges(resultNet, nm, eo);
 	}
 
-
 	/**
 	 * TODO
 	 * 
@@ -187,13 +186,14 @@ public class NetworkCleaning
 	{
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();
+		Set<String> roots = eo.retrieveAllSourceRootCats();
 
 		for (Node source : allNodes)
 		{
 			for (Node target : allNodes)
 			{
 				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(source, target);
-				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, edges, source, target);
+				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, source, target);
 				for (EdgeDefinition def : cleanedEdges.values())
 				{
 					newEdges.add(new Edge(source, target, def));
@@ -211,6 +211,7 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param roots the root categories of the edge ontology
 	 * @param oldEdges all edges between two nodes, including both directed and symmetrical edges
 	 * 
 	 * @param source the source node (used for logging)
@@ -218,9 +219,9 @@ public class NetworkCleaning
 	 * 
 	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
 	 */
-	protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<EdgeDefinition> oldEdges, Node source, Node target)
+	protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges, Node source, Node target)
 	{
-		Map<String, Set<EdgeDefinition>> mappedNormalEdges = resolveEdgesPerRoot(eo, oldEdges);
+		Map<String, Set<EdgeDefinition>> mappedNormalEdges = resolveEdgesPerRoot(eo, roots, oldEdges);
 		Map<String, EdgeDefinition> mappedSingleEdges = new HashMap<String, EdgeDefinition>();
 
 		for (String rootCat : mappedNormalEdges.keySet())
@@ -236,24 +237,23 @@ public class NetworkCleaning
 	 * Group all input edges into subclasses per root category of the EdgeOntology.
 	 * 
 	 * @param eo the edge ontology
+	 * @param roots the root categories of the edge ontology
 	 * @param oldEdges the original set of input edges
 	 * @return all input edges grouped by edge root category
 	 */
-	protected Map<String, Set<EdgeDefinition>> resolveEdgesPerRoot(EdgeOntology eo, Set<EdgeDefinition> oldEdges)
+	protected Map<String, Set<EdgeDefinition>> resolveEdgesPerRoot(EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges)
 	{
 		Map<String, Set<EdgeDefinition>> mappedEdges = new HashMap<String, Set<EdgeDefinition>>();
-		Set<String> roots = eo.retrieveAllSourceRootCats();
-
+		
 		for (EdgeDefinition refE : oldEdges)
 		{
 			String edgeType = refE.getType();
-			String edgeClass = eo.getSourceCategory(edgeType);
 
 			int foundRoot = 0;
 
 			for (String root : roots)
 			{
-				boolean belongsToRoot = eo.isSourceChildOf(edgeClass, root) >= 0;
+				boolean belongsToRoot = eo.isSourceTypeChildOf(edgeType, root) >= 0;
 				if (belongsToRoot)
 				{
 					foundRoot++;
@@ -298,17 +298,26 @@ public class NetworkCleaning
 	{
 		// TODO v2.0: should we also take into account whether or not one of the edges is more specific?
 		double maxWeight = 0.0;
+		int numberOriginal = 0;
 
 		for (EdgeDefinition e : edges)
 		{
-			maxWeight = Math.max(maxWeight, e.getWeight());
+			double weight = e.getWeight();
+			if (weight > 0)
+			{
+				numberOriginal++;
+			}
+			maxWeight = Math.max(maxWeight, weight);
 		}
 
 		for (EdgeDefinition e : edges)
 		{
 			if (maxWeight == e.getWeight())
 			{
-				logger.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
+				if (numberOriginal > 1)
+				{
+					logger.log(" Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
+				}
 				return e;
 			}
 		}

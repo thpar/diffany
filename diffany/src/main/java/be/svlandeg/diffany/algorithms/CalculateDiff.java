@@ -129,7 +129,6 @@ public class CalculateDiff
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger(configurationID);
-		log.clean();
 		
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -241,7 +240,6 @@ public class CalculateDiff
 		EdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger(configurationID);
-		log.clean();
 		
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
 		ReferenceNetwork r = rc.getReferenceNetwork();

@@ -12,7 +12,7 @@ import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
- * This class can calculate a differential network between one reference and a set of condition-specific networks. 
+ * This class can calculate a differential network between one reference and a set of condition-specific networks.
  * Currently this algorithm assumes a 1-to-1 mapping of nodes between the two networks!
  * 
  * @author Sofie Van Landeghem
@@ -39,7 +39,7 @@ public class CalculateDiffOfMore
 	}
 
 	/**
-	 * Calculate the differential network between the reference and condition-specific networks. 
+	 * Calculate the differential network between the reference and condition-specific networks.
 	 * The overlapping network should be calculated independently!
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
@@ -47,9 +47,9 @@ public class CalculateDiffOfMore
 	 * @param conditions a set of condition-specific networks (at least 2)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the differential network. 
+	 * @param diff_name the name to give to the differential network.
 	 * 
-	 * @return the differential network between the two    
+	 * @return the differential network between the two
 	 */
 	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, EdgeOntology eo, NodeMapper nm, String diff_name, double cutoff)
 	{
@@ -64,6 +64,8 @@ public class CalculateDiffOfMore
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
+
+		Set<String> roots = eo.retrieveAllSourceRootCats();
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -147,39 +149,38 @@ public class CalculateDiffOfMore
 					condlist.add(i, conditionEdges);
 				}
 
-				for (String root : eo.retrieveAllSourceRootCats())
+				for (String root : roots)
 				{
+					System.out.println(source1 + "-" + target1 + " : " + root);
+					boolean aRef = true;
 					boolean symm = eo.isSymmetricalSourceCat(root);
 					Set<EdgeDefinition> rootRefs = new HashSet<EdgeDefinition>();
 					for (Edge e : allRefs)
 					{
 						String type = e.getType();
-						if (eo.isSourceChildOf(type, root) > -1)
+						if (eo.isSourceTypeChildOf(type, root) > -1)
 						{
 							rootRefs.add(e);
 						}
 					}
 					if (rootRefs.isEmpty())
 					{
+						aRef = false;
 						rootRefs.add(EdgeDefinition.getVoidEdge(symm));
 					}
 					if (rootRefs.size() > 1)
 					{
-						System.out.println(source1 + "-" + target1);
-						for (EdgeDefinition ed : rootRefs)
-						{
-							System.out.println(" def " + ed);
-						}
 						throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 					}
 					Set<EdgeDefinition> rootCons = new HashSet<EdgeDefinition>();
+					boolean atLeastOneCon = false;
 					for (int i = 0; i < listedConditions.size(); i++)
 					{
 						Set<EdgeDefinition> thisRootCons = new HashSet<EdgeDefinition>();
 						for (Edge e : condlist.get(i))
 						{
 							String type = e.getType();
-							if (eo.isSourceChildOf(type, root) > -1)
+							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
 								thisRootCons.add(e);
 							}
@@ -188,36 +189,43 @@ public class CalculateDiffOfMore
 						{
 							thisRootCons.add(EdgeDefinition.getVoidEdge(symm));
 						}
-						if (thisRootCons.size() > 1)
+						else if (thisRootCons.size() > 1)
 						{
 							throw new IllegalArgumentException("Found more than 1 condition edge in " + listedConditions.get(i).getName() + " for semantic root " + root);
-							
+
+						}
+						else
+						{
+							atLeastOneCon = true;
 						}
 						rootCons.add(thisRootCons.iterator().next());
 					}
-					EdgeDefinition diff_edge_def = eo.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
-
-					String sourceconsensus = nm.getConsensusName(allSources);
-					String targetconsensus = nm.getConsensusName(allTargets);
-
-					// non-void differential edge
-					if (diff_edge_def.getType() != EdgeOntology.VOID_SYMMETRICAL_TYPE && diff_edge_def.getType() != EdgeOntology.VOID_DIRECTED_TYPE
-							&& sourceconsensus != null && targetconsensus != null)
+					if (atLeastOneCon || aRef)
 					{
-						if (!allDiffNodes.containsKey(sourceconsensus))
-						{
-							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
-						}
-						Node sourceresult = allDiffNodes.get(sourceconsensus);
+						System.out.println("calculating");
+						EdgeDefinition diff_edge_def = eo.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
 
-						if (!allDiffNodes.containsKey(targetconsensus))
-						{
-							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
-						}
-						Node targetresult = allDiffNodes.get(targetconsensus);
+						String sourceconsensus = nm.getConsensusName(allSources);
+						String targetconsensus = nm.getConsensusName(allTargets);
 
-						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
-						diff.addEdge(edgediff);
+						// non-void differential edge
+						if (diff_edge_def.getWeight() > 0 && sourceconsensus != null && targetconsensus != null)
+						{
+							if (!allDiffNodes.containsKey(sourceconsensus))
+							{
+								allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
+							}
+							Node sourceresult = allDiffNodes.get(sourceconsensus);
+
+							if (!allDiffNodes.containsKey(targetconsensus))
+							{
+								allDiffNodes.put(targetconsensus, new Node(targetconsensus));
+							}
+							Node targetresult = allDiffNodes.get(targetconsensus);
+
+							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+							diff.addEdge(edgediff);
+						}
 					}
 				}
 			}
@@ -227,13 +235,13 @@ public class CalculateDiffOfMore
 	}
 
 	/**
-	 * Calculate the overlapping network between a set of networks. 
+	 * Calculate the overlapping network between a set of networks.
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * @param networks a set of networks (at least 2)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param overlapping_name the name to give to the overlapping network. 
+	 * @param overlapping_name the name to give to the overlapping network.
 	 * @param minOperator whether or not to take the minimum of the edge weights for the overlapping edges - if false, the maximum is taken
 	 * 
 	 * @return the differential network between the two
@@ -263,6 +271,7 @@ public class CalculateDiffOfMore
 
 	/**
 	 * Return one single node from a collection, assuming that there will only be 1
+	 * 
 	 * @param nodes the set of nodes
 	 * @return the one node in the set, or an UnsupportedOperationException if there are more than 1
 	 */

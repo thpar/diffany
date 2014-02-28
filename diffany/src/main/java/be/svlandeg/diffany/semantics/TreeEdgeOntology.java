@@ -54,31 +54,32 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				allRoots.add(cat);
 			}
 		}
-		allRoots.remove(VOID_DIRECTED_TYPE);
-		allRoots.remove(VOID_SYMMETRICAL_TYPE);
+		allRoots.remove(VOID_DIRECTED_CAT);
+		allRoots.remove(VOID_SYMMETRICAL_CAT);
 		return allRoots;
 	}
 
 	/**
 	 * Define a child category and its parent category. The child should not have received a parent before.
+	 * 
 	 * @param childCat the child category (subclass)
 	 * @param parentCat the parent category (superclass)
 	 * @throws IllegalArgumentException when the childCat was already previously
 	 * attached to a parent or if either of the two categories are not defined in this ontology
 	 */
-	protected void putSourceParent(String childCat, String parentCat) throws IllegalArgumentException
+	protected void putSourceCatParent(String childCat, String parentCat) throws IllegalArgumentException
 	{
 		if (sourceCatHierarchy.containsKey(childCat))
 		{
 			String errormsg = "The provided child category ('" + childCat + "') already has a parent category!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!allSourceCategories.containsKey(childCat.toLowerCase()))
+		if (!allSourceCategories.containsKey(parentCat))
 		{
 			String errormsg = "The provided child category ('" + childCat + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (!allSourceCategories.containsKey(parentCat.toLowerCase()))
+		if (!allSourceCategories.containsKey(parentCat))
 		{
 			String errormsg = "The provided parent category ('" + parentCat + "') does not exist in this ontology!";
 			throw new IllegalArgumentException(errormsg);
@@ -88,57 +89,76 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve the parent category of a specific child category, or null if there is none.
+	 * 
 	 * @param childCat the subclass category
 	 * @return the superclass category, or null if there is none
 	 */
-	public String retrieveParent(String childCat)
+	public String retrieveCatParent(String childCat)
 	{
 		return sourceCatHierarchy.get(childCat);
 	}
 
 	/**
 	 * Retrieve the set of child categories of a specific parent category, or an empty set if there are none.
+	 * 
 	 * @param parentCat the superclass category
 	 * @return the set of subclass categories, or an empty set if there are none.
 	 */
-	protected Set<String> retrieveChildren(String parentCat)
+	protected Set<String> retrieveCatChildren(String parentCat)
 	{
 		Set<String> children = new HashSet<String>();
 		for (String childCat : sourceCatHierarchy.keySet())
 		{
 			if (sourceCatHierarchy.get(childCat).equals(parentCat))
+			{
 				children.add(childCat);
+			}
 		}
 		return children;
 	}
+	
+	@Override
+	public int isSourceTypeChildOf(String childType, String grandparentCat)
+	{
+		if (childType == null || grandparentCat == null)
+		{
+			return -1;
+		}
+		String cat = getSourceCategory(childType);
+		return isSourceCatChildOf(cat, grandparentCat);
+	}
 
 	@Override
-	public int isSourceChildOf(String childCat, String parentCat)
+	public int isSourceCatChildOf(String childCat, String grandparentCat)
 	{
-		if (childCat == null || parentCat == null)
+		if (childCat == null || grandparentCat == null)
 		{
 			return -1;
 		}
 		int depth = 0;
-		if (childCat.equals(parentCat))
+
+		if (childCat.equals(grandparentCat))
 		{
 			return 0;
 		}
-		String parent = retrieveParent(childCat);
+
+		String parent = retrieveCatParent(childCat);
+
+		// TODO: will this loop without stop when a category is its own parent?
 		while (parent != null)
 		{
 			depth++;
-			if (parent.equals(parentCat))
+			if (parent.equals(grandparentCat))
 			{
 				return depth;
 			}
-			parent = retrieveParent(parent);
+			parent = retrieveCatParent(parent);
 		}
 		return -1;
 	}
 
 	@Override
-	public String commonSourceParent(String childCat1, String childCat2)
+	public String commonSourceCatParent(String childCat1, String childCat2)
 	{
 		if (!sourceCatHierarchy.containsKey(childCat1))
 		{
@@ -188,7 +208,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			recordMaxDepth(childByDepth, cat, depth);
 
 			// record all children down in the hierarchy
-			Set<String> childrenCats = retrieveChildren(cat);
+			Set<String> childrenCats = retrieveCatChildren(cat);
 			while (childrenCats.size() > 0)
 			{
 				Set<String> newChildrenCats = new HashSet<String>();
@@ -197,7 +217,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				{
 					addOne(childrenCatsByCount, child);
 					recordMaxDepth(childByDepth, child, depth);
-					newChildrenCats.addAll(retrieveChildren(child));
+					newChildrenCats.addAll(retrieveCatChildren(child));
 				}
 				childrenCats = newChildrenCats;
 			}
@@ -207,7 +227,9 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		for (String cat : childrenCatsByCount.keySet())
 		{
 			if (childrenCatsByCount.get(cat) == countEdges)
+			{
 				allCommonChildren.put(cat, childByDepth.get(cat));
+			}
 		}
 
 		return allCommonChildren;
@@ -216,6 +238,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	/**
 	 * For a set of EdgeDefinition objects, determine their most general common child.
 	 * Most general is seen as a minimal maximum distance down to that (grand)child across the whole edge set.
+	 * 
 	 * @param edges the original set of edges
 	 * @return the most general common child.
 	 */
@@ -282,7 +305,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		{
 			int depth = 0;
 			String cat = getSourceCategory(e.getType());
-			if (cat.equals(VOID_SYMMETRICAL_TYPE) || cat.equals(VOID_DIRECTED_TYPE))
+			if (cat.equals(VOID_SYMMETRICAL_CAT) || cat.equals(VOID_DIRECTED_CAT))
 			{
 				countEmpty++;
 			}
@@ -293,19 +316,19 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				recordMaxDepth(parentByDepth, cat, depth);
 
 				// record all parents up in the hierarchy
-				String parentCat = retrieveParent(cat);
+				String parentCat = retrieveCatParent(cat);
 				while (parentCat != null)
 				{
 					depth++;
 					addOne(parentCatsByCount, parentCat);
 					recordMaxDepth(parentByDepth, parentCat, depth);
-					parentCat = retrieveParent(parentCat);
+					parentCat = retrieveCatParent(parentCat);
 				}
 			}
 		}
 		if (countEmpty == countEdges)
 		{
-			allCommonParents.put(VOID_SYMMETRICAL_TYPE, 0);
+			allCommonParents.put(VOID_SYMMETRICAL_CAT, 0);
 			return allCommonParents;
 		}
 		if (excludeEmpty)
@@ -391,18 +414,26 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		for (EdgeDefinition e : edges)
 		{
 			if (e.isNegated())
+			{
 				countNegated++;
+			}
 
 			if (e.isSymmetrical())
+			{
 				countSymmetrical++;
+			}
 
 			double weight = e.getWeight();
 			if (weight < minWeight)
+			{
 				minWeight = weight;
+			}
 			if (weight > maxWeight)
+			{
 				maxWeight = weight;
+			}
 		}
-		
+
 		boolean symm = countSymmetrical == countEdges;
 		overlap_edge.makeSymmetrical(symm);
 
@@ -459,6 +490,14 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	@Override
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
+		System.out.println(" ");
+		System.out.println("differential?");
+		System.out.println("refEdge " + refEdge);
+		for (EdgeDefinition conEdge : conEdges)
+		{
+			System.out.println("conEdge " + conEdge);
+		}
+		
 		EdgeDefinition diff_edge = new EdgeDefinition();
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
@@ -493,7 +532,9 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 		boolean refNeg = refEdge.isNegated();
 		if (refNeg)
+		{
 			refEdge = EdgeDefinition.getVoidEdge(conSymm);
+		}
 
 		diff_edge.makeNegated(false); // a differential edge is never negated 
 
@@ -523,7 +564,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		String firstNeutralParent = firstParent;
 		while (firstNeutralParent != null && (posSourceCats.contains(firstNeutralParent) || negSourceCats.contains(firstNeutralParent)))
 		{
-			firstNeutralParent = retrieveParent(firstNeutralParent);
+			firstNeutralParent = retrieveCatParent(firstNeutralParent);
 		}
 
 		if (firstNeutralParent == null)
@@ -533,11 +574,11 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 		String baseType = firstNeutralParent;
 		boolean unspecified = false;
-		
-		String VOID_TYPE = VOID_SYMMETRICAL_TYPE;
-		if (! conSymm)
+
+		String VOID_CAT = VOID_SYMMETRICAL_CAT;
+		if (!conSymm)
 		{
-			VOID_TYPE = VOID_DIRECTED_TYPE;
+			VOID_CAT = VOID_DIRECTED_CAT;
 		}
 
 		for (EdgeDefinition conEdge : conEdges2)
@@ -547,7 +588,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			double cumWeight = conEdge.getWeight() + refEdge.getWeight();
 
 			// refcat is void, concat is not --> increase (unless concat is negative)
-			if (refCat.equals(VOID_TYPE) && !conCat.equals(VOID_TYPE))
+			if (refCat.equals(VOID_CAT) && !conCat.equals(VOID_CAT))
 			{
 				if (negSourceCats.contains(conCat))
 				{
@@ -561,7 +602,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			}
 
 			// refcat is not void, concat is void --> decrease (unless refcat is negative)
-			else if (!refCat.equals(VOID_TYPE) && conCat.equals(VOID_TYPE))
+			else if (!refCat.equals(VOID_CAT) && conCat.equals(VOID_CAT))
 			{
 				if (negSourceCats.contains(refCat))
 				{
@@ -599,8 +640,8 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 				{
 					countUp++;
 				}
-				boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
-				boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
+				boolean refNeutral = !(negSourceCats.contains(refCat)) || posSourceCats.contains(refCat);
+				boolean conNeutral = !(negSourceCats.contains(conCat)) || posSourceCats.contains(conCat);
 
 				if ((refNeutral && !conNeutral) || (conNeutral && !refNeutral))
 				{
@@ -654,7 +695,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			return EdgeDefinition.getVoidEdge(conSymm);
 		}
 		diff_edge.setWeight(diffWeight);
-
+		System.out.println(" diff_edge " + diff_edge);
 		return diff_edge;
 	}
 
@@ -662,6 +703,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve whether or not a certain differential category can be seen as a positive, directed edge
+	 * 
 	 * @param category the category of the edge interaction
 	 * @return whether or not a certain category can be seen as a positive, directed edge
 	 */
@@ -673,6 +715,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve whether or not a certain differential category can be seen as a negative, directed edge
+	 * 
 	 * @param category the category of the edge interaction
 	 * @return whether or not a certain differential category can be seen as a negative, directed edge
 	 */
@@ -684,6 +727,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve whether or not a certain category can be seen as a negative, symmetrical edge
+	 * 
 	 * @param category the category of the edge interaction
 	 * @return whether or not a certain category can be seen as a negative, symmetrical edge
 	 */
@@ -695,6 +739,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve whether or not a certain category can be seen as a positive, symmetrical edge
+	 * 
 	 * @param category the category of the edge interaction
 	 * @return whether or not a certain category can be seen as a positive, symmetrical edge
 	 */

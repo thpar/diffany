@@ -165,6 +165,11 @@ public class CalculateDiffOfMore
 					}
 					if (rootRefs.size() > 1)
 					{
+						System.out.println(source1 + "-" + target1);
+						for (EdgeDefinition ed : rootRefs)
+						{
+							System.out.println(" def " + ed);
+						}
 						throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 					}
 					Set<EdgeDefinition> rootCons = new HashSet<EdgeDefinition>();
@@ -217,7 +222,7 @@ public class CalculateDiffOfMore
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(diff, true);
+		cleaning.fullOutputCleaning(diff);
 		return diff;
 	}
 

@@ -177,7 +177,7 @@ public class CalculateDiffOfTwo
 				}
 			}
 		}
-		cleaning.fullOutputCleaning(overlap, false);
+		cleaning.fullOutputCleaning(overlap);
 		return overlap;
 	}
 

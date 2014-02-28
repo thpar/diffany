@@ -123,10 +123,13 @@ public class Unification
 				Edge newE = new Edge(e.getTarget(), e.getSource(), e);
 				newEdges.add(newE);
 			}
+			else
+			{
+				// simply keep the current edge
+				newEdges.add(e);
+			}
 			
 		}
-		
 		return newEdges;
-		
 	}
 }

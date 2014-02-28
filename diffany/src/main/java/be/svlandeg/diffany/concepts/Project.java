@@ -124,13 +124,13 @@ public class Project
 	{
 		Logger logger = new Logger();
 		registerSourceNetwork(reference, logger);
-		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, true);
+		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology);
 		
 		Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 		for (ConditionNetwork conNet : conditions)
 		{
 			registerSourceNetwork(conNet, logger);
-			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, true);
+			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology);
 			cleanConditions.add(cleanCon);
 		}
 		

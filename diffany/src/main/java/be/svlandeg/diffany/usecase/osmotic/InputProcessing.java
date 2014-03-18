@@ -24,7 +24,7 @@ public class InputProcessing
 			{
 				System.out.println(" processing " + fileName);
 				
-				// TODO: we'll use R to read and process the raw data !
+				// TODO: we'll use R and JRI to read and process the raw data !
 			}
 		}
 		

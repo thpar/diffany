@@ -1,5 +1,14 @@
 package be.svlandeg.diffany.r;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Scanner;
+
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RMainLoopCallbacks;
 import org.rosuda.JRI.Rengine;
@@ -12,10 +21,11 @@ import org.rosuda.JRI.Rengine;
 public class RBridge
 {
 
-	protected final static String[] DEFAULT_ARGS = new String[]{ "--vanilla" };
+	protected final static String[] DEFAULT_ARGS = new String[]
+	{ "--vanilla" };
 	protected final static boolean DEFAULT_LOOP = false;
 	protected Rengine engine;
-	
+
 	/**
 	 * Produces a bridge to R. The bridge should be closed when the application is done with the R engine!
 	 * 
@@ -28,7 +38,7 @@ public class RBridge
 		checkSystem();
 		engine = getRengine(args, runMainLoop, initialCallbacks);
 	}
-	
+
 	/**
 	 * Produces a bridge to R. The bridge should be closed when the application is done with the R engine!
 	 * This constructor will call the main constructor with vanilla arguments, runMainLoop=false and no initialCallBacks (null).
@@ -72,18 +82,51 @@ public class RBridge
 	}
 
 	/**
-	 * Testing method
+	 * Testing method : R instructions from file
 	 */
-	public void randomTesting()
+	public void randomTesting1() 
 	{
-		engine.eval(String.format("greeting <- '%s'", "Hello R World"));
+		URL scriptURL = Thread.currentThread().getContextClassLoader().getResource("helloWorld.R");
+
+		try
+		{
+			BufferedReader reader = new BufferedReader(new FileReader(new File(scriptURL.toURI())));
+			String line = reader.readLine();
+			while (line != null)
+			{
+				engine.eval(line);
+				line = reader.readLine();
+			}
+			reader.close();
+		}
+		catch (IOException e)
+		{
+			System.out.println("Couldn't read R code : " + e.getMessage());
+			return;
+		}
+		catch (URISyntaxException e)
+		{
+			System.out.println("Couldn't read R code : " + e.getMessage());
+			return;
+		}
+
+		REXP string_greeting = engine.eval("greeting");
+		REXP number_greeting = engine.eval("number");
+		String s = string_greeting.asString();
+		String i = number_greeting.asString(); // asInt doesn't work?!
+		System.out.println("Greeting from R: " + s + " - " + i);
+	}
+
+	/**
+	 * Testing method: in-code R
+	 */
+	public void randomTesting2()
+	{
+		engine.eval(String.format("greeting <- '%s'", "Hello R In-code World"));
 		REXP result = engine.eval("greeting");
 		System.out.println("Greeting from R: " + result.asString());
-
-		// print a random number from uniform distribution
-		System.out.println("random number from R: " + engine.eval("runif(1)").asDouble());
 	}
-	
+
 	/**
 	 * Close the R engine, should be called when the application is done with R calculations.
 	 * Calls an asynchronous method!
@@ -119,12 +162,12 @@ public class RBridge
 
 	/**
 	 * Currently this method is used for testing
-	 * @param args
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) 
 	{
 		RBridge bridge = new RBridge();
-		bridge.randomTesting();
+		bridge.randomTesting1();
+		bridge.randomTesting2();
 		bridge.close();
 	}
 }

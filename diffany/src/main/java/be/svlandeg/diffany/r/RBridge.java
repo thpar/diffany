@@ -19,7 +19,7 @@ public class RBridge
 		if (!Rengine.versionCheck()) 
 		{
 		    System.out.println("** Version mismatch - Java files don't match library version.");
-		    System.exit(1);
+		    return;
 		}
 		
 		// create engine 
@@ -35,8 +35,23 @@ public class RBridge
 
 	}
 	
+	/**
+	 * Currently this method is used for testing
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
+		// We have to catch this error to be able to tell the user what to do!
+		try
+		{
+			System.loadLibrary("JRI");
+		}
+		catch(UnsatisfiedLinkError e)
+		{
+			System.out.println("Error deploying the Java-R bridge through JRI: " +  e.getMessage());
+			System.out.println("Value for java.library.path: " +  System.getProperty( "java.library.path"));
+			return;
+		}
 		new RBridge().getRengine();
 	}
 }

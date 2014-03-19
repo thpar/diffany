@@ -18,14 +18,14 @@ public class RBridge
 	{
 		if (!Rengine.versionCheck()) 
 		{
-		    System.out.println("** Version mismatch - Java files don't match library version.");
+		    System.out.println("Error deploying the Java-R bridge through JRI: Version mismatch of the Rengine Java files.");
 		    return;
 		}
 		
 		// create engine 
 		Rengine re = new Rengine();
 		
-		// the engine creates R is a new thread, so we should wait until it's ready
+		// the engine creates R in a new thread, so we should wait until it's ready
         if (!re.waitForR()) 
         {
             System.out.println("Cannot load R");
@@ -49,9 +49,15 @@ public class RBridge
 		catch(UnsatisfiedLinkError e)
 		{
 			System.out.println("Error deploying the Java-R bridge through JRI: " +  e.getMessage());
-			System.out.println("Value for java.library.path: " +  System.getProperty( "java.library.path"));
+			System.out.println("");
+			System.out.println("This is probably because the directory containing the correct jri.dll is lacking from the path variable.");
+			System.out.println("Current value for java.library.path: " +  System.getProperty( "java.library.path"));
+			System.out.println("");
+			System.out.println("Execution can not continue untill the system settings are fixed!");
+			System.out.println("After fixing this issue, please reboot the system and try again.");
 			return;
 		}
+		
 		new RBridge().getRengine();
 	}
 }

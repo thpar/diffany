@@ -9,4 +9,4 @@ setwd("D:/diffany-osmotic/data-marieke/short-term-osmotic-stress");
 ourdata <- ReadAffy();
 ed <- exprs(ourdata);
 probes <- featureNames(ourdata);
-samp <- sampleNames(ourdata)
+samp <- sampleNames(ourdata);

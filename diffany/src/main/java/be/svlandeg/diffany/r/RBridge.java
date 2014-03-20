@@ -11,7 +11,7 @@ import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RMainLoopCallbacks;
 import org.rosuda.JRI.Rengine;
 
-/** 
+/**
  * This class provides an R bridge to allow processing R commands from within Diffany.
  * The R commands can be defined in-line, or in a separate .R file.
  * 
@@ -20,7 +20,7 @@ import org.rosuda.JRI.Rengine;
 public class RBridge
 {
 
-	protected final static String[] DEFAULT_ARGS = new String[]{ "--vanilla" };
+	protected final static String[] DEFAULT_ARGS = new String[]{"--vanilla"};
 	protected final static boolean DEFAULT_LOOP = false;
 	protected Rengine engine;
 
@@ -82,10 +82,10 @@ public class RBridge
 	 * Testing method : R instructions from file
 	 * TODO: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 */
-	public void randomTesting1() 
+	public void randomTesting1()
 	{
 		System.out.println("Test: reading R script from file");
-		
+
 		URL scriptURL = Thread.currentThread().getContextClassLoader().getResource("helloWorld.R");
 
 		try
@@ -112,10 +112,10 @@ public class RBridge
 
 		REXP string_greeting = engine.eval("greeting");
 		String s = string_greeting.asString();
-		
+
 		REXP number_greeting = engine.eval("number");
 		double i = number_greeting.asDouble();
-		
+
 		System.out.println(" Greeting from R: " + s + " - " + i);
 	}
 
@@ -125,7 +125,7 @@ public class RBridge
 	public void randomTesting2()
 	{
 		System.out.println("Test: executing R code directly in Java code");
-		
+
 		engine.eval(String.format("greeting <- '%s'", "Hello R In-code World"));
 		REXP result = engine.eval("greeting");
 		System.out.println(" Greeting from R: " + result.asString());
@@ -142,6 +142,7 @@ public class RBridge
 
 	/**
 	 * This private message will inform the user of inappropriately installed R/JRI versions.
+	 * 
 	 * @throws IllegalStateException
 	 */
 	private void checkSystem() throws IllegalStateException
@@ -167,16 +168,16 @@ public class RBridge
 	/**
 	 * Currently this method is used for testing
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		RBridge bridge = new RBridge();
-		
+
 		bridge.randomTesting1();
 		System.out.println(" ");
-		
+
 		bridge.randomTesting2();
 		System.out.println(" ");
-		
+
 		bridge.close();
 	}
 }

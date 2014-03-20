@@ -1,0 +1,32 @@
+Name	FileName	Target		Description (Sofie)
+1	hyb6221.CEL	3h_0_Ex1	control after 3h, replicate 1	
+2	hyb6227.CEL	3h_0_Ex2	control after 3h, replicate 2
+3	hyb6233.CEL	3h_0_Ex3	control after 3h, replicate 3
+
+4	hyb6222.CEL	3h_25_Ex1	mannitol-stress after 3h, replicate 1
+5	hyb6228.CEL	3h_25_Ex2	mannitol-stress after 3h, replicate 2
+6	hyb6234.CEL	3h_25_Ex3	mannitol-stress after 3h, replicate 3
+
+7	hyb6223.CEL	12h_0_Ex1	control after 12h, replicate 1
+8	hyb6229.CEL	12h_0_Ex2	control after 12h, replicate 2
+9	hyb6235.CEL	12h_0_Ex3	control after 12h, replicate 3
+
+10	hyb6224.CEL	12h_25_Ex1	mannitol-stress after 12h, replicate 1
+11	hyb6230.CEL	12h_25_Ex2	mannitol-stress after 12h, replicate 2
+12	hyb6236.CEL	12h_25_Ex3	mannitol-stress after 12h, replicate 3
+
+13	hyb6225.CEL	24h_0_Ex1	control after 24h, replicate 1
+14	hyb6231.CEL	24h_0_Ex2	control after 24h, replicate 2
+15	hyb6237.CEL	24h_0_Ex3	control after 24h, replicate 3
+
+16	hyb6226.CEL	24h_25_Ex1	mannitol-stress after 24h, replicate 1
+17	hyb6232.CEL	24h_25_Ex2	mannitol-stress after 24h, replicate 2
+18	hyb6238.CEL	24h_25_Ex3	mannitol-stress after 24h, replicate 3
+
+19      hyb6378.CEL     1.5h_0_Ex1	control after 1.5h, replicate 1
+20      hyb6380.CEL     1.5h_0_Ex2	control after 1.5h, replicate 2
+21      hyb6382.CEL     1.5h_0_Ex3  	control after 1.5h, replicate 3
+ 
+22      hyb6379.CEL     1.5h_25_Ex1	mannitol-stress after 1.5h, replicate 1
+23      hyb6381.CEL     1.5h_25_Ex2	mannitol-stress after 1.5h, replicate 2
+24      hyb6383.CEL     1.5h_25_Ex3	mannitol-stress after 1.5h, replicate 3

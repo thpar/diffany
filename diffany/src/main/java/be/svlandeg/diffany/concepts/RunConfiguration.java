@@ -40,7 +40,7 @@ public class RunConfiguration
 	
 	/**
 	 * Set the condition-specific networks in this configuration.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
 	 * 
 	 * @param conditions the condition-specific networks (not null or empty!)
 	 * @throws IllegalArgumentException if the set is null or empty
@@ -58,7 +58,7 @@ public class RunConfiguration
 	
 	/**
 	 * Set the reference network of this configuration.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
 	 * 
 	 * @param reference the reference network
 	 * @throws IllegalArgumentException if the network is null

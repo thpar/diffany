@@ -18,7 +18,7 @@ public class RunAnalysis
 	
 	/**
 	 * Run the full analysis pipeline.
-	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO).
+	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
 	 */

@@ -45,7 +45,7 @@ public class CalculateDiffOfTwo
 	 * 
 	 * @return the overlapping network between the two
 	 *      
-	 * TODO v2.0: expand this algorithm to be able to deal with n-m node mappings
+	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
 	{

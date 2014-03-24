@@ -22,6 +22,7 @@ public class ExecuteR
 
 	/**
 	 * Create a new instance to execute R commando's, through a certain R bridge.
+	 * @param bridge the bridge that allows talking to R
 	 */
 	public ExecuteR(RBridge bridge)
 	{
@@ -47,7 +48,7 @@ public class ExecuteR
 	}
 	
 	/**
-	 * TODO documentation
+	 * TODO documentation v2.1
 	 */
 	public String getStringValue(String variable)
 	{
@@ -56,7 +57,7 @@ public class ExecuteR
 	}
 		
 	/**
-	 * TODO documentation
+	 * TODO documentation v2.1
 	 */
 	public double getDoubleValue(String variable)
 	{
@@ -65,8 +66,8 @@ public class ExecuteR
 	}
 	
 	/**
-	 * TODO documentation
-	 * TODO: will this code work when packaged inside a jar or will we need to create a tmp file?
+	 * TODO documentation v2.1
+	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 */
 	public void executeScript(URL scriptURL)
 	{

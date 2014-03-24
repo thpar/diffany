@@ -15,7 +15,7 @@ public class InputProcessing
 {
 
 	/**
-	 * TODO documentation v2.0
+	 * TODO documentation v2.1
 	 * 
 	 * Currently, the needed R script is loaded from the context, and is defined in the 'resources' folder
 	 * of the Maven project.
@@ -41,6 +41,7 @@ public class InputProcessing
 		System.out.println("Set new WD in R to " + path);
 		System.out.println("");
 		
+		// TODO V2.0: currently this generates pop-ups / trouble when not executed as admin/root ...
 		URL scriptURL = Thread.currentThread().getContextClassLoader().getResource("Rcode/ReadAffyData.R");
 		System.out.println("Executing script: " + scriptURL);
 		exeR.executeScript(scriptURL);

@@ -183,7 +183,7 @@ public class Project
 
 	/**
 	 * Set the edge ontology for this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
 	 * 
 	 * @param edgeOntology the edge ontology (not null!)
 	 * @throws IllegalArgumentException if the edgeOntology is null
@@ -211,7 +211,7 @@ public class Project
 
 	/**
 	 * Set the node mapper for this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v2.0))
+	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
 	 * 
 	 * @param nodeMapper the node mapper (not null!)
 	 * @throws IllegalArgumentException if the nodeMapper is null

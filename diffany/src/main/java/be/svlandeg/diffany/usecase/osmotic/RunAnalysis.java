@@ -3,6 +3,9 @@ package be.svlandeg.diffany.usecase.osmotic;
 import java.io.File;
 import java.io.IOException;
 
+import be.svlandeg.diffany.r.ExecuteR;
+import be.svlandeg.diffany.r.RBridge;
+
 
 /**
  * This class provides the analysis pipeline and calls our procedures necessary
@@ -28,7 +31,11 @@ public class RunAnalysis
 		File osmoticStressDir = io.getOsmoticStressDir();
 		try
 		{
-			input.processOsmoticData(osmoticStressDir);
+			RBridge bridge = new RBridge();
+			ExecuteR exeR = new ExecuteR(bridge);
+			input.processOsmoticData(exeR, osmoticStressDir);
+			
+			bridge.close();
 		}
 		catch(IOException e)
 		{
@@ -36,5 +43,4 @@ public class RunAnalysis
 			System.out.println(errorMsg);
 		}
 	}
-
 }

@@ -23,37 +23,37 @@ public class InputProcessing
 	public void processOsmoticData(ExecuteR exeR, File osmoticStressDir) throws IOException
 	{
 		String path = osmoticStressDir.getAbsolutePath();
-		System.out.println("reading " + path + ":");
+		System.out.println(" Reading " + path + ":");
 		
 		for (File f : osmoticStressDir.listFiles())
 		{
 			String fileName = f.getName();
 			if (fileName.endsWith(".CEL"))
 			{
-				System.out.print(" " + fileName);
+				System.out.print("  " + fileName);
 			}
 		}
 		System.out.println("");
 		System.out.println("");
 		
 		String old_dir_path = exeR.changeExecutionDir(path);
-		System.out.println("Old WD in R: " + old_dir_path);
-		System.out.println("Set new WD in R to " + path);
+		System.out.println(" Old WD in R: " + old_dir_path);
+		System.out.println(" Set new WD in R to " + path);
 		System.out.println("");
 		
 		// TODO V2.0: currently this generates pop-ups / trouble when not executed as admin/root ...
 		URL scriptURL = Thread.currentThread().getContextClassLoader().getResource("Rcode/ReadAffyData.R");
-		System.out.println("Executing script: " + scriptURL);
+		System.out.println(" Executing script: " + scriptURL);
 		exeR.executeScript(scriptURL);
 		System.out.println("");
 		
 		String probe3 = exeR.getStringValue("probes[3]");
-		System.out.println("Third sample: " + probe3);
+		System.out.println("  Third probe: " + probe3);
 		
-		String ed4 = exeR.getStringValue("ed[4]");
-		System.out.println("Fourth value: " + ed4);
+		double ed4 = exeR.getDoubleValue("ed[4]");
+		System.out.println("  Fourth value: " + ed4);
 		
 		String sample2 = exeR.getStringValue("samp[2]");
-		System.out.println("Second sample: " + sample2);
+		System.out.println("  Second sample: " + sample2);
 	}
 }

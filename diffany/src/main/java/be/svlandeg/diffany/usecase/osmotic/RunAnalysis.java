@@ -24,6 +24,8 @@ public class RunAnalysis
 	 */
 	public static void main(String[] args)
 	{
+		System.out.println("Performing osmotic data analysis");
+		System.out.println("");
 		String inputRoot = "D:" + File.separator + "diffany-osmotic";
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
@@ -42,5 +44,7 @@ public class RunAnalysis
 			String errorMsg = "Error reading input data from " + inputRoot + ": " + e.getMessage();
 			System.out.println(errorMsg);
 		}
+		System.out.println("");
+		System.out.println("Done!");
 	}
 }

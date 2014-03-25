@@ -98,7 +98,7 @@ public class RBridge
 	 */
 	private void checkSystem() throws IllegalStateException
 	{
-		// We have to catch this error to be able to tell the user what to do!
+		/* We have to catch this error to be able to tell the user what to do! */
 		try
 		{
 			System.loadLibrary("JRI");

@@ -31,6 +31,7 @@ public class RunAnalysis
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		
+		// TODO: compare all at once?
 		File osmoticStressDir = io.getOsmoticStress12Dir();
 		
 		RBridge bridge = new RBridge();

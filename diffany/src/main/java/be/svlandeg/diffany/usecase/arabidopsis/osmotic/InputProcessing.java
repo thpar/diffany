@@ -1,11 +1,14 @@
-package be.svlandeg.diffany.usecase.osmotic;
+package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.r.ExecuteR;
+import be.svlandeg.diffany.usecase.arabidopsis.MapID;
 
 /**
  * This class reads and processes the raw input data.
@@ -53,8 +56,11 @@ public class InputProcessing
 		exeR.executeScript(scriptURL);
 		System.out.println("");
 		
+		URL mappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
+		Map<String, Set<String>> idmapping = new MapID().getAllArrayMappings(new File(mappingURL.toURI())); 
+		
 		String[] probes = exeR.getStringArray("probes");
-		System.out.println("  Third probe: " + probes[2]);
+		System.out.println("  Third probe: " + probes[2] + " -> " + idmapping.get(probes[2]));
 		
 		double[] values = exeR.getDoubleArray("values");
 		System.out.println("  Fourth value: " + values[3]);

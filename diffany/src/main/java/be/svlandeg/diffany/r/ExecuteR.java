@@ -56,7 +56,28 @@ public class ExecuteR
 	public String getStringValue(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		return value.asString();
+		if (doesVariableExist(variable))
+		{
+			return value.asString();
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve whether a variable by the given name exists, and print an error message if not.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return whether or not the variable exists in the R environment.
+	 */
+	public boolean doesVariableExist(String variable)
+	{
+		REXP value = bridge.evaluate(variable);
+		if (value == null)
+		{
+			System.out.println("Variable " + variable + " is not defined in the R environment!");
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -68,7 +89,11 @@ public class ExecuteR
 	public String[] getStringArray(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		return value.asStringArray();
+		if (doesVariableExist(variable))
+		{
+			return value.asStringArray();
+		}
+		return null;
 	}
 
 	/**
@@ -77,10 +102,14 @@ public class ExecuteR
 	 * @param variable the symbol of the variable (as defined previously)
 	 * @return the Double value in the R environment
 	 */
-	public double getDoubleValue(String variable)
+	public Double getDoubleValue(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		return value.asDouble();
+		if (doesVariableExist(variable))
+		{
+			return value.asDouble();
+		}
+		return null;
 	}
 
 	/**
@@ -92,7 +121,11 @@ public class ExecuteR
 	public double[] getDoubleArray(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		return value.asDoubleArray();
+		if (doesVariableExist(variable))
+		{
+			return value.asDoubleArray();
+		}
+		return null;
 	}
 
 	/**
@@ -104,7 +137,11 @@ public class ExecuteR
 	public double[][] getDoubleMatrix(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		return value.asDoubleMatrix();
+		if (doesVariableExist(variable))
+		{
+			return value.asDoubleMatrix();
+		}
+		return null;
 	}
 
 	/**

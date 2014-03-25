@@ -31,10 +31,11 @@ public class RunAnalysis
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		
-		File osmoticStressDir = io.getOsmoticStressDir();
+		File osmoticStressDir = io.getOsmoticStress12Dir();
+		
+		RBridge bridge = new RBridge();
 		try
 		{
-			RBridge bridge = new RBridge();
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticData(exeR, osmoticStressDir);
 			
@@ -48,8 +49,8 @@ public class RunAnalysis
 		catch (URISyntaxException e)
 		{
 			System.out.println("Couldn't read R script : " + e.getMessage());
-			return;
 		}
+		bridge.close();
 		
 		System.out.println("");
 		System.out.println("Done!");

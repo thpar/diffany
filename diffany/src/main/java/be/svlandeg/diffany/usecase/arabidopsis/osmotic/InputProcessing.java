@@ -61,19 +61,24 @@ public class InputProcessing
 		Map<String, Set<String>> idmapping = new MapID().getAllArrayMappings(new File(mappingURL.toURI())); 
 		System.out.println("");
 		
+		System.out.println(" Analysing data: ");
+		
 		String[] samples = exeR.getStringArray("samples");
 		System.out.println("  Samples: " + samples.length);
-		System.out.println("  e.g. second sample: " + samples[1]);
-		System.out.println("");
 		
 		String[] probesets = exeR.getStringArray("probesets");
 		System.out.println("  Probe sets: " + probesets.length);
-		System.out.println("  e.g. third probe: set " + probesets[2] + " -> " + idmapping.get(probesets[2]));
-		System.out.println("");
 		
-		double[][] expressionValues = exeR.getDoubleMatrix("expressionMatrix");
-		System.out.println("  Expression values dimension: " + expressionValues.length + " - " + expressionValues[0].length);
-		System.out.println("  e.g. third value in first two samples: " + expressionValues[2][0] + " & " + expressionValues[2][1]);
+		//double[][] expressionValues = exeR.getDoubleMatrix("expressionMatrix");
+		//System.out.println("  Expression values dimension: " + expressionValues.length + " - " + expressionValues[0].length);
+		
+		System.out.println("");
+		String[] topIDs = exeR.getStringArray("topIDs");
+		System.out.println(" Top most DE genes: ");
+		for (int i = 0; i < topIDs.length; i++)
+		{
+			System.out.println("  " + (i+1) + ". " + topIDs[i] + " or " + idmapping.get(topIDs[i]));
+		}
 		System.out.println("");
 	}
 }

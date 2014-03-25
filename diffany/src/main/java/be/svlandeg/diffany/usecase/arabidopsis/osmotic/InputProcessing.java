@@ -57,15 +57,23 @@ public class InputProcessing
 		System.out.println("");
 		
 		URL mappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
+		System.out.println(" Fetching ID mapping data: " + mappingURL);
 		Map<String, Set<String>> idmapping = new MapID().getAllArrayMappings(new File(mappingURL.toURI())); 
-		
-		String[] probes = exeR.getStringArray("probes");
-		System.out.println("  Third probe: " + probes[2] + " -> " + idmapping.get(probes[2]));
-		
-		double[] values = exeR.getDoubleArray("values");
-		System.out.println("  Fourth value: " + values[3]);
+		System.out.println("");
 		
 		String[] samples = exeR.getStringArray("samples");
-		System.out.println("  Second sample: " + samples[1]);
+		System.out.println("  Samples: " + samples.length);
+		System.out.println("  e.g. second sample: " + samples[1]);
+		System.out.println("");
+		
+		String[] probesets = exeR.getStringArray("probesets");
+		System.out.println("  Probe sets: " + probesets.length);
+		System.out.println("  e.g. third probe: set " + probesets[2] + " -> " + idmapping.get(probesets[2]));
+		System.out.println("");
+		
+		double[][] expressionValues = exeR.getDoubleMatrix("expressionMatrix");
+		System.out.println("  Expression values dimension: " + expressionValues.length + " - " + expressionValues[0].length);
+		System.out.println("  e.g. third value in first two samples: " + expressionValues[2][0] + " & " + expressionValues[2][1]);
+		System.out.println("");
 	}
 }

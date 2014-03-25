@@ -5,7 +5,10 @@
 library(affy);
 library(affyPLM);
 library(org.Dm.eg.db);
-ourdata <- ReadAffy();
-values <- exprs(ourdata);
-probes <- featureNames(ourdata);
-samples <- sampleNames(ourdata);
+rawProbeData <- ReadAffy();
+#probeValues <- exprs(rawProbeData);
+#probeNames <- probeNames(rawProbeData);
+expressionSet <- rma(rawProbeData);
+probesets <- featureNames(expressionSet);
+samples <- sampleNames(expressionSet);
+expressionMatrix <- exprs(expressionSet);

@@ -2,6 +2,7 @@ package be.svlandeg.diffany.usecase.osmotic;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import be.svlandeg.diffany.r.ExecuteR;
@@ -15,12 +16,16 @@ public class InputProcessing
 {
 
 	/**
-	 * TODO documentation v2.1
+	 * Process the raw osmotic expression data with R.
 	 * 
 	 * Currently, the needed R script is loaded from the context, and is defined in the 'resources' folder
 	 * of the Maven project.
+	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
+	 * 
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
-	public void processOsmoticData(ExecuteR exeR, File osmoticStressDir) throws IOException
+	public void processOsmoticData(ExecuteR exeR, File osmoticStressDir) throws URISyntaxException, IOException
 	{
 		String path = osmoticStressDir.getAbsolutePath();
 		System.out.println(" Reading " + path + ":");
@@ -41,19 +46,20 @@ public class InputProcessing
 		System.out.println(" Set new WD in R to " + path);
 		System.out.println("");
 		
-		// TODO V2.0: currently this generates pop-ups / trouble when not executed as admin/root ...
+		// TODO V2.0: currently this assumes libs "affy", "affyPLM" and "org.Dm.eg.db" are pre-installed!
 		URL scriptURL = Thread.currentThread().getContextClassLoader().getResource("Rcode/ReadAffyData.R");
 		System.out.println(" Executing script: " + scriptURL);
+		System.out.println(" (this may take a minute ... please be patient and do not interrupt the execution) ");
 		exeR.executeScript(scriptURL);
 		System.out.println("");
 		
-		String probe3 = exeR.getStringValue("probes[3]");
-		System.out.println("  Third probe: " + probe3);
+		String[] probes = exeR.getStringArray("probes");
+		System.out.println("  Third probe: " + probes[2]);
 		
-		double ed4 = exeR.getDoubleValue("ed[4]");
-		System.out.println("  Fourth value: " + ed4);
+		double[] values = exeR.getDoubleArray("values");
+		System.out.println("  Fourth value: " + values[3]);
 		
-		String sample2 = exeR.getStringValue("samp[2]");
-		System.out.println("  Second sample: " + sample2);
+		String[] samples = exeR.getStringArray("samples");
+		System.out.println("  Second sample: " + samples[1]);
 	}
 }

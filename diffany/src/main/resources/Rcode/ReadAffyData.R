@@ -6,6 +6,6 @@ library(affy);
 library(affyPLM);
 library(org.Dm.eg.db);
 ourdata <- ReadAffy();
-ed <- exprs(ourdata);
+values <- exprs(ourdata);
 probes <- featureNames(ourdata);
-samp <- sampleNames(ourdata);
+samples <- sampleNames(ourdata);

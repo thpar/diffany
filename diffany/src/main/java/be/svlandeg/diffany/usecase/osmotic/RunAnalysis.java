@@ -2,6 +2,7 @@ package be.svlandeg.diffany.usecase.osmotic;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
@@ -44,6 +45,12 @@ public class RunAnalysis
 			String errorMsg = "Error reading input data from " + inputRoot + ": " + e.getMessage();
 			System.out.println(errorMsg);
 		}
+		catch (URISyntaxException e)
+		{
+			System.out.println("Couldn't read R script : " + e.getMessage());
+			return;
+		}
+		
 		System.out.println("");
 		System.out.println("Done!");
 	}

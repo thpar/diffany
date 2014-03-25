@@ -38,60 +38,93 @@ public class ExecuteR
 	{
 		bridge.evaluate("path <- getwd()");
 		String old_dir_path = getStringValue("path");
-		
+
 		// R wants to get forward slashed in the path 
 		String new_dir_path = dir_path.replace("\\", "/");
-		
-		bridge.evaluate("setwd('" + new_dir_path + "')"); 
-		
+
+		bridge.evaluate("setwd('" + new_dir_path + "')");
+
 		return old_dir_path;
 	}
-	
+
 	/**
-	 * TODO documentation v2.1
+	 * Retrieve the value of a certain String variable previously defined/calculated in R.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return the String value in the R environment
 	 */
 	public String getStringValue(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
 		return value.asString();
 	}
-		
+
 	/**
-	 * TODO documentation v2.1
+	 * Retrieve the value of a certain String array previously defined/calculated in R.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return the String array in the R environment
+	 */
+	public String[] getStringArray(String variable)
+	{
+		REXP value = bridge.evaluate(variable);
+		return value.asStringArray();
+	}
+
+	/**
+	 * Retrieve the value of a certain Double variable previously defined/calculated in R.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return the Double value in the R environment
 	 */
 	public double getDoubleValue(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
 		return value.asDouble();
 	}
-	
+
 	/**
-	 * TODO documentation v2.1
-	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
+	 * Retrieve the value of a certain double array previously defined/calculated in R.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return the double array in the R environment
 	 */
-	public void executeScript(URL scriptURL)
+	public double[] getDoubleArray(String variable)
 	{
-		try
+		REXP value = bridge.evaluate(variable);
+		return value.asDoubleArray();
+	}
+
+	/**
+	 * Retrieve the value of a certain double matrix previously defined/calculated in R.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return the double matrix in the R environment
+	 */
+	public double[][] getDoubleMatrix(String variable)
+	{
+		REXP value = bridge.evaluate(variable);
+		return value.asDoubleMatrix();
+	}
+
+	/**
+	 * Execute a certain script in R by evaluating each line consequently.
+	 * 
+	 * @param scriptURL the URL (location) of the script that needs to be executed.
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public void executeScript(URL scriptURL) throws URISyntaxException, IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(new File(scriptURL.toURI())));
+		String line = reader.readLine();
+		while (line != null)
 		{
-			BufferedReader reader = new BufferedReader(new FileReader(new File(scriptURL.toURI())));
-			String line = reader.readLine();
-			while (line != null)
-			{
-				bridge.evaluate(line);
-				line = reader.readLine();
-			}
-			reader.close();
+			bridge.evaluate(line);
+			line = reader.readLine();
 		}
-		catch (IOException e)
-		{
-			System.out.println("Couldn't read R code : " + e.getMessage());
-			return;
-		}
-		catch (URISyntaxException e)
-		{
-			System.out.println("Couldn't read R code : " + e.getMessage());
-			return;
-		}
+		reader.close();
+
 	}
 
 }

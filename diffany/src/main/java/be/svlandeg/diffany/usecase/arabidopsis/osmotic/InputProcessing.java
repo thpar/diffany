@@ -56,9 +56,12 @@ public class InputProcessing
 		exeR.executeScript(scriptURL);
 		System.out.println("");
 		
-		URL mappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
-		System.out.println(" Fetching ID mapping data: " + mappingURL);
-		Map<String, Set<String>> idmapping = new MapID().getAllArrayMappings(new File(mappingURL.toURI())); 
+		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
+		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/TAIR10_NCBI_GENEID_mapping.tab");
+		System.out.println(" Fetching array ID mapping data: " + arrayMappingURL);
+		System.out.println(" Fetching Locus ID mapping data: " + locusMappingURL);
+		Map<String, Set<String>> arrayidmapping = new MapID().getAllArrayMappings(new File(arrayMappingURL.toURI())); 
+		Map<String, String> locusidmapping = new MapID().getLocusGIDMappings(new File(locusMappingURL.toURI()));
 		System.out.println("");
 		
 		System.out.println(" Analysing data: ");
@@ -77,7 +80,13 @@ public class InputProcessing
 		System.out.println(" Top most DE genes: ");
 		for (int i = 0; i < topIDs.length; i++)
 		{
-			System.out.println("  " + (i+1) + ". " + topIDs[i] + " or " + idmapping.get(topIDs[i]));
+			String arrayID = topIDs[i];
+			Set<String> locusIDs = arrayidmapping.get(arrayID);
+			for (String locusID : locusIDs)
+			{
+				String egid = locusidmapping.get(locusID);
+				System.out.println("  " + (i+1) + ". " + arrayID + " or " + locusID + " or GeneID: " + egid);
+			}
 		}
 		System.out.println("");
 	}

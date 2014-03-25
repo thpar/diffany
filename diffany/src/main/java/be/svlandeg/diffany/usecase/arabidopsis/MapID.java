@@ -42,7 +42,7 @@ public class MapID
 			
 			if (map.containsKey(array_element))
 			{
-				System.out.println("error: found " + array_element + " twice");
+				System.out.println("error: found array_element " + array_element + " twice");
 			}
 			
 			while (stok.hasMoreTokens())
@@ -52,6 +52,39 @@ public class MapID
 			}
 			
 			map.put(array_element, locusIDs);
+			line = reader.readLine();
+		}
+		reader.close();
+		return map;
+	}
+	
+	/**
+	 * Obtain the mapping data between locus IDs (keys) and Entrez Gene IDs (values).
+	 * 
+	 * @param inputfile the .tab file containing the mapping between locus IDs and gene IDs
+	 * (e.g. from ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/TAIR10_NCBI_GENEID_mapping)
+	 * @return the mapping of locus IDs to their corresponding Entrez Gene IDs
+	 * @throws IOException when the input file can not be read properly
+	 */
+	public Map<String, String> getLocusGIDMappings(File inputfile) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(inputfile));
+		
+		Map<String, String> map = new HashMap<String, String>();
+		
+		String line = reader.readLine();
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String EGID = stok.nextToken();
+			String locusID = stok.nextToken();
+			
+			if (map.containsKey(locusID))
+			{
+				System.out.println("error: found locusID " + locusID + " twice");
+			}
+			
+			map.put(locusID, EGID);
 			line = reader.readLine();
 		}
 		reader.close();

@@ -38,7 +38,7 @@ public class RunProject
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
 		
-		// TODO v2.0: make ontologies adjustable
+		// TODO v3.0: make ontologies adjustable
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology(), new DefaultNodeMapper());
 		NodeMapper nm = p.getNodeMapper();
 

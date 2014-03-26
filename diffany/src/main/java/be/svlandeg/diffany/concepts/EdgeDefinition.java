@@ -162,7 +162,7 @@ public class EdgeDefinition
 	 */
 	public void setWeight(double weight) throws IllegalArgumentException
 	{
-		// TODO v2.0 properly log this event!
+		// TODO v2.1 properly log this event!
 		if (checkWeight(weight))
 		{
 			this.weight = weight;

@@ -1,0 +1,26 @@
+#source("http://bioconductor.org/biocLite.R");
+#biocLite("affy");
+#biocLite("IRanges");
+#biocLite("limma");
+#biocLite("affyPLM");
+#biocLite("org.Dm.eg.db");
+library(affy);
+library(limma);
+library(affyPLM);
+library(org.Dm.eg.db);
+library(Biobase)
+pheno <- read.AnnotatedDataFrame("RNAtargets.txt");
+rawProbeData <- ReadAffy(phenoData=pheno);
+#probeValues <- exprs(rawProbeData);
+#probeNames <- probeNames(rawProbeData);
+expressionSet <- rma(rawProbeData);
+probesets <- featureNames(expressionSet);
+samples <- sampleNames(expressionSet);
+expressionMatrix <- exprs(expressionSet);
+#combn <- factor(paste(pData(pheno)[, 1], pData(pheno)[, 2], sep = "_"));
+#design <- model.matrix(~combn);
+design <- cbind(c=1,mutvsc=c(0,0,0,1,1,1));
+fit <- lmFit(expressionSet, design);
+efit <- eBayes(fit);
+toptable <- topTable(efit, coef = 2);
+topIDs <- row.names(toptable);

@@ -21,7 +21,7 @@ public class ProjectIO
 	@SuppressWarnings("unused")
     private static void saveProject(Project p, String fileLocation)
 	{
-		//TODO v2.0: implement!
+		//TODO v3.0: implement!
 		throw new UnsupportedOperationException("Saving of project not yet implemented");
 	}
 	
@@ -35,7 +35,7 @@ public class ProjectIO
 	@SuppressWarnings("unused")
     private static Project loadFromFile(String fileLocation)
 	{
-		//TODO v2.0: implement!
+		//TODO v3.0: implement!
 		throw new UnsupportedOperationException("Loading of project not yet implemented");
 	}
 

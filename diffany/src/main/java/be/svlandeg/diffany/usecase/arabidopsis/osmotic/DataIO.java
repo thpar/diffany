@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.usecase.osmotic;
+package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 
 import java.io.File;
 
@@ -26,8 +26,8 @@ public class DataIO
 	}
 	
 	/**
-	 * Retrieve the directory containing the leaf development files
-	 * @return
+	 * Retrieve the root directory of the experimental data
+	 * @return the root directory, containing subdirectories for the leaf development data and the osmotic stress data
 	 */
 	public File getInputDataDir()
 	{
@@ -36,7 +36,7 @@ public class DataIO
 	
 	/**
 	 * Retrieve the directory containing the leaf development files
-	 * @return
+	 * @return the directory containing the leaf development files
 	 */
 	public File getLeafDevelDir()
 	{
@@ -45,10 +45,19 @@ public class DataIO
 	
 	/**
 	 * Retrieve the directory containing the osmotic stress files
-	 * @return
+	 * @return the directory containing the osmotic stress files
 	 */
-	public File getOsmoticStressDir()
+	public File getRootOsmoticStressDir()
 	{
 		return new File(getInputDataDir(), "short-term-osmotic-stress"); 
+	}
+	
+	/**
+	 * Retrieve the directory containing the osmotic stress files after 12h
+	 * @return the directory containing the osmotic stress files after 12h
+	 */
+	public File getOsmoticStress12Dir()
+	{
+		return new File(getRootOsmoticStressDir(), "subset-12h"); 
 	}
 }

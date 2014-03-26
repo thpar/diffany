@@ -15,7 +15,7 @@ public class RunAnalysis
 	
 	/**
 	 * Run the full analysis pipeline.
-	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
+	 * Currently, the data directories are hard coded to point to Sofie's D drive (TODO v2.1).
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
 	 */
@@ -26,11 +26,14 @@ public class RunAnalysis
 		String inputRoot = "D:" + File.separator + "diffany-tf";
 		DataIO io = new DataIO(inputRoot);
 		File tfTargetFile = io.getTFs();
+		File expDir = io.getExpInputDataDir();
+		
 		InputProcessing input = new InputProcessing();
 		
 		try
 		{
 			input.processTFData(tfTargetFile);
+			input.processExpressionData(expDir);
 		}
 		catch(IOException e)
 		{

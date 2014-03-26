@@ -27,11 +27,20 @@ public class DataIO
 	
 	/**
 	 * Retrieve the root directory of the TF-target data
-	 * @return the root directory, containing the input files
+	 * @return the root directory, containing the input TF files
 	 */
-	public File getInputDataDir()
+	public File getTFInputDataDir()
 	{
 		return new File(root, "data-jan"); 
+	}
+	
+	/**
+	 * Retrieve the root directory of the expression data
+	 * @return the root directory, containing the input expression files
+	 */
+	public File getExpInputDataDir()
+	{
+		return new File(root, "CORNET2.0"); 
 	}
 	
 	/**
@@ -40,7 +49,7 @@ public class DataIO
 	 */
 	public File getTFs()
 	{
-		return new File(getInputDataDir(), "AGRIS_CELLWALL.txt"); 
+		return new File(getTFInputDataDir(), "AGRIS_CELLWALL.txt"); 
 	}
 
 }

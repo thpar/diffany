@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.EdgeDefinition;
-import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.networks.Edge;
+import be.svlandeg.diffany.networks.EdgeDefinition;
+import be.svlandeg.diffany.networks.Node;
 
 /**
  * This class allows reading/writing an {@link Edge} from/to File.

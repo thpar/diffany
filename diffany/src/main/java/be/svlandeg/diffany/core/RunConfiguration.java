@@ -1,8 +1,12 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.core;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.DifferentialNetwork;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 
 
 /**

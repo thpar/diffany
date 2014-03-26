@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.Node;
 
 /**
  * This abstract class allows identifying equal nodes across two networks. 

@@ -2,7 +2,7 @@ package be.svlandeg.diffany.semantics;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.networks.*;
 import be.svlandeg.diffany.visualstyle.EdgeDrawing;
 
 /**

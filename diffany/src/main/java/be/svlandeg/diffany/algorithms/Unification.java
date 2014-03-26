@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Logger;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.networks.Edge;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**

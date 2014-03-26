@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.networks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -116,7 +116,7 @@ public class DifferentialNetwork extends Network
 	}
 
 	/* (non-Javadoc)
-	 * @see be.svlandeg.diffany.concepts.Network#getStringRepresentation()
+	 * @see be.svlandeg.diffany.networks.Network#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation()

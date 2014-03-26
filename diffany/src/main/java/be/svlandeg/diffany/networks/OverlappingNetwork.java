@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.networks;
 
 import java.util.Set;
 

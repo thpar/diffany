@@ -3,7 +3,10 @@ package be.svlandeg.diffany.algorithms;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.RunConfiguration;
+import be.svlandeg.diffany.networks.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

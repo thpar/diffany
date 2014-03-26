@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.networks.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

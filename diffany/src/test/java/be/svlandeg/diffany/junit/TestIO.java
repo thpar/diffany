@@ -12,14 +12,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.OverlappingNetwork;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.RunConfiguration;
+import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.RunConfiguration;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.io.NetworkIO;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.DifferentialNetwork;
+import be.svlandeg.diffany.networks.OverlappingNetwork;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

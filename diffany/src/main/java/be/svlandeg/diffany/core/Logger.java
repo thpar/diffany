@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.core;
 
 import java.util.ArrayList;
 import java.util.List;

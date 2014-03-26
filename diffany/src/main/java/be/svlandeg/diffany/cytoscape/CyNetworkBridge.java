@@ -22,14 +22,14 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
-import be.svlandeg.diffany.concepts.Condition;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.core.Project;
 import be.svlandeg.diffany.cytoscape.internal.Services;
+import be.svlandeg.diffany.networks.Condition;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.Edge;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.Node;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

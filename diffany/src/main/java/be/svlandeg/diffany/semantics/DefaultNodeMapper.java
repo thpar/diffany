@@ -2,7 +2,7 @@ package be.svlandeg.diffany.semantics;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.Node;
+import be.svlandeg.diffany.networks.Node;
 
 /**
  * This class provides a default implementation of a NodeMapper, defining nodes as equal when there names are equal (ignoring case, i.e. using 'normalized' names).

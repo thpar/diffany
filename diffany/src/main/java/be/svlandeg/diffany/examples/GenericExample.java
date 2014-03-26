@@ -2,13 +2,13 @@ package be.svlandeg.diffany.examples;
 
 import java.util.Collection;
 
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
-import be.svlandeg.diffany.concepts.RunConfiguration;
+import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.RunConfiguration;
 import be.svlandeg.diffany.io.EdgeIO;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.DifferentialNetwork;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 
 /**
  * Generic class for printing an example to the console.

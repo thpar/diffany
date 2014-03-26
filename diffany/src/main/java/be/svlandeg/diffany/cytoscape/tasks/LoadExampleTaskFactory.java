@@ -3,7 +3,7 @@ package be.svlandeg.diffany.cytoscape.tasks;
 import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 
-import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.core.Project;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 
 /**

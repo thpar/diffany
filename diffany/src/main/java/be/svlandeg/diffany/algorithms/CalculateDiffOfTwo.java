@@ -2,7 +2,8 @@ package be.svlandeg.diffany.algorithms;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.networks.*;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

@@ -13,14 +13,14 @@ import java.util.TreeSet;
 
 import javax.activation.UnsupportedDataTypeException;
 
-import be.svlandeg.diffany.concepts.Condition;
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.OverlappingNetwork;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.networks.Condition;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.DifferentialNetwork;
+import be.svlandeg.diffany.networks.Edge;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.Node;
+import be.svlandeg.diffany.networks.OverlappingNetwork;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**

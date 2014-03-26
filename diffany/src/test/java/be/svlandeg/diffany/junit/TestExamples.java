@@ -8,13 +8,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.core.Project;
 import be.svlandeg.diffany.examples.ActivityFlowTest;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.ConflictingEdgesTest;
 import be.svlandeg.diffany.examples.Ideker2011;
 import be.svlandeg.diffany.examples.MultipleConditionTest;
 import be.svlandeg.diffany.examples.ProcessTest;
+import be.svlandeg.diffany.networks.*;
 
 /** 
  * Class that automatically tests the outputs of the small examples 

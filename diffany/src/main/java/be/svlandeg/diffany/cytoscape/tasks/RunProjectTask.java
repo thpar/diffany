@@ -22,16 +22,16 @@ import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.DifferentialNetwork;
-import be.svlandeg.diffany.concepts.Logger;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.OverlappingNetwork;
-import be.svlandeg.diffany.concepts.Project;
-import be.svlandeg.diffany.concepts.RunConfiguration;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.RunConfiguration;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.networks.DifferentialNetwork;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.OverlappingNetwork;
 
 /**
  * This Task gathers information from the model and runs the {@link Project}

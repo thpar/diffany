@@ -2,7 +2,7 @@ package be.svlandeg.diffany.semantics;
 
 import java.util.*;
 
-import be.svlandeg.diffany.concepts.EdgeDefinition;
+import be.svlandeg.diffany.networks.EdgeDefinition;
 
 /**
  * This edge ontology is implemented as a tree structure.

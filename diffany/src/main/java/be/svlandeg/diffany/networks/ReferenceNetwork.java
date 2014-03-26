@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.networks;
 
 import be.svlandeg.diffany.semantics.NodeMapper;
 
@@ -26,7 +26,7 @@ public class ReferenceNetwork extends Network
 	}
 
 	/* (non-Javadoc)
-	 * @see be.svlandeg.diffany.concepts.Network#getStringRepresentation()
+	 * @see be.svlandeg.diffany.networks.Network#getStringRepresentation()
 	 */
 	@Override
 	public String getStringRepresentation()

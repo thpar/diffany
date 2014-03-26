@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.concepts;
+package be.svlandeg.diffany.core;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +9,9 @@ import java.util.Set;
 import be.svlandeg.diffany.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.algorithms.Unification;
 import be.svlandeg.diffany.io.ProjectIO;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.semantics.EdgeOntology;

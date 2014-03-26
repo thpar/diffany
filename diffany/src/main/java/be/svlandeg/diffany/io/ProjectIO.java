@@ -1,7 +1,7 @@
 package be.svlandeg.diffany.io;
 
 
-import be.svlandeg.diffany.concepts.Project;
+import be.svlandeg.diffany.core.Project;
 
 /**
  * This class allows reading or writing a {@link Project} from File.

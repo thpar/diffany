@@ -5,13 +5,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.concepts.ConditionNetwork;
-import be.svlandeg.diffany.concepts.Edge;
-import be.svlandeg.diffany.concepts.EdgeDefinition;
-import be.svlandeg.diffany.concepts.Logger;
-import be.svlandeg.diffany.concepts.Network;
-import be.svlandeg.diffany.concepts.Node;
-import be.svlandeg.diffany.concepts.ReferenceNetwork;
+import be.svlandeg.diffany.core.Logger;
+import be.svlandeg.diffany.networks.ConditionNetwork;
+import be.svlandeg.diffany.networks.Edge;
+import be.svlandeg.diffany.networks.EdgeDefinition;
+import be.svlandeg.diffany.networks.Network;
+import be.svlandeg.diffany.networks.Node;
+import be.svlandeg.diffany.networks.ReferenceNetwork;
 import be.svlandeg.diffany.semantics.EdgeOntology;
 import be.svlandeg.diffany.semantics.NodeMapper;
 

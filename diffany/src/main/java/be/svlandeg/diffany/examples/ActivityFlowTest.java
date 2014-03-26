@@ -3,7 +3,8 @@ package be.svlandeg.diffany.examples;
 import java.util.*;
 
 import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.concepts.*;
+import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.networks.*;
 import be.svlandeg.diffany.semantics.*;
 
 /**

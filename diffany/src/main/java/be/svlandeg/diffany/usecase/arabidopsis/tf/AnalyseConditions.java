@@ -20,7 +20,7 @@ public class AnalyseConditions
 	 */
 	public void integrateTFandExpr(GenericNetwork tfNetwork, Set<ExpressionData> datasets)
 	{
-		System.out.println(" Analysing the TF network " + tfNetwork);
+		System.out.println(" Analysing " + tfNetwork.getStringRepresentation());
 		System.out.println("  " + tfNetwork.getNodes().size() + " genes");
 		System.out.println("  " + tfNetwork.getEdges().size() + " interactions");
 		

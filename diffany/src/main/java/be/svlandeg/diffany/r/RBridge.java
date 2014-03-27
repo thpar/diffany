@@ -105,14 +105,15 @@ public class RBridge
 		}
 		catch (UnsatisfiedLinkError e)
 		{
-			System.out.println("Error deploying the Java-R bridge through JRI: " + e.getMessage());
-			System.out.println("");
-			System.out.println("This is probably because the directory containing the correct jri.dll is lacking from the path variable.");
-			System.out.println("Current value for java.library.path: " + System.getProperty("java.library.path"));
-			System.out.println("");
-			System.out.println("Execution can not continue until the system settings are fixed!");
-			System.out.println("After fixing this issue, please reboot the system and try again.");
-			throw new IllegalStateException("R is not properly installed and configured!");
+			System.err.println(" ! Error deploying the Java-R bridge through JRI: " + e.getMessage());
+			System.err.println("");
+			System.err.println(" ! This is probably because the directory containing the correct jri.dll is lacking from the path variable.");
+			System.err.println(" ! Current value for java.library.path: " + System.getProperty("java.library.path"));
+			System.err.println("");
+			System.err.println(" ! Execution can not continue until the system settings are fixed!");
+			System.err.println(" ! After fixing this issue, please reboot the system and try again.");
+			System.err.println("");
+			throw new IllegalStateException("R is not properly installed and configured! ");
 		}
 	}
 

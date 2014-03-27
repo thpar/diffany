@@ -2,6 +2,9 @@ package be.svlandeg.diffany.usecase.arabidopsis.tf;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
+
+import be.svlandeg.diffany.core.expression.ExpressionData;
 
 
 /**
@@ -31,11 +34,13 @@ public class RunAnalysis
 		File expDir = io.getExpInputDataDir();
 		
 		InputProcessing input = new InputProcessing();
+		AnalyseConditions ana = new AnalyseConditions();
 		
 		try
 		{
 			input.processTFData(tfTargetFile);
-			input.processExpressionData(expDir);
+			Set<ExpressionData> datasets = input.processExpressionData(expDir);
+			ana.integrateTFandExpr(datasets);
 		}
 		catch(IOException e)
 		{

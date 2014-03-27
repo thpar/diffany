@@ -13,12 +13,12 @@ import org.cytoscape.view.vizmap.mappings.BoundaryRangeValues;
 import org.cytoscape.view.vizmap.mappings.ContinuousMapping;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
+import be.svlandeg.diffany.core.visualstyle.EdgeDrawing;
+import be.svlandeg.diffany.core.visualstyle.EdgeStyle;
+import be.svlandeg.diffany.core.visualstyle.EdgeStyle.ArrowHead;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.internal.Services;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.visualstyle.EdgeDrawing;
-import be.svlandeg.diffany.visualstyle.EdgeStyle;
-import be.svlandeg.diffany.visualstyle.EdgeStyle.ArrowHead;
 
 /**
  * {@link VisualStyle} to be applied on differential networks.

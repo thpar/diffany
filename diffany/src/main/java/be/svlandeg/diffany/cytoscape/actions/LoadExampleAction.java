@@ -7,7 +7,7 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
-import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.cytoscape.tasks.LoadExampleTaskFactory;
 

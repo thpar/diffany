@@ -2,10 +2,10 @@ package be.svlandeg.diffany.examples;
 
 import java.util.*;
 
-import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.Project;
-import be.svlandeg.diffany.networks.*;
-import be.svlandeg.diffany.semantics.*;
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.networks.*;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.semantics.*;
 
 /**
  * Testing class that tries to simulate a range of possibilities in activity flow networks

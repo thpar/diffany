@@ -5,17 +5,17 @@ import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 
-import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.Logger;
-import be.svlandeg.diffany.core.Project;
-import be.svlandeg.diffany.io.NetworkIO;
-import be.svlandeg.diffany.networks.ConditionNetwork;
-import be.svlandeg.diffany.networks.DifferentialNetwork;
-import be.svlandeg.diffany.networks.OverlappingNetwork;
-import be.svlandeg.diffany.networks.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.NodeMapper;
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.Logger;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * This class can run the Diffany algorithms from a {@link org.apache.commons.cli.CommandLine} object.

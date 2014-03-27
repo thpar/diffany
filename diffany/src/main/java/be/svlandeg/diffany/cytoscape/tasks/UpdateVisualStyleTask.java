@@ -8,9 +8,9 @@ import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskMonitor;
 
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
-import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
  * This task gathers all used interactions in a given {@link CyProject}, updates

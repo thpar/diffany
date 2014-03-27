@@ -22,16 +22,16 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
-import be.svlandeg.diffany.core.Project;
+import be.svlandeg.diffany.core.networks.Condition;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.Network;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
-import be.svlandeg.diffany.networks.Condition;
-import be.svlandeg.diffany.networks.ConditionNetwork;
-import be.svlandeg.diffany.networks.Edge;
-import be.svlandeg.diffany.networks.Network;
-import be.svlandeg.diffany.networks.Node;
-import be.svlandeg.diffany.networks.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
 
 /**
  * Static conversion class that takes the appropriate Cytoscape Factories and uses them

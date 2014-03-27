@@ -5,17 +5,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.Project;
-import be.svlandeg.diffany.networks.Condition;
-import be.svlandeg.diffany.networks.ConditionNetwork;
-import be.svlandeg.diffany.networks.Edge;
-import be.svlandeg.diffany.networks.Node;
-import be.svlandeg.diffany.networks.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.EdgeOntology;
-import be.svlandeg.diffany.semantics.NodeMapper;
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.networks.Condition;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * Testing class that simulates input networks with edge conflicts, 

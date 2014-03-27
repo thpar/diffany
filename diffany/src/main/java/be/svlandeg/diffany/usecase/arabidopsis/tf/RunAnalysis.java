@@ -23,7 +23,9 @@ public class RunAnalysis
 	{
 		System.out.println("Performing TF-target analysis");
 		System.out.println("");
-		String inputRoot = "D:" + File.separator + "diffany-tf";
+		//String inputRoot = "D:" + File.separator + "diffany-tf";
+		String inputRoot = "C:" + File.separator + "Users" + File.separator + "Sloffie" + File.separator + "Documents" + File.separator + "phd" + File.separator + "diffany_data" + File.separator + "tf";
+		
 		DataIO io = new DataIO(inputRoot);
 		File tfTargetFile = io.getTFs();
 		File expDir = io.getExpInputDataDir();

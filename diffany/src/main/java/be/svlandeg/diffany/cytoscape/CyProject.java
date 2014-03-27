@@ -10,16 +10,16 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
-import be.svlandeg.diffany.core.Logger;
-import be.svlandeg.diffany.core.Project;
-import be.svlandeg.diffany.core.RunConfiguration;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.Logger;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
-import be.svlandeg.diffany.networks.ConditionNetwork;
-import be.svlandeg.diffany.networks.DifferentialNetwork;
-import be.svlandeg.diffany.networks.OverlappingNetwork;
-import be.svlandeg.diffany.networks.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
 
 
 

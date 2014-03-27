@@ -19,10 +19,10 @@ import org.cytoscape.view.vizmap.mappings.ContinuousMapping;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
 
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.internal.Services;
-import be.svlandeg.diffany.semantics.EdgeOntology;
 
 /**
  * A {@link VisualStyle} wrapper with default values for all Diffany styles. 

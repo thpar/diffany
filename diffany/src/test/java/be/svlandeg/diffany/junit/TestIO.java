@@ -11,17 +11,17 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import be.svlandeg.diffany.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.Project;
-import be.svlandeg.diffany.core.RunConfiguration;
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
-import be.svlandeg.diffany.io.NetworkIO;
-import be.svlandeg.diffany.networks.ConditionNetwork;
-import be.svlandeg.diffany.networks.DifferentialNetwork;
-import be.svlandeg.diffany.networks.OverlappingNetwork;
-import be.svlandeg.diffany.networks.ReferenceNetwork;
-import be.svlandeg.diffany.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.semantics.NodeMapper;
 
 /** 
  * Class that automatically tests the IO functionality of Diffany:

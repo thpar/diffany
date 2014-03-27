@@ -1,6 +1,6 @@
 package be.svlandeg.diffany.cytoscape;
 
-import be.svlandeg.diffany.core.RunConfiguration;
+import be.svlandeg.diffany.core.project.RunConfiguration;
 
 /**
  * Get throws when a {@link CyProject} doesn't have enough

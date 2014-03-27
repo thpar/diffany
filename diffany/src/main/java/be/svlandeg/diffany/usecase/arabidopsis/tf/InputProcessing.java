@@ -5,12 +5,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.core.expression.ExpressionData;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.GenericNetwork;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * This class reads and processes the raw input TF-target data.
@@ -24,26 +31,49 @@ public class InputProcessing
 	 * Process the TF-target data
 	 * 
 	 * @param TFtargetFile the file containing the TF-target interactions
+	 * @param networkName the name the network should have
 	 * @throws IOException
 	 */
-	public void processTFData(File TFtargetFile) throws IOException
+	public GenericNetwork processTFData(File TFtargetFile, String networkName) throws IOException
 	{
 		String path = TFtargetFile.getAbsolutePath();
 		System.out.println(" Reading " + path );
 
+		Map<String, Node> nodes = new HashMap<String, Node>();
+		Set<Edge> edges = new HashSet<Edge>();
+		NodeMapper nm = new DefaultNodeMapper();
+		
 		BufferedReader reader = new BufferedReader(new FileReader(TFtargetFile));
 		String line = reader.readLine();
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
+			
 			String TF = stok.nextToken();
+			Node TFnode = nodes.get(TF);
+			if (TFnode == null)
+			{
+				TFnode = new Node(TF);
+				nodes.put(TF, TFnode);
+			}
+			
 			String target = stok.nextToken();
-
-			//System.out.println(TF + " --> " + target);
+			Node targetnode = nodes.get(target);
+			if (targetnode == null)
+			{
+				targetnode = new Node(target);
+				nodes.put(target, targetnode);
+			}
+			
+			Edge e = new Edge("Transcription", TFnode, targetnode, false, false);
+			edges.add(e);
 
 			line = reader.readLine();
 		}
 		reader.close();
+		
+		GenericNetwork tfNetwork = new GenericNetwork(networkName, new HashSet<Node>(nodes.values()), edges, nm);
+		return tfNetwork;
 	}
 
 	/**

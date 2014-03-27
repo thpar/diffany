@@ -28,6 +28,7 @@ public abstract class Network
 	/**
 	 * Create a new network with a specific name and sets of nodes and edges.
 	 * All source and target nodes of each edge will be automatically added to the internal set of nodes.
+	 * 
 	 * @param name the name of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network

@@ -245,6 +245,8 @@ public class EdgeByEdge
 	 * @param minOperator whether or not to take the minimum of the edge weights for the overlapping edges - if false, the maximum is taken
 	 * 
 	 * @return the differential network between the two
+	 * 
+	 * TODO v2.0: calculate overlap directly on set of networks 
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
 	{
@@ -258,12 +260,14 @@ public class EdgeByEdge
 		Network firstN = listedNetworks.get(first);
 		Network secondN = listedNetworks.get(second);
 		OverlappingNetwork overlapTmp = calculateOverlappingNetwork(firstN, secondN, eo, nm, overlapping_name, cutoff, minOperator);
+		new NetworkCleaning(log).fullOutputCleaning(overlapTmp);
 		second++;
 
 		while (second < numberOfNetworks)
 		{
 			secondN = listedNetworks.get(second);
 			overlapTmp = calculateOverlappingNetwork(overlapTmp, secondN, eo, nm, overlapping_name, cutoff, minOperator);
+			new NetworkCleaning(log).fullOutputCleaning(overlapTmp);
 			second++;
 		}
 		return overlapTmp;
@@ -283,6 +287,7 @@ public class EdgeByEdge
 	 * 
 	 * @return the overlapping network between the two
 	 *      
+	 * TODO v2.0: calculate overlap directly on set of networks      
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
 	private OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)

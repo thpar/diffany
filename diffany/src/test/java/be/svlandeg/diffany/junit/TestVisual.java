@@ -16,6 +16,7 @@ import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.core.visualstyle.EdgeStyle.ArrowHead;
 
 /** 
@@ -33,7 +34,7 @@ public class TestVisual
 	@Test
 	public void testAll()
 	{
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project("testProject", eo, nm);
 		

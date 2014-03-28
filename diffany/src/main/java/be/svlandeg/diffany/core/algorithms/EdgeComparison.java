@@ -8,7 +8,7 @@ import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
- * This class does the actual edge-by-edge comparisons, based on the semantic definitions of an ontology
+ * This class does the actual edge-by-edge comparisons, based on the semantic definitions of an ontology, structured as a tree classification system.
  * 
  * @author Sofie Van Landeghem
  */
@@ -20,7 +20,7 @@ public class EdgeComparison
 	
 	/**
 	 * Initialize this object by defining the Edge Ontology which will be used for semantically comparing edges.
-	 * @param eo
+	 * @param eo the edge ontology defining the interaction semantics
 	 */
 	public EdgeComparison(TreeEdgeOntology teo)
 	{

@@ -14,8 +14,8 @@ import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
  * This class provides example code to work with the Diffany library.
@@ -28,7 +28,7 @@ public class ExampleCode
 	public void example(String refLocation, String condLocation, String diffLocation, String overlapLocation) throws IOException
 	{
 		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project("testProject", eo, nm);
 

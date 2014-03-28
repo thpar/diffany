@@ -26,7 +26,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	public DefaultEdgeOntology()
 	{
-		super("increase_", "increases_", "decrease_", "decreases_", defineAllCategories());
+		super("increase_", "increases_", "decrease_", "decreases_", "unspecified_", defineAllCategories());
 		sourceDraw = new DefaultSourceEdgeDrawing(this);
 		diffDraw = new DefaultDiffEdgeDrawing(this);
 

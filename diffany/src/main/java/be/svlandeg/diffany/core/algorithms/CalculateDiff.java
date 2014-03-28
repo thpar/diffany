@@ -3,12 +3,16 @@ package be.svlandeg.diffany.core.algorithms;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.networks.*;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.Network;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
-import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
  * This class serves as an abstract layer between a GUI and the actual technical implementations of various algorithms
@@ -66,7 +70,7 @@ public class CalculateDiff
 	 * @return the overlapping network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo,
+	public OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
 			NodeMapper nm, String overlapping_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
@@ -100,7 +104,7 @@ public class CalculateDiff
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, EdgeOntology eo,
+	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
 			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
@@ -146,7 +150,7 @@ public class CalculateDiff
 	 */
 	public void calculateOneDifferentialNetwork(Project p, int configurationID, String diff_name, double cutoff) throws IllegalArgumentException
 	{
-		EdgeOntology eo = p.getEdgeOntology();
+		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger(configurationID);
 
@@ -244,7 +248,7 @@ public class CalculateDiff
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
-	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, EdgeOntology eo,
+	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, ConditionNetwork condition, TreeEdgeOntology eo,
 			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		Set<ConditionNetwork> allConditions = new HashSet<ConditionNetwork>();
@@ -266,7 +270,7 @@ public class CalculateDiff
 	 * @return the overlapping network between the two
 	 * @throws IllegalArgumentException if any of the parameters are null
 	 */
-	public OverlappingNetwork calculateOverlappingNetwork(Network reference, Network condition, EdgeOntology eo,
+	public OverlappingNetwork calculateOverlappingNetwork(Network reference, Network condition, TreeEdgeOntology eo,
 			NodeMapper nm, String overlap_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		Set<Network> allNetworks = new HashSet<Network>();
@@ -313,7 +317,7 @@ public class CalculateDiff
 	 */
 	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, double cutoff) throws IllegalArgumentException
 	{
-		EdgeOntology eo = p.getEdgeOntology();
+		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
 		Logger log = p.getLogger(configurationID);
 

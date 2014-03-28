@@ -33,7 +33,7 @@ public class ProcessTest extends GenericExample
 	public Project getTestProject()
 	{
 		String name = "Process_test";
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		NodeMapper nm = new DefaultNodeMapper();
 		Project p = new Project(name, eo, nm);
 		return p;

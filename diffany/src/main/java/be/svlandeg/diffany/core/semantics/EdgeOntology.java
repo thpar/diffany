@@ -107,32 +107,6 @@ public abstract class EdgeOntology
 	public abstract String commonSourceCatParent(String childCat1, String childCat2);
 
 	/**
-	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
-	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
-	 * 
-	 * @param refEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
-	 * @param conEdges the edge definitions in the condition-specific networks (can be EdgeDefinition.getVoidEdge() when non-existing)
-	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential network
-	 * 
-	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
-	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
-	 */
-	public abstract EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException;
-
-	/**
-	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
-	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in the overlapping network).
-	 * 
-	 * @param edges the original edge definitions (can contain EdgeDefinition.getVoidEdge()), should not be empty!
-	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
-	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
-	 * 
-	 * @return the edge definition in the overlapping network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
-	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
-	 */
-	public abstract EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException;
-
-	/**
 	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in a differential network
 	 * 
 	 * @return the EdgeDrawing object for the differential network(s)
@@ -274,6 +248,26 @@ public abstract class EdgeOntology
 	public Set<String> getAllSourceCategories()
 	{
 		return allSourceCategories.keySet();
+	}
+	
+	/**
+	 * Return all positive source (input) categories present in this ontology.
+	 * 
+	 * @return the set of positive categories mapped in this ontology.
+	 */
+	public Set<String> getAllPosSourceCategories()
+	{
+		return posSourceCats;
+	}
+	
+	/**
+	 * Return all negative source (input) categories present in this ontology.
+	 * 
+	 * @return the set of negative categories mapped in this ontology.
+	 */
+	public Set<String> getAllNegSourceCategories()
+	{
+		return negSourceCats;
 	}
 
 	/**

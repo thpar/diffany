@@ -16,6 +16,7 @@ import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
  * A project consists of a number of Diffany runs and the ontology settings within one user session.
@@ -35,7 +36,7 @@ public class Project
 	
 	protected String name;
 
-	protected EdgeOntology edgeOntology;
+	protected TreeEdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
 	
 	// runs by Configuration IDs
@@ -65,7 +66,7 @@ public class Project
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public Project(String name, EdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
+	public Project(String name, TreeEdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -191,7 +192,7 @@ public class Project
 	 * @param edgeOntology the edge ontology (not null!)
 	 * @throws IllegalArgumentException if the edgeOntology is null
 	 */
-	private void setEdgeOntology(EdgeOntology edgeOntology) throws IllegalArgumentException
+	private void setEdgeOntology(TreeEdgeOntology edgeOntology) throws IllegalArgumentException
 	{
 		if (edgeOntology == null)
 		{
@@ -207,7 +208,7 @@ public class Project
 	 * 
 	 * @return the edge ontology used in this project (should not be null)
 	 */
-	public EdgeOntology getEdgeOntology()
+	public TreeEdgeOntology getEdgeOntology()
 	{
 		return edgeOntology;
 	}

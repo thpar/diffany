@@ -37,7 +37,7 @@ public class Ideker2011 extends GenericExample
 	public Project getProjectFigure3A()
 	{
 		String name = "Ideker2011_fig3A";
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		return p;
 	}

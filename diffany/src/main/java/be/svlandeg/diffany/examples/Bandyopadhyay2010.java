@@ -15,8 +15,8 @@ import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
  * This class provides examples taken from the Bandyopadhyay et al, Science 2010 paper.
@@ -44,7 +44,7 @@ public class Bandyopadhyay2010 extends GenericExample
 	public Project getProjectFigure1C()
 	{
 		String name = "Bandyopadhyay2010_fig1C";
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		return p;
 	}

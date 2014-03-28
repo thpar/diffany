@@ -33,7 +33,7 @@ public class ActivityFlowTest extends GenericExample
 	public Project getTestProject()
 	{
 		String name = "AF_test";
-		EdgeOntology eo = new DefaultEdgeOntology();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		return p;
 	}

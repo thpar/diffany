@@ -16,8 +16,8 @@ import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
-import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 
 /**
@@ -48,13 +48,13 @@ public class EdgeByEdge
 	 * 
 	 * @param reference the reference network
 	 * @param conditions a set of condition-specific networks (at least 2)
-	 * @param eo the edge ontology that provides meaning to the edge types
+	 * @param eo the tree edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network.
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, EdgeOntology eo, NodeMapper nm, String diff_name, double cutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diff_name, double cutoff)
 	{
 		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
 
@@ -69,6 +69,7 @@ public class EdgeByEdge
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats();
+		EdgeComparison ec = new EdgeComparison(eo);
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -204,7 +205,7 @@ public class EdgeByEdge
 					}
 					if (atLeastOneCon || aRef)
 					{
-						EdgeDefinition diff_edge_def = eo.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
+						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
 
 						String sourceconsensus = nm.getConsensusName(allSources);
 						String targetconsensus = nm.getConsensusName(allTargets);
@@ -248,7 +249,7 @@ public class EdgeByEdge
 	 * 
 	 * TODO v2.0: calculate overlap directly on set of networks 
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, EdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
 	{
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
@@ -290,7 +291,7 @@ public class EdgeByEdge
 	 * TODO v2.0: calculate overlap directly on set of networks      
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	private OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, EdgeOntology eo, NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
+	private OverlappingNetwork calculateOverlappingNetwork(Network n1, Network n2, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, double cutoff, boolean minOperator)
 	{
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.add(n1);
@@ -304,6 +305,7 @@ public class EdgeByEdge
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 		
 		Set<String> roots = eo.retrieveAllSourceRootCats();
+		EdgeComparison ec = new EdgeComparison(eo);
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -388,7 +390,7 @@ public class EdgeByEdge
 					allEdges.add(rootN1s.iterator().next());
 					allEdges.add(rootN2s.iterator().next());
 							
-					EdgeDefinition overlap_edge_def = eo.getOverlapEdge(allEdges, cutoff, minOperator);
+					EdgeDefinition overlap_edge_def = ec.getOverlapEdge(allEdges, cutoff, minOperator);
 
 					Set<Node> allSources = new HashSet<Node>();
 					allSources.add(source1);

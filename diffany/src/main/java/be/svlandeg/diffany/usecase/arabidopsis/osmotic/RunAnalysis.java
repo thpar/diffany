@@ -37,7 +37,7 @@ public class RunAnalysis
 		
 		RBridge bridge = new RBridge();
 		try
-		{
+		{ 
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticData(exeR, osmoticStressDir);
 			deAnalysis.findDEGenes(exeR, osmoticStressDir);

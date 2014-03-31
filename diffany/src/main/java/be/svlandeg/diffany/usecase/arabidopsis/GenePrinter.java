@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class allows printing gene information in a human-readable format
+ * This class allows printing gene information in a human-readable format, by taking the original array ID,
+ * fetching its corresponding locus tags and Entrez Gene IDs, and gene symbols.
  * 
  * @author Sofie Van Landeghem
  */
@@ -18,14 +19,25 @@ public class GenePrinter
 	
 	private Map<String, Set<String>> arrayidmapping;
 	private Map<String, String> locusidmapping;
-	private Map<String, String> symbolmapping;
 	private Map<String, Set<String>> synonymmapping;
 	
+	/**
+	 * Create a new GenePrinter, reading the mapping data.
+	 * 
+	 * @throws IOException when a file can't be read properly
+	 * @throws URISyntaxException when a file location can't be parsed properly
+	 */
 	public GenePrinter() throws IOException, URISyntaxException 
 	{
 		ini();
 	}
 	
+	/**
+	 * Initialize the mapping files from the internal directory structure.
+	 * 
+	 * @throws IOException when a file can't be read properly
+	 * @throws URISyntaxException when a file location can't be parsed properly
+	 */
 	private void ini() throws IOException, URISyntaxException
 	{
 		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
@@ -38,15 +50,12 @@ public class GenePrinter
 
 		URL symbolMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/EVEX_synonyms_3702.tab");
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
-		symbolmapping = new MapID().getSymbolMappings(new File(symbolMappingURL.toURI()));
-
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));
 	}
 	
 	/**
 	 * Print an A.th. gene by its array ID
-	 * @throws URISyntaxException 
-	 * @throws IOException 
+	 * @param arrayID the ID from the A.th microarray dataset
 	 */
 	public void printGene(String arrayID) 
 	{
@@ -54,19 +63,14 @@ public class GenePrinter
 		for (String locusID : locusIDs)
 		{
 			String egid = locusidmapping.get(locusID);
-			String symbol = symbolmapping.get(egid);
 			System.out.print(arrayID + " - " + locusID + " - GID:" + egid);
-			/*if (symbol != null && !symbol.equals(locusID))
-			{
-				System.out.print(" - " + symbol);
-			}*/
+
 			System.out.print("\t");
 			Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));
 			{
 				synonyms.remove(arrayID);
 				synonyms.remove(locusID);
 				synonyms.remove(egid);
-				synonyms.remove(symbol);
 			}
 			for (String synonym : synonyms)
 			{

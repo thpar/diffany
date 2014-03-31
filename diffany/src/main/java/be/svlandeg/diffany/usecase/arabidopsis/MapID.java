@@ -146,7 +146,8 @@ public class MapID
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			String EGID = stok.nextToken().trim();
-			String type = stok.nextToken().trim();
+			@SuppressWarnings("unused")
+            String type = stok.nextToken().trim();
 			String symbol = stok.nextToken().trim();
 			
 			if (! map.containsKey(EGID))
@@ -208,11 +209,10 @@ public class MapID
 	 * Process the raw mapping data obtained from 
 	 * ftp://ftp.arabidopsis.org/home/tair/Microarrays/Affymetrix/affy_ATH1_array_elements-2010-12-20.txt
 	 * 
-	 * 
 	 * Currently, the output (written to the D disk), has been stored as a resources file in Maven.
 	 * There is thus no need to execute this method again.
 	 */
-	public static void main(String[] args) throws IOException
+	protected void processRawMAinfo() throws IOException
 	{
 		String inputRoot = "D:" + File.separator + "diffany-osmotic";
 		

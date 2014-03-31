@@ -1,3 +1,8 @@
+#source("http://bioconductor.org/biocLite.R");
+#biocLite("limma");
+
+library(limma);
+
 #combn <- factor(paste(pData(pheno)[, 1], pData(pheno)[, 2], sep = "_"));
 #design <- model.matrix(~combn);
 design <- cbind(c=1,mutvsc=c(0,0,0,1,1,1));

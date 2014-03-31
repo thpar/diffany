@@ -92,7 +92,7 @@ public class MapID
 	}
 	
 	/**
-	 * Obtain the official gene symbols (values) by their Entrez Gene IDs (keys).
+	 * Obtain the official gene symbols (unique values) by their Entrez Gene IDs (keys).
 	 * 
 	 * @param inputfile the .tab file containing the EVEX data on A.th gene symbols
 	 * @return the mapping of Entrez Gene IDs to their corresponding official symbols
@@ -121,6 +121,39 @@ public class MapID
 				}
 				map.put(EGID, symbol);
 			}
+			line = reader.readLine();
+		}
+		reader.close();
+		return map;
+	}
+	
+	/**
+	 * Obtain all synonyms (values) by their Entrez Gene IDs (keys).
+	 * 
+	 * @param inputfile the .tab file containing the EVEX data on A.th gene symbols
+	 * @return the mapping of Entrez Gene IDs to their corresponding official symbols
+	 * @throws IOException when the input file can not be read properly
+	 */
+	public Map<String, Set<String>> getSynonymMappings(File inputfile) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(inputfile));
+		
+		Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+		
+		String line = reader.readLine();
+		line = reader.readLine();		// skip header
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String EGID = stok.nextToken().trim();
+			String type = stok.nextToken().trim();
+			String symbol = stok.nextToken().trim();
+			
+			if (! map.containsKey(EGID))
+			{
+				map.put(EGID, new HashSet<String>());
+			}
+			map.get(EGID).add(symbol);
 			line = reader.readLine();
 		}
 		reader.close();

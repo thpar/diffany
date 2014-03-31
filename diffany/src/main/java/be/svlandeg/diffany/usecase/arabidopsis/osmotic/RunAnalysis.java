@@ -30,6 +30,7 @@ public class RunAnalysis
 		String inputRoot = "D:" + File.separator + "diffany-osmotic";
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
+		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
 		// TODO: compare all at once?
 		File osmoticStressDir = io.getOsmoticStress12Dir();
@@ -39,6 +40,7 @@ public class RunAnalysis
 		{
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticData(exeR, osmoticStressDir);
+			deAnalysis.findDEGenes(exeR, osmoticStressDir);
 			
 			bridge.close();
 		}

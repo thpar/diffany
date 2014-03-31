@@ -37,7 +37,7 @@ public class MapID
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String array_element = stok.nextToken();
+			String array_element = stok.nextToken().trim();
 			Set<String> locusIDs = new HashSet<String>();
 			
 			if (map.containsKey(array_element))
@@ -47,7 +47,7 @@ public class MapID
 			
 			while (stok.hasMoreTokens())
 			{
-				String locus = stok.nextToken();
+				String locus = stok.nextToken().trim();
 				locusIDs.add(locus);
 			}
 			
@@ -76,8 +76,8 @@ public class MapID
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String EGID = stok.nextToken();
-			String locusID = stok.nextToken();
+			String EGID = stok.nextToken().trim();
+			String locusID = stok.nextToken().trim();
 			
 			if (map.containsKey(locusID))
 			{
@@ -85,6 +85,42 @@ public class MapID
 			}
 			
 			map.put(locusID, EGID);
+			line = reader.readLine();
+		}
+		reader.close();
+		return map;
+	}
+	
+	/**
+	 * Obtain the official gene symbols (values) by their Entrez Gene IDs (keys).
+	 * 
+	 * @param inputfile the .tab file containing the EVEX data on A.th gene symbols
+	 * @return the mapping of Entrez Gene IDs to their corresponding official symbols
+	 * @throws IOException when the input file can not be read properly
+	 */
+	public Map<String, String> getSymbolMappings(File inputfile) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(inputfile));
+		
+		Map<String, String> map = new HashMap<String, String>();
+		
+		String line = reader.readLine();
+		line = reader.readLine();		// skip header
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String EGID = stok.nextToken().trim();
+			String type = stok.nextToken().trim();
+			String symbol = stok.nextToken().trim();
+			
+			if (type.equals("official_symbol"))
+			{
+				if (map.containsKey(EGID))
+				{
+					System.out.println("error: found EGID " + EGID + " twice");
+				}
+				map.put(EGID, symbol);
+			}
 			line = reader.readLine();
 		}
 		reader.close();

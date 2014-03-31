@@ -38,13 +38,18 @@ public class AnalyseDiffExpression
 		System.out.println("");
 		
 		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
-		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/TAIR10_NCBI_GENEID_mapping.tab");
 		System.out.println(" Fetching array ID mapping data: " + arrayMappingURL);
-		System.out.println(" Fetching Locus ID mapping data: " + locusMappingURL);
 		Map<String, Set<String>> arrayidmapping = new MapID().getAllArrayMappings(new File(arrayMappingURL.toURI())); 
-		Map<String, String> locusidmapping = new MapID().getLocusGIDMappings(new File(locusMappingURL.toURI()));
-		System.out.println("");
 		
+		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/TAIR10_NCBI_GENEID_mapping.tab");
+		System.out.println(" Fetching Locus ID mapping data: " + locusMappingURL);
+		Map<String, String> locusidmapping = new MapID().getLocusGIDMappings(new File(locusMappingURL.toURI()));
+		
+		URL symbolMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/EVEX_synonyms_3702.tab");
+		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
+		Map<String, String> symbolmapping = new MapID().getSymbolMappings(new File(symbolMappingURL.toURI()));
+		
+		System.out.println("");
 		System.out.println(" Analysing data: ");
 		
 		String[] samples = exeR.getStringArray("samples");
@@ -66,7 +71,13 @@ public class AnalyseDiffExpression
 			for (String locusID : locusIDs)
 			{
 				String egid = locusidmapping.get(locusID);
-				System.out.println("  " + (i+1) + ". " + arrayID + " or " + locusID + " or GeneID: " + egid);
+				String symbol = symbolmapping.get(egid);
+				System.out.print("  " + (i+1) + ". " + arrayID + " - " + locusID + " - GID:" + egid);
+				if (symbol != null && ! symbol.equals(locusID))
+				{
+					System.out.print(" - " + symbol);
+				}
+				System.out.println("");
 			}
 		}
 		System.out.println("");

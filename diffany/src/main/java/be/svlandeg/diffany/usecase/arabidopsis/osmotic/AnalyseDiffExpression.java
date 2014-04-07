@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
@@ -50,14 +51,25 @@ public class AnalyseDiffExpression
 		GenePrinter gp = new GenePrinter();
 		System.out.println("");
 		
+		exeR.doesVariableExist("conditions");
+		exeR.doesVariableExist("times");
+		exeR.doesVariableExist("design");
+		exeR.doesVariableExist("expressionSet");
+		exeR.doesVariableExist("fit");
+		exeR.doesVariableExist("efit");
+		exeR.doesVariableExist("toptable");
+		exeR.doesVariableExist("topIDs");
+		
 		String[] topIDs = exeR.getStringArray("topIDs");
 		System.out.println(" Top most DE genes: ");
 		for (int i = 0; i < topIDs.length; i++)
 		{
 			String arrayID = topIDs[i];
-			System.out.print("  " + (i + 1) + ".\t");
-			gp.printGene(arrayID);
-			System.out.println("");
+			List<String> results = gp.printGene(arrayID);;
+			for (String result : results)
+			{
+				System.out.println("  " + (i + 1) + ".\t" + result);
+			}
 		}
 		System.out.println("");
 	}

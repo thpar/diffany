@@ -5,7 +5,7 @@
 library(affy);
 library(Biobase);
 
-pheno <- read.AnnotatedDataFrame("RNAtargets.txt");
+pheno <- read.AnnotatedDataFrame("RNAtargets_Sofie.txt");
 rawProbeData <- ReadAffy(phenoData=pheno);
 #probeValues <- exprs(rawProbeData);
 #probeNames <- probeNames(rawProbeData);

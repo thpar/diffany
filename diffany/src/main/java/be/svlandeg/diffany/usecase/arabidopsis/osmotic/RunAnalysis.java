@@ -33,7 +33,8 @@ public class RunAnalysis
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
 		// TODO: compare all at once?
-		File osmoticStressDir = io.getOsmoticStress12Dir();
+		//File osmoticStressDir = io.getOsmoticStress12Dir();
+		File osmoticStressDir = io.getRootOsmoticStressDir();
 		
 		RBridge bridge = new RBridge();
 		try

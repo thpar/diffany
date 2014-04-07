@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,22 +18,22 @@ import java.util.Set;
  */
 public class GenePrinter
 {
-	
+
 	private Map<String, Set<String>> arrayidmapping;
 	private Map<String, String> locusidmapping;
 	private Map<String, Set<String>> synonymmapping;
-	
+
 	/**
 	 * Create a new GenePrinter, reading the mapping data.
 	 * 
 	 * @throws IOException when a file can't be read properly
 	 * @throws URISyntaxException when a file location can't be parsed properly
 	 */
-	public GenePrinter() throws IOException, URISyntaxException 
+	public GenePrinter() throws IOException, URISyntaxException
 	{
 		ini();
 	}
-	
+
 	/**
 	 * Initialize the mapping files from the internal directory structure.
 	 * 
@@ -43,7 +45,7 @@ public class GenePrinter
 		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
 		System.out.println(" Fetching array ID mapping data: " + arrayMappingURL);
 		arrayidmapping = new MapID().getAllArrayMappings(new File(arrayMappingURL.toURI()));
-		
+
 		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/TAIR10_NCBI_GENEID_mapping.tab");
 		System.out.println(" Fetching Locus ID mapping data: " + locusMappingURL);
 		locusidmapping = new MapID().getLocusGIDMappings(new File(locusMappingURL.toURI()));
@@ -52,31 +54,36 @@ public class GenePrinter
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));
 	}
-	
+
 	/**
 	 * Print an A.th. gene by its array ID
 	 * @param arrayID the ID from the A.th microarray dataset
 	 */
-	public void printGene(String arrayID) 
+	public List<String> printGene(String arrayID)
 	{
+		List<String> results = new ArrayList<String>();
+		
 		Set<String> locusIDs = arrayidmapping.get(arrayID);
 		for (String locusID : locusIDs)
 		{
 			String egid = locusidmapping.get(locusID);
-			System.out.print(arrayID + " - " + locusID + " - GID:" + egid);
-
-			System.out.print("\t");
-			Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));
+			String result = arrayID + " - " + locusID + " - GID:" + egid;
+			if (egid != null)
 			{
-				synonyms.remove(arrayID);
-				synonyms.remove(locusID);
-				synonyms.remove(egid);
+				Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));
+				{
+					synonyms.remove(arrayID);
+					synonyms.remove(locusID);
+					synonyms.remove(egid);
+				}
+				for (String synonym : synonyms)
+				{
+					result += " [" + synonym + "]";
+				}
 			}
-			for (String synonym : synonyms)
-			{
-				System.out.print(" [" + synonym + "]");
-			}
+			results.add(result);
 		}
+		return results;
 	}
 
 }

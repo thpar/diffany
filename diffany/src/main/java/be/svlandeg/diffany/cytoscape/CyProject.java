@@ -12,11 +12,14 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
@@ -441,8 +444,10 @@ public class CyProject{
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProct}
 	 */
 	public void update(Services services) {
-		RunConfiguration runConfig = project.getRunConfiguration(latestRunConfigID);
-		this.addDifferentialNetworks(runConfig.getDifferentialNetworks(), services);
+		// TODO (after Sofie's refactoring) check type of current ronConfigurationID
+		RunDiffConfiguration runConfig = (RunDiffConfiguration) project.getRunConfiguration(latestRunConfigID);
+		Collection<DifferentialOutput> differentialOutputs = runConfig.getDifferentialOutputs();
+		this.addDifferentialNetworks(differentialOutputs, services);
 	}
 	
 	
@@ -450,21 +455,22 @@ public class CyProject{
 	 * Convert and add the resulting networks after running the algorithm. 
 	 * Add these networks to the set of results of this {@link CyProject}
 	 * 
-	 * @param differentialNetworks
+	 * @param differentialOutputs
 	 * @param services 
 	 */
-	private void addDifferentialNetworks(Collection<DifferentialNetwork> differentialNetworks, Services services) {
-		for (DifferentialNetwork network : differentialNetworks){
+	private void addDifferentialNetworks(Collection<DifferentialOutput> differentialOutputs, Services services) {
+		for (DifferentialOutput o: differentialOutputs){
+		OutputNetworkPair pair = o.getOutputAsPair();
+		DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
+		OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
+		//add the diffnet
+		CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);
 			
-			//add the diffnet
-			CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(network, this.collection, services);
+		//add the overlap
+		CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);
 			
-			//add the overlap
-			OverlappingNetwork overlap = network.getOverlappingNetwork();
-			CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlap, this.collection, services);
-			
-			this.addResultPair(cyDiffNet, cyOverlapNet);
-		}	
+		this.addResultPair(cyDiffNet, cyOverlapNet);
+		}
 	}
 	
 	/**

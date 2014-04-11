@@ -10,7 +10,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public class ConditionNetwork extends Network
+public class ConditionNetwork extends InputNetwork
 {
 
 	protected Set<Condition> conditions;

@@ -10,6 +10,7 @@ import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.algorithms.Unification;
 import be.svlandeg.diffany.core.io.ProjectIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
@@ -41,6 +42,9 @@ public class Project
 	
 	// runs by Configuration IDs
 	protected Map<Integer, RunConfiguration> runs;
+	
+	// run types by Configuration IDs
+	protected Map<Integer, Boolean> runTypes;	// boolean: can do differential
 	
 	// loggers by Configuration ID
 	protected Map<Integer, Logger> runLogs;
@@ -79,6 +83,7 @@ public class Project
 		setNodeMapper(nodeMapper);
 		
 		runs = new HashMap<Integer, RunConfiguration>();
+		runTypes = new HashMap<Integer, Boolean>();
 		runLogs = new HashMap<Integer, Logger>();
 	}
 	
@@ -117,6 +122,7 @@ public class Project
 	
 	/**
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
+	 * This configuration will allow the calculation of both differential and overlapping networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
 	 * @param reference the reference network (not null!)
@@ -138,7 +144,7 @@ public class Project
 			cleanConditions.add(cleanCon);
 		}
 		
-		RunConfiguration rc = new RunConfiguration(cleanRef, cleanConditions);
+		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions);
 		int nextID;
 		if (runs.keySet().isEmpty())
 		{
@@ -149,6 +155,44 @@ public class Project
 			nextID = Collections.max(runs.keySet()) + 1;
 		}
 		runs.put(nextID, rc);
+		runTypes.put(nextID, true);
+		runLogs.put(nextID, logger);
+		return nextID;
+	}
+	
+	/**
+	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
+	 * This configuration will NOT be able to calculate differential networks; only overlapping networks.
+	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param inputNetworks all the input networks (at least 1!)
+	 * 
+	 * @return the unique ID assigned to the RunConfiguration in this project
+	 */
+	public int addRunConfiguration(Set<InputNetwork> networks)
+	{
+		Logger logger = new Logger();
+		
+		Set<InputNetwork> cleanNetworks = new HashSet<InputNetwork>();
+		for (InputNetwork inputNet : networks)
+		{
+			registerSourceNetwork(inputNet, logger);
+			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, nodeMapper, edgeOntology);
+			cleanNetworks.add(cleanNet);
+		}
+		
+		RunConfiguration rc = new RunConfiguration(cleanNetworks);
+		int nextID;
+		if (runs.keySet().isEmpty())
+		{
+			nextID = 1;
+		}
+		else
+		{
+			nextID = Collections.max(runs.keySet()) + 1;
+		}
+		runs.put(nextID, rc);
+		runTypes.put(nextID, false);
 		runLogs.put(nextID, logger);
 		return nextID;
 	}
@@ -160,6 +204,15 @@ public class Project
 	public Logger getLogger(int configurationID)
 	{
 		return runLogs.get(configurationID);
+	}
+	
+	/**
+	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only overlappingà.
+	 * @return the type of a specific run configuration.
+	 */
+	public boolean isDiffType(int configurationID)
+	{
+		return runTypes.get(configurationID);
 	}
 	
 	

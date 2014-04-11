@@ -8,6 +8,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
@@ -131,7 +132,7 @@ public class NetworkCleaning
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getConditions(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullInputCleaning(resultNet, nm, eo);
+		fullCleaning(resultNet, nm, eo);
 
 		return resultNet;
 	}
@@ -151,7 +152,27 @@ public class NetworkCleaning
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullInputCleaning(resultNet, nm, eo);
+		fullCleaning(resultNet, nm, eo);
+
+		return resultNet;
+	}
+	
+	/**
+	 * Clean a generic input network:
+	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
+	 * 
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper
+	 * @param eo the edge ontology
+	 * 
+	 * @return a cleaned reference network representing the same semantic information
+	 */
+	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo)
+	{
+		InputNetwork resultNet = new InputNetwork(net.getName(), nm);
+		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
+		fullCleaning(resultNet, nm, eo);
 
 		return resultNet;
 	}
@@ -161,13 +182,13 @@ public class NetworkCleaning
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
 	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
+	 * Be aware: this function changes the input network object!
+	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
 	 * @param eo the edge ontology
-	 * 
-	 * @return a cleaned network representing the same semantic information
 	 */
-	protected void fullInputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();

@@ -6,7 +6,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
- * A differential network only contains differential edges between 2 (or more) networks,
+ * A differential network contains differential edges between 2 (or more) networks,
  * one of which is always a 'static' reference network.
  * 
  * @author Sofie Van Landeghem
@@ -16,7 +16,6 @@ public class DifferentialNetwork extends Network
 	
 	protected ReferenceNetwork reference;
 	protected Set<ConditionNetwork> conditionNetworks;
-	protected OverlappingNetwork overlap;
 	
 	
 	/**
@@ -77,24 +76,6 @@ public class DifferentialNetwork extends Network
 		}
 		conditionNetworks = new HashSet<ConditionNetwork>();
 		conditionNetworks.add(conditionNetwork);
-	}
-	
-	/**
-	 * Set the overlappping ('house-keeping') network that is associated to this differential network
-	 * @param overlap the complementary overlappping network
-	 */
-	public void setOverlappingNetwork(OverlappingNetwork overlap)
-	{
-		this.overlap = overlap;
-	}
-	
-	/**
-	 * Get the overlapping ('house-keeping') network associated to this differential network
-	 * @return the overlapping network that complements this differential network (may be null)
-	 */
-	public OverlappingNetwork getOverlappingNetwork()
-	{
-		return overlap;
 	}
 	
 	/**

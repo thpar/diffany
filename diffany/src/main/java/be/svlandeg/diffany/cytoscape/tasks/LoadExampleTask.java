@@ -18,6 +18,7 @@ import org.cytoscape.work.TaskMonitor;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 
@@ -50,8 +51,9 @@ public class LoadExampleTask implements Task{
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		
-		ReferenceNetwork refNet = exampleProject.getRunConfiguration(runConfigurationID).getReferenceNetwork();
-		Collection<ConditionNetwork> condNets = exampleProject.getRunConfiguration(runConfigurationID).getConditionNetworks();
+		// TODO (after Sofie's refactoring) check type of current ronConfigurationID
+		ReferenceNetwork refNet = ((RunDiffConfiguration) exampleProject.getRunConfiguration(runConfigurationID)).getReferenceNetwork();
+		Collection<ConditionNetwork> condNets = ((RunDiffConfiguration) exampleProject.getRunConfiguration(runConfigurationID)).getConditionNetworks();
 		
 		CyNetworkManager networkManager = services.getCyNetworkManager();
 		CyRootNetworkManager rootNetworkManager = services.getCyRootNetworkManager();

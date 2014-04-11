@@ -4,11 +4,12 @@ import java.util.Collection;
 
 import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
-import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Network;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 
 /**
  * Generic class for printing an example to the console.
@@ -36,7 +37,7 @@ public abstract class GenericExample
 	 */
 	protected void printAllNetworks(Project p, int configurationID)
 	{
-		RunConfiguration rc = p.getRunConfiguration(configurationID);
+		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(configurationID);
 		
 		System.out.println("Reference network : ");
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -49,11 +50,14 @@ public abstract class GenericExample
 			printNetwork(c);
 		}
 		System.out.println("Differential network(s) : ");
-		Collection<DifferentialNetwork> dnetworks = rc.getDifferentialNetworks();
-		for (DifferentialNetwork d : dnetworks)
+		Collection<DifferentialOutput> dnetworks = rc.getDifferentialOutputs();
+		
+		for (DifferentialOutput d : dnetworks)
 		{
-			printNetwork(d);
-			printNetwork(d.getOverlappingNetwork());
+			OutputNetworkPair pair = d.getOutputAsPair();
+			
+			printNetwork(pair.getDifferentialNetwork());
+			printNetwork(pair.getOverlappingNetwork());
 		}
 	}
 

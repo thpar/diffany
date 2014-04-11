@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +14,12 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
@@ -56,9 +57,9 @@ public class TestIO
 		Project p = ex.getProjectFigure1C();
 		int ID = ex.getTestConfiguration1C(p);
 		double cutoff = 0.0;
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 		
-		RunConfiguration rc = p.getRunConfiguration(ID);
+		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(ID);
 		
 		// The reference network
 		ReferenceNetwork rWriteNetwork = rc.getReferenceNetwork();
@@ -67,11 +68,12 @@ public class TestIO
 		ConditionNetwork cWriteNetwork = rc.getConditionNetworks().iterator().next();
 		
 		// There is exactly one differential network created
-		Collection<DifferentialNetwork> dNetworks = rc.getDifferentialNetworks();
-		DifferentialNetwork dWriteNetwork = dNetworks.iterator().next();
+		DifferentialOutput output = rc.getDifferentialOutputs().iterator().next();
+		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				
 		// The overlapping network (there should be only 1)
-		OverlappingNetwork oWriteNetwork = dWriteNetwork.getOverlappingNetwork();
+		OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
 		
 		NodeMapper nm = new DefaultNodeMapper();
 			
@@ -80,8 +82,8 @@ public class TestIO
 		{
 			NetworkIO.writeReferenceNetworkToDir(rWriteNetwork, nm, rDir);
 			NetworkIO.writeConditionNetworkToDir(cWriteNetwork, nm, cDir);
-			NetworkIO.writeDifferentialNetworkToDir(dWriteNetwork, nm, dDir);
-			NetworkIO.writeOverlappingNetworkToDir(oWriteNetwork, nm, oDir);
+			NetworkIO.writeDifferentialNetworkToDir(dNetwork, nm, dDir);
+			NetworkIO.writeOverlappingNetworkToDir(oNetwork, nm, oDir);
 		}
 		catch(IOException io)
 		{

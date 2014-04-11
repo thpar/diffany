@@ -7,8 +7,10 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -45,12 +47,14 @@ public class ExampleCode
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff);
+		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff, true, true);
 
 		// In this case, there will be exactly one DifferentialNetwork
 		RunConfiguration rc = p.getRunConfiguration(rcID);
-		DifferentialNetwork diffNet = rc.getDifferentialNetworks().iterator().next();
-		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
+		DifferentialOutput output = rc.getDifferentialOutputs().iterator().next();
+		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
+		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = new File(diffLocation);

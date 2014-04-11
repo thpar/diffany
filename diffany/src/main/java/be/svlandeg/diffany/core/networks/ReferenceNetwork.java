@@ -10,7 +10,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * @author Sofie Van Landeghem
  *
  */
-public class ReferenceNetwork extends Network
+public class ReferenceNetwork extends InputNetwork
 {
 	
 	/**

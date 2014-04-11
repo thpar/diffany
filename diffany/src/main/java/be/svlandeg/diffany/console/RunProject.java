@@ -9,8 +9,10 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
@@ -70,11 +72,13 @@ public class RunProject
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
 		// TODO v2.0: allow to change mode
-		diffAlgo.calculateOneDifferentialNetwork(p, rcID, name, cutoff);
+		diffAlgo.calculateOneDifferentialNetwork(p, rcID, name, cutoff, true, true);
 		
 		// TODO v2.0: check number of differential networks generated
-		DifferentialNetwork diffNet = p.getRunConfiguration(rcID).getDifferentialNetworks().iterator().next();
-		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
+		DifferentialOutput output = p.getRunConfiguration(rcID).getDifferentialOutputs().iterator().next();
+		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
+		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);

@@ -12,6 +12,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.EdgeGenerator;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
@@ -251,9 +252,9 @@ public class EdgeByEdge
 	 * 
 	 * TODO v2.0: calculate overlap directly on set of networks 
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<InputNetwork> networks, TreeEdgeOntology eo, NodeMapper nm, String overlapping_name, double cutoff, boolean minOperator)
 	{
-		List<Network> listedNetworks = new ArrayList<Network>();
+		List<InputNetwork> listedNetworks = new ArrayList<InputNetwork>();
 		listedNetworks.addAll(networks);
 
 		int numberOfNetworks = listedNetworks.size();

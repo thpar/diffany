@@ -124,7 +124,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		int ID = ex.getTestConfiguration1C(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID);

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.expression.ExpressionData;
-import be.svlandeg.diffany.core.networks.GenericNetwork;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 
 
 /**
@@ -39,7 +39,7 @@ public class RunAnalysis
 		
 		try
 		{
-			GenericNetwork tfNetwork = input.processTFData(tfTargetFile, "TF-network");
+			InputNetwork tfNetwork = input.processTFData(tfTargetFile, "TF-network");
 			Set<ExpressionData> datasets = input.processExpressionData(expDir);
 			ana.integrateTFandExpr(tfNetwork, datasets);
 		}

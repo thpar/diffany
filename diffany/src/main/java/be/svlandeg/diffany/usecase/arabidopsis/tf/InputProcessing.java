@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.core.expression.ExpressionData;
 import be.svlandeg.diffany.core.networks.Edge;
-import be.svlandeg.diffany.core.networks.GenericNetwork;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
@@ -34,7 +34,7 @@ public class InputProcessing
 	 * @param networkName the name the network should have
 	 * @throws IOException
 	 */
-	public GenericNetwork processTFData(File TFtargetFile, String networkName) throws IOException
+	public InputNetwork processTFData(File TFtargetFile, String networkName) throws IOException
 	{
 		String path = TFtargetFile.getAbsolutePath();
 		System.out.println(" Reading " + path );
@@ -72,7 +72,7 @@ public class InputProcessing
 		}
 		reader.close();
 		
-		GenericNetwork tfNetwork = new GenericNetwork(networkName, new HashSet<Node>(nodes.values()), edges, nm);
+		InputNetwork tfNetwork = new InputNetwork(networkName, new HashSet<Node>(nodes.values()), edges, nm);
 		return tfNetwork;
 	}
 

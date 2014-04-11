@@ -215,13 +215,12 @@ public abstract class Network
 
 	/**
 	 * Add an edge to this network, automatically also adding its source and target nodes if needed.
-	 * If the edge was already present, nothing happens 
+	 * If the edge was already present, nothing happens. An additional cleaning step (with {@link NetworkCleaning}) should be performed to remove redundant edges. 
 	 * 
 	 * @param edge a new adge in this network
 	 */
 	public void addEdge(Edge edge)
 	{
-		// TODO v2.0: edge comparison? Or leave it to the cleaning step?
 		edges.add(edge);
 		
 		addNode(edge.getSource());
@@ -229,7 +228,7 @@ public abstract class Network
 	}
 	
 	/**
-	 * Remove an edge from this network, leaving its source and target nodes otherwise untouched.
+	 * Remove an edge from this network, leaving its source and target nodes otherwise untouched (and perhaps unconnected).
 	 * @param edge the edge that should be removed from the network
 	 */
 	public void removeEdge(Edge edge)
@@ -238,7 +237,7 @@ public abstract class Network
 	}
 
 	/**
-	 * Add a new (unconnected) node to this network. If it was already present, nothing happens.
+	 * Add a new (unconnected) node to this network. If it was already present, nothing happens. The comparison is done with the internal NodeMapper object.
 	 * The comparison is made through the NodeMapper object of this Network.
 	 * 
 	 * @param node a new node in this network

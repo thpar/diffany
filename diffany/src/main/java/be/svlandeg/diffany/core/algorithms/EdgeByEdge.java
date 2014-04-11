@@ -11,6 +11,7 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
+import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
@@ -70,6 +71,7 @@ public class EdgeByEdge
 
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 		EdgeComparison ec = new EdgeComparison(eo);
+		EdgeGenerator eg = new EdgeGenerator();
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -169,7 +171,7 @@ public class EdgeByEdge
 					if (rootRefs.isEmpty())
 					{
 						aRef = false;
-						rootRefs.add(EdgeDefinition.getVoidEdge(symm));
+						rootRefs.add(eg.getVoidEdge(symm));
 					}
 					if (rootRefs.size() > 1)
 					{
@@ -190,7 +192,7 @@ public class EdgeByEdge
 						}
 						if (thisRootCons.isEmpty())
 						{
-							thisRootCons.add(EdgeDefinition.getVoidEdge(symm));
+							thisRootCons.add(eg.getVoidEdge(symm));
 						}
 						else if (thisRootCons.size() > 1)
 						{
@@ -306,6 +308,7 @@ public class EdgeByEdge
 		
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 		EdgeComparison ec = new EdgeComparison(eo);
+		EdgeGenerator eg = new EdgeGenerator();
 
 		for (Node source1 : allNodes) // source node in reference network
 		{
@@ -361,7 +364,7 @@ public class EdgeByEdge
 					}
 					if (rootN1s.isEmpty())
 					{
-						rootN1s.add(EdgeDefinition.getVoidEdge(symm));
+						rootN1s.add(eg.getVoidEdge(symm));
 					}
 					if (rootN1s.size() > 1)
 					{
@@ -379,7 +382,7 @@ public class EdgeByEdge
 					}
 					if (rootN2s.isEmpty())
 					{
-						rootN2s.add(EdgeDefinition.getVoidEdge(symm));
+						rootN2s.add(eg.getVoidEdge(symm));
 					}
 					if (rootN2s.size() > 1)
 					{

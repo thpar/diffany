@@ -34,8 +34,8 @@ public abstract class EdgeOntology
 	 */
 	public EdgeOntology()
 	{
-		VOID_SYMMETRICAL_CAT = EdgeDefinition.getVoidEdge(true).getType();
-		VOID_DIRECTED_CAT = EdgeDefinition.getVoidEdge(false).getType();
+		VOID_SYMMETRICAL_CAT = new EdgeGenerator().getVoidEdge(true).getType();
+		VOID_DIRECTED_CAT = new EdgeGenerator().getVoidEdge(false).getType();
 		
 		removeAllCategoriesAndMappings();
 		posSourceCats = new HashSet<String>();

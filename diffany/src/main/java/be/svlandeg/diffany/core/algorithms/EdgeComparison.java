@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
+import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -16,6 +17,7 @@ public class EdgeComparison
 {
 	
 	protected TreeEdgeOntology teo;
+	protected EdgeGenerator eg;
 	
 	
 	/**
@@ -25,6 +27,7 @@ public class EdgeComparison
 	public EdgeComparison(TreeEdgeOntology teo)
 	{
 		this.teo = teo;
+		eg = new EdgeGenerator();
 	}
 	
 	/**
@@ -40,7 +43,8 @@ public class EdgeComparison
 	 */
 	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, Collection<EdgeDefinition> conEdges, double cutoff) throws IllegalArgumentException
 	{
-		EdgeDefinition diff_edge = new EdgeDefinition();
+		EdgeDefinition diff_edge = eg.getDefaultEdge();
+		
 		Set<EdgeDefinition> conEdges2 = new HashSet<EdgeDefinition>();
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
 		
@@ -62,7 +66,7 @@ public class EdgeComparison
 			// negated edges are set to void
 			if (e.isNegated())
 			{
-				conEdges2.add(EdgeDefinition.getVoidEdge(conSymm));
+				conEdges2.add(eg.getVoidEdge(conSymm));
 			}
 			else
 			{
@@ -72,13 +76,13 @@ public class EdgeComparison
 
 		if (conEdges.isEmpty())
 		{
-			conEdges2.add(EdgeDefinition.getVoidEdge(conSymm));
+			conEdges2.add(eg.getVoidEdge(conSymm));
 		}
 
 		boolean refNeg = refEdge.isNegated();
 		if (refNeg)
 		{
-			refEdge = EdgeDefinition.getVoidEdge(conSymm);
+			refEdge = eg.getVoidEdge(conSymm);
 		}
 
 		diff_edge.makeNegated(false); // a differential edge is never negated 
@@ -104,7 +108,7 @@ public class EdgeComparison
 		String firstParent = teo.retrieveFirstCommonParent(allEdges, true);
 		if (firstParent == null)
 		{
-			return EdgeDefinition.getVoidEdge(conSymm);
+			return eg.getVoidEdge(conSymm);
 		}
 		String firstNeutralParent = firstParent;
 		while (firstNeutralParent != null && (posSourceCats.contains(firstNeutralParent) || negSourceCats.contains(firstNeutralParent)))
@@ -114,7 +118,7 @@ public class EdgeComparison
 
 		if (firstNeutralParent == null)
 		{
-			return EdgeDefinition.getVoidEdge(conSymm);
+			return eg.getVoidEdge(conSymm);
 		}
 
 		String baseType = firstNeutralParent;
@@ -196,7 +200,7 @@ public class EdgeComparison
 		// some are up, some are down -> no general differential edge
 		if (countUp > 0 && countDown > 0)
 		{
-			return EdgeDefinition.getVoidEdge(conSymm);
+			return eg.getVoidEdge(conSymm);
 		}
 
 		// all edges are either all up, or all down
@@ -233,7 +237,7 @@ public class EdgeComparison
 
 		if (diffWeight <= cutoff)
 		{
-			return EdgeDefinition.getVoidEdge(conSymm);
+			return eg.getVoidEdge(conSymm);
 		}
 		diff_edge.setWeight(diffWeight);
 		return diff_edge;
@@ -257,7 +261,7 @@ public class EdgeComparison
 			String errormsg = "The set of edges should not be null or empty!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		EdgeDefinition overlap_edge = new EdgeDefinition();
+		EdgeDefinition overlap_edge = eg.getDefaultEdge();
 		int countEdges = edges.size();
 
 		// 1. DETERMINE NEGATION AND SYMMETRY //
@@ -296,7 +300,7 @@ public class EdgeComparison
 		// some are negated, some are not -> no overlap
 		if (countNegated != 0 && countNegated != countEdges)
 		{
-			return EdgeDefinition.getVoidEdge(symm);
+			return eg.getVoidEdge(symm);
 		}
 		boolean overlapNegated = countNegated == countEdges;
 		overlap_edge.makeNegated(overlapNegated);
@@ -312,7 +316,7 @@ public class EdgeComparison
 		}
 		if (overlapWeight <= cutoff)
 		{
-			return EdgeDefinition.getVoidEdge(symm);
+			return eg.getVoidEdge(symm);
 		}
 		overlap_edge.setWeight(overlapWeight);
 
@@ -322,7 +326,7 @@ public class EdgeComparison
 		if (firstCommonParent == null)
 		{
 			// no category covers all of the edges
-			return EdgeDefinition.getVoidEdge(symm);
+			return eg.getVoidEdge(symm);
 		}
 
 		if (!overlapNegated && firstCommonParent != null) //  the shared edge is the (first) common super class 
@@ -335,7 +339,7 @@ public class EdgeComparison
 		if (firstCommonParent == null)
 		{
 			// no category covers all of the edges
-			return EdgeDefinition.getVoidEdge(symm);
+			return eg.getVoidEdge(symm);
 		}
 
 		// the shared edge is the negation of the (first) common subclass, if there is one such

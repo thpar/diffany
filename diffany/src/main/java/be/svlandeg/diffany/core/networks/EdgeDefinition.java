@@ -13,8 +13,6 @@ import be.svlandeg.diffany.core.io.EdgeIO;
  */
 public class EdgeDefinition
 {
-	protected static String VOID_DIRECT_TYPE = "*nodirectedtype*";
-	protected static String VOID_SYMM_TYPE = "*nosymmetricaltype*";
 	
 	protected static String DEFAULT_TYPE = "unspecified_connection";
 	protected static double DEFAULT_WEIGHT = 1.0;
@@ -30,6 +28,7 @@ public class EdgeDefinition
 	
 	/**
 	 * Create a new edge definition with a certain type, direction, weight and directionality
+	 * 
 	 * @param type the interaction type of this edge
 	 * @param symmetrical defines whether the edge is symmetrical or directed
 	 * @param weight the weight or confidence of this edge (should be positive)
@@ -44,16 +43,6 @@ public class EdgeDefinition
 		makeNegated(negated);
 	}
 	
-	
-	/**
-	 * Create a new edge definition. It will be initalized to default values 
-	 * ("unspecified_connection", weight 1, symmetrical, not negated).
-	 */
-	public EdgeDefinition()
-	{
-		this(DEFAULT_TYPE , DEFAULT_SYMM, DEFAULT_WEIGHT, DEFAULT_NEG);
-	}
-	
 	/**
 	 * Cloning constructor
 	 * @param old the EdgeDefinition to be cloned
@@ -63,31 +52,6 @@ public class EdgeDefinition
 		this(new String(old.type) , new Boolean(old.symmetrical), old.weight, new Boolean(old.negated));
 	}
 
-
-	/**
-	 * Obtain a void edge, for the purpose of being able to compare it to existing edges.
-	 * 
-	 * @param symmetrical whether or not the edge should be symmetrical
-	 * @return a void edge (weight == 0)
-	 */
-	public static EdgeDefinition getVoidEdge(boolean symmetrical)
-	{
-		if (symmetrical)
-		{
-			return new EdgeDefinition(VOID_SYMM_TYPE , true, 0, DEFAULT_NEG);
-		}
-		return new EdgeDefinition(VOID_DIRECT_TYPE , false, 0, DEFAULT_NEG);
-	}
-	
-	
-	/**
-	 * Obtain a default edge, equal to the one assigned when calling an empty constructor.
-	 * @return a void edge (weight == 1, symmetrical == true)
-	 */
-	public static EdgeDefinition getDefaultEdge()
-	{
-		return new EdgeDefinition(DEFAULT_TYPE , DEFAULT_SYMM, DEFAULT_WEIGHT, DEFAULT_NEG);
-	}
 	
 	/**
 	 * Set the type of the edge
@@ -162,12 +126,10 @@ public class EdgeDefinition
 	 */
 	public void setWeight(double weight) throws IllegalArgumentException
 	{
-		// TODO v2.1 properly log this event!
 		if (checkWeight(weight))
 		{
 			this.weight = weight;
 		}
-		weight = DEFAULT_WEIGHT;
 	}
 	
 	/**
@@ -177,6 +139,7 @@ public class EdgeDefinition
 	 */
 	private boolean checkWeight(double weight) throws IllegalArgumentException
 	{
+		// TODO v2.1 log this event and continue instead of throwing an exception?
 		if (weight < 0.0)
 		{
 			String errormsg = "The edge weight should be positive!";
@@ -184,7 +147,6 @@ public class EdgeDefinition
 		}
 		return true;
 	}
-	
 	
 	
 	@Override

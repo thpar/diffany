@@ -88,6 +88,15 @@ public class Project
 	}
 	
 	/**
+	 * Retrieve all run configuration IDs stored in this project
+	 * @return all 
+	 */
+	public Set<Integer> getAllRunConfigurations()
+	{
+		return runs.keySet();
+	}
+	
+	/**
 	 * Get a specific RunConfiguration by its unique ID
 	 * 
 	 * @param configurationID the (unique) ID of the configuration
@@ -103,6 +112,7 @@ public class Project
 		}
 		return runs.get(configurationID);
 	}
+	
 	
 	/**
 	 * Add a new RunConfiguration to this project. 

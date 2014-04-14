@@ -111,8 +111,6 @@ public class TestIO
 			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks);
 			assertEquals(2, oReadNetwork.getEdges().size());
 			assertEquals(3, oReadNetwork.getNodes().size());
-			
-			
 		}
 		catch(IOException io)
 		{
@@ -120,6 +118,4 @@ public class TestIO
 		}
 		
 	}
-	
-	
 }

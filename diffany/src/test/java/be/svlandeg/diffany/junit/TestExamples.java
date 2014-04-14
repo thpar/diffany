@@ -204,7 +204,7 @@ public class TestExamples
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		int ID = ex.getTestDiffConfiguration(p);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created

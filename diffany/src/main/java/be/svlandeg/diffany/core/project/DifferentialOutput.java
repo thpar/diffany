@@ -70,8 +70,9 @@ public class DifferentialOutput
 	}
 	
 	/**
-	 * Retrieve the differential network
-	 * @return the differential network
+	 * Retrieve the differential and overlap networks as a result pair
+	 * @return the result pair, containing both the differential and overlap networks
+	 * @throws IllegalArgumentException when either of the two was null
 	 */
 	public OutputNetworkPair getOutputAsPair()
 	{
@@ -86,6 +87,36 @@ public class DifferentialOutput
 			throw new IllegalArgumentException(errormsg);
 		}
 		return new OutputNetworkPair(dn, on);
+	}
+	
+	/**
+	 * Retrieve the differential network
+	 * @return the differential network
+	 * @throws IllegalArgumentException when the differential network was null (i.e. not calculated)
+	 */
+	public DifferentialNetwork getDifferentialNetwork()
+	{
+		if (dn == null)
+		{
+			String errormsg = "Can not provided the differential network: it was not calculated!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		return dn;
+	}
+	
+	/**
+	 * Retrieve the overlapping network
+	 * @return the overlapping network
+	 * @throws IllegalArgumentException when the overlapping network was null (i.e. not calculated)
+	 */
+	public OverlappingNetwork getOverlappingNetwork()
+	{
+		if (on == null)
+		{
+			String errormsg = "Can not provided the overlapping network: it was not calculated!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		return on;
 	}
 	
 }

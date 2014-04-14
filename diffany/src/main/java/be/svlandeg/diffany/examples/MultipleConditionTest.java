@@ -9,6 +9,7 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
@@ -52,11 +53,24 @@ public class MultipleConditionTest extends GenericExample
 	 * Add some custom-defined networks to the project.
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfiguration(Project p)
+	public int getTestDiffConfiguration(Project p)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
 		int ID = p.addRunConfiguration(r, c);
+		return ID;
+	}
+	
+	/**
+	 * Add some custom-defined networks to the project.
+	 * @return the resulting configuration ID.
+	 */
+	public int getTestOverlapConfiguration(Project p)
+	{
+		Set<InputNetwork> i = new HashSet<InputNetwork>();
+		i.addAll(getTestConditions());
+		i.add(getTestReference());
+		int ID = p.addRunConfiguration(i);
 		return ID;
 	}
 
@@ -203,7 +217,7 @@ public class MultipleConditionTest extends GenericExample
 		
 		System.out.println("Defining network for weight test");
 		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		int ID = ex.getTestDiffConfiguration(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);

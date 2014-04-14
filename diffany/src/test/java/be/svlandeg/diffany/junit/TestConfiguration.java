@@ -1,8 +1,11 @@
 package be.svlandeg.diffany.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -23,101 +26,313 @@ import be.svlandeg.diffany.examples.MultipleConditionTest;
 public class TestConfiguration
 {
 
+	private static double cutoff = 0.0;
+
 	/**
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
 	 * 
 	 * TODO check calc pairwise
 	 */
-	@Test
+	//@Test
 	public void testMultipleConditions()
 	{
 		CalculateDiff calc = new CalculateDiff();
 
 		MultipleConditionTest ex = new MultipleConditionTest();
-		double cutoff = 0.0;
 		Project p = ex.getTestProject();
+
+		int calls = 0;
+
+		// before calculation
+		testIni(p, calc, ex, calls);
+		calls++;
+
+		// 1-all differential configuration : differential+overlap calculation
+		testDifferentialOneMulti(p, calc, ex, calls, true, true);
+		calls++;
+
+		// (the exact same) 1-all differential+overlap calculation
+		testDifferentialOneMulti(p, calc, ex, calls, true, true);
+		calls++;
+
+		// 1-all differential (only) calculation
+		testDifferentialOneMulti(p, calc, ex, calls, true, false);
+		calls++;
+
+		// 1-all overlap (only) calculation - with differential configuration
+		testDifferentialOneMulti(p, calc, ex, calls, false, true);
+		calls++;
+
+		// 1-all calculation which doesn't actually do anything (no diff, no overlap)
+		testDifferentialOneMulti(p, calc, ex, calls, false, false);
+		calls++;
+
+		// 1-all overlap configuration - assess correct failure of differential calculation
+		testOverlapOneMulti(p, calc, ex, calls);
+		calls++;
+
+		// pairwise differential configuration : differential+overlap calculation
+		testDifferentialPairwise(p, calc, ex, calls, true, true);
+		calls++;
+		
+		// pairwise differential (only) calculation
+		testDifferentialPairwise(p, calc, ex, calls, true, false);
+		calls++;
+				
+		// pairwise overlap (only) calculation - with differential configuration
+		testDifferentialPairwise(p, calc, ex, calls, false, true);
+		calls++;
+		
+		// pairwise calculation which doesn't actually do anything (no diff, no overlap)
+		testDifferentialPairwise(p, calc, ex, calls, false, false);
+		calls++;
+	}
+
+	/**
+	 * Test an initial empty project 
+	 */
+	private void testIni(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
+	{
 		assertEquals(0, p.getAllRunConfigurations().size());
+
+		int ID = ex.getTestDiffConfiguration(p);
+		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(0, dOutputs.size());
+	}
+
+	/**
+	 * Test an 1-multi differential configuration
+	 */
+	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
+	{
+		int ID = ex.getTestDiffConfiguration(p);
+		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+
+		// it should not make a difference how many times this method is called!
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
+		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(1, dOutputs.size());
+
+		DifferentialOutput output = dOutputs.iterator().next();
+
+		if (diff && overlap)
+		{
+			OutputNetworkPair pair = output.getOutputAsPair();
+			DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
+			assertEquals(8, dNetwork.getEdges().size());
+
+			OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
+			assertEquals(3, oNetwork.getEdges().size());
+		}
+		else
+		{
+			assertNoPair(output);
+		}
+		if (diff)
+		{
+			DifferentialNetwork dNetwork = output.getDifferentialNetwork();
+			assertEquals(8, dNetwork.getEdges().size());
+		}
+		else
+		{
+			assertNoDiffNetwork(output);
+		}
+		if (overlap)
+		{
+			OverlappingNetwork oNetwork5 = output.getOverlappingNetwork();
+			assertEquals(3, oNetwork5.getEdges().size());
+		}
+		else
+		{
+			assertNoOverlapNetwork(output);
+		}
+	}
+
+	/**
+	 * Test an 1-multi overlap configuration
+	 */
+	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
+	{
+		int ID = ex.getTestOverlapConfiguration(p);
+		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+
+		assertException(p, calc, ID, true, true);
+		assertException(p, calc, ID, true, false);
+
+		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(0, dOutputs.size());
+
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true);
+		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(1, dOutputs.size());
+
+		DifferentialOutput output = dOutputs.iterator().next();
+
+		assertNoPair(output);
+		assertNoDiffNetwork(output);
+
+		OverlappingNetwork oNetwork = output.getOverlappingNetwork();
+		assertEquals(3, oNetwork.getEdges().size());
+	}
+
+	/**
+	 * Test an 1-multi differential configuration
+	 */
+	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
+	{
+		int ID = ex.getTestDiffConfiguration(p);
+		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+
+		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap);
+		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
 		
-		// CONFIG 1: 1-all differential configuration - before calculation
-		int ID1 = ex.getTestDiffConfiguration(p);
-		assertEquals(1, p.getAllRunConfigurations().size());
-		Collection<DifferentialOutput> dOutputs1 = p.getRunConfiguration(ID1).getDifferentialOutputs();
-		assertEquals(0, dOutputs1.size());
-		
-		// CONFIG 1: 1-all differential configuration : differential+overlap calculation
-		calc.calculateOneDifferentialNetwork(p, ID1, cutoff, true, true);
-		dOutputs1 = p.getRunConfiguration(ID1).getDifferentialOutputs();
-		assertEquals(1, dOutputs1.size());
+		if (diff)
+		{
+			// ref vs. 2 conditions
+			assertEquals(2, dOutputs.size());
+		}
+		else if (overlap)
+		{
+			// 3 pairwise comparisons
+			assertEquals(3, dOutputs.size());
+		}
+		else
+		{
+			// no comparisons
+			assertEquals(0, dOutputs.size());
+		}
 
-		DifferentialOutput output1 = dOutputs1.iterator().next();
-		OutputNetworkPair pair1 = output1.getOutputAsPair();
+		for (DifferentialOutput output : dOutputs)
+		{
+			Map<String, Integer> diffcounts = new HashMap<String, Integer>();
+			diffcounts.put("diff_Draughty", 12);
+			diffcounts.put("diff_Salty", 11);
+			
+			Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
+			overlapcounts.put("overlap_Reference_Draughty", 3);
+			overlapcounts.put("overlap_Draughty_Reference", 3);
+			overlapcounts.put("overlap_Reference_Salty", 5);
+			overlapcounts.put("overlap_Salty_Reference", 5);
+			overlapcounts.put("overlap_Draughty_Salty", 5);
+			overlapcounts.put("overlap_Salty_Draughty", 5);
+			
+			
+			if (diff && overlap)
+			{
+				OutputNetworkPair pair = output.getOutputAsPair();
+				DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
+				int countD = diffcounts.get(dNetwork.getName());
+				assertEquals(countD, dNetwork.getEdges().size());
 
-		DifferentialNetwork dNetwork1 = pair1.getDifferentialNetwork();
-		assertEquals(8, dNetwork1.getEdges().size());
+				OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
+				int countO = overlapcounts.get(oNetwork.getName());
+				System.out.println(oNetwork.getName() + " - " + countO);
+				System.out.println("found " + oNetwork.getEdges().size());
+				assertEquals(countO, oNetwork.getEdges().size());
+			}
+			else
+			{
+				assertNoPair(output);
+			}
+			if (diff)
+			{
+				DifferentialNetwork dNetwork = output.getDifferentialNetwork();
+				int countD = diffcounts.get(dNetwork.getName());
+				assertEquals(countD, dNetwork.getEdges().size());
+			}
+			else
+			{
+				assertNoDiffNetwork(output);
+			}
+			if (overlap)
+			{
+				OverlappingNetwork oNetwork = output.getOverlappingNetwork();
+				int countO = overlapcounts.get(oNetwork.getName());
+				assertEquals(countO, oNetwork.getEdges().size());
+			}
+			else
+			{
+				assertNoOverlapNetwork(output);
+			}
+		}
+	}
 
-		OverlappingNetwork oNetwork1 = pair1.getOverlappingNetwork();
-		assertEquals(3, oNetwork1.getEdges().size());
-
-		
-		// CONFIG 2: (the exact same) 1-all differential+overlap calculation
-		int ID2 = ex.getTestDiffConfiguration(p);
-		calc.calculateOneDifferentialNetwork(p, ID2, cutoff, true, true);
-		assertEquals(2, p.getAllRunConfigurations().size());
-
-		Collection<DifferentialOutput> dOutputs2 = p.getRunConfiguration(ID2).getDifferentialOutputs();
-		assertEquals(1, dOutputs2.size());
-
-		DifferentialOutput output2 = dOutputs2.iterator().next();
-		OutputNetworkPair pair2 = output2.getOutputAsPair();
-
-		DifferentialNetwork dNetwork2 = pair2.getDifferentialNetwork();
-		assertEquals(8, dNetwork2.getEdges().size());
-
-		OverlappingNetwork oNetwork2 = pair2.getOverlappingNetwork();
-		assertEquals(3, oNetwork2.getEdges().size());
-		
-		
-		// CONFIG 3: (only) overlap configuration - assess correct failure of differential calculation
-		int ID3 = ex.getTestOverlapConfiguration(p);
-		assertEquals(3, p.getAllRunConfigurations().size());
-		
-		boolean exceptionThrown1 = false;
+	/**
+	 * Private method that asserts an error will result from calling the oneMulti calculation
+	 */
+	private void assertException(Project p, CalculateDiff calc, int ID, boolean diff, boolean overlap)
+	{
+		boolean exceptionThrown = false;
 		try
 		{
-			calc.calculateOneDifferentialNetwork(p, ID3, cutoff, true, true);
+			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
 		}
-		catch(IllegalArgumentException e)
+		catch (IllegalArgumentException e)
 		{
-			exceptionThrown1 = true;
+			exceptionThrown = true;
 		}
-		assertTrue(exceptionThrown1);
-		Collection<DifferentialOutput> dOutputs3 = p.getRunConfiguration(ID3).getDifferentialOutputs();
-		assertEquals(0, dOutputs3.size());
-		
-		// CONFIG 3: (only) overlap calculation - assess correct failure of differential network request
-		calc.calculateOneDifferentialNetwork(p, ID3, cutoff, false, true);
-		dOutputs3 = p.getRunConfiguration(ID3).getDifferentialOutputs();
-		assertEquals(1, dOutputs3.size());
-		
-		DifferentialOutput output3 = dOutputs3.iterator().next();
-		
-		boolean exceptionThrown2 = false;
+		assertTrue(exceptionThrown);
+	}
+
+	/**
+	 * Private method that asserts that a pair can not be queried from this output result
+	 * @param output the differential output object
+	 */
+	private void assertNoPair(DifferentialOutput output)
+	{
+		boolean exceptionThrown = false;
 		try
 		{
 			@SuppressWarnings("unused")
-            OutputNetworkPair pair3 = output3.getOutputAsPair();
+			OutputNetworkPair pair = output.getOutputAsPair();
 		}
-		catch(IllegalArgumentException e)
+		catch (IllegalArgumentException e)
 		{
-			exceptionThrown2 = true;
+			exceptionThrown = true;
 		}
-		assertTrue(exceptionThrown2);
+		assertTrue(exceptionThrown);
+	}
 
-		//DifferentialNetwork dNetwork3 = pair3.getDifferentialNetwork();
-		//assertEquals(8, dNetwork3.getEdges().size());
+	/**
+	 * Private method that asserts that a differential network can not be queried from this output result
+	 * @param output the differential output object
+	 */
+	private void assertNoDiffNetwork(DifferentialOutput output)
+	{
+		boolean exceptionThrown = false;
+		try
+		{
+			@SuppressWarnings("unused")
+			DifferentialNetwork dn = output.getDifferentialNetwork();
+		}
+		catch (IllegalArgumentException e)
+		{
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+	}
 
-		OverlappingNetwork oNetwork3 = output3.getOverlappingNetwork();
-		assertEquals(3, oNetwork3.getEdges().size());
+	/**
+	 * Private method that asserts that an overlap network can not be queried from this output result
+	 * @param output the differential output object
+	 */
+	private void assertNoOverlapNetwork(DifferentialOutput output)
+	{
+		boolean exceptionThrown = false;
+		try
+		{
+			@SuppressWarnings("unused")
+			OverlappingNetwork dn = output.getOverlappingNetwork();
+		}
+		catch (IllegalArgumentException e)
+		{
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
 	}
 
 }

@@ -32,7 +32,7 @@ public class RunConfiguration
 	public RunConfiguration(Set<InputNetwork> inputNetworks)
 	{
 		setInputs(inputNetworks);
-		differentialOutputs = new HashSet<DifferentialOutput>();
+		cleanOutputResults();
 	}
 	
 	/**
@@ -53,14 +53,28 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Add a differential output network to this configuration.
+	 * Add a differential output network to this configuration, with or without prior cleaning of the previous result set.
 	 * 
 	 * @param differential a new differential network
+	 * @param clean whether or not to first clean the existing result set
 	 */
-	public void addOutputResult(DifferentialOutput output)
+	public void addOutputResult(DifferentialOutput output, boolean clean)
 	{
+		if (clean)
+		{
+			cleanOutputResults();
+		}
 		differentialOutputs.add(output);
 	}
+	
+	/**
+	 * Remove all previous differential output networks from this configuration.
+	 */
+	public void cleanOutputResults()
+	{
+		differentialOutputs = new HashSet<DifferentialOutput>();
+	}
+	
 	
 	/**
 	 * Get all input network(s): 1 or many. 

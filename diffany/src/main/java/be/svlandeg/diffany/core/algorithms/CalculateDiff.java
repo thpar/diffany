@@ -176,7 +176,7 @@ public class CalculateDiff
 			output.setOverlap(on);
 		}
 		
-		rc.addOutputResult(output);
+		rc.addOutputResult(output, true);
 		log.log("Done!");
 	}
 
@@ -276,7 +276,7 @@ public class CalculateDiff
 		Logger log = p.getLogger(configurationID);
 
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
-		
+		rc.cleanOutputResults();
 		
 		if (diffNetwork)
 		{
@@ -298,15 +298,17 @@ public class CalculateDiff
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
 				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, cutoff, log);
-				
-				String overlapping_name = overlapnameprefix + r.getName() + "_" + c.getName();
-				Set<InputNetwork> inputs = new HashSet<InputNetwork>(rc.getInputNetworks());
-				OverlappingNetwork on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
-				
 				output.setDifferential(diff);
-				output.setOverlap(on);
 				
-				rc.addOutputResult(output);
+				if (overlapNetwork)
+				{
+					String overlapping_name = overlapnameprefix + r.getName() + "_" + c.getName();
+					Set<InputNetwork> inputs = new HashSet<InputNetwork>(rc.getInputNetworks());
+					OverlappingNetwork on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
+					output.setOverlap(on);
+				}
+				
+				rc.addOutputResult(output, false);
 			}
 		}
 		else if (overlapNetwork)
@@ -315,7 +317,7 @@ public class CalculateDiff
 			for (int i = 0; i < inputs.size(); i++)
 			{
 				InputNetwork n1 = inputs.get(i);
-				for (int j = 0; j < inputs.size(); j++)
+				for (int j = i+1; j < inputs.size(); j++)
 				{
 					InputNetwork n2 = inputs.get(j);
 					
@@ -330,7 +332,7 @@ public class CalculateDiff
 					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, cutoff, log);
 					
 					output.setOverlap(on);
-					rc.addOutputResult(output);
+					rc.addOutputResult(output, false);
 				}
 			}
 		}

@@ -60,5 +60,33 @@ public abstract class GenericExample
 			printNetwork(pair.getOverlappingNetwork());
 		}
 	}
+	
+	/**
+	 * Print all overlap networks in an entire project.
+	 * @param p the project to be printed
+	 * @param configurationID the ID of the RunConfiguration
+	 */
+	protected void printAllOverlapNetworks(Project p, int configurationID)
+	{
+		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(configurationID);
+		
+		System.out.println("Reference network : ");
+		ReferenceNetwork r = rc.getReferenceNetwork();
+		printNetwork(r);
+
+		System.out.println("Condition-specific network(s) : ");
+		Collection<ConditionNetwork> cnetworks = rc.getConditionNetworks();
+		for (ConditionNetwork c : cnetworks)
+		{
+			printNetwork(c);
+		}
+		System.out.println("Overlap network(s) : ");
+		Collection<DifferentialOutput> dnetworks = rc.getDifferentialOutputs();
+		
+		for (DifferentialOutput d : dnetworks)
+		{
+			printNetwork(d.getOverlappingNetwork());
+		}
+	}
 
 }

@@ -134,7 +134,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 1", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Salty", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -176,7 +176,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Draughty", conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -219,10 +219,20 @@ public class MultipleConditionTest extends GenericExample
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
 		
-		System.out.println("Calculating differential networks at cutoff " + cutoff);
+		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID);
+		
+		System.out.println(" ");
+		System.out.println(" **************************************************************** ");
+		System.out.println(" ");
+		
+		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, false, true);
+		
+		System.out.println("");
+		ex.printAllOverlapNetworks(p, ID);
 	}
 }

@@ -3,12 +3,18 @@ package be.svlandeg.diffany.junit;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.networks.*;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.Network;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.examples.ActivityFlowTest;
@@ -197,9 +203,10 @@ public class TestExamples
 
 	/**
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
+	 * This method specifically checks the 1-to-many algorithm.
 	 */
 	@Test
-	public void testMultipleConditions()
+	public void testMultipleConditions1toMany()
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double cutoff = 0.0;
@@ -239,6 +246,159 @@ public class TestExamples
 		assertAnEdge(sNetwork, "A", "B", true, false, "ppi", false, 0.3);
 		assertAnEdge(sNetwork, "A", "C", true, false, "ppi", false, 0.6);
 		assertAnEdge(sNetwork, "M", "N", false, false, "phosphorylation", false, 2);
+	}
+
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
+	 * This method specifically checks the pairwise algorithms of reference vs. conditions.
+	 */
+	@Test
+	public void testMultipleConditionsPairwiseDiff()
+	{
+		MultipleConditionTest ex = new MultipleConditionTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		int ID = ex.getTestDiffConfiguration(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
+
+		// Testing that there are exactly two differential networks created (1 for each condition)
+		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(2, dOutputs.size());
+
+		// Testing the edges in the differential networks
+		Map<String, DifferentialOutput> outputs = new HashMap<String, DifferentialOutput>();
+		for (DifferentialOutput output : dOutputs)
+		{
+			outputs.put(output.getDifferentialNetwork().getName(), output);
+		}
+
+		// Salt vs. reference
+		DifferentialOutput saltOutput = outputs.get("diff_Salty");
+		OutputNetworkPair saltPair = saltOutput.getOutputAsPair();
+		DifferentialNetwork saltDiff = saltPair.getDifferentialNetwork();
+
+		Set<Edge> dEdgesS = saltDiff.getEdges();
+
+		assertEquals(11, dEdgesS.size());
+
+		assertAnEdge(saltDiff, "W", "Z", true, false, "decrease_ppi", false, 0.5);
+		assertAnEdge(saltDiff, "A", "Z", true, false, "decrease_ppi", false, 0.8);
+		assertAnEdge(saltDiff, "A", "C", true, false, "decrease_ppi", false, 0.2);
+		assertAnEdge(saltDiff, "A", "B", true, false, "decrease_ppi", false, 0.3);
+		assertAnEdge(saltDiff, "A", "D", true, false, "increase_ppi", false, 0.9);
+		assertAnEdge(saltDiff, "F", "D", true, false, "increase_ppi", false, 0.3);
+
+		assertAnEdge(saltDiff, "A", "B", false, false, "decreases_phosphorylation", false, 1.1);
+
+		assertAnEdge(saltDiff, "M", "N", false, false, "increases_phosphorylation", false, 6);
+		assertAnEdge(saltDiff, "P", "M", false, false, "increases_phosphorylation", false, 2);
+		assertAnEdge(saltDiff, "N", "P", false, false, "decreases_phosphorylation", false, 3);
+		assertAnEdge(saltDiff, "O", "P", false, false, "increases_phosphorylation", false, 4);
+
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork saltOverlap = saltPair.getOverlappingNetwork();
+		Set<Edge> sEdgesS = saltOverlap.getEdges();
+		assertEquals(5, sEdgesS.size());
+
+		assertAnEdge(saltOverlap, "A", "Z", true, false, "ppi", false, 0.1);
+		assertAnEdge(saltOverlap, "A", "B", true, false, "ppi", false, 0.4);
+		assertAnEdge(saltOverlap, "A", "C", true, false, "ppi", false, 0.6);
+
+		assertAnEdge(saltOverlap, "M", "N", false, false, "phosphorylation", false, 2);
+		assertAnEdge(saltOverlap, "M", "O", false, false, "phosphorylation", true, 1);
+
+		// Draught vs. reference
+		DifferentialOutput draughtOutput = outputs.get("diff_Draughty");
+		OutputNetworkPair draughtPair = draughtOutput.getOutputAsPair();
+		DifferentialNetwork draughtDiff = draughtPair.getDifferentialNetwork();
+
+		Set<Edge> dEdges = draughtDiff.getEdges();
+
+		assertEquals(12, dEdges.size());
+
+		assertAnEdge(draughtDiff, "W", "Z", true, false, "decrease_ppi", false, 0.5);
+		assertAnEdge(draughtDiff, "A", "Z", true, false, "decrease_ppi", false, 0.9);
+		assertAnEdge(draughtDiff, "A", "C", true, false, "increase_ppi", false, 0.4);
+		assertAnEdge(draughtDiff, "A", "B", true, false, "decrease_ppi", false, 0.4);
+		assertAnEdge(draughtDiff, "A", "D", true, false, "increase_ppi", false, 0.75);
+		assertAnEdge(draughtDiff, "E", "D", true, false, "increase_ppi", false, 0.2);
+
+		assertAnEdge(draughtDiff, "A", "B", false, false, "decreases_phosphorylation", false, 1.1);
+
+		assertAnEdge(draughtDiff, "M", "N", false, false, "increases_phosphorylation", false, 4);
+		assertAnEdge(draughtDiff, "P", "M", false, false, "increases_ptm", false, 7);
+		assertAnEdge(draughtDiff, "N", "O", false, false, "increases_phosphorylation", false, 5);
+		assertAnEdge(draughtDiff, "N", "P", false, false, "decreases_phosphorylation", false, 3);
+		assertAnEdge(draughtDiff, "P", "N", false, false, "increases_phosphorylation", false, 8);
+
+		// Testing the edges in the corresponding overlapping network
+		OverlappingNetwork draughtOverlap = draughtPair.getOverlappingNetwork();
+		Set<Edge> sEdges = draughtOverlap.getEdges();
+		assertEquals(3, sEdges.size());
+
+		assertAnEdge(draughtOverlap, "A", "B", true, false, "ppi", false, 0.3);
+		assertAnEdge(draughtOverlap, "A", "C", true, false, "ppi", false, 0.8);
+
+		assertAnEdge(draughtOverlap, "M", "N", false, false, "phosphorylation", false, 2);
+	}
+
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
+	 * This method specifically checks the pairwise overlap algorithms of a generic set of input networks (i.e. reference undefined).
+	 */
+	@Test
+	public void testMultipleConditionsPairwiseOverlap()
+	{
+		MultipleConditionTest ex = new MultipleConditionTest();
+		double cutoff = 0.0;
+		Project p = ex.getTestProject();
+		int ID = ex.getTestDiffConfiguration(p);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, false, true);
+
+		// Testing that there are exactly three overlap networks created (3 pairs)
+		Collection<DifferentialOutput> outputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		assertEquals(3, outputs.size());
+
+		Map<String, OverlappingNetwork> networks = new HashMap<String, OverlappingNetwork>();
+		for (DifferentialOutput output : outputs)
+		{
+			OverlappingNetwork on = output.getOverlappingNetwork();
+			networks.put(on.getName(), on);
+		}
+
+		// Salt vs. reference
+		OverlappingNetwork saltOverlap = networks.get("overlap_Reference_Salty");
+		Set<Edge> sEdgesS = saltOverlap.getEdges();
+		assertEquals(5, sEdgesS.size());
+
+		assertAnEdge(saltOverlap, "A", "Z", true, false, "ppi", false, 0.1);
+		assertAnEdge(saltOverlap, "A", "B", true, false, "ppi", false, 0.4);
+		assertAnEdge(saltOverlap, "A", "C", true, false, "ppi", false, 0.6);
+
+		assertAnEdge(saltOverlap, "M", "N", false, false, "phosphorylation", false, 2);
+		assertAnEdge(saltOverlap, "M", "O", false, false, "phosphorylation", true, 1);
+
+		// Draught vs. reference
+		OverlappingNetwork draughtOverlap = networks.get("overlap_Draughty_Reference");
+		Set<Edge> sEdges = draughtOverlap.getEdges();
+		assertEquals(3, sEdges.size());
+
+		assertAnEdge(draughtOverlap, "A", "B", true, false, "ppi", false, 0.3);
+		assertAnEdge(draughtOverlap, "A", "C", true, false, "ppi", false, 0.8);
+
+		assertAnEdge(draughtOverlap, "M", "N", false, false, "phosphorylation", false, 2);
+		
+		// Draught vs. reference
+		OverlappingNetwork draughtStressOverlap = networks.get("overlap_Draughty_Salty");
+		Set<Edge> sEdgesDS = draughtStressOverlap.getEdges();
+		assertEquals(5, sEdgesDS.size());	
+
+		assertAnEdge(draughtStressOverlap, "A", "B", true, false, "ppi", false, 0.3);
+		assertAnEdge(draughtStressOverlap, "A", "C", true, false, "ppi", false, 0.6);
+		assertAnEdge(draughtStressOverlap, "A", "D", true, false, "ppi", false, 0.75);
+
+		assertAnEdge(draughtStressOverlap, "M", "N", false, false, "phosphorylation", false, 6);
+		assertAnEdge(draughtStressOverlap, "P", "M", false, false, "ptm", false, 2);
 	}
 
 	/**

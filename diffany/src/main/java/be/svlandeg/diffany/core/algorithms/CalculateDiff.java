@@ -302,7 +302,14 @@ public class CalculateDiff
 				
 				if (overlapNetwork)
 				{
+					// create an overlapping name with consistent alphabetical ordering of the network names
 					String overlapping_name = overlapnameprefix + r.getName() + "_" + c.getName();
+					
+					if (c.getName().compareTo(r.getName()) < 0)
+					{
+						overlapping_name = overlapnameprefix + c.getName() + "_" + r.getName();
+					}
+					
 					Set<InputNetwork> inputs = new HashSet<InputNetwork>();
 					inputs.add(r);
 					inputs.add(c);
@@ -326,7 +333,12 @@ public class CalculateDiff
 					DifferentialOutput output = new DifferentialOutput();
 					log.log("Calculating the overlap network between " + n1.getName() + " and " + n2.getName());
 					
+					// create an overlapping name with consistent alphabetical ordering of the network names
 					String overlapping_name = overlapnameprefix + n1.getName() + "_" + n2.getName();
+					if (n2.getName().compareTo(n1.getName()) < 0)
+					{
+						overlapping_name = overlapnameprefix + n2.getName() + "_" + n1.getName();
+					}
 					
 					Set<InputNetwork> twoInputs = new HashSet<InputNetwork>();
 					twoInputs.add(n1);

@@ -229,7 +229,7 @@ public class MultipleConditionTest extends GenericExample
 		System.out.println(" **************************************************************** ");
 		System.out.println(" ");
 		
-		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
+		System.out.println("Calculating pairwise differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, true, true);
 		
 		System.out.println("");
@@ -239,7 +239,7 @@ public class MultipleConditionTest extends GenericExample
 		System.out.println(" **************************************************************** ");
 		System.out.println(" ");
 		
-		System.out.println("Calculating 1-all overlap networks at cutoff " + cutoff);
+		System.out.println("Calculating pairwise overlap networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, false, true);
 		
 		System.out.println("");

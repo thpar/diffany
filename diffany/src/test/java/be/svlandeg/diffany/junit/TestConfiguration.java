@@ -211,12 +211,9 @@ public class TestConfiguration
 			diffcounts.put("diff_Salty", 11);
 
 			Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
-			overlapcounts.put("overlap_Reference_Draughty", 3);
 			overlapcounts.put("overlap_Draughty_Reference", 3);
 			overlapcounts.put("overlap_Reference_Salty", 5);
-			overlapcounts.put("overlap_Salty_Reference", 5);
 			overlapcounts.put("overlap_Draughty_Salty", 5);	
-			overlapcounts.put("overlap_Salty_Draughty", 5);
 
 			if (diff && overlap)
 			{

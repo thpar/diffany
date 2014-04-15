@@ -217,22 +217,32 @@ public class MultipleConditionTest extends GenericExample
 		
 		System.out.println("Defining network for weight test");
 		Project p = ex.getTestProject();
-		int ID = ex.getTestDiffConfiguration(p);
+		int ID_diff = ex.getTestDiffConfiguration(p);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, true, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID);
+		ex.printAllNetworks(p, ID_diff);
 		
 		System.out.println(" ");
 		System.out.println(" **************************************************************** ");
 		System.out.println(" ");
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, false, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, true, true);
 		
 		System.out.println("");
-		ex.printAllOverlapNetworks(p, ID);
+		ex.printAllNetworks(p, ID_diff);
+		
+		System.out.println(" ");
+		System.out.println(" **************************************************************** ");
+		System.out.println(" ");
+		
+		System.out.println("Calculating 1-all overlap networks at cutoff " + cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, false, true);
+		
+		System.out.println("");
+		ex.printAllOverlapNetworks(p, ID_diff);
 	}
 }

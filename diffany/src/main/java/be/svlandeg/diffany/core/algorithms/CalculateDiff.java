@@ -303,7 +303,9 @@ public class CalculateDiff
 				if (overlapNetwork)
 				{
 					String overlapping_name = overlapnameprefix + r.getName() + "_" + c.getName();
-					Set<InputNetwork> inputs = new HashSet<InputNetwork>(rc.getInputNetworks());
+					Set<InputNetwork> inputs = new HashSet<InputNetwork>();
+					inputs.add(r);
+					inputs.add(c);
 					OverlappingNetwork on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
 					output.setOverlap(on);
 				}

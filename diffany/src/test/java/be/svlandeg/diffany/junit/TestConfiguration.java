@@ -30,10 +30,8 @@ public class TestConfiguration
 
 	/**
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
-	 * 
-	 * TODO check calc pairwise
 	 */
-	//@Test
+	@Test
 	public void testMultipleConditions()
 	{
 		CalculateDiff calc = new CalculateDiff();
@@ -74,22 +72,22 @@ public class TestConfiguration
 		// pairwise differential configuration : differential+overlap calculation
 		testDifferentialPairwise(p, calc, ex, calls, true, true);
 		calls++;
-		
+
 		// pairwise differential (only) calculation
 		testDifferentialPairwise(p, calc, ex, calls, true, false);
 		calls++;
-				
+
 		// pairwise overlap (only) calculation - with differential configuration
 		testDifferentialPairwise(p, calc, ex, calls, false, true);
 		calls++;
-		
+
 		// pairwise calculation which doesn't actually do anything (no diff, no overlap)
 		testDifferentialPairwise(p, calc, ex, calls, false, false);
 		calls++;
 	}
 
 	/**
-	 * Test an initial empty project 
+	 * Test an initial empty project: should contain no differential output.
 	 */
 	private void testIni(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
 	{
@@ -102,7 +100,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Test an 1-multi differential configuration
+	 * Test a 1-multi differential configuration, with differential and/or overlap calculation.
 	 */
 	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
 	{
@@ -152,7 +150,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Test an 1-multi overlap configuration
+	 * Test a 1-multi overlap configuration, should not contain differential networks.
 	 */
 	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
 	{
@@ -179,7 +177,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Test an 1-multi differential configuration
+	 * Test a pairwise differential configuration, with differential and/or overlap calculation.
 	 */
 	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
 	{
@@ -189,7 +187,7 @@ public class TestConfiguration
 		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap);
 		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
 		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		
+
 		if (diff)
 		{
 			// ref vs. 2 conditions
@@ -211,16 +209,15 @@ public class TestConfiguration
 			Map<String, Integer> diffcounts = new HashMap<String, Integer>();
 			diffcounts.put("diff_Draughty", 12);
 			diffcounts.put("diff_Salty", 11);
-			
+
 			Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
 			overlapcounts.put("overlap_Reference_Draughty", 3);
 			overlapcounts.put("overlap_Draughty_Reference", 3);
 			overlapcounts.put("overlap_Reference_Salty", 5);
 			overlapcounts.put("overlap_Salty_Reference", 5);
-			overlapcounts.put("overlap_Draughty_Salty", 5);
+			overlapcounts.put("overlap_Draughty_Salty", 5);	
 			overlapcounts.put("overlap_Salty_Draughty", 5);
-			
-			
+
 			if (diff && overlap)
 			{
 				OutputNetworkPair pair = output.getOutputAsPair();
@@ -230,8 +227,6 @@ public class TestConfiguration
 
 				OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
 				int countO = overlapcounts.get(oNetwork.getName());
-				System.out.println(oNetwork.getName() + " - " + countO);
-				System.out.println("found " + oNetwork.getEdges().size());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}
 			else
@@ -262,7 +257,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Private method that asserts an error will result from calling the oneMulti calculation
+	 * Private method that asserts an error will result from calling the oneMulti calculation with a specific runconfiguration ID.
 	 */
 	private void assertException(Project p, CalculateDiff calc, int ID, boolean diff, boolean overlap)
 	{
@@ -279,8 +274,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Private method that asserts that a pair can not be queried from this output result
-	 * @param output the differential output object
+	 * Private method that asserts that a pair can not be queried from this output result.
 	 */
 	private void assertNoPair(DifferentialOutput output)
 	{
@@ -298,8 +292,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Private method that asserts that a differential network can not be queried from this output result
-	 * @param output the differential output object
+	 * Private method that asserts that a differential network can not be queried from this output result.
 	 */
 	private void assertNoDiffNetwork(DifferentialOutput output)
 	{
@@ -317,8 +310,7 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Private method that asserts that an overlap network can not be queried from this output result
-	 * @param output the differential output object
+	 * Private method that asserts that an overlap network can not be queried from this output result.
 	 */
 	private void assertNoOverlapNetwork(DifferentialOutput output)
 	{

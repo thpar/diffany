@@ -64,7 +64,7 @@ public class ExecuteR
 	}
 	
 	/**
-	 * Retrieve whether a variable by the given name exists, and print an error message if not.
+	 * Retrieve whether a variable by the given name exists or not.
 	 * 
 	 * @param variable the symbol of the variable (as defined previously)
 	 * @return whether or not the variable exists in the R environment.
@@ -72,19 +72,15 @@ public class ExecuteR
 	public boolean doesVariableExist(String variable)
 	{
 		REXP value = bridge.evaluate(variable);
-		if (value == null)
-		{
-			System.out.println("Variable " + variable + " is not defined in the R environment!");
-			return false;
-		}
-		return true;
+		return value != null;
 	}
 
 	/**
 	 * Retrieve the value of a certain String array previously defined/calculated in R.
+	 * To check whether a variable exists, the method doesVariableExist is used.
 	 * 
 	 * @param variable the symbol of the variable (as defined previously)
-	 * @return the String array in the R environment
+	 * @return the String array in the R environment, or null if it doesn't exist in the environment
 	 */
 	public String[] getStringArray(String variable)
 	{
@@ -98,9 +94,10 @@ public class ExecuteR
 
 	/**
 	 * Retrieve the value of a certain Double variable previously defined/calculated in R.
+	 * To check whether a variable exists, the method doesVariableExist is used.
 	 * 
 	 * @param variable the symbol of the variable (as defined previously)
-	 * @return the Double value in the R environment
+	 * @return the Double value in the R environment, or null if it doesn't exist in the environment
 	 */
 	public Double getDoubleValue(String variable)
 	{
@@ -114,9 +111,10 @@ public class ExecuteR
 
 	/**
 	 * Retrieve the value of a certain double array previously defined/calculated in R.
+	 * To check whether a variable exists, the method doesVariableExist is used.
 	 * 
 	 * @param variable the symbol of the variable (as defined previously)
-	 * @return the double array in the R environment
+	 * @return the double array in the R environment, or null if it doesn't exist in the environment
 	 */
 	public double[] getDoubleArray(String variable)
 	{
@@ -130,9 +128,10 @@ public class ExecuteR
 
 	/**
 	 * Retrieve the value of a certain double matrix previously defined/calculated in R.
+	 * To check whether a variable exists, the method doesVariableExist is used.
 	 * 
 	 * @param variable the symbol of the variable (as defined previously)
-	 * @return the double matrix in the R environment
+	 * @return the double matrix in the R environment, or null if it doesn't exist in the environment
 	 */
 	public double[][] getDoubleMatrix(String variable)
 	{

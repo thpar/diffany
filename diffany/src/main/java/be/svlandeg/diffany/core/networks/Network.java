@@ -23,7 +23,6 @@ public abstract class Network
 
 	protected String name;
 	protected NodeMapper nm;
-	
 
 	/**
 	 * Create a new network with a specific name and sets of nodes and edges.
@@ -41,13 +40,12 @@ public abstract class Network
 			String errormsg = "Please define a proper NodeMapper object!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		
+
 		this.name = name;
 		this.nm = nm;
 		setNodesAndEdges(nodes, edges);
 	}
 
-	
 	/**
 	 * Create a new network with an empty set of nodes and edges.
 	 * @param name the name of this network (should be enforced to be unique within one project)
@@ -92,7 +90,6 @@ public abstract class Network
 		return edges;
 	}
 
-	
 	/**
 	 * Get all directed edges in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between source-target or target-source, these will be excluded!
@@ -108,7 +105,7 @@ public abstract class Network
 		{
 			for (Edge e : edges)
 			{
-				if (! e.symmetrical)
+				if (!e.symmetrical)
 				{
 					if (nm.areEqual(e.getSource(), source) && nm.areEqual(e.getTarget(), target))
 					{
@@ -119,7 +116,7 @@ public abstract class Network
 		}
 		return resultEdges;
 	}
-	
+
 	/**
 	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between target-source, these will be added too.
@@ -147,7 +144,7 @@ public abstract class Network
 		}
 		return resultEdges;
 	}
-	
+
 	/**
 	 * Get all edge definitions (both symmetric and assymetric) in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between target-source, these will be added too.
@@ -166,7 +163,7 @@ public abstract class Network
 		}
 		return resultEdgeDefinitions;
 	}
-	
+
 	/**
 	 * Get all edges in this network between two nodes with a specific name, assuming these names are unique. 
 	 * In case there are symmetrical edges in this network between target-source, these will also be added if addSyms is true.
@@ -182,7 +179,7 @@ public abstract class Network
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		if (source == null || target == null)
 			return resultEdges;
-		
+
 		for (Edge e : edges)
 		{
 			if (e.getSource().getName(normalized).equals(source) && e.getTarget().getName(normalized).equals(target))
@@ -222,11 +219,11 @@ public abstract class Network
 	public void addEdge(Edge edge)
 	{
 		edges.add(edge);
-		
+
 		addNode(edge.getSource());
 		addNode(edge.getTarget());
 	}
-	
+
 	/**
 	 * Remove an edge from this network, leaving its source and target nodes otherwise untouched (and perhaps unconnected).
 	 * @param edge the edge that should be removed from the network
@@ -244,13 +241,10 @@ public abstract class Network
 	 */
 	public void addNode(Node node)
 	{
-		if (! nm.isContained(node, nodes))
+		if (!nm.isContained(node, nodes))
 		{
 			nodes.add(node);
 		}
 	}
-
-	
-
 
 }

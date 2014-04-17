@@ -460,16 +460,16 @@ public class CyProject{
 	 */
 	private void addDifferentialNetworks(Collection<DifferentialOutput> differentialOutputs, Services services) {
 		for (DifferentialOutput o: differentialOutputs){
-		OutputNetworkPair pair = o.getOutputAsPair();
-		DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
-		OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
-		//add the diffnet
-		CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);
-			
-		//add the overlap
-		CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);
-			
-		this.addResultPair(cyDiffNet, cyOverlapNet);
+			OutputNetworkPair pair = o.getOutputAsPair();
+			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
+			OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
+			//add the diffnet
+			CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);
+				
+			//add the overlap
+			CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);
+				
+			this.addResultPair(cyDiffNet, cyOverlapNet);
 		}
 	}
 	

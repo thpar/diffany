@@ -71,7 +71,7 @@ public class NetworkCleaning
 		{
 			for (Node n2 : net.getNodes())
 			{
-				Set<Edge> all_edges = net.getAllEdges(n1, n2);
+				Set<? extends Edge> all_edges = net.getAllEdges(n1, n2);
 				for (Edge et : all_edges)
 				{
 					for (Edge eb : all_edges)

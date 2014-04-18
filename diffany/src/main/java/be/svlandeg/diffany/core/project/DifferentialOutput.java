@@ -6,6 +6,8 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.merged.MergedDifferentialNetwork;
+import be.svlandeg.diffany.core.networks.merged.MergedOverlappingNetwork;
 
 /**
  * This class keeps the output of differential network algorithms, both differential networks as well overlapping networks.
@@ -29,7 +31,17 @@ public class DifferentialOutput
 	{
 		clean();
 	}
-	
+
+	/**
+	 * Clean the output.
+	 */
+	public void clean()
+	{
+		dns = new HashSet<DifferentialNetwork>();
+		ons = new HashSet<OverlappingNetwork>();
+		pairs = new HashSet<OutputNetworkPair>();
+	}
+
 	/**
 	 * Add a pair of differential+overlap networks to this output.
 	 * @param pair the pair of differential and overlap output networks
@@ -45,7 +57,6 @@ public class DifferentialOutput
 		addDifferential(pair.getDifferentialNetwork());
 		addOverlap(pair.getOverlappingNetwork());
 	}
-
 
 	/**
 	 * Add a differential output network.
@@ -86,7 +97,7 @@ public class DifferentialOutput
 
 	/**
 	 * Retrieve all differential networks
-	 * @return all differential networks in this output.
+	 * @return all differential networks in this output
 	 */
 	public Set<DifferentialNetwork> getDifferentialNetworks()
 	{
@@ -95,21 +106,31 @@ public class DifferentialOutput
 
 	/**
 	 * Retrieve all overlapping networks
-	 * @return the overlapping network in this output.
+	 * @return the overlapping network in this output
 	 */
 	public Set<OverlappingNetwork> getOverlappingNetworks()
 	{
 		return ons;
 	}
-	
+
 	/**
-	 * Clean the output.
+	 * Retrieve all differential networks as one large merged network
+	 * @return the differential networks in this output, all merged together
 	 */
-	public void clean()
+	public MergedDifferentialNetwork getMergedDifferential()
 	{
-		dns = new HashSet<DifferentialNetwork>();
-		ons = new HashSet<OverlappingNetwork>();
-		pairs = new HashSet<OutputNetworkPair>();
+		// TODO
+		return null;
+	}
+
+	/**
+	 * Retrieve all overlapping networks as one large merged network
+	 * @return the overlapping networks in this output, all merged together
+	 */
+	public MergedOverlappingNetwork getMergedOverlapping()
+	{
+		// TODO
+		return null;
 	}
 
 }

@@ -19,6 +19,7 @@ public class ConditionEdge extends Edge
 {
 	
 	protected Set<Condition> conditions;
+	protected boolean inReference;
 	
 	
 	/**
@@ -29,11 +30,13 @@ public class ConditionEdge extends Edge
 	 * @param target the target node
 	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public ConditionEdge(Node source, Node target, EdgeDefinition def, Set<Condition> conditions)
+	public ConditionEdge(Node source, Node target, EdgeDefinition def, Set<Condition> conditions, boolean inReference)
 	{
 		super(source, target, def);
 		setConditions(conditions);
+		this.inReference = inReference;
 	}
 
 	/**
@@ -46,12 +49,14 @@ public class ConditionEdge extends Edge
 	 * @param weight the weight or confidence of this edge (should be positive)
 	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param inReference whether or not this edge is present in the reference network
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
-	public ConditionEdge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions) throws IllegalArgumentException
+	public ConditionEdge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, boolean inReference) throws IllegalArgumentException
 	{
 		super(type, source, target, symmetrical, weight, negated);
 		setConditions(conditions);
+		this.inReference = inReference;
 	}
 
 	/**
@@ -113,6 +118,20 @@ public class ConditionEdge extends Edge
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.conditions = conditions;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Set<Condition> getConditions()
+	{
+		return conditions;
+	}
+	
+	public boolean inReferenceNetwork()
+	{
+		return inReference;
 	}
 	
 

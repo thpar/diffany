@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.core.project;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.InputNetwork;
@@ -19,7 +18,7 @@ public class RunConfiguration
 {
 	
 	protected Set<InputNetwork> inputNetworks;
-	protected Set<DifferentialOutput> differentialOutputs;
+	protected DifferentialOutput differentialOutput;
 	
 	
 	/**
@@ -32,7 +31,7 @@ public class RunConfiguration
 	public RunConfiguration(Set<InputNetwork> inputNetworks)
 	{
 		setInputs(inputNetworks);
-		cleanOutputResults();
+		differentialOutput = new DifferentialOutput(); 
 	}
 	
 	/**
@@ -52,29 +51,6 @@ public class RunConfiguration
 		this.inputNetworks = inputNetworks;
 	}
 	
-	/**
-	 * Add a differential output network to this configuration, with or without prior cleaning of the previous result set.
-	 * 
-	 * @param differential a new differential network
-	 * @param clean whether or not to first clean the existing result set
-	 */
-	public void addOutputResult(DifferentialOutput output, boolean clean)
-	{
-		if (clean)
-		{
-			cleanOutputResults();
-		}
-		differentialOutputs.add(output);
-	}
-	
-	/**
-	 * Remove all previous differential output networks from this configuration.
-	 */
-	public void cleanOutputResults()
-	{
-		differentialOutputs = new HashSet<DifferentialOutput>();
-	}
-	
 	
 	/**
 	 * Get all input network(s): 1 or many. 
@@ -87,13 +63,13 @@ public class RunConfiguration
 	}
 
 	/**
-	 * Get the output networks in the configuration: 0, 1 or more
+	 * Get the output produced for this configuration.
 	 * 
-	 * @return the differential output networks in this configuration (if any, otherwise empty set, but never null)
+	 * @return the differential output networks in this configuration
 	 */
-	public Collection<DifferentialOutput> getDifferentialOutputs()
+	public DifferentialOutput getDifferentialOutput()
 	{
-		return differentialOutputs;
+		return differentialOutput;
 	}
 
 }

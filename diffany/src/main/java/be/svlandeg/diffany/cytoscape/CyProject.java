@@ -446,8 +446,8 @@ public class CyProject{
 	public void update(Services services) {
 		// TODO (after Sofie's refactoring) check type of current ronConfigurationID
 		RunDiffConfiguration runConfig = (RunDiffConfiguration) project.getRunConfiguration(latestRunConfigID);
-		Collection<DifferentialOutput> differentialOutputs = runConfig.getDifferentialOutputs();
-		this.addDifferentialNetworks(differentialOutputs, services);
+		DifferentialOutput differentialOutput = runConfig.getDifferentialOutput();
+		this.addDifferentialNetworks(differentialOutput, services);
 	}
 	
 	
@@ -455,12 +455,11 @@ public class CyProject{
 	 * Convert and add the resulting networks after running the algorithm. 
 	 * Add these networks to the set of results of this {@link CyProject}
 	 * 
-	 * @param differentialOutputs
+	 * @param differentialOutput
 	 * @param services 
 	 */
-	private void addDifferentialNetworks(Collection<DifferentialOutput> differentialOutputs, Services services) {
-		for (DifferentialOutput o: differentialOutputs){
-			OutputNetworkPair pair = o.getOutputAsPair();
+	private void addDifferentialNetworks(DifferentialOutput differentialOutput, Services services) {
+		for (OutputNetworkPair pair: differentialOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
 			OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
 			//add the diffnet

@@ -39,7 +39,6 @@ public class RunDiffConfiguration extends RunConfiguration
 		super(defineInputNetworks(reference, conditions));
 		setReference(reference);
 		setConditions(conditions);
-		differentialOutputs = new HashSet<DifferentialOutput>();
 	}
 	
 	/**

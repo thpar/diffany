@@ -51,8 +51,8 @@ public class ExampleCode
 
 		// In this case, there will be exactly one DifferentialNetwork
 		RunConfiguration rc = p.getRunConfiguration(rcID);
-		DifferentialOutput output = rc.getDifferentialOutputs().iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialOutput output = rc.getDifferentialOutput();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 

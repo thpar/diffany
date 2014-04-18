@@ -8,9 +8,9 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -132,7 +132,7 @@ public class CalculateDiff
 	/**
 	 * Calculate the differential network and/or the 'overlapping' or 'house-keeping' interactions, starting from a predefined runconfiguration in a project.
 	 * 
-	 * The calculated differential networksare added to the project directly.
+	 * The calculated differential networks are added to the project directly, after cleaning previous output first.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param configurationID the configuration ID of the configuration that needs to be run
@@ -150,7 +150,10 @@ public class CalculateDiff
 		Logger log = p.getLogger(configurationID);
 
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
-		DifferentialOutput output = new DifferentialOutput();
+		rc.getDifferentialOutput().clean();
+		
+		DifferentialNetwork diff = null;
+		OverlappingNetwork on = null;
 		
 		if (diffNetwork)
 		{
@@ -164,19 +167,28 @@ public class CalculateDiff
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
 			log.log("Calculating the differential and overlap network between " + r.getName() + " and "
 					+ cs.size() + " condition-dependent network(s)");
-			DifferentialNetwork diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, cutoff, log);
-			output.setDifferential(diff);
+			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, cutoff, log);
 		}
 		
 		if (overlapNetwork)
 		{
 			Set<InputNetwork> inputs = new HashSet<InputNetwork>(rc.getInputNetworks());
 			String overlapping_name = overlapnameprefix + diff_name;
-			OverlappingNetwork on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
-			output.setOverlap(on);
+			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
 		}
 		
-		rc.addOutputResult(output, true);
+		if (diff != null && on != null)
+		{
+			rc.getDifferentialOutput().addPair(new OutputNetworkPair(diff, on));
+		}
+		else if (diff != null)
+		{
+			rc.getDifferentialOutput().addDifferential(diff);
+		}
+		else if (on != null)
+		{
+			rc.getDifferentialOutput().addOverlap(on);
+		}
 		log.log("Done!");
 	}
 
@@ -260,7 +272,7 @@ public class CalculateDiff
 	 * The name of the overlapping networks will be prefix 'overlap_' + the two names of the networks.
 	 * 
 	 * All calculated differential networks and the logger object are added to the project directly.
-	 * The logger object will first be cleaned.
+	 * The logger object and the output result will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param configurationID the configuration ID of the configuration that needs to be run
@@ -276,7 +288,7 @@ public class CalculateDiff
 		Logger log = p.getLogger(configurationID);
 
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
-		rc.cleanOutputResults();
+		rc.getDifferentialOutput().clean();
 		
 		if (diffNetwork)
 		{
@@ -291,14 +303,13 @@ public class CalculateDiff
 			
 			for (ConditionNetwork c : cs)
 			{
-				DifferentialOutput output = new DifferentialOutput();
-				
 				String diff_name = diffnameprefix + c.getName();
 				log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
 				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, cutoff, log);
-				output.setDifferential(diff);
+				
+				OverlappingNetwork on = null;
 				
 				if (overlapNetwork)
 				{
@@ -313,11 +324,17 @@ public class CalculateDiff
 					Set<InputNetwork> inputs = new HashSet<InputNetwork>();
 					inputs.add(r);
 					inputs.add(c);
-					OverlappingNetwork on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
-					output.setOverlap(on);
+					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
 				}
 				
-				rc.addOutputResult(output, false);
+				if (on != null)
+				{
+					rc.getDifferentialOutput().addPair(new OutputNetworkPair(diff, on));
+				}
+				else 
+				{
+					rc.getDifferentialOutput().addDifferential(diff);
+				}
 			}
 		}
 		else if (overlapNetwork)
@@ -330,7 +347,6 @@ public class CalculateDiff
 				{
 					InputNetwork n2 = inputs.get(j);
 					
-					DifferentialOutput output = new DifferentialOutput();
 					log.log("Calculating the overlap network between " + n1.getName() + " and " + n2.getName());
 					
 					// create an overlapping name with consistent alphabetical ordering of the network names
@@ -345,8 +361,7 @@ public class CalculateDiff
 					twoInputs.add(n2);
 					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, cutoff, log);
 					
-					output.setOverlap(on);
-					rc.addOutputResult(output, false);
+					rc.getDifferentialOutput().addOverlap(on);
 				}
 			}
 		}

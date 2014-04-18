@@ -2,7 +2,6 @@ package be.svlandeg.diffany.junit;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,12 +46,11 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
-
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
+		
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dNetwork.getEdges();
 		assertEquals(3, dEdges.size());
@@ -84,12 +82,11 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
 
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
@@ -123,12 +120,11 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
 
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
@@ -167,12 +163,11 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
 
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
@@ -215,12 +210,11 @@ public class TestExamples
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
 
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
@@ -262,19 +256,19 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 
 		// Testing that there are exactly two differential networks created (1 for each condition)
-		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(2, dOutputs.size());
+		
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 2);
 
 		// Testing the edges in the differential networks
-		Map<String, DifferentialOutput> outputs = new HashMap<String, DifferentialOutput>();
-		for (DifferentialOutput output : dOutputs)
+		Map<String, OutputNetworkPair> outputs = new HashMap<String, OutputNetworkPair>();
+		for (OutputNetworkPair pair : output.getOutputAsPairs())
 		{
-			outputs.put(output.getDifferentialNetwork().getName(), output);
+			outputs.put(pair.getDifferentialNetwork().getName(), pair);
 		}
 
 		// Salt vs. reference
-		DifferentialOutput saltOutput = outputs.get("diff_Salty");
-		OutputNetworkPair saltPair = saltOutput.getOutputAsPair();
+		OutputNetworkPair saltPair = outputs.get("diff_Salty");
 		DifferentialNetwork saltDiff = saltPair.getDifferentialNetwork();
 
 		Set<Edge> dEdgesS = saltDiff.getEdges();
@@ -308,8 +302,7 @@ public class TestExamples
 		assertAnEdge(saltOverlap, "M", "O", false, false, "phosphorylation", true, 1);
 
 		// Draught vs. reference
-		DifferentialOutput draughtOutput = outputs.get("diff_Draughty");
-		OutputNetworkPair draughtPair = draughtOutput.getOutputAsPair();
+		OutputNetworkPair draughtPair = outputs.get("diff_Draughty");
 		DifferentialNetwork draughtDiff = draughtPair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = draughtDiff.getEdges();
@@ -356,13 +349,13 @@ public class TestExamples
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, false, true);
 
 		// Testing that there are exactly three overlap networks created (3 pairs)
-		Collection<DifferentialOutput> outputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(3, outputs.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 0);
+		assertNrOverlapNetworks(output, 3);
 
 		Map<String, OverlappingNetwork> networks = new HashMap<String, OverlappingNetwork>();
-		for (DifferentialOutput output : outputs)
+		for (OverlappingNetwork on : output.getOverlappingNetworks())
 		{
-			OverlappingNetwork on = output.getOverlappingNetwork();
 			networks.put(on.getName(), on);
 		}
 
@@ -414,12 +407,11 @@ public class TestExamples
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
 
 		// Testing that there is exactly one differential network created
-		Collection<DifferentialOutput> dNetworks = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dNetworks.size());
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(output, 1);
 
 		// Testing the edges in the differential network
-		DifferentialOutput output = dNetworks.iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
@@ -480,5 +472,23 @@ public class TestExamples
 			}
 		}
 		assertEquals(found, true);
+	}
+	
+	/**
+	 * Private method that asserts the number of differential output pairs in the output result (may be 0).
+	 */
+	private void assertNrPairs(DifferentialOutput output, int number)
+	{
+		int pairs = output.getOutputAsPairs().size();
+		assertEquals(number, pairs);
+	}
+	
+	/**
+	 * Private method that asserts the number of overlap networks in the output result (may be 0).
+	 */
+	private void assertNrOverlapNetworks(DifferentialOutput output, int number)
+	{
+		int overlaps = output.getOverlappingNetworks().size();
+		assertEquals(number, overlaps);
 	}
 }

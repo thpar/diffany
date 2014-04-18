@@ -75,8 +75,8 @@ public class RunProject
 		diffAlgo.calculateOneDifferentialNetwork(p, rcID, name, cutoff, true, true);
 		
 		// TODO v2.0: check number of differential networks generated
-		DifferentialOutput output = p.getRunConfiguration(rcID).getDifferentialOutputs().iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialOutput output = p.getRunConfiguration(rcID).getDifferentialOutput();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 

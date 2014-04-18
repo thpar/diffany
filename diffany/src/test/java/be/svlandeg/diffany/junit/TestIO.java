@@ -68,8 +68,8 @@ public class TestIO
 		ConditionNetwork cWriteNetwork = rc.getConditionNetworks().iterator().next();
 		
 		// There is exactly one differential network created
-		DifferentialOutput output = rc.getDifferentialOutputs().iterator().next();
-		OutputNetworkPair pair = output.getOutputAsPair();
+		DifferentialOutput output = rc.getDifferentialOutput();
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				
 		// The overlapping network (there should be only 1)

@@ -6,6 +6,7 @@ import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
+import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Project;
@@ -50,12 +51,10 @@ public abstract class GenericExample
 			printNetwork(c);
 		}
 		System.out.println("Differential network(s) : ");
-		Collection<DifferentialOutput> dnetworks = rc.getDifferentialOutputs();
+		DifferentialOutput output = rc.getDifferentialOutput();
 		
-		for (DifferentialOutput d : dnetworks)
+		for (OutputNetworkPair pair : output.getOutputAsPairs())
 		{
-			OutputNetworkPair pair = d.getOutputAsPair();
-			
 			printNetwork(pair.getDifferentialNetwork());
 			printNetwork(pair.getOverlappingNetwork());
 		}
@@ -81,11 +80,11 @@ public abstract class GenericExample
 			printNetwork(c);
 		}
 		System.out.println("Overlap network(s) : ");
-		Collection<DifferentialOutput> dnetworks = rc.getDifferentialOutputs();
+		DifferentialOutput output = rc.getDifferentialOutput();
 		
-		for (DifferentialOutput d : dnetworks)
+		for (OverlappingNetwork on : output.getOverlappingNetworks())
 		{
-			printNetwork(d.getOverlappingNetwork());
+			printNetwork(on);
 		}
 	}
 

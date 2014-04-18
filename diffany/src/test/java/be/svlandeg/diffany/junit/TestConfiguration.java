@@ -3,7 +3,6 @@ package be.svlandeg.diffany.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,8 +94,9 @@ public class TestConfiguration
 
 		int ID = ex.getTestDiffConfiguration(p);
 		assertEquals(calls + 1, p.getAllRunConfigurations().size());
-		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(0, dOutputs.size());
+		
+		DifferentialOutput dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrDiffNetworks(dOutput, 0);
 	}
 
 	/**
@@ -110,15 +110,13 @@ public class TestConfiguration
 		// it should not make a difference how many times this method is called!
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
-		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dOutputs.size());
-
-		DifferentialOutput output = dOutputs.iterator().next();
-
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		
 		if (diff && overlap)
 		{
-			OutputNetworkPair pair = output.getOutputAsPair();
+			assertNrPairs(output, 1);
+			OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
+			
 			DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 			assertEquals(8, dNetwork.getEdges().size());
 
@@ -127,25 +125,28 @@ public class TestConfiguration
 		}
 		else
 		{
-			assertNoPair(output);
+			assertNrPairs(output, 0);
 		}
 		if (diff)
 		{
-			DifferentialNetwork dNetwork = output.getDifferentialNetwork();
+			assertNrDiffNetworks(output, 1);
+			DifferentialNetwork dNetwork = output.getDifferentialNetworks().iterator().next();
 			assertEquals(8, dNetwork.getEdges().size());
 		}
 		else
 		{
-			assertNoDiffNetwork(output);
+			assertNrDiffNetworks(output, 0);
 		}
 		if (overlap)
 		{
-			OverlappingNetwork oNetwork5 = output.getOverlappingNetwork();
-			assertEquals(3, oNetwork5.getEdges().size());
+			assertNrOverlapNetworks(output, 1);
+			assertEquals(1, output.getOverlappingNetworks().size());
+			OverlappingNetwork oNetwork = output.getOverlappingNetworks().iterator().next();
+			assertEquals(3, oNetwork.getEdges().size());
 		}
 		else
 		{
-			assertNoOverlapNetwork(output);
+			assertNrOverlapNetworks(output, 0);
 		}
 	}
 
@@ -160,19 +161,19 @@ public class TestConfiguration
 		assertException(p, calc, ID, true, true);
 		assertException(p, calc, ID, true, false);
 
-		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(0, dOutputs.size());
+		DifferentialOutput dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
+		assertNrPairs(dOutput, 0);
+		assertNrDiffNetworks(dOutput, 0);
+		assertNrOverlapNetworks(dOutput, 0);
 
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true);
-		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		assertEquals(1, dOutputs.size());
+		dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
 
-		DifferentialOutput output = dOutputs.iterator().next();
+		assertNrPairs(dOutput, 0);
+		assertNrDiffNetworks(dOutput, 0);
+		assertNrOverlapNetworks(dOutput, 1);
 
-		assertNoPair(output);
-		assertNoDiffNetwork(output);
-
-		OverlappingNetwork oNetwork = output.getOverlappingNetwork();
+		OverlappingNetwork oNetwork = dOutput.getOverlappingNetworks().iterator().next();
 		assertEquals(3, oNetwork.getEdges().size());
 	}
 
@@ -185,39 +186,52 @@ public class TestConfiguration
 		assertEquals(calls + 1, p.getAllRunConfigurations().size());
 
 		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap);
-		Collection<DifferentialOutput> dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
-		dOutputs = p.getRunConfiguration(ID).getDifferentialOutputs();
+		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
 
+		// First, test the number of result networks, depending on the settings.
 		if (diff)
 		{
 			// ref vs. 2 conditions
-			assertEquals(2, dOutputs.size());
+			assertNrDiffNetworks(output, 2);
+			if (overlap)
+			{
+				assertNrOverlapNetworks(output, 2);
+			}
+			else
+			{
+				assertNrOverlapNetworks(output, 0);
+			}
 		}
+		
 		else if (overlap)
 		{
 			// 3 pairwise comparisons
-			assertEquals(3, dOutputs.size());
+			assertNrPairs(output, 0);
+			assertNrDiffNetworks(output, 0);
+			assertNrOverlapNetworks(output, 3);
 		}
 		else
 		{
 			// no comparisons
-			assertEquals(0, dOutputs.size());
+			assertNrPairs(output, 0);
+			assertNrDiffNetworks(output, 0);
+			assertNrOverlapNetworks(output, 0);
 		}
 
-		for (DifferentialOutput output : dOutputs)
+		// Now, test the number of edges per result network, depending on the settings.
+		Map<String, Integer> diffcounts = new HashMap<String, Integer>();
+		diffcounts.put("diff_Draughty", 12);
+		diffcounts.put("diff_Salty", 11);
+
+		Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
+		overlapcounts.put("overlap_Draughty_Reference", 3);
+		overlapcounts.put("overlap_Reference_Salty", 5);
+		overlapcounts.put("overlap_Draughty_Salty", 5);	
+
+		if (diff && overlap)
 		{
-			Map<String, Integer> diffcounts = new HashMap<String, Integer>();
-			diffcounts.put("diff_Draughty", 12);
-			diffcounts.put("diff_Salty", 11);
-
-			Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
-			overlapcounts.put("overlap_Draughty_Reference", 3);
-			overlapcounts.put("overlap_Reference_Salty", 5);
-			overlapcounts.put("overlap_Draughty_Salty", 5);	
-
-			if (diff && overlap)
+			for (OutputNetworkPair pair : output.getOutputAsPairs())
 			{
-				OutputNetworkPair pair = output.getOutputAsPair();
 				DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				int countD = diffcounts.get(dNetwork.getName());
 				assertEquals(countD, dNetwork.getEdges().size());
@@ -226,29 +240,21 @@ public class TestConfiguration
 				int countO = overlapcounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}
-			else
+		}
+		if (diff)
+		{
+			for (DifferentialNetwork dNetwork : output.getDifferentialNetworks())
 			{
-				assertNoPair(output);
-			}
-			if (diff)
-			{
-				DifferentialNetwork dNetwork = output.getDifferentialNetwork();
 				int countD = diffcounts.get(dNetwork.getName());
 				assertEquals(countD, dNetwork.getEdges().size());
 			}
-			else
+		}
+		if (overlap)
+		{
+			for (OverlappingNetwork oNetwork : output.getOverlappingNetworks())
 			{
-				assertNoDiffNetwork(output);
-			}
-			if (overlap)
-			{
-				OverlappingNetwork oNetwork = output.getOverlappingNetwork();
 				int countO = overlapcounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
-			}
-			else
-			{
-				assertNoOverlapNetwork(output);
 			}
 		}
 	}
@@ -271,57 +277,30 @@ public class TestConfiguration
 	}
 
 	/**
-	 * Private method that asserts that a pair can not be queried from this output result.
+	 * Private method that asserts the number of differential output pairs in the output result (may be 0).
 	 */
-	private void assertNoPair(DifferentialOutput output)
+	private void assertNrPairs(DifferentialOutput output, int number)
 	{
-		boolean exceptionThrown = false;
-		try
-		{
-			@SuppressWarnings("unused")
-			OutputNetworkPair pair = output.getOutputAsPair();
-		}
-		catch (IllegalArgumentException e)
-		{
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
+		int pairs = output.getOutputAsPairs().size();
+		assertEquals(number, pairs);
 	}
 
 	/**
-	 * Private method that asserts that a differential network can not be queried from this output result.
+	 * Private method that asserts the number of differential networks in the output result (may be 0).
 	 */
-	private void assertNoDiffNetwork(DifferentialOutput output)
+	private void assertNrDiffNetworks(DifferentialOutput output, int number)
 	{
-		boolean exceptionThrown = false;
-		try
-		{
-			@SuppressWarnings("unused")
-			DifferentialNetwork dn = output.getDifferentialNetwork();
-		}
-		catch (IllegalArgumentException e)
-		{
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
+		int diffs = output.getDifferentialNetworks().size();
+		assertEquals(number, diffs);
 	}
 
 	/**
-	 * Private method that asserts that an overlap network can not be queried from this output result.
+	 * Private method that asserts the number of overlap networks in the output result (may be 0).
 	 */
-	private void assertNoOverlapNetwork(DifferentialOutput output)
+	private void assertNrOverlapNetworks(DifferentialOutput output, int number)
 	{
-		boolean exceptionThrown = false;
-		try
-		{
-			@SuppressWarnings("unused")
-			OverlappingNetwork dn = output.getOverlappingNetwork();
-		}
-		catch (IllegalArgumentException e)
-		{
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
+		int overlaps = output.getOverlappingNetworks().size();
+		assertEquals(number, overlaps);
 	}
 
 }

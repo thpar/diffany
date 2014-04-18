@@ -1,5 +1,8 @@
 package be.svlandeg.diffany.core.project;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
@@ -12,111 +15,101 @@ import be.svlandeg.diffany.core.networks.OverlappingNetwork;
  */
 public class DifferentialOutput
 {
-	
-	private DifferentialNetwork dn;
-	private OverlappingNetwork on;
 
-	
-	/**
-	 * Create a new empty output object from both a non-null differential and a non-null overlapping network.
-     *
-	 * @param dn the differential network
-	 * @param on the overlap network
-	 * @throws IllegalArgumentException when either of the provided networks is null
-	 */
-	public DifferentialOutput(DifferentialNetwork dn, OverlappingNetwork on)
-	{
-		setDifferential(dn);
-		setOverlap(on);
-	}
-	
+	private Set<DifferentialNetwork> dns;
+	private Set<OverlappingNetwork> ons;
+	private Set<OutputNetworkPair> pairs;
+
 	/**
 	 * Create a new empty output object.
-     *
+	 *
 	 * @throws IllegalArgumentException when either of the provided networks is null
 	 */
 	public DifferentialOutput()
 	{
-		this.dn = null;
-		this.on = null;
+		clean();
 	}
 	
 	/**
-	 * Set the differential output network.
+	 * Add a pair of differential+overlap networks to this output.
+	 * @param pair the pair of differential and overlap output networks
+	 */
+	public void addPair(OutputNetworkPair pair)
+	{
+		if (pair == null)
+		{
+			String errormsg = "The specified output pair can not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		pairs.add(pair);
+		addDifferential(pair.getDifferentialNetwork());
+		addOverlap(pair.getOverlappingNetwork());
+	}
+
+
+	/**
+	 * Add a differential output network.
 	 * @param dn the differential output network
 	 */
-	public void setDifferential(DifferentialNetwork dn)
+	public void addDifferential(DifferentialNetwork dn)
 	{
 		if (dn == null)
 		{
 			String errormsg = "The specified output differential network(s) can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		this.dn = dn;
+		dns.add(dn);
 	}
-	
+
 	/**
-	 * Set the overlap output network.
+	 * Add an overlap output network.
 	 * @param on the overlap output network
 	 */
-	public void setOverlap(OverlappingNetwork on)
+	public void addOverlap(OverlappingNetwork on)
 	{
 		if (on == null)
 		{
 			String errormsg = "The specified output overlap network(s) can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		this.on = on;
+		ons.add(on);
+	}
+
+	/**
+	 * Retrieve the differential and overlap networks as result pairs.
+	 * @return the result pairs, each containing both a differential and an overlap network
+	 */
+	public Set<OutputNetworkPair> getOutputAsPairs()
+	{
+		return pairs;
+	}
+
+	/**
+	 * Retrieve all differential networks
+	 * @return all differential networks in this output.
+	 */
+	public Set<DifferentialNetwork> getDifferentialNetworks()
+	{
+		return dns;
+	}
+
+	/**
+	 * Retrieve all overlapping networks
+	 * @return the overlapping network in this output.
+	 */
+	public Set<OverlappingNetwork> getOverlappingNetworks()
+	{
+		return ons;
 	}
 	
 	/**
-	 * Retrieve the differential and overlap networks as a result pair
-	 * @return the result pair, containing both the differential and overlap networks
-	 * @throws IllegalArgumentException when either of the two was null
+	 * Clean the output.
 	 */
-	public OutputNetworkPair getOutputAsPair()
+	public void clean()
 	{
-		if (dn == null)
-		{
-			String errormsg = "Can not provided the differential network: it was not calculated!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (on == null)
-		{
-			String errormsg = "Can not provided the overlapping network: it was not calculated!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		return new OutputNetworkPair(dn, on);
+		dns = new HashSet<DifferentialNetwork>();
+		ons = new HashSet<OverlappingNetwork>();
+		pairs = new HashSet<OutputNetworkPair>();
 	}
-	
-	/**
-	 * Retrieve the differential network
-	 * @return the differential network
-	 * @throws IllegalArgumentException when the differential network was null (i.e. not calculated)
-	 */
-	public DifferentialNetwork getDifferentialNetwork()
-	{
-		if (dn == null)
-		{
-			String errormsg = "Can not provided the differential network: it was not calculated!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		return dn;
-	}
-	
-	/**
-	 * Retrieve the overlapping network
-	 * @return the overlapping network
-	 * @throws IllegalArgumentException when the overlapping network was null (i.e. not calculated)
-	 */
-	public OverlappingNetwork getOverlappingNetwork()
-	{
-		if (on == null)
-		{
-			String errormsg = "Can not provided the overlapping network: it was not calculated!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		return on;
-	}
-	
+
 }

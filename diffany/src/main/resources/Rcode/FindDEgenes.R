@@ -3,7 +3,7 @@
 
 library(limma);
 
-#combn <- factor(paste(pData(pheno)[, 1], pData(pheno)[, 2], sep = "_"));
+#combn <- factor(paste(pData(pheno)[, 1], pData(pheno)[, 2], sep="_"));
 #design <- model.matrix(~combn);
 
 #design <- cbind(c=1,mutvsc=c(0,0,0,1,1,1)); 
@@ -14,5 +14,5 @@ design <- model.matrix(~times*conditions);
 
 fit <- lmFit(expressionSet, design);
 efit <- eBayes(fit);
-toptable <- topTable(efit, coef = 2);
+toptable <- topTable(efit, coef=2, number=50);
 topIDs <- row.names(toptable);

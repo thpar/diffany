@@ -51,21 +51,13 @@ public class AnalyseDiffExpression
 		GenePrinter gp = new GenePrinter();
 		System.out.println("");
 		
-		exeR.doesVariableExist("conditions");
-		exeR.doesVariableExist("times");
-		exeR.doesVariableExist("design");
-		exeR.doesVariableExist("expressionSet");
-		exeR.doesVariableExist("fit");
-		exeR.doesVariableExist("efit");
-		exeR.doesVariableExist("toptable");
-		exeR.doesVariableExist("topIDs");
-		
 		String[] topIDs = exeR.getStringArray("topIDs");
 		System.out.println(" Top most DE genes: ");
 		for (int i = 0; i < topIDs.length; i++)
 		{
+			System.out.println("");
 			String arrayID = topIDs[i];
-			List<String> results = gp.printGene(arrayID);;
+			List<String> results = gp.printGene(arrayID);
 			for (String result : results)
 			{
 				System.out.println("  " + (i + 1) + ".\t" + result);

@@ -6,6 +6,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.merged.MergedConvertor;
 import be.svlandeg.diffany.core.networks.merged.MergedDifferentialNetwork;
 import be.svlandeg.diffany.core.networks.merged.MergedOverlappingNetwork;
 
@@ -115,12 +116,15 @@ public class DifferentialOutput
 
 	/**
 	 * Retrieve all differential networks as one large merged network
-	 * @return the differential networks in this output, all merged together
+	 * @return the differential networks in this output, all merged together (or null when there were no differential networks)
 	 */
 	public MergedDifferentialNetwork getMergedDifferential()
 	{
-		// TODO
-		return null;
+		if (dns == null || dns.isEmpty())
+		{
+			return null;
+		}
+		return MergedConvertor.convertDifferentials(dns);
 	}
 
 	/**
@@ -129,8 +133,11 @@ public class DifferentialOutput
 	 */
 	public MergedOverlappingNetwork getMergedOverlapping()
 	{
-		// TODO
-		return null;
+		if (ons == null || ons.isEmpty())
+		{
+			return null;
+		}
+		return MergedConvertor.convertOverlapping(ons);
 	}
 
 }

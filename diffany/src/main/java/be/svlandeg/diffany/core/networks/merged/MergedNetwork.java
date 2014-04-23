@@ -35,7 +35,7 @@ public abstract class MergedNetwork extends Network
 
 		this.name = name;
 		this.nm = nm;
-		Set<Edge> edges = MergedConvertor.convertToNormalEdges(conditionEdges);
+		Set<Edge> edges = MergedConvertor.castToNormalEdges(conditionEdges);
 		setNodesAndEdges(nodes, edges);
 	}
 

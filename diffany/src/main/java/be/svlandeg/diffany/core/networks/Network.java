@@ -246,5 +246,14 @@ public abstract class Network
 			nodes.add(node);
 		}
 	}
+	
+	/**
+	 * Return the nodemapper object that defines equality of nodes within this network 
+	 * @return the nodemapper
+	 */
+	public NodeMapper getNodeMapper()
+	{
+		return nm;
+	}
 
 }

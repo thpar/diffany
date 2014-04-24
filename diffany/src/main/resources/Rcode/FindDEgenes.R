@@ -8,7 +8,7 @@ fit_stress <- lmFit(expressionSet, design_stress);
 contrasts_stress <- makeContrasts(StressvsControl=Stressmannitol25-Stresscontrol, levels=design_stress);
 fit2_stress <- contrasts.fit(fit_stress, contrasts_stress);
 efit_stress <- eBayes(fit2_stress);
-toptable_stress <- topTable(efit_stress, coef=1, number=Inf, p.value=0.05);
+toptable_stress <- topTable(efit_stress, coef="StressvsControl", number=Inf, p.value=0.05);
 topIDs_stress <- row.names(toptable_stress);
 
 #design_stress_time <- model.matrix(~Time*Stress, data=pData(expressionSet));

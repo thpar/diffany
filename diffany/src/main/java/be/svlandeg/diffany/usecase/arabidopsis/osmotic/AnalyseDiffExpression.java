@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
@@ -50,24 +52,32 @@ public class AnalyseDiffExpression
 		System.out.println("");
 		GenePrinter gp = new GenePrinter();
 		System.out.println("");
-		
-		String suffix = "_stress";
-		//String suffix = "_stress_time";
-		int printMax = 30;
-		String[] topIDs = exeR.getStringArray("topIDs" + suffix);
-		System.out.println(printMax + " top most DE genes for " + suffix);
-		
-		for (int i = 0; i < Math.min(printMax, topIDs.length); i++)
-		{
-			System.out.println("");
-			String arrayID = topIDs[i];
-			List<String> results = gp.printGene(arrayID);
-			for (String result : results)
-			{
-				System.out.println("  " + (i + 1) + ".\t" + result);
-			}
-		}
-		System.out.println("");
-	}
 
+		Set<String> suffixes = new HashSet<String>();
+		suffixes.add("_stress");
+		//suffixes.add("_stress_time_3");
+		//suffixes.add("_stress_time_12");
+		//suffixes.add("_stress_time_24");
+
+		for (String suffix : suffixes)
+		{
+			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
+			int printMax = 50; //Integer.MAX_VALUE;
+			int toPrint = Math.min(printMax, topIDs.length);
+
+			System.out.println(toPrint + " top most DE genes for " + suffix);
+
+			for (int i = 0; i < toPrint; i++)
+			{
+				System.out.println("");
+				String arrayID = topIDs[i];
+				List<String> results = gp.printGene(arrayID);
+				for (String result : results)
+				{
+					System.out.println("  " + (i + 1) + ".\t" + result);
+				}
+			}
+			System.out.println("");
+		}
+	}
 }

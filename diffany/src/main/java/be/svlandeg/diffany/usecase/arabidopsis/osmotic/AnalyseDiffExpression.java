@@ -51,9 +51,13 @@ public class AnalyseDiffExpression
 		GenePrinter gp = new GenePrinter();
 		System.out.println("");
 		
-		String[] topIDs = exeR.getStringArray("topIDs");
-		System.out.println(" Top most DE genes: ");
-		for (int i = 0; i < topIDs.length; i++)
+		String suffix = "_stress";
+		//String suffix = "_stress_time";
+		int printMax = 30;
+		String[] topIDs = exeR.getStringArray("topIDs" + suffix);
+		System.out.println(printMax + " top most DE genes for " + suffix);
+		
+		for (int i = 0; i < Math.min(printMax, topIDs.length); i++)
 		{
 			System.out.println("");
 			String arrayID = topIDs[i];

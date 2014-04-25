@@ -107,13 +107,21 @@ public class RBridge
 		{
 			System.err.println(" ! Error deploying the Java-R bridge through JRI: " + e.getMessage());
 			System.err.println("");
-			System.err.println(" ! This is probably because the directory containing the correct jri.dll is lacking from the path variable.");
+			
+			System.err.println(" ! This may be because the R installation is not on the path variable (e.g. C:/Program Files/R/R-X.Y.Z/bin/x64/)");
+			System.err.println(" ! Or because the jri.dll is not on the path variable (e.g. C:/Program Files/R/R-X.Y.Z/library/rJava/jri/x64/)");
+			System.err.println("");
+			System.err.println(" ! If R is not installed, download and install it from http://www.r-project.org/");
+			System.err.println(" ! If rJava/JRI is not installed, run this command in R: << install.packages(\"rJava\") >>");
+			System.err.println(" ! A nice GUI for R can be found at http://www.rstudio.com/");
+			System.err.println("");
 			System.err.println(" ! Current value for java.library.path: " + System.getProperty("java.library.path"));
+			System.err.println(" ! This can be edited by changing the system environment variables.");
 			System.err.println("");
 			System.err.println(" ! Execution can not continue until the system settings are fixed!");
 			System.err.println(" ! After fixing this issue, please reboot the system and try again.");
 			System.err.println("");
-			throw new IllegalStateException("R is not properly installed and configured! ");
+			throw new IllegalStateException("R is not properly installed and configured!");
 		}
 	}
 

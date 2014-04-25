@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
@@ -39,33 +38,33 @@ public class AnalyseDiffExpression
 		System.out.println("");
 
 		System.out.println(" Analysing data: ");
-
+		
 		String[] samples = exeR.getStringArray("samples");
 		System.out.println("  Samples: " + samples.length);
 
 		String[] probesets = exeR.getStringArray("probesets");
 		System.out.println("  Probe sets: " + probesets.length);
 
-		//double[][] expressionValues = exeR.getDoubleMatrix("expressionMatrix");
-		//System.out.println("  Expression values dimension: " + expressionValues.length + " - " + expressionValues[0].length);
-
 		System.out.println("");
 		GenePrinter gp = new GenePrinter();
 		System.out.println("");
 
-		Set<String> suffixes = new HashSet<String>();
+		List<String> suffixes = new ArrayList<String>();
 		suffixes.add("_stress");
-		//suffixes.add("_stress_time_3");
-		//suffixes.add("_stress_time_12");
-		//suffixes.add("_stress_time_24");
+		suffixes.add("_stress_time_1.5");
+		suffixes.add("_stress_time_3");
+		suffixes.add("_stress_time_12");
+		suffixes.add("_stress_time_24");
 
 		for (String suffix : suffixes)
 		{
+			System.out.println("  results for: " + suffix);
+			
 			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
-			int printMax = 50; //Integer.MAX_VALUE;
+			int printMax = 10; //Integer.MAX_VALUE;
 			int toPrint = Math.min(printMax, topIDs.length);
-
-			System.out.println(toPrint + " top most DE genes for " + suffix);
+			
+			System.out.println(toPrint + " top most DE genes");
 
 			for (int i = 0; i < toPrint; i++)
 			{
@@ -77,7 +76,7 @@ public class AnalyseDiffExpression
 					System.out.println("  " + (i + 1) + ".\t" + result);
 				}
 			}
-			System.out.println("");
+			System.out.println(" ******************************* ");
 		}
 	}
 }

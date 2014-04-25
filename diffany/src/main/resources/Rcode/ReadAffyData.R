@@ -2,8 +2,13 @@
 #biocLite("affy");
 
 library(affy);
+library(limma);
 
-pheno <- read.AnnotatedDataFrame("RNAtargets_Sofie.txt");
+targets <- readTargets("RNAtargets_Sofie.txt");
+cols <- c("Stress","Time");
+targets[, "Setup"] <- do.call(paste, c(targets [cols], sep="_"));
+pheno <- new("AnnotatedDataFrame", data=targets);
+
 rawProbeData <- ReadAffy(phenoData=pheno);
 #probeValues <- exprs(rawProbeData);
 #probeNames <- probeNames(rawProbeData);

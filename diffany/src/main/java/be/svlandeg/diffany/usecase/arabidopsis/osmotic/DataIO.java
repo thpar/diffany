@@ -52,12 +52,4 @@ public class DataIO
 		return new File(getInputDataDir(), "short-term-osmotic-stress"); 
 	}
 	
-	/**
-	 * Retrieve the directory containing the osmotic stress files after 12h
-	 * @return the directory containing the osmotic stress files after 12h
-	 */
-	public File getOsmoticStress12Dir()
-	{
-		return new File(getRootOsmoticStressDir(), "subset-12h"); 
-	}
 }

@@ -3,16 +3,18 @@
 
 library(limma);
 
-design_stress <- model.matrix(~0+Stress, data=pData(expressionSet));
-colnames(design_stress) <- gsub("Stress","",colnames(design_stress));
-contrasts_stress <- makeContrasts(StressvsControl=mannitol25-control, levels=design_stress);
+# GENERIC COMPARISON BETWEEN ALL STRESS AND ALL CONTROL CONDITIONS (TOO COARSE-GRAINED)
+#design_stress <- model.matrix(~0+Stress, data=pData(expressionSet));
+#colnames(design_stress) <- gsub("Stress","",colnames(design_stress));
+#contrasts_stress <- makeContrasts(StressvsControl=mannitol25-control, levels=design_stress);
 
-fit_stress <- lmFit(expressionSet, design_stress);
-fit2_stress <- contrasts.fit(fit_stress, contrasts_stress);
-efit_stress <- eBayes(fit2_stress);
-toptable_stress <- topTable(efit_stress, coef="StressvsControl", number=Inf, p.value=0.05);
-topIDs_stress <- row.names(toptable_stress);
+#fit_stress <- lmFit(expressionSet, design_stress);
+#fit2_stress <- contrasts.fit(fit_stress, contrasts_stress);
+#efit_stress <- eBayes(fit2_stress);
+#toptable_stress <- topTable(efit_stress, coef="StressvsControl", number=Inf, p.value=0.05);
+#topIDs_stress <- row.names(toptable_stress);
 
+# SPECIFIC COMPARISONS BETWEEN TIME-DEPENDENT STRESS AND CONTROL EXPERIMENTS
 design_stress_time <- model.matrix(~0+Setup, data=pData(expressionSet));
 colnames(design_stress_time) <- gsub("Setup","",colnames(design_stress_time));
 contrasts_stress_time <- makeContrasts(StressvsControl_3h=mannitol25_3h-control_3h, StressvsControl_12h=mannitol25_12h-control_12h, StressvsControl_24h=mannitol25_24h-control_24h, StressvsControl_1.5h=mannitol25_1.5h-control_1.5h, levels=design_stress_time);

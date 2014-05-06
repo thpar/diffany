@@ -27,14 +27,12 @@ public class RunAnalysis
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie thuis 
+		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie thuis 
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
-		// TODO: compare all at once?
-		//File osmoticStressDir = io.getOsmoticStress12Dir();
 		File osmoticStressDir = io.getRootOsmoticStressDir();
 		
 		RBridge bridge = new RBridge();

@@ -50,7 +50,7 @@ public class AnalyseDiffExpression
 		System.out.println("");
 
 		List<String> suffixes = new ArrayList<String>();
-		suffixes.add("_stress");
+		//suffixes.add("_stress");
 		suffixes.add("_stress_time_1.5");
 		suffixes.add("_stress_time_3");
 		suffixes.add("_stress_time_12");

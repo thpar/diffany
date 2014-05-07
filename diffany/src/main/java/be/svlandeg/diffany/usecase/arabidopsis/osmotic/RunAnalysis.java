@@ -27,22 +27,21 @@ public class RunAnalysis
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
-		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie thuis 
+		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
 		File osmoticStressDir = io.getRootOsmoticStressDir();
+		String outputLog = osmoticStressDir + File.separator + "R_log.txt";	// can also be null
 		
-		RBridge bridge = new RBridge();
+		RBridge bridge = new RBridge(outputLog);
 		try
 		{ 
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticData(exeR, osmoticStressDir);
 			deAnalysis.findDEGenes(exeR, osmoticStressDir);
-			
-			bridge.close();
 		}
 		catch(IOException e)
 		{
@@ -53,6 +52,7 @@ public class RunAnalysis
 		{
 			System.out.println("Couldn't read R script : " + e.getMessage());
 		}
+		
 		bridge.close();
 		
 		System.out.println("");

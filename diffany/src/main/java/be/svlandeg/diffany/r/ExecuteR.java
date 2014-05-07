@@ -28,23 +28,46 @@ public class ExecuteR
 	{
 		this.bridge = bridge;
 	}
-
+	
+	/**
+	 * Create a new instance to execute R commando's, through a certain R bridge.
+	 * The output of the R commands will be diverted to the outputfile until endLogDiversion is called.
+	 * 
+	 * @param bridge the bridge that allows talking to R
+	 */
+	public ExecuteR(RBridge bridge, String outputfile)
+	{
+		this(bridge);
+		changeExecutionDir(outputfile);
+	}
+	
 	/**
 	 * Change the execution directory for the R commando's.
-	 * @param dir_path
-	 * @return the old path setting
+	 * 
+	 * @param dir_path the new working directory
+	 * @return the old working directory
 	 */
 	public String changeExecutionDir(String dir_path)
 	{
 		bridge.evaluate("path <- getwd()");
 		String old_dir_path = getStringValue("path");
-
-		// R wants to get forward slashed in the path 
-		String new_dir_path = dir_path.replace("\\", "/");
+		String new_dir_path = bridge.convertSlashes(dir_path);
 
 		bridge.evaluate("setwd('" + new_dir_path + "')");
 
 		return old_dir_path;
+	}
+	
+	/**
+	 * Retrieve whether a variable by the given name exists or not.
+	 * 
+	 * @param variable the symbol of the variable (as defined previously)
+	 * @return whether or not the variable exists in the R environment.
+	 */
+	public boolean doesVariableExist(String variable)
+	{
+		REXP value = bridge.evaluate(variable);
+		return value != null;
 	}
 
 	/**
@@ -61,18 +84,6 @@ public class ExecuteR
 			return value.asString();
 		}
 		return null;
-	}
-	
-	/**
-	 * Retrieve whether a variable by the given name exists or not.
-	 * 
-	 * @param variable the symbol of the variable (as defined previously)
-	 * @return whether or not the variable exists in the R environment.
-	 */
-	public boolean doesVariableExist(String variable)
-	{
-		REXP value = bridge.evaluate(variable);
-		return value != null;
 	}
 
 	/**

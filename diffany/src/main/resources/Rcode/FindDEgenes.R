@@ -1,7 +1,9 @@
 #source("http://bioconductor.org/biocLite.R");
 #biocLite("limma");
+#install.packages("statmod") 
 
 library(limma);
+library(statmod);
 
 # GENERIC COMPARISON BETWEEN ALL STRESS AND ALL CONTROL CONDITIONS (TOO COARSE-GRAINED)
 #design_stress <- model.matrix(~0+Stress, data=pData(expressionSet));
@@ -17,9 +19,12 @@ library(limma);
 # SPECIFIC COMPARISONS BETWEEN TIME-DEPENDENT STRESS AND CONTROL EXPERIMENTS
 design_stress_time <- model.matrix(~0+Setup, data=pData(expressionSet));
 colnames(design_stress_time) <- gsub("Setup","",colnames(design_stress_time));
-contrasts_stress_time <- makeContrasts(StressvsControl_3h=mannitol25_3h-control_3h, StressvsControl_12h=mannitol25_12h-control_12h, StressvsControl_24h=mannitol25_24h-control_24h, StressvsControl_1.5h=mannitol25_1.5h-control_1.5h, levels=design_stress_time);
 
-fit_stress_time <- lmFit(expressionSet, design_stress_time);
+corfit <- duplicateCorrelation(expressionSet, design_stress_time, block=targets$Replicate);
+fit_stress_time <- lmFit(expressionSet, design_stress_time, block=targets$Replicate, cor=corfit$consensus);
+#fit_stress_time <- lmFit(expressionSet, design_stress_time);
+
+contrasts_stress_time <- makeContrasts(StressvsControl_3h=mannitol25_3h-control_3h, StressvsControl_12h=mannitol25_12h-control_12h, StressvsControl_24h=mannitol25_24h-control_24h, StressvsControl_1.5h=mannitol25_1.5h-control_1.5h, levels=design_stress_time);
 fit2_stress_time <- contrasts.fit(fit_stress_time, contrasts_stress_time);
 efit_stress_time <- eBayes(fit2_stress_time);
 

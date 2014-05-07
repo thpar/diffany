@@ -38,7 +38,7 @@ public class AnalyseDiffExpression
 		System.out.println("");
 
 		System.out.println(" Analysing data: ");
-		
+
 		String[] samples = exeR.getStringArray("samples");
 		System.out.println("  Samples: " + samples.length);
 
@@ -59,21 +59,28 @@ public class AnalyseDiffExpression
 		for (String suffix : suffixes)
 		{
 			System.out.println("  results for: " + suffix);
-			
-			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
-			int printMax = 10; //Integer.MAX_VALUE;
-			int toPrint = Math.min(printMax, topIDs.length);
-			
-			System.out.println(toPrint + " top most DE genes");
 
-			for (int i = 0; i < toPrint; i++)
+			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
+			if (topIDs == null)
 			{
-				System.out.println("");
-				String arrayID = topIDs[i];
-				List<String> results = gp.printGene(arrayID);
-				for (String result : results)
+				System.out.println("   error: NULL");
+			}
+			else
+			{
+				int printMax = 10; //Integer.MAX_VALUE;
+				int toPrint = Math.min(printMax, topIDs.length);
+
+				System.out.println(toPrint + " top most DE genes");
+
+				for (int i = 0; i < toPrint; i++)
 				{
-					System.out.println("  " + (i + 1) + ".\t" + result);
+					System.out.println("");
+					String arrayID = topIDs[i];
+					List<String> results = gp.printGene(arrayID);
+					for (String result : results)
+					{
+						System.out.println("  " + (i + 1) + ".\t" + result);
+					}
 				}
 			}
 			System.out.println(" ******************************* ");

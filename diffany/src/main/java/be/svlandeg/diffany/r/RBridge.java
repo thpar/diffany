@@ -1,5 +1,8 @@
 package be.svlandeg.diffany.r;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RMainLoopCallbacks;
 import org.rosuda.JRI.Rengine;
@@ -24,24 +27,36 @@ public class RBridge
 	 * @param args arguments to be passed to R (not an empty list!)
 	 * @param runMainLoop if set to true the the event loop will be started as soon as possible, otherwise no event loop is started
 	 * @param initialCallbacks an instance implementing the RMainLoopCallbacks interface that provides methods to be called by R (can be null)
+	 * @param outputfile the absolute file path which will contain the R log file (if null, will be ignored). Will be emptied first.
 	 */
-	public RBridge(String[] args, boolean runMainLoop, RMainLoopCallbacks initialCallbacks)
+	public RBridge(String[] args, boolean runMainLoop, RMainLoopCallbacks initialCallbacks, String outputfile)
 	{
 		checkSystem();
 		iniEngine(args, runMainLoop, initialCallbacks);
+		if (outputfile != null)
+		{
+			try{
+				FileWriter writer = new FileWriter(outputfile, false);
+				writer.close();
+				divertLog(outputfile);
+			}
+			catch(IOException ex)
+			{
+				System.out.println(" ! error: could not divert the output to " + outputfile);
+				endLogDiversion();
+			}
+		}
 	}
 
 	/**
 	 * Produces a bridge to R. The bridge should be closed when the application is done with the R engine!
 	 * This constructor will call the main constructor with vanilla arguments, runMainLoop=false and no initialCallBacks (null).
 	 * 
-	 * @param args arguments to be passed to R (not an empty list!)
-	 * @param runMainLoop if set to true the the event loop will be started as soon as possible, otherwise no event loop is started
-	 * @param initialCallbacks an instance implementing the RMainLoopCallbacks interface that provides methods to be called by R (can be null)
+	 * @param outputfile the absolute file path which will contain the R log file
 	 */
-	public RBridge()
+	public RBridge(String outputfile)
 	{
-		this(DEFAULT_ARGS, DEFAULT_LOOP, null);
+		this(DEFAULT_ARGS, DEFAULT_LOOP, null, outputfile);
 	}
 
 	/**
@@ -72,6 +87,17 @@ public class RBridge
 	}
 	
 	/**
+	 * R wants only forward slashes in a path location, so this method converts backward slashes to forward.
+	 * 
+	 * @param dir_path the original path, which may contain both forward and backward slashes
+	 * @return a path location usable by the R bridge (i.e. containing only forward slashes)
+	 */
+	public String convertSlashes(String dir_path)
+	{
+		return dir_path.replace("\\", "/");
+	}
+	
+	/**
 	 * Evaluate an R statement through the Java-R bridge.
 	 * @return the REXP object resulting from the execution of the R code.
 	 */
@@ -80,7 +106,27 @@ public class RBridge
 		//System.out.println("trying : " + statement);
 		return engine.eval(statement);
 	}
-
+	
+	/**
+	 * Print the logs of the R environment into the specified file.
+	 * @param filepath the absolute file path which will contain the R log file
+	 */
+	public void divertLog(String filepath)
+	{
+		evaluate("log<-file('" + convertSlashes(filepath) + "')");
+		evaluate("sink(log, append=TRUE)");
+		evaluate("sink(log, append=TRUE, type='message')");
+	}
+	
+	/**
+	 * Stop printing the R outputs to the file specified earlier.
+	 */
+	public void endLogDiversion()
+	{
+		evaluate("sink(file = NULL)");
+		evaluate("closeAllConnections()");
+	}
+	
 
 	/**
 	 * Close the R engine, should be called when the application is done with R calculations.
@@ -89,6 +135,7 @@ public class RBridge
 	public void close()
 	{
 		engine.end();
+		endLogDiversion();
 	}
 
 	/**

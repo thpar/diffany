@@ -1,5 +1,6 @@
 #source("http://bioconductor.org/biocLite.R");
 #biocLite("affy");
+#biocLite("limma");
 
 library(affy);
 library(limma);

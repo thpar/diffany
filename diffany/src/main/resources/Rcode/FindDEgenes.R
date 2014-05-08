@@ -24,19 +24,19 @@ corfit <- duplicateCorrelation(expressionSet, design_stress_time, block=targets$
 fit_stress_time <- lmFit(expressionSet, design_stress_time, block=targets$Replicate, cor=corfit$consensus);
 #fit_stress_time <- lmFit(expressionSet, design_stress_time);
 
-contrasts_stress_time <- makeContrasts(StressvsControl_3h=mannitol25_3h-control_3h, StressvsControl_12h=mannitol25_12h-control_12h, StressvsControl_24h=mannitol25_24h-control_24h, StressvsControl_1.5h=mannitol25_1.5h-control_1.5h, levels=design_stress_time);
+contrasts_stress_time <- makeContrasts(response_3h=mannitol_3h-control_3h, response_12h=mannitol_12h-control_12h, response_24h=mannitol_24h-control_24h, response_1.5h=mannitol_1.5h-control_1.5h, levels=design_stress_time);
 fit2_stress_time <- contrasts.fit(fit_stress_time, contrasts_stress_time);
 efit_stress_time <- eBayes(fit2_stress_time);
 
-toptable_stress_time_3 <- topTable(efit_stress_time, coef="StressvsControl_3h", number=Inf, p.value=0.05);
+toptable_stress_time_3 <- topTable(efit_stress_time, coef="response_3h", number=Inf, p.value=0.05);
 topIDs_stress_time_3 <- row.names(toptable_stress_time_3);
 
-toptable_stress_time_12 <- topTable(efit_stress_time, coef="StressvsControl_12h", number=Inf, p.value=0.05);
+toptable_stress_time_12 <- topTable(efit_stress_time, coef="response_12h", number=Inf, p.value=0.05);
 topIDs_stress_time_12 <- row.names(toptable_stress_time_12);
 
-toptable_stress_time_24 <- topTable(efit_stress_time, coef="StressvsControl_24h", number=Inf, p.value=0.05);
+toptable_stress_time_24 <- topTable(efit_stress_time, coef="response_24h", number=Inf, p.value=0.05);
 topIDs_stress_time_24 <- row.names(toptable_stress_time_24);
 
-toptable_stress_time_1.5 <- topTable(efit_stress_time, coef="StressvsControl_1.5h", number=Inf, p.value=0.05);
+toptable_stress_time_1.5 <- topTable(efit_stress_time, coef="response_1.5h", number=Inf, p.value=0.05);
 topIDs_stress_time_1.5 <- row.names(toptable_stress_time_1.5);
 

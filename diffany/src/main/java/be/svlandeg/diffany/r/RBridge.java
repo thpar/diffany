@@ -35,7 +35,9 @@ public class RBridge
 		iniEngine(args, runMainLoop, initialCallbacks);
 		if (outputfile != null)
 		{
-			try{
+			try
+			{
+				// Make sure the file is empty before starting to write the log
 				FileWriter writer = new FileWriter(outputfile, false);
 				writer.close();
 				divertLog(outputfile);
@@ -108,7 +110,7 @@ public class RBridge
 	}
 	
 	/**
-	 * Print the logs of the R environment into the specified file.
+	 * Print the logs of the R environment into the specified file. The file is appended and NOT cleaned beforehand!
 	 * @param filepath the absolute file path which will contain the R log file
 	 */
 	public void divertLog(String filepath)
@@ -119,7 +121,8 @@ public class RBridge
 	}
 	
 	/**
-	 * Stop printing the R outputs to the file specified earlier.
+	 * Stop printing the R outputs to the file specified earlier. 
+	 * This method will also close all existing connections to ensure proper cleanup.
 	 */
 	public void endLogDiversion()
 	{
@@ -129,8 +132,8 @@ public class RBridge
 	
 
 	/**
-	 * Close the R engine, should be called when the application is done with R calculations.
-	 * Calls an asynchronous method!
+	 * Close the R engine: should be called when the application is done with R calculations. Calls an asynchronous method!
+	 * This method will also close the connection to the log file, if any.
 	 */
 	public void close()
 	{
@@ -139,9 +142,10 @@ public class RBridge
 	}
 
 	/**
-	 * This private message will inform the user of inappropriately installed R/JRI versions.
+	 * This private message will inform the user of inappropriately installed R/JRI versions, 
+	 * and provide help information and pointers for fixing the issue.
 	 * 
-	 * @throws IllegalStateException
+	 * @throws IllegalStateException when R is not properly installed or configured
 	 */
 	private void checkSystem() throws IllegalStateException
 	{

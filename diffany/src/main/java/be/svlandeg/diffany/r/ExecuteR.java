@@ -30,18 +30,6 @@ public class ExecuteR
 	}
 	
 	/**
-	 * Create a new instance to execute R commando's, through a certain R bridge.
-	 * The output of the R commands will be diverted to the outputfile until endLogDiversion is called.
-	 * 
-	 * @param bridge the bridge that allows talking to R
-	 */
-	public ExecuteR(RBridge bridge, String outputfile)
-	{
-		this(bridge);
-		changeExecutionDir(outputfile);
-	}
-	
-	/**
 	 * Change the execution directory for the R commando's.
 	 * 
 	 * @param dir_path the new working directory

@@ -50,11 +50,11 @@ public class AnalyseDiffExpression
 		System.out.println("");
 
 		List<String> suffixes = new ArrayList<String>();
-		//suffixes.add("_stress");
-		suffixes.add("_stress_time_1.5");
-		suffixes.add("_stress_time_3");
-		suffixes.add("_stress_time_12");
-		suffixes.add("_stress_time_24");
+		suffixes.add("_stress");
+		//suffixes.add("_stress_time_1.5");
+		//suffixes.add("_stress_time_3");
+		//suffixes.add("_stress_time_12");
+		//suffixes.add("_stress_time_24");
 
 		for (String suffix : suffixes)
 		{
@@ -67,7 +67,7 @@ public class AnalyseDiffExpression
 			}
 			else
 			{
-				int printMax = 10; //Integer.MAX_VALUE;
+				int printMax = 100; //Integer.MAX_VALUE;
 				int toPrint = Math.min(printMax, topIDs.length);
 
 				System.out.println(toPrint + " top most DE genes");

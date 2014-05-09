@@ -17,8 +17,8 @@ fit_stress <- lmFit(expressionSet, design_stress, block=targets$Replicate, cor=c
 contrasts_stress <- makeContrasts(StressvsControl=mannitol-control, levels=design_stress);
 fit2_stress <- contrasts.fit(fit_stress, contrasts_stress);
 efit_stress <- eBayes(fit2_stress);
-toptable_stress <- topTable(efit_stress, coef="StressvsControl", number=Inf);
-topIDs_stress <- row.names(toptable_stress);
+toptable_mannitol <- topTable(efit_stress, coef="StressvsControl", number=Inf);
+topIDs_mannitol <- row.names(toptable_mannitol);
 
 # SPECIFIC COMPARISONS BETWEEN TIME-DEPENDENT STRESS AND CONTROL EXPERIMENTS
 design_stress_time <- model.matrix(~0+Setup, data=pData(expressionSet));
@@ -37,16 +37,16 @@ contrasts_stress_time <- makeContrasts(response_3h=mannitol_3h-control_3h, respo
 fit2_stress_time <- contrasts.fit(fit_stress_time, contrasts_stress_time);
 efit_stress_time <- eBayes(fit2_stress_time);
 
-#toptable_stress_time_3 <- topTable(efit_stress_time, coef="response_3h", number=Inf, p.value=0.05);
-toptable_stress_time_3 <- topTable(efit_stress_time, coef="response_3h", number=Inf);
-topIDs_stress_time_3 <- row.names(toptable_stress_time_3);
+#toptable_3 <- topTable(efit_stress_time, coef="response_3h", number=Inf, p.value=0.05);
+toptable_3 <- topTable(efit_stress_time, coef="response_3h", number=Inf);
+topIDs_3 <- row.names(toptable_3);
 
-toptable_stress_time_12 <- topTable(efit_stress_time, coef="response_12h", number=Inf);
-topIDs_stress_time_12 <- row.names(toptable_stress_time_12);
+toptable_12 <- topTable(efit_stress_time, coef="response_12h", number=Inf);
+topIDs_12 <- row.names(toptable_12);
 
-toptable_stress_time_24 <- topTable(efit_stress_time, coef="response_24h", number=Inf);
-topIDs_stress_time_24 <- row.names(toptable_stress_time_24);
+toptable_24 <- topTable(efit_stress_time, coef="response_24h", number=Inf);
+topIDs_24 <- row.names(toptable_24);
 
-toptable_stress_time_1.5 <- topTable(efit_stress_time, coef="response_1.5h", number=Inf);
-topIDs_stress_time_1.5 <- row.names(toptable_stress_time_1.5);
+toptable_1.5 <- topTable(efit_stress_time, coef="response_1.5h", number=Inf);
+topIDs_1.5 <- row.names(toptable_1.5);
 

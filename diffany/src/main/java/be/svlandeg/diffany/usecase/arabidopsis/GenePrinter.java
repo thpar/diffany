@@ -54,34 +54,42 @@ public class GenePrinter
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));
 	}
-	
+
 	/**
 	 * Get the synonyms of an A.th. gene by its array ID. There may be multiple entries when an arrayID maps to multiple locus IDs.
+	 * 
 	 * @param arrayID the ID from the A.th microarray dataset
 	 */
 	public List<String> getSynonyms(String arrayID)
 	{
 		List<String> results = new ArrayList<String>();
-		
+
 		Set<String> locusIDs = arrayidmapping.get(arrayID);
-		for (String locusID : locusIDs)
+		if (locusIDs != null)
 		{
-			String egid = locusidmapping.get(locusID);
-			String result = locusID + " - GID:" + egid;
-			if (egid != null)
+			for (String locusID : locusIDs)
 			{
-				Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));
+				String egid = locusidmapping.get(locusID);
+				String result = locusID + " - GID:" + egid;
+				if (egid != null)
 				{
-					synonyms.remove(arrayID);
-					synonyms.remove(locusID);
-					synonyms.remove(egid);
+					Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));
+					{
+						synonyms.remove(arrayID);
+						synonyms.remove(locusID);
+						synonyms.remove(egid);
+					}
+					for (String synonym : synonyms)
+					{
+						result += " [" + synonym + "]";
+					}
 				}
-				for (String synonym : synonyms)
-				{
-					result += " [" + synonym + "]";
-				}
+				results.add(result);
 			}
-			results.add(result);
+		}
+		else
+		{
+			results.add("no_match");
 		}
 		return results;
 	}

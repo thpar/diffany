@@ -1,7 +1,11 @@
 package be.svlandeg.diffany.r;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.rosuda.JRI.REXP;
 import org.rosuda.JRI.RMainLoopCallbacks;
@@ -21,30 +25,33 @@ public class RBridge
 	private final static boolean DEFAULT_LOOP = false;
 	private Rengine engine;
 
+	private String logfile;
+
 	/**
 	 * Produces a bridge to R. The bridge should be closed when the application is done with the R engine!
 	 * 
 	 * @param args arguments to be passed to R (not an empty list!)
 	 * @param runMainLoop if set to true the the event loop will be started as soon as possible, otherwise no event loop is started
 	 * @param initialCallbacks an instance implementing the RMainLoopCallbacks interface that provides methods to be called by R (can be null)
-	 * @param outputfile the absolute file path which will contain the R log file (if null, will be ignored). Will be emptied first.
+	 * @param logfile the absolute file path which will contain the R log file (if null, will be ignored). Will be emptied first.
 	 */
-	public RBridge(String[] args, boolean runMainLoop, RMainLoopCallbacks initialCallbacks, String outputfile)
+	public RBridge(String[] args, boolean runMainLoop, RMainLoopCallbacks initialCallbacks, String logfile)
 	{
 		checkSystem();
 		iniEngine(args, runMainLoop, initialCallbacks);
-		if (outputfile != null)
+		if (logfile != null)
 		{
+			this.logfile = logfile;
 			try
 			{
 				// Make sure the file is empty before starting to write the log
-				FileWriter writer = new FileWriter(outputfile, false);
+				FileWriter writer = new FileWriter(logfile, false);
 				writer.close();
-				divertLog(outputfile);
+				divertLog(logfile);
 			}
-			catch(IOException ex)
+			catch (IOException ex)
 			{
-				System.out.println(" ! error: could not divert the output to " + outputfile);
+				System.out.println(" ! error: could not divert the output to " + logfile);
 				endLogDiversion();
 			}
 		}
@@ -54,7 +61,7 @@ public class RBridge
 	 * Produces a bridge to R. The bridge should be closed when the application is done with the R engine!
 	 * This constructor will call the main constructor with vanilla arguments, runMainLoop=false and no initialCallBacks (null).
 	 * 
-	 * @param outputfile the absolute file path which will contain the R log file
+	 * @param logfile the absolute file path which will contain the R log file
 	 */
 	public RBridge(String outputfile)
 	{
@@ -62,7 +69,7 @@ public class RBridge
 	}
 
 	/**
-	 * Produces an engine for R, and initializes this engine as a protected field within this class. 
+	 * Produces an engine for R, and initializes this engine as a protected field within this class.
 	 * The function end should be called when the application is done with the engine!
 	 * 
 	 * @param args arguments to be passed to R (not an empty list!)
@@ -87,7 +94,7 @@ public class RBridge
 			throw new IllegalStateException("R is not properly installed and configured!");
 		}
 	}
-	
+
 	/**
 	 * R wants only forward slashes in a path location, so this method converts backward slashes to forward.
 	 * 
@@ -98,9 +105,10 @@ public class RBridge
 	{
 		return dir_path.replace("\\", "/");
 	}
-	
+
 	/**
 	 * Evaluate an R statement through the Java-R bridge.
+	 * 
 	 * @return the REXP object resulting from the execution of the R code.
 	 */
 	protected REXP evaluate(String statement)
@@ -108,28 +116,28 @@ public class RBridge
 		//System.out.println("trying : " + statement);
 		return engine.eval(statement);
 	}
-	
+
 	/**
 	 * Print the logs of the R environment into the specified file. The file is appended and NOT cleaned beforehand!
+	 * 
 	 * @param filepath the absolute file path which will contain the R log file
 	 */
-	public void divertLog(String filepath)
+	private void divertLog(String filepath)
 	{
 		evaluate("log<-file('" + convertSlashes(filepath) + "')");
 		evaluate("sink(log, append=TRUE)");
 		evaluate("sink(log, append=TRUE, type='message')");
 	}
-	
+
 	/**
-	 * Stop printing the R outputs to the file specified earlier. 
+	 * Stop printing the R outputs to the file specified earlier.
 	 * This method will also close all existing connections to ensure proper cleanup.
 	 */
-	public void endLogDiversion()
+	private void endLogDiversion()
 	{
 		evaluate("sink(file = NULL)");
 		evaluate("closeAllConnections()");
 	}
-	
 
 	/**
 	 * Close the R engine: should be called when the application is done with R calculations. Calls an asynchronous method!
@@ -142,7 +150,42 @@ public class RBridge
 	}
 
 	/**
-	 * This private message will inform the user of inappropriately installed R/JRI versions, 
+	 * Retrieve all errors found in the logfile of the R commando's. Specifically, this will return all lines starting with "Error".
+	 * When there was a problem reading the logfile, this will be specified as an error message in the returned list itself.
+	 * 
+	 * @return a chronological list of errors which happened during execution of the R commando's through this bridge.
+	 */
+	public List<String> getErrorsFromLogfile()
+	{
+		List<String> errors = new ArrayList<String>();
+		if (logfile == null)
+		{
+			errors.add("No logfile specified!");
+		}
+		try
+		{
+			BufferedReader reader = new BufferedReader(new FileReader(logfile));
+			String line = reader.readLine();
+			while (line != null)
+			{
+				if (line.startsWith("Error"))
+				{
+					errors.add(line);
+				}
+				line = reader.readLine();
+			}
+			reader.close();
+		}
+		catch(IOException ex)
+		{
+			errors.add("Error reading logfile: " + ex.getMessage());
+		}
+		
+		return errors;
+	}
+
+	/**
+	 * This private message will inform the user of inappropriately installed R/JRI versions,
 	 * and provide help information and pointers for fixing the issue.
 	 * 
 	 * @throws IllegalStateException when R is not properly installed or configured
@@ -158,7 +201,7 @@ public class RBridge
 		{
 			System.err.println(" ! Error deploying the Java-R bridge through JRI: " + e.getMessage());
 			System.err.println("");
-			
+
 			System.err.println(" ! This may be because the R installation is not on the path variable (e.g. C:/Program Files/R/R-X.Y.Z/bin/x64/)");
 			System.err.println(" ! Or because the jri.dll is not on the path variable (e.g. C:/Program Files/R/R-X.Y.Z/library/rJava/jri/x64/)");
 			System.err.println("");

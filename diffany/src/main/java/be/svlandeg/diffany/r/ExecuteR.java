@@ -125,6 +125,7 @@ public class ExecuteR
 		return null;
 	}
 
+	
 	/**
 	 * Retrieve the value of a certain double matrix previously defined/calculated in R.
 	 * To check whether a variable exists, the method doesVariableExist is used.

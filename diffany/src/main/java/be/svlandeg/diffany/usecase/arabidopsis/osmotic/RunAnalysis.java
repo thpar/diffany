@@ -3,6 +3,7 @@ package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
@@ -27,8 +28,8 @@ public class RunAnalysis
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
-		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
@@ -52,7 +53,17 @@ public class RunAnalysis
 		{
 			System.out.println("Couldn't read R script : " + e.getMessage());
 		}
+		System.out.println("");
+		List<String> errors = bridge.getErrorsFromLogfile();
 		
+		if (! errors.isEmpty())
+		{
+			System.out.println(" Errors occurred during R execution:");
+			for (String error : errors)
+			{
+				System.out.println("  ! " + error);
+			}
+		}
 		bridge.close();
 		
 		System.out.println("");

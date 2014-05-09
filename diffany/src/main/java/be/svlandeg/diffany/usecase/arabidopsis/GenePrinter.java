@@ -54,12 +54,12 @@ public class GenePrinter
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));
 	}
-
+	
 	/**
-	 * Print an A.th. gene by its array ID
+	 * Get the synonyms of an A.th. gene by its array ID. There may be multiple entries when an arrayID maps to multiple locus IDs.
 	 * @param arrayID the ID from the A.th microarray dataset
 	 */
-	public List<String> printGene(String arrayID)
+	public List<String> getSynonyms(String arrayID)
 	{
 		List<String> results = new ArrayList<String>();
 		
@@ -67,7 +67,7 @@ public class GenePrinter
 		for (String locusID : locusIDs)
 		{
 			String egid = locusidmapping.get(locusID);
-			String result = arrayID + " - " + locusID + " - GID:" + egid;
+			String result = locusID + " - GID:" + egid;
 			if (egid != null)
 			{
 				Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));

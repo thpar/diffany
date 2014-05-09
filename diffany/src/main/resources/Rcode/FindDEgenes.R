@@ -9,8 +9,10 @@ library(statmod);
 design_stress <- model.matrix(~0+Stress, data=pData(expressionSet));
 colnames(design_stress) <- gsub("Stress","",colnames(design_stress));
 
+# CHOSE WHETHER OR NOT TO MODEL THE REPLICATES AS RANDOM VARIABLES
 corfit_stress <- duplicateCorrelation(expressionSet, design=design_stress, block=targets$Replicate);
 fit_stress <- lmFit(expressionSet, design_stress, block=targets$Replicate, cor=corfit_stress$consensus);
+#fit_stress <- lmFit(expressionSet, design_stress);
 
 contrasts_stress <- makeContrasts(StressvsControl=mannitol-control, levels=design_stress);
 fit2_stress <- contrasts.fit(fit_stress, contrasts_stress);

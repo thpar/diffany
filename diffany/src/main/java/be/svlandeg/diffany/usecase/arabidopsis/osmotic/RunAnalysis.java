@@ -28,21 +28,22 @@ public class RunAnalysis
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
+		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
 		DataIO io = new DataIO(inputRoot);
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
 		File osmoticStressDir = io.getRootOsmoticStressDir();
 		String outputLog = osmoticStressDir + File.separator + "R_log.txt";	// can also be null
+		boolean printDetails = true;
 		
 		RBridge bridge = new RBridge(outputLog);
 		try
 		{ 
 			ExecuteR exeR = new ExecuteR(bridge);
-			input.processOsmoticData(exeR, osmoticStressDir);
-			deAnalysis.findDEGenes(exeR, osmoticStressDir);
+			input.processOsmoticCELLData(exeR, osmoticStressDir);
+			deAnalysis.findDEGenes(exeR, osmoticStressDir, printDetails);
 		}
 		catch(IOException e)
 		{

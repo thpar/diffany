@@ -1,21 +1,16 @@
 package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
+import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
+import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 
 /**
  * This class processes normalized expression data, identifying differentially expressed genes
@@ -28,17 +23,20 @@ public class AnalyseDiffExpression
 
 	/**
 	 * Identify differentially expressed (DE) genes, with R scripts.
+	 * This method can write an output file containing all p-values etc, which will be called 'differential_values.txt' and placed within the 
+	 * 'osmoticStressDir' root directory.
 	 * 
 	 * Currently, the needed R script is loaded from the context, and is defined in the 'resources' folder of the Maven project.
 	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 * 
 	 * @param exeR the environment to execute R scripts
 	 * @param osmoticStressDir the directory containing the experimental data
+	 * @param writeOutputFile whether or not to write an output file containing all p-values and other results
 	 * 
 	 * @throws URISyntaxException
 	 * @throws IOException when an IO error occurs
 	 */
-	public void findDEGenes(ExecuteR exeR, File osmoticStressDir) throws URISyntaxException, IOException
+	public void findDEGenes(ExecuteR exeR, File osmoticStressDir, boolean writeOutputFile) throws URISyntaxException, IOException
 	{
 		// TODO V2.1: currently this assumes libs "affy", "limma", etc are pre-installed!
 		URL script3URL = Thread.currentThread().getContextClassLoader().getResource("Rcode/FindDEgenes.R");
@@ -66,8 +64,16 @@ public class AnalyseDiffExpression
 
 		printByStatTest(exeR, gp, suffixes, 10);
 
-		String outputValues = osmoticStressDir + File.separator + "differential_values.txt";
-		printByGene(exeR, gp, suffixes, outputValues);
+		if (writeOutputFile)
+		{
+			String outputValues = osmoticStressDir + File.separator + "differential_values.txt";
+			System.out.println("");
+			System.out.println("All results are being written to " + outputValues + " (do not interfere with that file at this point)");
+			System.out.println(" This may take a few minutes, but please do not interfere with the file during this process");
+			
+			List<OverexpressionData> datasets = assembleDataset(exeR, suffixes);
+			new OverexpressionIO().printDatasets(outputValues, datasets, gp);
+		}
 	}
 
 	/**
@@ -122,31 +128,18 @@ public class AnalyseDiffExpression
 	}
 
 	/**
-	 * Private method which will print all genes in the experiments and their values across all types of statistical comparisons.
+	 * Private method which will assemble all overexpression values across all types of statistical comparisons, ready for printing.
 	 * 
 	 * @param exeR the environment to execute R scripts
-	 * @@param gp the gene printer which can fetch the locus IDs and synonyms for array IDs
 	 * @param suffixes the suffixes used in the R script to subscript the "topIDs" objects
-	 * @param outputValues the file location where all calculated p-values etc will be written
-	 * @throws IOException when an IO error occurs
 	 */
-	private void printByGene(ExecuteR exeR, GenePrinter gp, List<String> suffixes, String outputValues) throws IOException
+	private List<OverexpressionData> assembleDataset(ExecuteR exeR, List<String> suffixes)
 	{
-		BufferedWriter writer = new BufferedWriter(new FileWriter(outputValues));
-		System.out.println("");
-
-		SortedSet<String> arrayIDs = new TreeSet<String>();
-		Map<String, Double> foldchanges = new HashMap<String, Double>();
-		Map<String, Double> pvalues = new HashMap<String, Double>();
-		Map<String, Double> FDRs = new HashMap<String, Double>();
-
-		System.out.println("All results are written to " + outputValues);
-
-		writer.append("arrayID \t");
-
+		List<OverexpressionData> datasets = new ArrayList<OverexpressionData>();
 		for (String suffix : suffixes)
 		{
-			writer.append("FDR" + suffix + "\t" + "FC" + suffix + "\t" + "p-value" + suffix + "\t");
+			OverexpressionData data = new OverexpressionData(suffix);
+			
 			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
 
 			if (topIDs != null)
@@ -154,49 +147,19 @@ public class AnalyseDiffExpression
 				for (int i = 0; i < topIDs.length; i++)
 				{
 					String arrayID = topIDs[i];
-					arrayIDs.add(arrayID);
-
-					String key = suffix + "*" + arrayID;
-
-					if (foldchanges.containsKey(key) || foldchanges.containsKey(key) || foldchanges.containsKey(key))
-					{
-						System.out.println(" WARNING: encountered " + arrayIDs + " twice in " + suffix + " ?! ");
-					}
 
 					int rindex = i + 1;
 
-					foldchanges.put(key, exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'logFC']"));
-					pvalues.put(key, exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'P.Value']"));
-					FDRs.put(key, exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'adj.P.Val']"));
+					double foldchange = exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'logFC']");
+					double pvalue = exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'P.Value']");
+					double FDR = exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'adj.P.Val']");
+
+					data.addResult(arrayID, foldchange, pvalue, FDR);
 				}
 			}
+			datasets.add(data);
 		}
-		writer.append("synonyms \t");
-		writer.newLine();
-		writer.flush();
-
-		DecimalFormat df = new DecimalFormat("#.###");
-
-		for (String arrayID : arrayIDs)
-		{
-			writer.append(arrayID+ "\t");
-			for (String suffix : suffixes)
-			{
-				String key = suffix + "*" + arrayID;
-				writer.append(df.format(FDRs.get(key)) + "\t" + df.format(foldchanges.get(key)) + "\t" + df.format(foldchanges.get(key)) + "\t");
-			}
-			writer.flush();
-
-			List<String> synonymList = gp.getSynonyms(arrayID);
-
-			for (String synonyms : synonymList)
-			{
-				writer.append(synonyms + " /// ");
-			}
-			writer.newLine();
-			writer.flush();
-		}
-		writer.flush();
-		writer.close();
+		return datasets;
+		
 	}
 }

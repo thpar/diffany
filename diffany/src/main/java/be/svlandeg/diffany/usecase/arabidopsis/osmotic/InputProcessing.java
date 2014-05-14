@@ -24,7 +24,7 @@ public class InputProcessing
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public void processOsmoticData(ExecuteR exeR, File osmoticStressDir) throws URISyntaxException, IOException
+	public void processOsmoticCELLData(ExecuteR exeR, File osmoticStressDir) throws URISyntaxException, IOException
 	{
 		String path = osmoticStressDir.getAbsolutePath();
 		System.out.println(" Reading " + path + ":");

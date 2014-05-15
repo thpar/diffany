@@ -66,13 +66,19 @@ public class AnalyseDiffExpression
 
 		if (writeOutputFile)
 		{
-			String outputValues = osmoticStressDir + File.separator + "differential_values.txt";
+			String outputValues = osmoticStressDir + File.separator + "differential_values1.txt";
+			String outputValues2 = osmoticStressDir + File.separator + "differential_values2.txt";
 			System.out.println("");
-			System.out.println("All results are being written to " + outputValues + " (do not interfere with that file at this point)");
+			System.out.println("All results are being written to " + outputValues);
 			System.out.println(" This may take a few minutes, but please do not interfere with the file during this process");
 			
-			List<OverexpressionData> datasets = assembleDataset(exeR, suffixes);
-			new OverexpressionIO().printDatasets(outputValues, datasets, gp);
+			List<OverexpressionData> datasets1 = assembleDataset(exeR, suffixes);
+			OverexpressionIO io = new OverexpressionIO();
+			io.printDatasets(outputValues, datasets1, gp);
+			
+			// TEST whether IO functions OK (TODO)
+			List<OverexpressionData> datasets2 = io.readDatasets(outputValues);
+			io.printDatasets(outputValues2, datasets2, gp);
 		}
 	}
 

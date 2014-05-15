@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -23,7 +24,7 @@ public class OverexpressionIO
 	private static String FC_column = "FC";
 	private static String pValue_column = "p-value";
 	private static String synonyms_column = "synonyms";
-	
+
 	/**
 	 * Print all genes in the experiments and their values across all types of statistical comparisons
 	 * @param filename the file location where all calculated p-values etc will be written
@@ -48,6 +49,10 @@ public class OverexpressionIO
 
 		// DATA
 		DecimalFormat df = new DecimalFormat("#.###");
+		DecimalFormatSymbols symbols = df.getDecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		df.setDecimalFormatSymbols(symbols);
+
 		for (String arrayID : datasets.get(0).getArrayIDs())
 		{
 			writer.append(arrayID + " \t");
@@ -86,39 +91,44 @@ public class OverexpressionIO
 
 		// READ AND CHECK HEADER
 		String header = reader.readLine();
+		//System.out.println("Read header: " + header);
 		StringTokenizer header_stok = new StringTokenizer(header, "\t");
-		
+
 		boolean formatOK = true;
-		
-		String first_token = header_stok.nextToken();
-		if (! arrayID_column.equals(first_token))
+
+		String first_token = header_stok.nextToken().trim();
+		if (!arrayID_column.equals(first_token))
 		{
 			formatOK = false;
 		}
-		String next_token = header_stok.nextToken();
-		while (next_token != null && next_token.startsWith(FDR_column))
+		String next_token = header_stok.nextToken().trim();
+		while (formatOK && next_token != null && next_token.startsWith(FDR_column))
 		{
 			int splits = next_token.indexOf(FDR_column);
 			String suffix = next_token.substring(splits + 3);
-			next_token = header_stok.nextToken();
+
+			next_token = header_stok.nextToken().trim();
 			String expected_FC = FC_column + suffix;
-			if (! expected_FC.equals(next_token))
+			if (!expected_FC.equals(next_token))
 			{
 				formatOK = false;
 			}
-			next_token = header_stok.nextToken();
+
+			next_token = header_stok.nextToken().trim();
 			String expected_pValue = pValue_column + suffix;
-			if (! expected_pValue.equals(next_token))
+			if (!expected_pValue.equals(next_token))
 			{
 				formatOK = false;
 			}
+
 			if (formatOK)
 			{
 				OverexpressionData data = new OverexpressionData(suffix);
 				datasets.add(data);
 			}
+			next_token = header_stok.nextToken().trim();
 		}
-		
+
 		// TODO. Currently no check on synonyms column because it's not strictly necessary
 		/*
 		next_token = header_stok.nextToken();
@@ -127,30 +137,33 @@ public class OverexpressionIO
 			formatOK = false;
 		}
 		*/
-		
-		if (! formatOK || datasets.isEmpty())
+
+		if (!formatOK || datasets.isEmpty())
 		{
 			reader.close();
-			String errormsg = "Unexpected input file format!"
-					+ " Expected is a tab-delimited file with header line arrayID, followed by (FDR,FC,p-value) triples"
-					+ " for each comparison, and finally a synonyms column";
+			String errormsg = "Unexpected input file format!" + " Expected is a tab-delimited file with header line arrayID, followed by (FDR,FC,p-value) triples" + " for each comparison, and finally a synonyms column";
 			throw new IllegalArgumentException(errormsg);
 		}
-		
+
+		// READ ALL OTHER DATA
 		String line = reader.readLine();
+		//System.out.println("Read line: " + line);
 		while (line != null)
 		{
-			StringTokenizer stok = new StringTokenizer(header, "\t");
-			String arrayID = stok.nextToken();
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String arrayID = stok.nextToken().trim();
+
+			// Read all triples for this array ID, i.e. 3 consecutive columns define 1 comparison
 			for (OverexpressionData data : datasets)
 			{
-				double FDR = Double.parseDouble(stok.nextToken());
-				double FC = Double.parseDouble(stok.nextToken());
-				double pvalue = Double.parseDouble(stok.nextToken());
+				double FDR = Double.parseDouble(stok.nextToken().trim());
+				double FC = Double.parseDouble(stok.nextToken().trim());
+				double pvalue = Double.parseDouble(stok.nextToken().trim());
 				data.addResult(arrayID, FC, pvalue, FDR);
 			}
+			line = reader.readLine();
 		}
-			
+
 		reader.close();
 		return datasets;
 	}

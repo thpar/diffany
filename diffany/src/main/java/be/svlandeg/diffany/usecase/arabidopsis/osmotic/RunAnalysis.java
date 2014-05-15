@@ -7,6 +7,8 @@ import java.util.List;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
+import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
+import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 
 
 /**
@@ -24,30 +26,73 @@ public class RunAnalysis
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
 	 */
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
+		
 		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home 
-		DataIO io = new DataIO(inputRoot);
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home
+		
+		DataIO dataIO = new DataIO(inputRoot);
+		OverexpressionIO io = new OverexpressionIO();
+		
+		File osmoticStressDir = dataIO.getRootOsmoticStressDir();
+		
+		RunAnalysis ra = new RunAnalysis();
+		
+		/*
+		 * OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY
+		 * 
+		System.out.println("1. Transforming CELL data into overexpression values");
+		System.out.println("");
+		String fileName = "differential_values.txt";
+		String overexpressionFile = ra.fromRawToOverexpression(osmoticStressDir, fileName);
+		*/
+		
+		/*
+		 * OPTION 2: USE PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER
+		 */
+		System.out.println("1. Reading published overexpression values");
+		System.out.println("");
+		
+		String overexpressionFile = osmoticStressDir + File.separator + "clean_Inze_Supplemental_Dataset_1.tab";
+		
+		System.out.println("2. Transforming overexpression values into networks");
+		System.out.println("");
+		
+		List<OverexpressionData> datasets = io.readDatasets(overexpressionFile);
+		for (OverexpressionData data : datasets)
+		{
+			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs");
+		}
+		
+		System.out.println("");
+		System.out.println("Done!");
+	}
+	
+	/**
+	 * This (private) step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
+	 */
+	private String fromRawToOverexpression(File osmoticStressDir, String fileName)
+	{
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
-		File osmoticStressDir = io.getRootOsmoticStressDir();
+		
 		String outputLog = osmoticStressDir + File.separator + "R_log.txt";	// can also be null
-		boolean printDetails = true;
+		String outputFile = osmoticStressDir + File.separator + fileName;
 		
 		RBridge bridge = new RBridge(outputLog);
 		try
 		{ 
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticCELLData(exeR, osmoticStressDir);
-			deAnalysis.findDEGenes(exeR, osmoticStressDir, printDetails);
+			deAnalysis.findDEGenes(exeR, osmoticStressDir, outputFile);
 		}
 		catch(IOException e)
 		{
-			String errorMsg = "Error reading input data from " + inputRoot + ": " + e.getMessage();
+			String errorMsg = "Error reading input data from " + osmoticStressDir + ": " + e.getMessage();
 			System.out.println(errorMsg);
 		}
 		catch (URISyntaxException e)
@@ -66,8 +111,6 @@ public class RunAnalysis
 			}
 		}
 		bridge.close();
-		
-		System.out.println("");
-		System.out.println("Done!");
+		return outputFile;
 	}
 }

@@ -126,7 +126,14 @@ public class OverexpressionIO
 				OverexpressionData data = new OverexpressionData(suffix);
 				datasets.add(data);
 			}
-			next_token = header_stok.nextToken().trim();
+			if (header_stok.hasMoreTokens())
+			{
+				next_token = header_stok.nextToken();
+			}
+			else
+			{
+				next_token = null;
+			}
 		}
 
 		// TODO. Currently no check on synonyms column because it's not strictly necessary
@@ -150,6 +157,8 @@ public class OverexpressionIO
 		//System.out.println("Read line: " + line);
 		while (line != null)
 		{
+			// TODO: this is a quick hack to work around the european locale
+			line = line.replace(',', '.');
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			String arrayID = stok.nextToken().trim();
 

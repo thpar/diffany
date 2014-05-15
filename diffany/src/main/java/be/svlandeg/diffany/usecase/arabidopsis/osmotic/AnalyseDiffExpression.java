@@ -36,7 +36,7 @@ public class AnalyseDiffExpression
 	 * @throws URISyntaxException
 	 * @throws IOException when an IO error occurs
 	 */
-	public void findDEGenes(ExecuteR exeR, File osmoticStressDir, boolean writeOutputFile) throws URISyntaxException, IOException
+	public void findDEGenes(ExecuteR exeR, File osmoticStressDir, String outputValues) throws URISyntaxException, IOException
 	{
 		// TODO V2.1: currently this assumes libs "affy", "limma", etc are pre-installed!
 		URL script3URL = Thread.currentThread().getContextClassLoader().getResource("Rcode/FindDEgenes.R");
@@ -62,11 +62,11 @@ public class AnalyseDiffExpression
 
 		GenePrinter gp = new GenePrinter();
 
-		printByStatTest(exeR, gp, suffixes, 10);
+		printByStatTest(exeR, gp, suffixes, 3);
 
-		if (writeOutputFile)
+		if (outputValues != null)
 		{
-			String outputValues = osmoticStressDir + File.separator + "differential_values.txt";
+			
 			System.out.println("");
 			System.out.println("All results are being written to " + outputValues);
 			System.out.println(" This may take a few minutes, but please do not interfere with the file during this process");

@@ -115,7 +115,7 @@ public class AnalyseDiffExpression
 					double pvalue = exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'P.Value']");
 					double FDR = exeR.getDoubleValue("toptable" + suffix + "[" + rindex + ",'adj.P.Val']");
 
-					List<String> synonymList = gp.getSynonyms(arrayID);
+					List<String> synonymList = gp.getSynonymsByArrayID(arrayID);
 					System.out.println("  " + (i + 1) + "." + arrayID + " - FDR: " + FDR + " - FC: " + foldChange + " - pvalue: " + pvalue);
 					for (String synonyms : synonymList)
 					{
@@ -139,7 +139,7 @@ public class AnalyseDiffExpression
 		List<OverexpressionData> datasets = new ArrayList<OverexpressionData>();
 		for (String suffix : suffixes)
 		{
-			OverexpressionData data = new OverexpressionData(suffix);
+			OverexpressionData data = new OverexpressionData(suffix, true);
 			
 			String[] topIDs = exeR.getStringArray("topIDs" + suffix);
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
+import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 
@@ -25,8 +26,9 @@ public class RunAnalysis
 	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
+	 * @throws URISyntaxException 
 	 */
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, URISyntaxException
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
@@ -34,15 +36,11 @@ public class RunAnalysis
 		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
 		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home
 		
-		DataIO dataIO = new DataIO(inputRoot);
-		OverexpressionIO io = new OverexpressionIO();
-		
-		File osmoticStressDir = dataIO.getRootOsmoticStressDir();
-		
+		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
 		
 		/*
-		 * OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY
+		 * STEP 1 - OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY
 		 * 
 		System.out.println("1. Transforming CELL data into overexpression values");
 		System.out.println("");
@@ -51,37 +49,37 @@ public class RunAnalysis
 		*/
 		
 		/*
-		 * OPTION 2: USE PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER
+		 * STEP 1 - OPTION 2: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER
 		 */
 		System.out.println("1. Reading published overexpression values");
 		System.out.println("");
 		
 		String overexpressionFile = osmoticStressDir + File.separator + "clean_Inze_Supplemental_Dataset_1.tab";
 		
+		/*
+		 * STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS
+		 */
 		System.out.println("2. Transforming overexpression values into networks");
 		System.out.println("");
 		
-		List<OverexpressionData> datasets = io.readDatasets(overexpressionFile);
-		for (OverexpressionData data : datasets)
-		{
-			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs");
-		}
+		ra.fromOverexpressionToNetworks(new File(overexpressionFile));
 		
 		System.out.println("");
 		System.out.println("Done!");
 	}
 	
 	/**
-	 * This (private) step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
+	 * This first step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
 	 */
-	private String fromRawToOverexpression(File osmoticStressDir, String fileName)
+	@SuppressWarnings("unused")
+    private String fromRawToOverexpression(File osmoticStressDir, String overExpressionFile)
 	{
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
 		
 		
 		String outputLog = osmoticStressDir + File.separator + "R_log.txt";	// can also be null
-		String outputFile = osmoticStressDir + File.separator + fileName;
+		String outputFile = osmoticStressDir + File.separator + overExpressionFile;
 		
 		RBridge bridge = new RBridge(outputLog);
 		try
@@ -112,5 +110,17 @@ public class RunAnalysis
 		}
 		bridge.close();
 		return outputFile;
+	}
+	
+	/**
+	 * Second step in the pipeline: use the overexpression values to generate networks
+	 * @throws URISyntaxException 
+	 */
+	private void fromOverexpressionToNetworks(File overExpressionFile) throws IOException, URISyntaxException
+	{
+		OverexpressionIO io = new OverexpressionIO();
+		
+		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
+		new NetworkConstruction().getSignificantGenes(datasets);
 	}
 }

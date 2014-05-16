@@ -13,6 +13,8 @@ import java.util.TreeSet;
 public class OverexpressionData
 {
 	private String name;
+	private boolean rawArrayIDs;
+	
 	private Map<String, Double> foldchanges;
 	private Map<String, Double> pvalues;
 	private Map<String, Double> FDRs;
@@ -20,10 +22,12 @@ public class OverexpressionData
 	/**
 	 * Create a new object to contain overexpression values
 	 * @param name the (unique) name of this dataset - its uniqueness should be enforced in the use-case
+	 * @param rawArrayIDs if true, this data keeps as key raw array IDs (otherwise, they will be locus tags)
 	 */
-	public OverexpressionData(String name)
+	public OverexpressionData(String name, boolean rawArrayIDs)
 	{
 		this.name = name;
+		this.rawArrayIDs = rawArrayIDs;
 		foldchanges = new HashMap<String, Double>();
 		pvalues = new HashMap<String, Double>();
 		FDRs = new HashMap<String, Double>();
@@ -52,6 +56,14 @@ public class OverexpressionData
 		foldchanges.put(arrayID, foldchange);
 		pvalues.put(arrayID, pvalue);
 		FDRs.put(arrayID, FDR);
+	}
+	
+	/**
+	 * TODO
+	 */
+	public boolean indexedByRawArrayIDs()
+	{
+		return rawArrayIDs;
 	}
 	
 	/**

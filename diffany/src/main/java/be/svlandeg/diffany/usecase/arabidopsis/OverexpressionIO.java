@@ -2,6 +2,7 @@ package be.svlandeg.diffany.usecase.arabidopsis;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,20 +53,27 @@ public class OverexpressionIO
 		DecimalFormatSymbols symbols = df.getDecimalFormatSymbols();
 		symbols.setDecimalSeparator('.');
 		df.setDecimalFormatSymbols(symbols);
+		
+		boolean rawArrayIDs = datasets.get(0).indexedByRawArrayIDs();
 
-		for (String arrayID : datasets.get(0).getArrayIDs())
+		for (String ID : datasets.get(0).getArrayIDs())
 		{
-			writer.append(arrayID + " \t");
+			writer.append(ID + " \t");
 			for (OverexpressionData data : datasets)
 			{
-				double foldchange = data.getFoldchange(arrayID);
-				double pvalue = data.getPvalue(arrayID);
-				double FDR = data.getFDR(arrayID);
+				double foldchange = data.getFoldchange(ID);
+				double pvalue = data.getPvalue(ID);
+				double FDR = data.getFDR(ID);
 
 				writer.append(df.format(FDR) + " \t" + df.format(foldchange) + " \t" + df.format(pvalue) + " \t");
 				writer.flush();
 			}
-			List<String> synonymList = gp.getSynonyms(arrayID);
+			List<String> synonymList = gp.getSynonymsByArrayID(ID);
+			if (!rawArrayIDs)
+			{
+				synonymList.clear();
+				synonymList.add(gp.getSynonymsByLocusID(ID));
+			}
 			for (String synonyms : synonymList)
 			{
 				writer.append(synonyms + " /// ");
@@ -81,13 +89,25 @@ public class OverexpressionIO
 	/**
 	 * Read all genes and their corresponding p-values of the statistical comparisons defined by the header line
 	 * @param filename the file location where all calculated p-values etc are recorded
+	 * @param rawArrayIDs whether or not this refers to raw array IDs (if not, locus tags are expected)
 	 * @throws IOException when the file could not be read properly
 	 */
-	public List<OverexpressionData> readDatasets(String filename) throws IOException, IllegalArgumentException
+	public List<OverexpressionData> readDatasets(String filename, boolean rawArrayIDs) throws IOException, IllegalArgumentException
+	{
+		return readDatasets(new File(filename), rawArrayIDs);
+	}
+
+	/**
+	 * Read all genes and their corresponding p-values of the statistical comparisons defined by the header line
+	 * @param inputfile the file which stores all calculated p-values etc 
+	 * @param rawArrayIDs whether or not this refers to raw array IDs (if not, locus tags are expected)
+	 * @throws IOException when the file could not be read properly
+	 */
+	public List<OverexpressionData> readDatasets(File inputfile, boolean rawArrayIDs) throws IOException, IllegalArgumentException
 	{
 		List<OverexpressionData> datasets = new ArrayList<OverexpressionData>();
 
-		BufferedReader reader = new BufferedReader(new FileReader(filename));
+		BufferedReader reader = new BufferedReader(new FileReader(inputfile));
 
 		// READ AND CHECK HEADER
 		String header = reader.readLine();
@@ -123,7 +143,7 @@ public class OverexpressionIO
 
 			if (formatOK)
 			{
-				OverexpressionData data = new OverexpressionData(suffix);
+				OverexpressionData data = new OverexpressionData(suffix, rawArrayIDs);
 				datasets.add(data);
 			}
 			if (header_stok.hasMoreTokens())

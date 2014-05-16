@@ -70,7 +70,7 @@ public class GenePrinter
 		{
 			for (String locusID : locusIDs)
 			{
-				String result = getSynonymsByLocusID(locusID);
+				String result = locusID + getSynonymsByLocusID(locusID);
 				results.add(result);
 			}
 		}
@@ -89,7 +89,7 @@ public class GenePrinter
 	public String getSynonymsByLocusID(String locusID)
 	{
 		String egid = locusidmapping.get(locusID);
-		String result = locusID + " - GID:" + egid;
+		String result = " - GID:" + egid;
 		if (egid != null)
 		{
 			Set<String> synonyms = new HashSet<String>(synonymmapping.get(egid));

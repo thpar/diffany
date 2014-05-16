@@ -62,7 +62,7 @@ public class RunAnalysis
 		System.out.println("2. Transforming overexpression values into networks");
 		System.out.println("");
 		
-		ra.fromOverexpressionToNetworks(new File(overexpressionFile));
+		ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05);
 		
 		System.out.println("");
 		System.out.println("Done!");
@@ -116,11 +116,11 @@ public class RunAnalysis
 	 * Second step in the pipeline: use the overexpression values to generate networks
 	 * @throws URISyntaxException 
 	 */
-	private void fromOverexpressionToNetworks(File overExpressionFile) throws IOException, URISyntaxException
+	private void fromOverexpressionToNetworks(File overExpressionFile, double threshold) throws IOException, URISyntaxException
 	{
 		OverexpressionIO io = new OverexpressionIO();
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
-		new NetworkConstruction().getSignificantGenes(datasets);
+		new NetworkConstruction().getSignificantGenes(datasets, threshold);
 	}
 }

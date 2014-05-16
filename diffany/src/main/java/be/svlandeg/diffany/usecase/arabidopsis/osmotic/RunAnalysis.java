@@ -4,7 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import be.svlandeg.diffany.core.io.EdgeIO;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.InputNetwork;
+import be.svlandeg.diffany.core.networks.Network;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -62,7 +70,8 @@ public class RunAnalysis
 		System.out.println("2. Transforming overexpression values into networks");
 		System.out.println("");
 		
-		ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05);
+		boolean selfInteractions = false;
+		ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions);
 		
 		System.out.println("");
 		System.out.println("Done!");
@@ -116,11 +125,33 @@ public class RunAnalysis
 	 * Second step in the pipeline: use the overexpression values to generate networks
 	 * @throws URISyntaxException 
 	 */
-	private void fromOverexpressionToNetworks(File overExpressionFile, double threshold) throws IOException, URISyntaxException
+	private void fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions) throws IOException, URISyntaxException
 	{
 		OverexpressionIO io = new OverexpressionIO();
+		NetworkConstruction nc = new NetworkConstruction();
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
-		new NetworkConstruction().getSignificantGenes(datasets, threshold);
+		for (OverexpressionData data : datasets)
+		{
+			System.out.println("");
+			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
+			
+			Map<Node, Boolean> nodes = nc.getSignificantGenes(data, threshold);
+			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
+			
+			Set<Edge> virtualRegulations = nc.constructVirtualRegulations(nodes);
+			System.out.println("  Found " + virtualRegulations.size() + " virtual regulations");
+			
+			Set<Edge> ppis = nc.readPPIsByLocustags(nodes.keySet(), selfInteractions);
+			System.out.println("  Found " + ppis.size() + " PPIs");
+			
+			ppis.addAll(virtualRegulations);
+			System.out.println("  Found " + ppis.size() + " edges");
+			
+			Network net = new InputNetwork(data.getName(), nodes.keySet(), ppis, new DefaultNodeMapper());
+			System.out.println(net.getStringRepresentation());
+			System.out.println(EdgeIO.writeEdgesToTab(net.getEdges()));
+			System.out.println("");
+		}
 	}
 }

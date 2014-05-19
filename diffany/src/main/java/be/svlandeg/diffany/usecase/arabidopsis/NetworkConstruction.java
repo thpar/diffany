@@ -75,7 +75,28 @@ public class NetworkConstruction
 	public Set<Edge> constructVirtualRegulations(Map<Node, Boolean> targets)
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		// TODO
+		Map<String, Node> virtualNodes = new HashMap<String, Node>();
+		
+		for (Node n : targets.keySet())
+		{
+			boolean up = targets.get(n);
+			String type = "upregulated";
+			String regulator = "upregulator";
+			if (! up)
+			{
+				type = "downregulated";
+				regulator = "downregulator";
+			}
+			String fullname = "virtual_" + regulator + "_of_" + n.getName();
+			if (! virtualNodes.containsKey(fullname))
+			{
+				virtualNodes.put(fullname, new Node(fullname, true));
+			}
+			Node virtualRegulator = virtualNodes.get(fullname);
+			Edge e = new Edge(type, virtualRegulator, n, false);
+			edges.add(e);
+		}
+		
 		return edges;
 	}
 

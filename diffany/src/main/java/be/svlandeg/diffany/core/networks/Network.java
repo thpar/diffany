@@ -241,7 +241,8 @@ public abstract class Network
 	 */
 	public void addNode(Node node)
 	{
-		if (!nm.isContained(node, nodes))
+		boolean contained = nm.isContained(node, nodes);
+		if (!contained)
 		{
 			nodes.add(node);
 		}

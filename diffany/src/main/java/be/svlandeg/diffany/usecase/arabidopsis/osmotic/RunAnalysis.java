@@ -3,6 +3,7 @@ package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,8 +42,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 		
-		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home
 		
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
@@ -148,7 +149,7 @@ public class RunAnalysis
 			ppis.addAll(virtualRegulations);
 			System.out.println("  Found " + ppis.size() + " edges");
 			
-			Network net = new InputNetwork(data.getName(), nodes.keySet(), ppis, new DefaultNodeMapper());
+			Network net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), ppis, new DefaultNodeMapper());
 			System.out.println(net.getStringRepresentation());
 			System.out.println(EdgeIO.writeEdgesToTab(net.getEdges()));
 			System.out.println("");

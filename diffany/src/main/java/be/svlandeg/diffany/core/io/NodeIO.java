@@ -25,7 +25,7 @@ public class NodeIO
 	 * @return a string representation of all nodes in this network, ready for printing
 	 * @see NodeIO#writeToTab
 	 */
-	public static String writeNodeToTab(Set<Node> nodes)
+	public static String writeNodesToTab(Set<Node> nodes)
 	{
 		String result = "";
 		for (Node n : nodes)

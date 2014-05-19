@@ -10,6 +10,7 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.io.NodeIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
@@ -98,6 +99,7 @@ public class RunAnalysis
 		{
 			System.out.println("");
 			System.out.println(rn.getStringRepresentation() + ":");
+			System.out.println(NodeIO.writeNodesToTab(rn.getNodes()));
 			System.out.println(EdgeIO.writeEdgesToTab(rn.getEdges()));
 			System.out.println("");
 		}

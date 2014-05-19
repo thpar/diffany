@@ -15,7 +15,7 @@ public class NodeIO
 {
 	
 	private static String virtualString = "virtual";
-	private static String nonVirtualString = "not virtual";
+	private static String nonVirtualString = "normal";
 
 	
 	/**

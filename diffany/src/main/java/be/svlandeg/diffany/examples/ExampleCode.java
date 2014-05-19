@@ -58,10 +58,10 @@ public class ExampleCode
 
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = new File(diffLocation);
-		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir);
 
 		File overlapDir = new File(overlapLocation);
-		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir);
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(rcID);

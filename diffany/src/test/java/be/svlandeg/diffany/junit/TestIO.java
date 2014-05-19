@@ -80,10 +80,10 @@ public class TestIO
 		// WRITING
 		try
 		{
-			NetworkIO.writeReferenceNetworkToDir(rWriteNetwork, nm, rDir);
-			NetworkIO.writeConditionNetworkToDir(cWriteNetwork, nm, cDir);
-			NetworkIO.writeDifferentialNetworkToDir(dNetwork, nm, dDir);
-			NetworkIO.writeOverlappingNetworkToDir(oNetwork, nm, oDir);
+			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir);
+			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir);
+			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir);
+			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir);
 		}
 		catch(IOException io)
 		{

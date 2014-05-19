@@ -18,9 +18,9 @@ public class EdgeIO
 {
 	
 	private static String symmString = "symmetrical";
-	private static String directString = "directed";
+	private static String directString = "asymmetrical";
 	private static String negatedString = "negated";
-	private static String notnegatedString = "not negated";
+	private static String notnegatedString = "affirmative";
 
 	/**
 	 * Get a string representation of all edges in a collection, divided by newlines, with edges in a tabbed format.

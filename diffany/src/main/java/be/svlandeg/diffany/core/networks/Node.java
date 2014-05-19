@@ -14,13 +14,13 @@ public class Node
 	protected boolean virtual;
 	
 	/**
-	 * Create a new (non-virtual) node with a specific name. This name will be used as unique identifier, so ensure its unambiguity across the project!
+	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
 	 * 
 	 * @param name the name of this node - should be unique within a network!
 	 */
 	public Node(String name) throws IllegalArgumentException
 	{
-		this(name, name);
+		this(name.toLowerCase(), name);
 	}
 
 	/**

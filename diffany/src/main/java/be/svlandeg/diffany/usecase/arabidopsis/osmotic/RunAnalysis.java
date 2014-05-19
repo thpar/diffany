@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.io.EdgeIO;
+import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
@@ -18,7 +20,6 @@ import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 
-
 /**
  * This class provides the analysis pipeline and calls our procedures necessary
  * to perform the full analysis, from data input to result output.
@@ -27,25 +28,25 @@ import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
  */
 public class RunAnalysis
 {
-	
+
 	/**
 	 * Run the full analysis pipeline.
 	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws IOException, URISyntaxException
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
-		
+
 		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic";		// Sofie @ home
-		
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
-		
+
 		/*
 		 * STEP 1 - OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY
 		 * 
@@ -54,62 +55,77 @@ public class RunAnalysis
 		String fileName = "differential_values.txt";
 		String overexpressionFile = ra.fromRawToOverexpression(osmoticStressDir, fileName);
 		*/
-		
+
 		/*
 		 * STEP 1 - OPTION 2: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER
 		 */
 		System.out.println("1. Reading published overexpression values");
 		System.out.println("");
-		
+
 		String overexpressionFile = osmoticStressDir + File.separator + "clean_Inze_Supplemental_Dataset_1.tab";
-		
+
 		/*
 		 * STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS
 		 */
 		System.out.println("2. Transforming overexpression values into networks");
 		System.out.println("");
-		
+
 		boolean selfInteractions = false;
 		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions);
-		
+
 		/*
 		 * STEP 3: WRITE NETWORKS TO FILE
 		 */
 		String outputDir = osmoticStressDir + File.separator + "output";
-		
-		System.out.println("3. Writing output networks to " + outputDir);
+
 		System.out.println("");
-		
+		System.out.println("3. Writing output networks to " + outputDir);
+
 		for (InputNetwork net : networks)
 		{
-			//NetworkIO.
+			NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()));
+		}
+
+		/*
+		 * STEP 4: READ NETWORKS BACK IN FROM FILE
+		 */
+		System.out.println("");
+		System.out.println("4. Reading networks from " + outputDir);
+
+		Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper());
+
+		for (InputNetwork rn : readNetworks)
+		{
+			System.out.println("");
+			System.out.println(rn.getStringRepresentation() + ":");
+			System.out.println(EdgeIO.writeEdgesToTab(rn.getEdges()));
+			System.out.println("");
 		}
 
 		System.out.println("");
 		System.out.println("Done!");
 	}
-	
+
 	/**
 	 * This first step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
 	 */
 	@SuppressWarnings("unused")
-    private String fromRawToOverexpression(File osmoticStressDir, String overExpressionFile)
+	private String fromRawToOverexpression(File osmoticStressDir, String overExpressionFile)
 	{
 		InputProcessing input = new InputProcessing();
 		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
-		
-		
-		String outputLog = osmoticStressDir + File.separator + "R_log.txt";	// can also be null
+
+		String outputLog = osmoticStressDir + File.separator + "R_log.txt"; // can also be null
 		String outputFile = osmoticStressDir + File.separator + overExpressionFile;
-		
+
 		RBridge bridge = new RBridge(outputLog);
 		try
-		{ 
+		{
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticCELLData(exeR, osmoticStressDir);
 			deAnalysis.findDEGenes(exeR, osmoticStressDir, outputFile);
 		}
-		catch(IOException e)
+		catch (IOException e)
 		{
 			String errorMsg = "Error reading input data from " + osmoticStressDir + ": " + e.getMessage();
 			System.out.println(errorMsg);
@@ -120,8 +136,8 @@ public class RunAnalysis
 		}
 		System.out.println("");
 		List<String> errors = bridge.getErrorsFromLogfile();
-		
-		if (! errors.isEmpty())
+
+		if (!errors.isEmpty())
 		{
 			System.out.println(" Errors occurred during R execution:");
 			for (String error : errors)
@@ -132,45 +148,39 @@ public class RunAnalysis
 		bridge.close();
 		return outputFile;
 	}
-	
+
 	/**
 	 * Second step in the pipeline: use the overexpression values to generate networks
-	 * @throws URISyntaxException 
+	 * 
+	 * @throws URISyntaxException
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
-		
+
 		OverexpressionIO io = new OverexpressionIO();
 		NetworkConstruction nc = new NetworkConstruction();
-		
+
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
 		for (OverexpressionData data : datasets)
 		{
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
-			
+
 			Map<Node, Boolean> nodes = nc.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
-			
+
 			Set<Edge> virtualRegulations = nc.constructVirtualRegulations(nodes);
 			System.out.println("  Found " + virtualRegulations.size() + " virtual regulations");
-			
+
 			Set<Edge> ppis = nc.readPPIsByLocustags(nodes.keySet(), selfInteractions);
 			System.out.println("  Found " + ppis.size() + " PPIs");
-			
+
 			ppis.addAll(virtualRegulations);
 			System.out.println("  Found " + ppis.size() + " edges");
-			
+
 			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), ppis, new DefaultNodeMapper());
 			networks.add(net);
-			
-			/*
-			System.out.println("");
-			System.out.println(net.getStringRepresentation() + ":");
-			System.out.println(EdgeIO.writeEdgesToTab(net.getEdges()));
-			System.out.println("");
-			*/
 		}
 		return networks;
 	}

@@ -82,11 +82,11 @@ public class RunProject
 
 		/** WRITE NETWORK OUTPUT **/
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir);
 		l.log("Writing the differential network to " + diffDir);
 
 		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
-		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir);
 		l.log("Writing the overlap network to " + overlapDir);
 		
 		l.log("Done !");

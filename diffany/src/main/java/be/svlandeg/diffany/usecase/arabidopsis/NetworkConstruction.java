@@ -87,12 +87,13 @@ public class NetworkConstruction
 				type = "downregulated";
 				regulator = "downregulator";
 			}
-			String fullname = "virtual_" + regulator + "_of_" + n.getID();
-			if (! virtualNodes.containsKey(fullname))
+			String ID = type.charAt(0) + "_" + n.getID();
+			String fullname = regulator + "_of_" + n.getID();
+			if (! virtualNodes.containsKey(ID))
 			{
-				virtualNodes.put(fullname, new Node(fullname, fullname, true));
+				virtualNodes.put(ID, new Node(ID, fullname, true));
 			}
-			Node virtualRegulator = virtualNodes.get(fullname);
+			Node virtualRegulator = virtualNodes.get(ID);
 			Edge e = new Edge(type, virtualRegulator, n, false);
 			edges.add(e);
 		}

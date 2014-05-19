@@ -20,6 +20,7 @@ import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
@@ -116,150 +117,18 @@ public class NetworkIO
 	}
 	
 	/**
-	 * Write the string representation of the reference network to (subfiles of) a directory.
-	 * 
-	 * @param network the {@link ReferenceNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param dir the output dir in which the tab files will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeReferenceNetworkToDir(ReferenceNetwork network, NodeMapper nm, File dir) throws IOException
-	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeReferenceNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
-	}
-	
-	/**
-	 * Write the string representation of the reference network: 
-	 * Different files will contain the edges information, nodes and network definition.
-	 * 
-	 * @param network the {@link ReferenceNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param edgesFile the output file in which the edges will be written
-	 * @param nodesFile the output file in which the nodes will be written
-	 * @param definitionFile the output file in which the network definition will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeReferenceNetworkToFiles(ReferenceNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
-			throws IOException
-	{
-		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
-	}
-	
-	
-	/**
-	 * Write the string representation of the differential network to (subfiles of) a directory.
-	 * 
-	 * @param network the {@link DifferentialNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param dir the output dir in which the tab files will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeDifferentialNetworkToDir(DifferentialNetwork network, NodeMapper nm, File dir) throws IOException
-	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeDifferentialNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
-	}
-	
-	/**
-	 * Write the string representation of the differential network: 
-	 * Different files will contain the edges information, nodes and network definition.
-	 * 
-	 * @param network the {@link DifferentialNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param edgesFile the output file in which the edges will be written
-	 * @param nodesFile the output file in which the nodes will be written
-	 * @param definitionFile the output file in which the network definition will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeDifferentialNetworkToFiles(DifferentialNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
-			throws IOException
-	{
-		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
-	}
-	
-	
-	
-	/**
-	 * Write the string representation of the overlapping network to (subfiles of) a directory.
-	 * 
-	 * @param network the {@link OverlappingNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param dir the output dir in which the tab files will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeOverlappingNetworkToDir(OverlappingNetwork network, NodeMapper nm, File dir) throws IOException
-	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeOverlappingNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
-	}
-	
-	/**
-	 * Write the string representation of the overlapping network: 
-	 * Different files will contain the edges information, nodes and network definition.
-	 * 
-	 * @param network the {@link OverlappingNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param edgesFile the output file in which the edges will be written
-	 * @param nodesFile the output file in which the nodes will be written
-	 * @param definitionFile the output file in which the network definition will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeOverlappingNetworkToFiles(OverlappingNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile)
-			throws IOException
-	{
-		writeNetworkToFiles(network, nm ,edgesFile, nodesFile, definitionFile);
-	}
-	
-	
-	/**
-	 * Write the string representation of the condition-specific network to (subfiles of) a directory.
+	 * Write the string representation of the conditions of a condition-specific network: call writeNetworkToFiles to write the edges edges information, nodes and network definition first.
+	 * Subsequently, call this method to write the conditions (ontology terms).
 	 * 
 	 * @param network the {@link ConditionNetwork} that needs to be written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param dir the output dir in which the tab files will be written
-	 * 
-	 * @throws IOException when an error occurs during writing
-	 */
-	public static void writeConditionNetworkToDir(ConditionNetwork network, NodeMapper nm, File dir) throws IOException
-	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
-		writeConditionNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile, default_conditions_File);
-	}
-	
-	/**
-	 * Write the string representation of the condition-specific network: 
-	 * Different files will contain the edges information, nodes, network definition and conditions.
-	 * 
-	 * @param network the {@link ConditionNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param edgesFile the output file in which the edges will be written
-	 * @param nodesFile the output file in which the nodes will be written
-	 * @param definitionFile the output file in which the network definition will be written
 	 * @param network the Network that needs to be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeConditionNetworkToFiles(ConditionNetwork network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile, File conditionsFile)
+	public static void writeConditionsToFiles(ConditionNetwork network, NodeMapper nm, File conditionsFile)
 			throws IOException
 	{
-		writeNetworkToFiles(network, nm, edgesFile, nodesFile, definitionFile);
-		
 		Set<Condition> conditions = network.getConditions();
 	
 		conditionsFile.getParentFile().mkdirs();
@@ -277,6 +146,30 @@ public class NetworkIO
 	
 		writer.flush();
 		writer.close();
+	}
+	
+	/**
+	 * Write the string representation of the network to (subfiles of) a directory: edges, nodes and definition all go in a separate file.
+	 * If the network is a ConditionNetwork, the conditions will be written to a fourth file.
+	 * 
+	 * @param network the {@link Network} that needs to be written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @param dir the output dir in which the tab files will be written
+	 * 
+	 * @throws IOException when an error occurs during writing
+	 */
+	public static void writeNetworkToDir(Network network, NodeMapper nm, File dir) throws IOException
+	{
+		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
+		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
+		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
+		writeNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
+		
+		if (network instanceof ConditionNetwork)
+		{
+			File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
+			writeConditionsToFiles((ConditionNetwork) network, nm, default_conditions_File);
+		}
 	}
 	
 	
@@ -316,6 +209,12 @@ public class NetworkIO
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
+		else if (type.equals("InputNetwork"))
+		{
+			InputNetwork c = new InputNetwork(name, nm);
+			c.setNodesAndEdges(nodes, edges);
+			return c;
+		}
 		
 		throw new UnsupportedDataTypeException("Encountered unknown input network type: " + type);
 	}
@@ -346,6 +245,40 @@ public class NetworkIO
 	public static ConditionNetwork readConditionNetworkFromDir(File dir, NodeMapper nm) throws IOException
 	{
 		return (ConditionNetwork) readInputNetworkFromDir(dir, nm);
+	}
+	
+	/**
+	 * Read an {@link InputNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
+	 * 
+	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @return an InputNetwork representation of the nodes and edges in the files
+	 * 
+	 * @throws IOException when an error occurs during reading
+	 */
+	public static InputNetwork readGenericInputNetworkFromDir(File dir, NodeMapper nm) throws IOException
+	{
+		return (InputNetwork) readInputNetworkFromDir(dir, nm);
+	}
+	
+	/**
+	 * Read a set of {@link InputNetwork} from a directory, one network per subdirectory.
+	 * 
+	 * @param dir the output dir in which the subdirectories contain previously written tab files defining the different networks 
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @return a set of InputNetwork representations of the nodes and edges in the files
+	 * 
+	 * @throws IOException when an error occurs during reading
+	 */
+	public static Set<InputNetwork> readGenericInputNetworksFromSubdirs(File dir, NodeMapper nm) throws IOException
+	{
+		Set<InputNetwork> networks = new HashSet<InputNetwork>();
+		for (File f : dir.listFiles())
+		{
+			InputNetwork net = readGenericInputNetworkFromDir(f, nm);
+			networks.add(net);
+		}
+		return networks;
 	}
 	
 	/**

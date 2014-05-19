@@ -53,7 +53,7 @@ public class InputProcessing
 			Node TFnode = nodes.get(TF);
 			if (TFnode == null)
 			{
-				TFnode = new Node(TF);
+				TFnode = new Node(TF, TF);
 				nodes.put(TF, TFnode);
 			}
 			
@@ -61,7 +61,7 @@ public class InputProcessing
 			Node targetnode = nodes.get(target);
 			if (targetnode == null)
 			{
-				targetnode = new Node(target);
+				targetnode = new Node(target, target);
 				nodes.put(target, targetnode);
 			}
 			

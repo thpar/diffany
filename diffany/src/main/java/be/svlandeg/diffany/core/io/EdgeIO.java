@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.core.io;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -49,19 +50,21 @@ public class EdgeIO
 	public static String writeToTab(Edge e)
 	{
 		String defResult = writeDefinitionToTab(e);
-		String result = e.getSource().getName() + '\t' + e.getTarget().getName() + '\t' + defResult;
+		String result = e.getSource().getID() + '\t' + e.getTarget().getID() + '\t' + defResult;
 		return result;
 	}
 	
 	
 	/**
-	 * Read an Edge from a tab-delimited String.
+	 * Read an Edge from a tab-delimited String. A set of input nodes should be given as input and mapped by their unique ID,
+	 * to be able to link the edge to the correct nodes.
 	 * 
 	 * @param s the tab-delimited string containing all parameters of the Edge
+	 * @param nodes the input nodes in the network, containing at least the two nodes for this edge (otherwise source/target will be null)
 	 * @return the corresponding Edge object
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Edge readFromTab(String s) throws IOException
+	public static Edge readFromTab(String s, Map<String, Node> nodes) throws IOException
 	{
 		StringTokenizer stok = new StringTokenizer(s, "\t");
 		String source = stok.nextToken();
@@ -73,8 +76,8 @@ public class EdgeIO
 			defS += stok.nextToken() + "\t";
 		}
 		
-		EdgeDefinition def =  readDefinitionToTab(defS);
-		return new Edge(new Node(source), new Node(target), def);
+		EdgeDefinition def =  readDefinitionFromTab(defS);
+		return new Edge(nodes.get(source), nodes.get(target), def);
 	}
 	
 
@@ -109,7 +112,7 @@ public class EdgeIO
 	 * @return a string representation of this edge , ready for printing
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static EdgeDefinition readDefinitionToTab(String def) throws IOException
+	public static EdgeDefinition readDefinitionFromTab(String def) throws IOException
 	{
 		StringTokenizer stok = new StringTokenizer(def, "\t");
 		String type = stok.nextToken();

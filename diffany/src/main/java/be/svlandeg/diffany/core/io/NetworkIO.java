@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import javax.activation.UnsupportedDataTypeException;
 
@@ -81,14 +84,16 @@ public class NetworkIO
 			}
 		}
 		
-		TreeSet<String> sortedNodes = new TreeSet<String>();
+		SortedMap<String, Node> sortedNodes = new TreeMap<String, Node>();
 		for (Node n : unduplicatedNodes)
 		{
-			sortedNodes.add(n.getName());
+			sortedNodes.put(n.getID(), n);
 		}
-		for (String name : sortedNodes)
+		for (String ID : sortedNodes.keySet())
 		{
-			nodeWriter.append(name);
+			Node n = sortedNodes.get(ID);
+			String tabRep = NodeIO.writeToTab(n);
+			nodeWriter.append(tabRep);
 			nodeWriter.newLine();
 			nodeWriter.flush();
 		}
@@ -291,8 +296,8 @@ public class NetworkIO
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		File conditionsFile = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
 		
-		Set<Edge> edges = readEdgesFromFile(edgeFile);
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
+		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes));
 		
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
@@ -360,8 +365,8 @@ public class NetworkIO
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		
-		Set<Edge> edges = readEdgesFromFile(edgeFile);
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
+		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes));
 		
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
@@ -383,6 +388,21 @@ public class NetworkIO
 		}
 		
 		throw new UnsupportedDataTypeException("Encountered unknown output network type: " + type);
+	}
+	
+	/**
+	 * Retrieve a view on this set of nodes which is mapped by their unique IDs
+	 * @param nodes the original set of nodes
+	 * @return the same set of nodes, mapped by their unique IDs
+	 */
+	private static Map<String, Node> getMappedNodes(Set<Node> nodes)
+	{
+		Map<String, Node> mappedNodes = new HashMap<String, Node>();
+		for (Node n : nodes)
+		{
+			mappedNodes.put(n.getID(), n);
+		}
+		return mappedNodes;
 	}
 	
 	/**
@@ -453,15 +473,16 @@ public class NetworkIO
 	}
 
 	/**
-	 * Read all edges from a file containing one tab-delimited edge per line
+	 * Read all edges from a file containing one tab-delimited edge per line. As input, a set of nodes should be given, mapped by their unique IDs.
 	 * 
 	 * @param edgesFile the file containing the edge data
+	 * @param nodes the nodes relevant to the edges that will be read
 	 * @return the set of edges read from the file, or an empty set if no edges were found
 	 * @see EdgeIO#readFromTab
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Edge> readEdgesFromFile(File edgesFile) throws IOException
+	public static Set<Edge> readEdgesFromFile(File edgesFile, Map<String, Node> nodes) throws IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 
@@ -469,7 +490,7 @@ public class NetworkIO
 		String line = reader.readLine();
 		while (line != null)
 		{
-			Edge e = EdgeIO.readFromTab(line);
+			Edge e = EdgeIO.readFromTab(line.trim(), nodes);
 			edges.add(e);
 			line = reader.readLine();
 		}
@@ -497,8 +518,7 @@ public class NetworkIO
 		
 		while (line != null)
 		{
-			// TODO v2.0: this code now simply reads the node name, but could be made more general through NodeIO and Node IDs?
-			Node n = new Node(line.trim());
+			Node n = NodeIO.readFromTab(line.trim());
 			if (! nm.isContained(n, nodes))
 			{
 				nodes.add(n);

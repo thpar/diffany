@@ -8,10 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
-import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.r.ExecuteR;
@@ -72,8 +70,21 @@ public class RunAnalysis
 		System.out.println("");
 		
 		boolean selfInteractions = false;
-		ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions);
+		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions);
 		
+		/*
+		 * STEP 3: WRITE NETWORKS TO FILE
+		 */
+		String outputDir = osmoticStressDir + File.separator + "output";
+		
+		System.out.println("3. Writing output networks to " + outputDir);
+		System.out.println("");
+		
+		for (InputNetwork net : networks)
+		{
+			//NetworkIO.
+		}
+
 		System.out.println("");
 		System.out.println("Done!");
 	}
@@ -126,8 +137,10 @@ public class RunAnalysis
 	 * Second step in the pipeline: use the overexpression values to generate networks
 	 * @throws URISyntaxException 
 	 */
-	private void fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions) throws IOException, URISyntaxException
 	{
+		Set<InputNetwork> networks = new HashSet<InputNetwork>();
+		
 		OverexpressionIO io = new OverexpressionIO();
 		NetworkConstruction nc = new NetworkConstruction();
 		
@@ -149,10 +162,16 @@ public class RunAnalysis
 			ppis.addAll(virtualRegulations);
 			System.out.println("  Found " + ppis.size() + " edges");
 			
-			Network net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), ppis, new DefaultNodeMapper());
-			System.out.println(net.getStringRepresentation());
+			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), ppis, new DefaultNodeMapper());
+			networks.add(net);
+			
+			/*
+			System.out.println("");
+			System.out.println(net.getStringRepresentation() + ":");
 			System.out.println(EdgeIO.writeEdgesToTab(net.getEdges()));
 			System.out.println("");
+			*/
 		}
+		return networks;
 	}
 }

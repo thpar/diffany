@@ -340,7 +340,7 @@ public class NetworkCleaning
 			{
 				if (numberOriginal > 1)
 				{
-					logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source.getName() + " and " + target.getName() + " for the category " + rootCat + " in " + network_name);
+					logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
 				}
 				return e;
 			}

@@ -182,11 +182,15 @@ public abstract class Network
 
 		for (Edge e : edges)
 		{
-			if (e.getSource().getName(normalized).equals(source) && e.getTarget().getName(normalized).equals(target))
+			Node edgeSource = e.getSource();
+			Node edgeTarget = e.getTarget();
+			Node givenSource = new Node(source, source);
+			Node givenTarget = new Node(target, target);
+			if (nm.areEqual(edgeSource, givenSource) && nm.areEqual(edgeTarget, givenTarget))
 			{
 				resultEdges.add(e);
 			}
-			else if (addSyms && e.isSymmetrical() && e.getSource().getName(normalized).equals(target) && e.getTarget().getName(normalized).equals(source))
+			else if (addSyms && e.isSymmetrical() && nm.areEqual(edgeSource, givenTarget) && nm.areEqual(edgeTarget, givenSource))
 			{
 				resultEdges.add(e);
 			}

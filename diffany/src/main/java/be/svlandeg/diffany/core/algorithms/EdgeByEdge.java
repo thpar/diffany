@@ -30,7 +30,8 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class EdgeByEdge
 {
 	
-	protected static String EMPTY_NAME = "*empty*";
+	protected static String EMPTY_ID = "*empty*";
+	protected static String EMPTY_DISPLAY_NAME = "Empty node";
 	
 	protected Logger log;
 	
@@ -68,6 +69,7 @@ public class EdgeByEdge
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
+		// nodes in the differential network, by ID
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats();
@@ -101,7 +103,7 @@ public class EdgeByEdge
 				}
 				else
 				{
-					allsources2.add(new Node(EMPTY_NAME));
+					allsources2.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
 				}
 			}
 
@@ -132,7 +134,7 @@ public class EdgeByEdge
 					}
 					else
 					{
-						alltargets2.add(new Node(EMPTY_NAME));
+						alltargets2.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
 					}
 				}
 
@@ -149,7 +151,7 @@ public class EdgeByEdge
 					ConditionNetwork condition = listedConditions.get(i);
 					Node source2 = allsources2.get(i);
 					Node target2 = alltargets2.get(i);
-					if (!source2.getName().equals(EMPTY_NAME) && !target2.getName().equals(EMPTY_NAME))
+					if (!source2.getID().equals(EMPTY_ID) && !target2.getID().equals(EMPTY_ID))
 					{
 						conditionEdges = condition.getAllEdges(source2, target2);
 					}
@@ -210,23 +212,25 @@ public class EdgeByEdge
 					{
 						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
 
-						String sourceconsensus = nm.getConsensusName(allSources);
-						String targetconsensus = nm.getConsensusName(allTargets);
+						String sourceconsensusName = nm.getConsensusName(allSources);
+						String sourceconsensusID = nm.getConsensusID(allSources);
+						String targetconsensusName = nm.getConsensusName(allTargets);
+						String targetconsensusID = nm.getConsensusID(allTargets);
 
 						// non-void differential edge
-						if (diff_edge_def.getWeight() > 0 && sourceconsensus != null && targetconsensus != null)
+						if (diff_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
 						{
-							if (!allDiffNodes.containsKey(sourceconsensus))
+							if (!allDiffNodes.containsKey(sourceconsensusID))
 							{
-								allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
+								allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
 							}
-							Node sourceresult = allDiffNodes.get(sourceconsensus);
+							Node sourceresult = allDiffNodes.get(sourceconsensusID);
 
-							if (!allDiffNodes.containsKey(targetconsensus))
+							if (!allDiffNodes.containsKey(targetconsensusID))
 							{
-								allDiffNodes.put(targetconsensus, new Node(targetconsensus));
+								allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
 							}
-							Node targetresult = allDiffNodes.get(targetconsensus);
+							Node targetresult = allDiffNodes.get(targetconsensusID);
 
 							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 							diff.addEdge(edgediff);
@@ -399,27 +403,29 @@ public class EdgeByEdge
 					Set<Node> allSources = new HashSet<Node>();
 					allSources.add(source1);
 					allSources.add(source2);
-					String sourceconsensus = nm.getConsensusName(allSources);
+					String sourceconsensusID = nm.getConsensusID(allSources);
+					String sourceconsensusName = nm.getConsensusName(allSources);
 
 					Set<Node> allTargets = new HashSet<Node>();
 					allTargets.add(target1);
 					allTargets.add(target2);
-					String targetconsensus = nm.getConsensusName(allTargets);
+					String targetconsensusID = nm.getConsensusID(allTargets);
+					String targetconsensusName = nm.getConsensusName(allTargets);
 
 					// non-void overlapping edge
-					if (overlap_edge_def.getWeight() > 0 && sourceconsensus != null && targetconsensus != null)
+					if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
 					{
-						if (!allDiffNodes.containsKey(sourceconsensus))
+						if (!allDiffNodes.containsKey(sourceconsensusID))
 						{
-							allDiffNodes.put(sourceconsensus, new Node(sourceconsensus));
+							allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
 						}
-						Node sourceresult = allDiffNodes.get(sourceconsensus);
+						Node sourceresult = allDiffNodes.get(sourceconsensusID);
 
-						if (!allDiffNodes.containsKey(targetconsensus))
+						if (!allDiffNodes.containsKey(targetconsensusID))
 						{
-							allDiffNodes.put(targetconsensus, new Node(targetconsensus));
+							allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
 						}
-						Node targetresult = allDiffNodes.get(targetconsensus);
+						Node targetresult = allDiffNodes.get(targetconsensusID);
 
 						Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
 						overlap.addEdge(overlapdiff);

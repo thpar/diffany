@@ -58,11 +58,11 @@ public class NetworkConstruction
 		}
 		for (String id : sign_ids_up)
 		{
-			nodes.put(new Node(id), true);
+			nodes.put(new Node(id, id), true);
 		}
 		for (String id : sign_ids_down)
 		{
-			nodes.put(new Node(id), false);
+			nodes.put(new Node(id, id), false);
 		}
 		return nodes;
 	}
@@ -87,10 +87,10 @@ public class NetworkConstruction
 				type = "downregulated";
 				regulator = "downregulator";
 			}
-			String fullname = "virtual_" + regulator + "_of_" + n.getName();
+			String fullname = "virtual_" + regulator + "_of_" + n.getID();
 			if (! virtualNodes.containsKey(fullname))
 			{
-				virtualNodes.put(fullname, new Node(fullname, true));
+				virtualNodes.put(fullname, new Node(fullname, fullname, true));
 			}
 			Node virtualRegulator = virtualNodes.get(fullname);
 			Edge e = new Edge(type, virtualRegulator, n, false);
@@ -153,7 +153,7 @@ public class NetworkConstruction
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
 		for (Node n : nodes)
 		{
-			mappedNodes.put(n.getName(), n);
+			mappedNodes.put(n.getID(), n);
 		}
 		return mappedNodes;
 	}

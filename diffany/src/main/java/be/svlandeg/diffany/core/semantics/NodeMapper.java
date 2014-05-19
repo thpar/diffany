@@ -28,6 +28,16 @@ public abstract class NodeMapper
 	
 	
 	/**
+	 * Return a 'consensus' ID for a set of nodes that were previously determined to be equal. 
+	 * Null or empty nodes are ignored. Otherwise, all IDs in the set will be the same, and this will be the result of this method.
+	 * 
+	 * @param nodes all nodes
+	 * @return a consensus name of these nodes to be used in the differential network, or null when all nodes are null
+	 * @throws IllegalArgumentException when the nodes are not all equal (when not null)
+	 */
+	public abstract String getConsensusID(Set<Node> nodes) throws IllegalArgumentException;
+	
+	/**
 	 * Return a 'consensus' name for a set of nodes that were previously determined to be equal. 
 	 * Null or empty nodes are ignored.
 	 * 

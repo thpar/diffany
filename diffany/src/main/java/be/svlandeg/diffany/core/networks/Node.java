@@ -8,48 +8,74 @@ package be.svlandeg.diffany.core.networks;
  */
 public class Node
 {
-	
+
+	protected String ID;
 	protected String name;
 	protected boolean virtual;
 	
 	/**
-	 * Create a new (non-virtual) node with a specific name
+	 * Create a new (non-virtual) node with a specific name. This name will be used as unique identifier, so ensure its unambiguity across the project!
+	 * 
 	 * @param name the name of this node - should be unique within a network!
 	 */
 	public Node(String name) throws IllegalArgumentException
 	{
-		if (name == null)
-		{
-			String errormsg = "The name of a node should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.name = name;
-		virtual = false;
+		this(name, name);
 	}
-	
+
 	/**
-	 * Create a new node with a specific name and which is virtual or not.
+	 * Create a new (non-virtual) node with a specific ID and name
+	 * 
+	 * @param ID the ID of this node - should be unique within a network!
+	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
+	 */
+	public Node(String ID, String name) throws IllegalArgumentException
+	{
+		this(ID, name, false);
+	}
+
+	/**
+	 * Create a new node with a specific ID, name and which is virtual or not
+	 * 
+	 * @param ID the ID of this node - should be unique within a network!
 	 * @param name the name of this node - should be unique within a network!
 	 * @param virtual whether this node is virtual
 	 */
-	public Node(String name, boolean virtual) throws IllegalArgumentException
+	public Node(String ID, String name, boolean virtual) throws IllegalArgumentException
 	{
+		if (ID == null)
+		{
+			String errormsg = "The ID of a node should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		if (name == null)
 		{
 			String errormsg = "The name of a node should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		this.ID = ID;
 		this.name = name;
 		this.virtual = virtual;
 	}
-	
+
 	/**
-	 * Return the name of this node, in its original (unnormalized) form.
+	 * Return the unique ID of this node
+	 * 
 	 * @return the name of this node
 	 */
-	public String getName()
+	public String getID()
 	{
-		return getName(false);
+		return ID;
+	}
+
+	/**
+	 * Return the name of this node, in its original (unnormalized) form.
+	 * 
+	 * @return the name of this node
+	 */
+	public String getDisplayName()
+	{
+		return getDisplayName(false);
 	}
 
 	/**
@@ -58,7 +84,7 @@ public class Node
 	 * @param normalized whether or not the name should be converted to lower case.
 	 * @return the name of this node
 	 */
-	public String getName(boolean normalized)
+	public String getDisplayName(boolean normalized)
 	{
 		if (normalized)
 		{
@@ -66,7 +92,7 @@ public class Node
 		}
 		return name;
 	}
-	
+
 	/**
 	 * Check whether or not this node is virtual or not.
 	 * E.g. visualisations will want to hide virtual nodes.
@@ -77,10 +103,15 @@ public class Node
 	{
 		return virtual;
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		return "Node " + name;
+		String result = "Node " + ID;
+		if (!ID.equals(name))
+		{
+			result += " (" + name + ")";
+		}
+		return result;
 	}
 }

@@ -110,8 +110,9 @@ public class CyNetworkBridge {
 		
 		for (Node node: network.getNodes()){
 			CyNode cyNode = cyNetwork.addNode();
-			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getName());
-			cyNetwork.getRow(cyNode).set(NORMALIZED_NAME, node.getName(true));
+			// TODO (comment by Sofie): keep track of Node ID as well! (#142)
+			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getDisplayName());
+			cyNetwork.getRow(cyNode).set(NORMALIZED_NAME, node.getDisplayName(true));
 		}
 		
 		for (Edge edge : network.getEdges()){
@@ -144,7 +145,7 @@ public class CyNetworkBridge {
 		final String pk = table.getPrimaryKey().getName();
 		
 		CyNode cyNode = null;
-		Collection<CyRow> matches = table.getMatchingRows(NORMALIZED_NAME, node.getName(true));
+		Collection<CyRow> matches = table.getMatchingRows(NORMALIZED_NAME, node.getDisplayName(true));
 		for (final CyRow row : matches){
 			Long suid = row.get(pk, Long.class);
 			cyNode = cyNetwork.getNode(suid);
@@ -219,8 +220,8 @@ public class CyNetworkBridge {
 		Map<Long, Node> nodeMap = new HashMap<Long, Node>();
 		for (CyNode cyNode : cyNodes){
 			String nodeName = getName(cyNetwork, cyNode);
-			Node node = new Node(nodeName);
-			nodeMap.put(cyNode.getSUID(), node);
+			Node node = new Node(nodeName, nodeName);	// TODO (comment by Sofie: Node ID?! #142)
+			nodeMap.put(cyNode.getSUID(), node);	
 		}
 		
 		Set<Edge> edgeSet = new HashSet<Edge>();

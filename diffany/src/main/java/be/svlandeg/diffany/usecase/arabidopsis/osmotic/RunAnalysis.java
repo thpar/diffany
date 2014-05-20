@@ -167,7 +167,7 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Map<Node, Boolean> nodes = nc.getSignificantGenes(data, threshold);
+			Map<Node, Double> nodes = nc.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
 
 			Set<Edge> virtualRegulations = nc.constructVirtualRegulations(nodes);

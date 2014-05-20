@@ -35,10 +35,10 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
 public class NetworkIO
 {
 
-	private static String default_conditions_file = "conditions.tab";
-	private static String default_edge_file = "edges.tab";
-	private static String default_node_file = "nodes.tab";
-	private static String default_definition_file = "network.tab";
+	private static String default_conditions_file = "conditions.txt";
+	private static String default_edge_file = "edges.txt";
+	private static String default_node_file = "nodes.txt";
+	private static String default_definition_file = "network.txt";
 	
 	private static String name_field = "Name";
 	private static String type_field = "Type";

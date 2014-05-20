@@ -6,13 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Node;
@@ -33,36 +33,32 @@ public class NetworkConstruction
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 */
-	public Map<Node, Boolean> getSignificantGenes(OverexpressionData data, double threshold) throws IOException, URISyntaxException
+	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold) throws IOException, URISyntaxException
 	{
-		Map<Node, Boolean> nodes = new HashMap<Node, Boolean>();
+		GenePrinter gp = new GenePrinter();
+		
+		boolean arrayID = data.indexedByRawArrayIDs();
+		
+		Map<Node, Double> nodes = new HashMap<Node, Double>();
 
 		SortedSet<String> ids = data.getArrayIDs();
-		SortedSet<String> sign_ids_up = new TreeSet<String>();
-		SortedSet<String> sign_ids_down = new TreeSet<String>();
 		for (String id : ids)
 		{
 			double FDR = data.getFDR(id);
 			if (FDR <= threshold)
 			{
+				String symbol = gp.getSymbolByLocusID(id);
+				if (arrayID)
+				{
+					symbol = Arrays.toString(gp.getSymbolByArrayID(id).toArray());
+				}
+				if (symbol == null)
+				{
+					symbol = id;
+				}
 				double FC = data.getFoldchange(id);
-				if (FC > 0)
-				{
-					sign_ids_up.add(id);
-				}
-				else
-				{
-					sign_ids_down.add(id);
-				}
+				nodes.put(new Node(id, symbol), FC);
 			}
-		}
-		for (String id : sign_ids_up)
-		{
-			nodes.put(new Node(id, id), true);
-		}
-		for (String id : sign_ids_down)
-		{
-			nodes.put(new Node(id, id), false);
 		}
 		return nodes;
 	}
@@ -72,21 +68,24 @@ public class NetworkConstruction
 	 * @param targets
 	 * @return
 	 */
-	public Set<Edge> constructVirtualRegulations(Map<Node, Boolean> targets)
+	public Set<Edge> constructVirtualRegulations(Map<Node, Double> targets)
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> virtualNodes = new HashMap<String, Node>();
 		
 		for (Node n : targets.keySet())
 		{
-			boolean up = targets.get(n);
+			double FC = targets.get(n);
+			
 			String type = "upregulated";
 			String regulator = "upregulator";
-			if (! up)
+			
+			if (FC < 0)
 			{
 				type = "downregulated";
 				regulator = "downregulator";
 			}
+			
 			String ID = type.charAt(0) + "_" + n.getID();
 			String fullname = regulator + "_of_" + n.getID();
 			if (! virtualNodes.containsKey(ID))
@@ -94,7 +93,7 @@ public class NetworkConstruction
 				virtualNodes.put(ID, new Node(ID, fullname, true));
 			}
 			Node virtualRegulator = virtualNodes.get(ID);
-			Edge e = new Edge(type, virtualRegulator, n, false);
+			Edge e = new Edge(type, virtualRegulator, n, false, Math.abs(FC), false);
 			edges.add(e);
 		}
 		

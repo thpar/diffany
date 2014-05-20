@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.io.NetworkIO;
-import be.svlandeg.diffany.core.io.NodeIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
@@ -42,8 +40,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
@@ -95,13 +93,13 @@ public class RunAnalysis
 
 		Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper());
 
+		
 		for (InputNetwork rn : readNetworks)
 		{
 			System.out.println("");
-			System.out.println(rn.getStringRepresentation() + ":");
-			System.out.println(NodeIO.writeNodesToTab(rn.getNodes()));
-			System.out.println(EdgeIO.writeEdgesToTab(rn.getEdges()));
-			System.out.println("");
+			System.out.println(" " + rn.getStringRepresentation() + ": ");
+			System.out.print(" " + rn.getNodes().size() + " nodes and " + rn.getEdges().size() + " edges");
+			System.out.println(" (" + rn.getNodesByVirtualState(true).size() + " virtual nodes)");
 		}
 
 		System.out.println("");

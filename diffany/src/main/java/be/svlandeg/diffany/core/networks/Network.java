@@ -80,6 +80,25 @@ public abstract class Network
 	{
 		return nodes;
 	}
+	
+	/**
+	 * Get the set of nodes in this network, all either virtual or all non-virtual.
+	 * 
+	 * @param virtual whether to get the subset of virtual nodes, or non-virtual ones
+	 * @return the set of virtual or non-virtual nodes (can be empty, but not null)
+	 */
+	public Set<Node> getNodesByVirtualState(boolean virtual)
+	{
+		Set<Node> nodeSubset = new HashSet<Node>();
+		for (Node n : getNodes())
+		{
+			if (n.isVirtual() == virtual)
+			{
+				nodeSubset.add(n);
+			}
+		}
+		return nodeSubset;
+	}
 
 	/**
 	 * Get the set of edges in this network

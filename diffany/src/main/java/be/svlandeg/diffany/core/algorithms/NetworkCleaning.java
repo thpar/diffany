@@ -160,7 +160,7 @@ public class NetworkCleaning
 	/**
 	 * Clean a generic input network:
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
-	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
+	 * (either all symmetric or all directed, as dictated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
@@ -290,12 +290,12 @@ public class NetworkCleaning
 			}
 			if (foundRoot == 0)
 			{
-				String errorMsg = " Edge source type " + edgeType + " could not be linked to a semantic root category in the edge ontology";
+				String errorMsg = " Edge source type '" + edgeType + "' could not be linked to a semantic root category in the edge ontology";
 				throw new IllegalArgumentException(errorMsg);
 			}
 			if (foundRoot > 1)
 			{
-				String errorMsg = " Edge source type " + edgeType + " could be linked to more than one semantic root category in the edge ontology";
+				String errorMsg = " Edge source type '" + edgeType + "' could be linked to more than one semantic root category in the edge ontology";
 				throw new IllegalArgumentException(errorMsg);
 			}
 		}

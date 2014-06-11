@@ -8,11 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.project.Logger;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -157,31 +162,51 @@ public class RunAnalysis
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
-
+		
 		OverexpressionIO io = new OverexpressionIO();
-		NetworkConstruction nc = new NetworkConstruction();
+		NetworkConstruction constr = new NetworkConstruction();
+		
+		NodeMapper nm = new DefaultNodeMapper();
+		EdgeOntology eo = new DefaultEdgeOntology();
 
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
 		for (OverexpressionData data : datasets)
 		{
+			Logger logger = new Logger();
+			NetworkCleaning cleaning = new NetworkCleaning(logger);
+			
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Map<Node, Double> nodes = nc.getSignificantGenes(data, threshold);
+			Map<Node, Double> nodes = constr.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
 
-			Set<Edge> virtualRegulations = nc.constructVirtualRegulations(nodes);
+			Set<Edge> virtualRegulations = constr.constructVirtualRegulations(nodes);
 			System.out.println("  Found " + virtualRegulations.size() + " virtual regulations");
 
-			Set<Edge> ppis = nc.readPPIsByLocustags(nodes.keySet(), selfInteractions);
-			System.out.println("  Found " + ppis.size() + " PPIs");
+			Set<Edge> edges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions);
+			System.out.println("  Found " + edges.size() + " PPIs");
 
-			ppis.addAll(virtualRegulations);
-			System.out.println("  Found " + ppis.size() + " edges");
+			edges.addAll(virtualRegulations);
+			System.out.println("  Found " + edges.size() + " total edges");
 
-			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), ppis, new DefaultNodeMapper());
-			networks.add(net);
+			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), edges, nm);
+			
+			System.out.println("  Cleaning network:");
+
+			InputNetwork cleannet = cleaning.fullInputCleaning(net, nm, eo);
+			networks.add(cleannet);
+			
+			for (String msg : logger.getAllLogMessages())
+			{
+				System.out.println(msg);
+			}
+			
+			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges");
 		}
+		
+		
+		
 		return networks;
 	}
 }

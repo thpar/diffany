@@ -21,7 +21,9 @@ public class GenePrinter
 
 	private Map<String, Set<String>> arrayidmapping;
 	private Map<String, String> locusidmapping;
+	private Map<String, String> symbolmapping;
 	private Map<String, Set<String>> synonymmapping;
+
 
 	/**
 	 * Create a new GenePrinter, reading the mapping data.
@@ -52,6 +54,7 @@ public class GenePrinter
 
 		URL symbolMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/EVEX_synonyms_3702.tab");
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
+		symbolmapping = new MapID().getSymbolMappings(new File(symbolMappingURL.toURI()));
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));
 	}
 	
@@ -60,6 +63,7 @@ public class GenePrinter
 	 * Get the synonyms of an A.th. gene by its array ID. There may be multiple entries when an arrayID maps to multiple locus IDs.
 	 * 
 	 * @param arrayID the ID from the A.th microarray dataset
+	 * @return a list of synonyms for this array ID, one concatenated string as entry per locus ID
 	 */
 	public List<String> getSynonymsByArrayID(String arrayID)
 	{
@@ -80,11 +84,37 @@ public class GenePrinter
 		}
 		return results;
 	}
-
+	
 	/**
-	 * Get the synonyms of an A.th. gene by its array ID. There may be multiple entries when an arrayID maps to multiple locus IDs.
+	 * Get the official symbol of an A.th. gene by its array ID. There may be multiple entries when an arrayID maps to multiple locus IDs.
 	 * 
 	 * @param arrayID the ID from the A.th microarray dataset
+	 * @return the official symbol, or null if it couldn't be found or this locus ID could not be mapped to Entrez Gene
+	 */
+	public Set<String> getSymbolByArrayID(String arrayID)
+	{
+		Set<String> results = new HashSet<String>();
+
+		Set<String> locusIDs = arrayidmapping.get(arrayID);
+		if (locusIDs != null)
+		{
+			for (String locusID : locusIDs)
+			{
+				results.add(getSymbolByLocusID(locusID));
+			}
+		}
+		else
+		{
+			results.add("no_match");
+		}
+		return results;
+	}
+
+	/**
+	 * Get the synonyms of an A.th. gene by its locus ID.
+	 * 
+	 * @param locusID the locus ID of the gene
+	 * @return a list of synonyms, concatenated into one string
 	 */
 	public String getSynonymsByLocusID(String locusID)
 	{
@@ -103,6 +133,22 @@ public class GenePrinter
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Get the official symbol of an A.th. gene by its locus ID.
+	 * 
+	 * @param locusID the locus ID of the gene
+	 * @return the official symbol, or null if it couldn't be found or this locus ID could not be mapped to Entrez Gene
+	 */
+	public String getSymbolByLocusID(String locusID)
+	{
+		String egid = locusidmapping.get(locusID);
+		if (egid != null)
+		{
+			return symbolmapping.get(egid);
+		}
+		return null;
 	}
 
 }

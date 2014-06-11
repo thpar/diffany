@@ -177,6 +177,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		// binding, coexpression, colocalization
 
 		addSourceCategoryMapping("ppi", "ppi", overwrite);
+		addSourceCategoryMapping("validated_ppi", "ppi", overwrite);
 		addSourceCategoryMapping("protein-protein interaction", "ppi", overwrite);
 		addSourceCategoryMapping("complex", "ppi", overwrite);
 		addSourceCategoryMapping("complex formation", "ppi", overwrite);
@@ -319,6 +320,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("positively regulates", "positive_regulation", overwrite);
 		addSourceCategoryMapping("positively regulating", "positive_regulation", overwrite);
 		addSourceCategoryMapping("upregulation", "positive_regulation", overwrite);
+		addSourceCategoryMapping("upregulated", "positive_regulation", overwrite);
 
 		addSourceCategoryMapping("catalysis", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyzis", "catalysis", overwrite);
@@ -339,6 +341,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("negatively regulates", "negative_regulation", overwrite);
 		addSourceCategoryMapping("negatively regulating", "negative_regulation", overwrite);
 		addSourceCategoryMapping("downregulation", "negative_regulation", overwrite);
+		addSourceCategoryMapping("downregulated", "negative_regulation", overwrite);
 
 		addSourceCategoryMapping("inhibit", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibits", "inhibition", overwrite);

@@ -43,6 +43,16 @@ public class Edge extends EdgeDefinition
 	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
 	{
 		super(type, symmetrical, weight, negated);
+		if (source == null)
+		{
+			String errormsg = "The source node should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (target == null)
+		{
+			String errormsg = "The target node should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.source = source;
 		this.target = target;
 	}

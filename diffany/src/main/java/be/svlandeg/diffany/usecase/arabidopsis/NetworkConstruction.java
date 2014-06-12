@@ -36,9 +36,9 @@ public class NetworkConstruction
 	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold) throws IOException, URISyntaxException
 	{
 		GenePrinter gp = new GenePrinter();
-		
+
 		boolean arrayID = data.indexedByRawArrayIDs();
-		
+
 		Map<Node, Double> nodes = new HashMap<Node, Double>();
 
 		SortedSet<String> ids = data.getArrayIDs();
@@ -62,7 +62,7 @@ public class NetworkConstruction
 		}
 		return nodes;
 	}
-	
+
 	/**
 	 * TODO
 	 * @param targets
@@ -72,23 +72,23 @@ public class NetworkConstruction
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> virtualNodes = new HashMap<String, Node>();
-		
+
 		for (Node n : targets.keySet())
 		{
 			double FC = targets.get(n);
-			
+
 			String type = "upregulated";
 			String regulator = "upregulator";
-			
+
 			if (FC < 0)
 			{
 				type = "downregulated";
 				regulator = "downregulator";
 			}
-			
+
 			String ID = type.charAt(0) + "_" + n.getID();
 			String fullname = regulator + "_of_" + n.getID();
-			if (! virtualNodes.containsKey(ID))
+			if (!virtualNodes.containsKey(ID))
 			{
 				virtualNodes.put(ID, new Node(ID, fullname, true));
 			}
@@ -96,7 +96,7 @@ public class NetworkConstruction
 			Edge e = new Edge(type, virtualRegulator, n, false, Math.abs(FC), false);
 			edges.add(e);
 		}
-		
+
 		return edges;
 	}
 
@@ -107,13 +107,16 @@ public class NetworkConstruction
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = getNodesByLocustag(nodes);
 
 		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetDataFile);
 		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
+
+		boolean symmetrical = true;
+		Set<String> ppisRead = new HashSet<String>();
 
 		String line = reader.readLine();
 		while (line != null)
@@ -125,15 +128,40 @@ public class NetworkConstruction
 			String locus2 = stok.nextToken();
 			String type = stok.nextToken();
 
-			if (mappedNodes.keySet().contains(locus1) && mappedNodes.keySet().contains(locus2))
+			String ppiRead = locus1 + locus2 + type;
+			String ppiReverseRead = locus2 + locus1 + type;
+
+			// avoid reading the same PPI twice
+			if (!ppisRead.contains(ppiRead) && !ppisRead.contains(ppiReverseRead))
 			{
-				if (includeSelfInteractions || !locus1.equals(locus2))
+				ppisRead.add(ppiRead);
+				ppisRead.add(ppiReverseRead);
+				
+				boolean foundL1 = mappedNodes.keySet().contains(locus1);
+				boolean foundL2 = mappedNodes.keySet().contains(locus2);
+
+				// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
+				if ((foundL1 && foundL2) || (includeNeighbours && (foundL1 || foundL2)))
 				{
-					Node source = mappedNodes.get(locus1);
-					Node target = mappedNodes.get(locus2);
-					boolean symmetrical = true;
-					Edge ppi = new Edge(type, source, target, symmetrical);
-					edges.add(ppi);
+					// include when the loci are different, or when self interactions are allowed
+					if (includeSelfInteractions || !locus1.equals(locus2))
+					{
+						Node source = mappedNodes.get(locus1);
+						if (source == null)
+						{
+							source = new Node(locus1);
+							mappedNodes.put(locus1, source);
+						}
+						Node target = mappedNodes.get(locus2);
+						if (target == null)
+						{
+							target = new Node(locus2);
+							mappedNodes.put(locus2, target);
+						}
+
+						Edge ppi = new Edge(type, source, target, symmetrical);
+						edges.add(ppi);
+					}
 				}
 			}
 			line = reader.readLine();

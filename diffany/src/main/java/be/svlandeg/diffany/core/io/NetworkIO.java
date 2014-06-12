@@ -91,7 +91,7 @@ public class NetworkIO
 				Node source = e.getSource();
 				Node target = e.getTarget();
 				
-				// Target should get meta deta on this virtual edge
+				// Target should get meta data on this virtual edge
 				if (source.isVirtual() && ! target.isVirtual())
 				{
 					String targetID = target.getID();

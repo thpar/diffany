@@ -95,6 +95,8 @@ public class NodeIO
 		String name = stok.nextToken();
 		String virtual = stok.nextToken();
 		
+		// TODO currently this method does not read information on virtual edges as written by NetworkIO.writeNetworkToFiles when !allowVirtualEdges
+		
 		boolean isVirtual = NodeIO.isVirtual(virtual);
 		
 		return new Node(ID, name, isVirtual);

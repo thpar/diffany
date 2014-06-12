@@ -39,14 +39,13 @@ public class NetworkIO
 	private static String default_edge_file = "edges.txt";
 	private static String default_node_file = "nodes.txt";
 	private static String default_definition_file = "network.txt";
-	
+
 	private static String name_field = "Name";
 	private static String type_field = "Type";
-	
 
 	/**
 	 * Write the string representation of the network: All edges to one File, and all nodes to another, as specified by the parameters.
-	 * Additionally, the network name and type are written to a defitionsfile
+	 * Additionally, the network name and type are written to a defitionsfile.
 	 * 
 	 * @param network the {@link Network} that needs to be written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
@@ -63,21 +62,47 @@ public class NetworkIO
 		// EDGES
 		edgesFile.getParentFile().mkdirs();
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
-		
+
 		Set<Edge> normalEdges = network.getEdgesByVirtualState(false);
 		Set<Edge> virtualEdges = network.getEdgesByVirtualState(true);
 		
+		Map<String, Set<String>> virtualNodeAttributes = new HashMap<String, Set<String>>();
+
 		for (Edge e : normalEdges)
 		{
 			edgeWriter.append(EdgeIO.writeToTab(e));
 			edgeWriter.newLine();
 			edgeWriter.flush();
 		}
-		for (Edge e : virtualEdges)
+		
+		if (allowVirtualEdges)	
 		{
-			edgeWriter.append(EdgeIO.writeToTab(e));
-			edgeWriter.newLine();
-			edgeWriter.flush();
+			for (Edge e : virtualEdges)
+			{
+				edgeWriter.append(EdgeIO.writeToTab(e));
+				edgeWriter.newLine();
+				edgeWriter.flush();
+			}
+		}
+		else	// TODO: currently, only information about target nodes from virtual edges are includes as additional node attributes
+		{
+			for (Edge e : virtualEdges)
+			{
+				Node source = e.getSource();
+				Node target = e.getTarget();
+				
+				// Target should get meta deta on this virtual edge
+				if (source.isVirtual() && ! target.isVirtual())
+				{
+					String targetID = target.getID();
+					String attribute = e.getType() + "\t" + e.getWeight();
+					if (! virtualNodeAttributes.containsKey(targetID))
+					{
+						virtualNodeAttributes.put(targetID, new HashSet<String>());
+					}
+					virtualNodeAttributes.get(targetID).add(attribute);
+				}
+			}
 		}
 		edgeWriter.flush();
 		edgeWriter.close();
@@ -85,16 +110,20 @@ public class NetworkIO
 		// NODES
 		nodesFile.getParentFile().mkdirs();
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
-		
+
 		Set<Node> unduplicatedNodes = new HashSet<Node>();
 		for (Node n : network.getNodes())
 		{
-			if (! nm.isContained(n, unduplicatedNodes))
+			if (!nm.isContained(n, unduplicatedNodes))
 			{
-				unduplicatedNodes.add(n);
+				// exclude virtual nodes when virtual edges should not be written
+				if (allowVirtualEdges || ! n.isVirtual())
+				{
+					unduplicatedNodes.add(n);
+				}
 			}
 		}
-		
+
 		SortedMap<String, Node> sortedNodes = new TreeMap<String, Node>();
 		for (Node n : unduplicatedNodes)
 		{
@@ -104,28 +133,42 @@ public class NetworkIO
 		{
 			Node n = sortedNodes.get(ID);
 			String tabRep = NodeIO.writeToTab(n);
+			
 			nodeWriter.append(tabRep);
+			if (! allowVirtualEdges)	// if there are no virtual edges, this information will be printed as node attributes
+			{
+				Set<String> attributes = virtualNodeAttributes.get(ID);
+				if (attributes == null || attributes.isEmpty())
+				{
+					attributes = new HashSet<String>();
+					attributes.add("no_meta_data" + "\t" + 1);
+				}
+				for (String at : attributes)
+				{
+					nodeWriter.append("\t" + at);
+				}
+			}
 			nodeWriter.newLine();
 			nodeWriter.flush();
 		}
 		nodeWriter.flush();
 		nodeWriter.close();
-		
+
 		// DEFINITION: NAME and TYPE (CLASS)
 		definitionFile.getParentFile().mkdirs();
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
-		
+
 		defWriter.append(name_field + "\t" + network.getName());
 		defWriter.newLine();
-		
+
 		String networkClass = network.getClass().getSimpleName();
 		defWriter.append(type_field + "\t" + networkClass);
 		defWriter.newLine();
-		
+
 		defWriter.flush();
 		defWriter.close();
 	}
-	
+
 	/**
 	 * Write the string representation of the conditions of a condition-specific network: call writeNetworkToFiles to write the edges edges information, nodes and network definition first.
 	 * Subsequently, call this method to write the conditions (ontology terms).
@@ -136,28 +179,27 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeConditionsToFiles(ConditionNetwork network, NodeMapper nm, File conditionsFile)
-			throws IOException
+	public static void writeConditionsToFiles(ConditionNetwork network, NodeMapper nm, File conditionsFile) throws IOException
 	{
 		Set<Condition> conditions = network.getConditions();
-	
+
 		conditionsFile.getParentFile().mkdirs();
 		BufferedWriter writer = new BufferedWriter(new FileWriter(conditionsFile));
 		for (Condition c : conditions)
 		{
 			writer.append(c.getDescription());
-			for (String ont: c.getOntologyTerms())
+			for (String ont : c.getOntologyTerms())
 			{
 				writer.append("\t" + ont);
 			}
 			writer.newLine();
 			writer.flush();
 		}
-	
+
 		writer.flush();
 		writer.close();
 	}
-	
+
 	/**
 	 * Write the string representation of the network to (subfiles of) a directory: edges, nodes and definition all go in a separate file.
 	 * If the network is a ConditionNetwork, the conditions will be written to a fourth file.
@@ -175,15 +217,14 @@ public class NetworkIO
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		writeNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile, allowVirtualEdges);
-		
+
 		if (network instanceof ConditionNetwork)
 		{
 			File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
 			writeConditionsToFiles((ConditionNetwork) network, nm, default_conditions_File);
 		}
 	}
-	
-	
+
 	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -199,20 +240,20 @@ public class NetworkIO
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		File conditionsFile = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
-		
+
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
 		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes));
-		
+
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
-		
+
 		if (type.equals("ReferenceNetwork"))
 		{
 			ReferenceNetwork r = new ReferenceNetwork(name, nm);
 			r.setNodesAndEdges(nodes, edges);
 			return r;
 		}
-		
+
 		else if (type.equals("ConditionNetwork"))
 		{
 			Set<Condition> conditions = readConditionsFromFile(conditionsFile);
@@ -226,10 +267,10 @@ public class NetworkIO
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
-		
+
 		throw new UnsupportedDataTypeException("Encountered unknown input network type: " + type);
 	}
-	
+
 	/**
 	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -243,7 +284,7 @@ public class NetworkIO
 	{
 		return (ReferenceNetwork) readInputNetworkFromDir(dir, nm);
 	}
-	
+
 	/**
 	 * Read a {@link ConditionNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -257,7 +298,7 @@ public class NetworkIO
 	{
 		return (ConditionNetwork) readInputNetworkFromDir(dir, nm);
 	}
-	
+
 	/**
 	 * Read an {@link InputNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -271,7 +312,7 @@ public class NetworkIO
 	{
 		return (InputNetwork) readInputNetworkFromDir(dir, nm);
 	}
-	
+
 	/**
 	 * Read a set of {@link InputNetwork} from a directory, one network per subdirectory.
 	 * 
@@ -291,7 +332,7 @@ public class NetworkIO
 		}
 		return networks;
 	}
-	
+
 	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -308,13 +349,13 @@ public class NetworkIO
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		
+
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm);
 		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes));
-		
+
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
-		
+
 		if (type.equals("DifferentialNetwork"))
 		{
 			DifferentialNetwork d = new DifferentialNetwork(name, reference, condNetworks, nm);
@@ -330,10 +371,10 @@ public class NetworkIO
 			o.setNodesAndEdges(nodes, edges);
 			return o;
 		}
-		
+
 		throw new UnsupportedDataTypeException("Encountered unknown output network type: " + type);
 	}
-	
+
 	/**
 	 * Retrieve a view on this set of nodes which is mapped by their unique IDs
 	 * @param nodes the original set of nodes
@@ -348,7 +389,7 @@ public class NetworkIO
 		}
 		return mappedNodes;
 	}
-	
+
 	/**
 	 * Read a {@link DifferentialNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -364,7 +405,7 @@ public class NetworkIO
 	{
 		return (DifferentialNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks);
 	}
-	
+
 	/**
 	 * Read a {@link OverlappingNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -380,7 +421,6 @@ public class NetworkIO
 	{
 		return (OverlappingNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks);
 	}
-	
 
 	/**
 	 * Read all conditions from a file containing one tab-delimited condition per line.
@@ -407,7 +447,7 @@ public class NetworkIO
 			}
 			Condition c = new Condition(descr, ontologies);
 			conditions.add(c);
-			
+
 			line = reader.readLine();
 		}
 
@@ -443,7 +483,7 @@ public class NetworkIO
 
 		return edges;
 	}
-	
+
 	/**
 	 * Read all nodes from a file containing one node name per line
 	 * 
@@ -459,22 +499,22 @@ public class NetworkIO
 
 		BufferedReader reader = new BufferedReader(new FileReader(nodesFile));
 		String line = reader.readLine();
-		
+
 		while (line != null)
 		{
 			Node n = NodeIO.readFromTab(line.trim());
-			if (! nm.isContained(n, nodes))
+			if (!nm.isContained(n, nodes))
 			{
 				nodes.add(n);
 			}
-			
+
 			line = reader.readLine();
 		}
 
 		reader.close();
 		return nodes;
 	}
-	
+
 	/**
 	 * Read the name of a network from file. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -488,10 +528,10 @@ public class NetworkIO
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
 		String line = reader.readLine();
-		
+
 		while (line != null)
 		{
-			StringTokenizer stok = new StringTokenizer(line,"\t");
+			StringTokenizer stok = new StringTokenizer(line, "\t");
 			if (stok.nextToken().equals(name_field))
 			{
 				String name = stok.nextToken();
@@ -503,7 +543,7 @@ public class NetworkIO
 		reader.close();
 		return null;
 	}
-	
+
 	/**
 	 * Read the type of a network from file. Specifically, a line of form "Type \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -517,10 +557,10 @@ public class NetworkIO
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
 		String line = reader.readLine();
-		
+
 		while (line != null)
 		{
-			StringTokenizer stok = new StringTokenizer(line,"\t");
+			StringTokenizer stok = new StringTokenizer(line, "\t");
 			if (stok.nextToken().equals(type_field))
 			{
 				String type = stok.nextToken();

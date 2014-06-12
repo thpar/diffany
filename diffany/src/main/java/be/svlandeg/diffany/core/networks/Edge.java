@@ -18,7 +18,7 @@ public class Edge extends EdgeDefinition
 
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
-	 * The EdgeDefinition object is not kept as such, its fields are copied (to make sure there is no dependency)
+	 * The EdgeDefinition object is not kept as such, its fields are copied (to make sure there is no dependency).
 	 * 
 	 * @param source the source node
 	 * @param target the target node
@@ -30,7 +30,7 @@ public class Edge extends EdgeDefinition
 	}
 
 	/**
-	 * Create a new edge with specified source and target nodes, direction and weight
+	 * Create a new edge with specified source and target nodes, direction and weight.
 	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
@@ -48,7 +48,7 @@ public class Edge extends EdgeDefinition
 	}
 
 	/**
-	 * Create a new edge with default weight of 1.0
+	 * Create a new edge with default weight of 1.
 	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
@@ -76,7 +76,7 @@ public class Edge extends EdgeDefinition
 	}
 
 	/**
-	 * Create a new edge with default weight of 1.0 and negation off
+	 * Create a new edge with default weight of 1.0 and negation off.
 	 * 
 	 * @param type the interaction type of this edge
 	 * @param source the source node
@@ -89,7 +89,7 @@ public class Edge extends EdgeDefinition
 	}
 
 	/**
-	 * Get the source node of this edge
+	 * Get the source node of this edge.
 	 * When the edge is symmetrical, source and target will be defined consistently,
 	 * though they can be used interchangeably in upstream code.
 	 * 
@@ -101,7 +101,7 @@ public class Edge extends EdgeDefinition
 	}
 
 	/**
-	 * Get the target node of this edge
+	 * Get the target node of this edge.
 	 * When the edge is symmetrical, source and target will be defined consistently,
 	 * though they can be used interchangeably in upstream code.
 	 * 
@@ -116,6 +116,20 @@ public class Edge extends EdgeDefinition
 	public String toString()
 	{
 		return EdgeIO.writeToTab(this);
+	}
+	
+	/** 
+	 * Retrieve whether or not an edge is virtual. It is considered virtual if the source and/or target nodes are virtual.
+	 * @return whether or not this is a virtual edge
+	 */
+	public boolean isVirtual()
+	{
+		boolean virtual = false;
+		if (source.isVirtual() || target.isVirtual())
+		{
+			virtual = true;
+		}
+		return virtual;
 	}
 
 }

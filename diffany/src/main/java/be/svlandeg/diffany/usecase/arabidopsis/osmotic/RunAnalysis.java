@@ -81,13 +81,14 @@ public class RunAnalysis
 		 * STEP 3: WRITE NETWORKS TO FILE
 		 */
 		String outputDir = osmoticStressDir + File.separator + "output";
+		boolean allowVirtualEdges = true;
 
 		System.out.println("");
 		System.out.println("3. Writing output networks to " + outputDir);
 
 		for (InputNetwork net : networks)
 		{
-			NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()));
+			NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()), allowVirtualEdges);
 		}
 
 		/*

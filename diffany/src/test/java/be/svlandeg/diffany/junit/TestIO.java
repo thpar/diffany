@@ -78,12 +78,13 @@ public class TestIO
 		NodeMapper nm = new DefaultNodeMapper();
 			
 		// WRITING
+		boolean allowVirtualEdges = true;
 		try
 		{
-			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir);
-			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir);
-			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir);
-			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir);
+			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir, allowVirtualEdges);
+			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir, allowVirtualEdges);
+			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir, allowVirtualEdges);
+			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir, allowVirtualEdges);
 		}
 		catch(IOException io)
 		{

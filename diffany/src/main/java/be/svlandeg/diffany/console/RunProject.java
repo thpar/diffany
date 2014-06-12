@@ -81,12 +81,14 @@ public class RunProject
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
+		boolean allowVirtualEdges = true;
+		
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, allowVirtualEdges);
 		l.log("Writing the differential network to " + diffDir);
 
 		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, allowVirtualEdges);
 		l.log("Writing the overlap network to " + overlapDir);
 		
 		l.log("Done !");

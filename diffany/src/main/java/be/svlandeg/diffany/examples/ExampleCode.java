@@ -57,11 +57,13 @@ public class ExampleCode
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
+		boolean allowVirtualEdges = true;
+		
 		File diffDir = new File(diffLocation);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, allowVirtualEdges);
 
 		File overlapDir = new File(overlapLocation);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, allowVirtualEdges);
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(rcID);

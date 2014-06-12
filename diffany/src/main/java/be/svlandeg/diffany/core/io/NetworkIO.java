@@ -53,16 +53,27 @@ public class NetworkIO
 	 * @param edgesFile the output file in which the edges will be written
 	 * @param nodesFile the output file in which the nodes will be written
 	 * @param definitionFile the output file in which the network definition will be written
+	 * @param allowVirtualEdges if true, write virtual edges in the edges file. If false, condense the information into node attributes
 	 * @see EdgeIO#writeToTab
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	protected static void writeNetworkToFiles(Network network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile) throws IOException
+	protected static void writeNetworkToFiles(Network network, NodeMapper nm, File edgesFile, File nodesFile, File definitionFile, boolean allowVirtualEdges) throws IOException
 	{
 		// EDGES
 		edgesFile.getParentFile().mkdirs();
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
-		for (Edge e : network.getEdges())
+		
+		Set<Edge> normalEdges = network.getEdgesByVirtualState(false);
+		Set<Edge> virtualEdges = network.getEdgesByVirtualState(true);
+		
+		for (Edge e : normalEdges)
+		{
+			edgeWriter.append(EdgeIO.writeToTab(e));
+			edgeWriter.newLine();
+			edgeWriter.flush();
+		}
+		for (Edge e : virtualEdges)
 		{
 			edgeWriter.append(EdgeIO.writeToTab(e));
 			edgeWriter.newLine();
@@ -72,7 +83,6 @@ public class NetworkIO
 		edgeWriter.close();
 
 		// NODES
-		// TODO v2.0: this code now simply prints the node name, but could be made more general through NodeIO and Node IDs?
 		nodesFile.getParentFile().mkdirs();
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
 		
@@ -155,15 +165,16 @@ public class NetworkIO
 	 * @param network the {@link Network} that needs to be written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param dir the output dir in which the tab files will be written
+	 * @param allowVirtualEdges if true, write virtual edges in the edges file. If false, condense the information into node attributes
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeNetworkToDir(Network network, NodeMapper nm, File dir) throws IOException
+	public static void writeNetworkToDir(Network network, NodeMapper nm, File dir, boolean allowVirtualEdges) throws IOException
 	{
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		writeNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile);
+		writeNetworkToFiles(network, nm, edgeFile, nodeFile, definitionFile, allowVirtualEdges);
 		
 		if (network instanceof ConditionNetwork)
 		{

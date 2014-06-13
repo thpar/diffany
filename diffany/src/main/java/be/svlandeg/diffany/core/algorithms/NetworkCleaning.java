@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.core.algorithms;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -65,31 +66,30 @@ public class NetworkCleaning
 		logger.log(" Removing redundant symmetrical edges from network " + net.getName());
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
+		
+		Set<Edge> oldEdges = net.getEdges();
 
 		// remove duplicate symmetrical edges between source-target and target-source
-		for (Node n1 : net.getNodes())
+		for (Edge et : oldEdges)
 		{
-			for (Node n2 : net.getNodes())
+			Node n1 = et.getSource();
+			Node n2 = et.getTarget();
+			
+			Set<Edge> all_edges = net.getAllEdges(n1, n2);
+			for (Edge eb : all_edges)
 			{
-				Set<Edge> all_edges = net.getAllEdges(n1, n2);
-				for (Edge et : all_edges)
+				// comparing two edges 'et' and 'eb', not removed in a previous iteration
+				if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
 				{
-					for (Edge eb : all_edges)
+					// both are symmetrical and have the same type
+					if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.getType().equals(eb.getType())))
 					{
-						// comparing two edges 'et' and 'eb', not removed in a previous iteration
-						if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
+						// both have the same weight and negation status
+						if ((et.getWeight() == eb.getWeight()) && (et.isNegated() == eb.isNegated()))
 						{
-							// both are symmetrical and have the same type
-							if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.getType().equals(eb.getType())))
-							{
-								// both have the same weight and negation status
-								if ((et.getWeight() == eb.getWeight()) && (et.isNegated() == eb.isNegated()))
-								{
-									// remove one of the two
-									net.removeEdge(eb);
-									removed_edges.add(eb);
-								}
-							}
+							// remove one of the two
+							net.removeEdge(eb);
+							removed_edges.add(eb);
 						}
 					}
 				}
@@ -156,7 +156,7 @@ public class NetworkCleaning
 
 		return resultNet;
 	}
-	
+
 	/**
 	 * Clean a generic input network:
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
@@ -191,11 +191,13 @@ public class NetworkCleaning
 	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
 		// make edges directed when defined as such by the edge ontology
+		System.out.println("   Unifying direction " + new Date());
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
+		System.out.println("   Cleaning edges " + new Date());
 		cleanEdges(net, nm, eo);
 	}
 
@@ -212,20 +214,64 @@ public class NetworkCleaning
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();
 		Set<String> roots = eo.retrieveAllSourceRootCats();
-
-		for (Node source : allNodes)
+		
+		// first, determine all node pairs which are relevant in this network
+		Set<Edge> oldEdges = net.getEdges();
+		Map<String, Set<String>> pairs = new HashMap<String, Set<String>>();
+		
+		Map<String, Node> mappedNodes = new HashMap<String, Node>();
+		
+		for (Edge e : oldEdges)
 		{
-			for (Node target : allNodes)
+			Node source = e.getSource();
+			Node target = e.getTarget();
+			
+			String sourceID = source.getID();
+			String targetID = target.getID();
+			
+			if (sourceID.compareTo(targetID) < 0)
 			{
-				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(source, target);
-				Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, source, target);
-				for (EdgeDefinition def : cleanedEdges.values())
+				if (! pairs.containsKey(sourceID))
 				{
-					newEdges.add(new Edge(source, target, def));
+					pairs.put(sourceID, new HashSet<String>());
+				}
+				pairs.get(sourceID).add(targetID);
+			}
+			else
+			{
+				if (! pairs.containsKey(targetID))
+				{
+					pairs.put(targetID, new HashSet<String>());
+				}
+				pairs.get(targetID).add(sourceID);
+			}
+			mappedNodes.put(sourceID, source);
+			mappedNodes.put(targetID, target);
+		}
+		
+		// For each node pair, perform a cleaning step
+		for (String ID1 : pairs.keySet())
+		{
+			Node n1 = mappedNodes.get(ID1);
+			Set<String> partners = pairs.get(ID1);
+			
+			for (String ID2 : partners)
+			{
+				Node n2 = mappedNodes.get(ID2);
+				
+				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(n1, n2);
+				if (!edges.isEmpty())
+				{
+					Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, n1, n2);
+					for (EdgeDefinition def : cleanedEdges.values())
+					{
+						newEdges.add(new Edge(n1, n2, def));
+					}
 				}
 			}
 		}
 		net.setNodesAndEdges(allNodes, newEdges);
+		System.out.println("   Removing redundant symmetry " + new Date());
 		removeRedundantSymmetricalEdges(net);
 	}
 
@@ -268,7 +314,7 @@ public class NetworkCleaning
 	protected Map<String, Set<EdgeDefinition>> resolveEdgesPerRoot(EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges)
 	{
 		Map<String, Set<EdgeDefinition>> mappedEdges = new HashMap<String, Set<EdgeDefinition>>();
-		
+
 		for (EdgeDefinition refE : oldEdges)
 		{
 			String edgeType = refE.getType();

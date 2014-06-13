@@ -73,11 +73,15 @@ public class RunAnalysis
 		 * STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS
 		 */
 		System.out.println("2. Transforming overexpression values into networks");
-		System.out.println("");
-
+		
 		boolean selfInteractions = false;
 		boolean neighbours = true;
-		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions, neighbours);
+		int min_neighbourcount = 2;
+		
+		System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount);
+		System.out.println("");
+		
+		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions, neighbours, min_neighbourcount);
 
 		/*
 		 * STEP 3: WRITE NETWORKS TO FILE
@@ -162,7 +166,7 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		
@@ -187,7 +191,7 @@ public class RunAnalysis
 			Set<Edge> virtualRegulations = constr.constructVirtualRegulations(nodes);
 			System.out.println("  Found " + virtualRegulations.size() + " virtual regulations");
 
-			Set<Edge> edges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours);
+			Set<Edge> edges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
 			System.out.println("  Found " + edges.size() + " PPIs");
 
 			edges.addAll(virtualRegulations);

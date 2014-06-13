@@ -107,7 +107,7 @@ public class NetworkConstruction
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
-	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = getNodesByLocustag(nodes);
@@ -117,6 +117,9 @@ public class NetworkConstruction
 
 		boolean symmetrical = true;
 		Set<String> ppisRead = new HashSet<String>();
+		
+		// for each new neighbour, store its interaction partners from the original set of nodes, to check whether there are more than min_neighbourcount
+		Map<String, Set<String>> neighbourCounts = new HashMap<String, Set<String>>();
 
 		String line = reader.readLine();
 		while (line != null)
@@ -140,8 +143,82 @@ public class NetworkConstruction
 				boolean foundL1 = mappedNodes.keySet().contains(locus1);
 				boolean foundL2 = mappedNodes.keySet().contains(locus2);
 
+				// include the interaction when both are in the nodeset
+				if (foundL1 && foundL2)
+				{
+					// include when the loci are different, or when self interactions are allowed
+					if (includeSelfInteractions || !locus1.equals(locus2))
+					{
+						Node source = mappedNodes.get(locus1);
+						Node target = mappedNodes.get(locus2);
+						Edge ppi = new Edge(type, source, target, symmetrical);
+						edges.add(ppi);
+					}
+				}
+				if (foundL1 && !foundL2)
+				{
+					if (! neighbourCounts.containsKey(locus2))
+					{
+						neighbourCounts.put(locus2, new HashSet<String>());
+					}
+					neighbourCounts.get(locus2).add(locus1);
+				}
+				
+				if (foundL2 && !foundL1)
+				{
+					if (! neighbourCounts.containsKey(locus1))
+					{
+						neighbourCounts.put(locus1, new HashSet<String>());
+					}
+					neighbourCounts.get(locus1).add(locus2);
+				}
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+		
+		// Check which neighbours can be added to the network (when they are sufficiently connected)
+		Set<String> allowedNeighbours = new HashSet<String>();
+		for (String neighbour : neighbourCounts.keySet())
+		{
+			if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
+			{
+				allowedNeighbours.add(neighbour);
+			}
+		}
+		
+		// read a second time to include the proper neighbours
+		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
+
+		ppisRead = new HashSet<String>();
+
+		line = reader.readLine();
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			@SuppressWarnings("unused")
+			String id = stok.nextToken();
+			String locus1 = stok.nextToken();
+			String locus2 = stok.nextToken();
+			String type = stok.nextToken();
+
+			String ppiRead = locus1 + locus2 + type;
+			String ppiReverseRead = locus2 + locus1 + type;
+
+			// avoid reading the same PPI twice
+			if (!ppisRead.contains(ppiRead) && !ppisRead.contains(ppiReverseRead))
+			{
+				ppisRead.add(ppiRead);
+				ppisRead.add(ppiReverseRead);
+				
+				boolean foundL1 = mappedNodes.keySet().contains(locus1);
+				boolean foundL2 = mappedNodes.keySet().contains(locus2);
+				
+				boolean neighbourL1 = allowedNeighbours.contains(locus1);
+				boolean neighbourL2 = allowedNeighbours.contains(locus2);
+
 				// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
-				if ((foundL1 && foundL2) || (includeNeighbours && (foundL1 || foundL2)))
+				if ((foundL1 && !foundL2 && neighbourL2) || (foundL2 && !foundL1 && neighbourL1))
 				{
 					// include when the loci are different, or when self interactions are allowed
 					if (includeSelfInteractions || !locus1.equals(locus2))
@@ -152,6 +229,7 @@ public class NetworkConstruction
 							source = new Node(locus1);
 							mappedNodes.put(locus1, source);
 						}
+						
 						Node target = mappedNodes.get(locus2);
 						if (target == null)
 						{
@@ -166,8 +244,8 @@ public class NetworkConstruction
 			}
 			line = reader.readLine();
 		}
-
 		reader.close();
+		
 		return edges;
 	}
 

@@ -65,7 +65,7 @@ public class NetworkIO
 
 		Set<Edge> normalEdges = network.getEdgesByVirtualState(false);
 		Set<Edge> virtualEdges = network.getEdgesByVirtualState(true);
-		
+
 		Map<String, Set<String>> virtualNodeAttributes = new HashMap<String, Set<String>>();
 
 		for (Edge e : normalEdges)
@@ -74,8 +74,8 @@ public class NetworkIO
 			edgeWriter.newLine();
 			edgeWriter.flush();
 		}
-		
-		if (allowVirtualEdges)	
+
+		if (allowVirtualEdges)
 		{
 			for (Edge e : virtualEdges)
 			{
@@ -84,19 +84,20 @@ public class NetworkIO
 				edgeWriter.flush();
 			}
 		}
-		else	// TODO: currently, only information about target nodes from virtual edges are includes as additional node attributes
+		else
+		// TODO: currently, only information about target nodes from virtual edges are includes as additional node attributes
 		{
 			for (Edge e : virtualEdges)
 			{
 				Node source = e.getSource();
 				Node target = e.getTarget();
-				
+
 				// Target should get meta data on this virtual edge
-				if (source.isVirtual() && ! target.isVirtual())
+				if (source.isVirtual() && !target.isVirtual())
 				{
 					String targetID = target.getID();
 					String attribute = e.getType() + "\t" + e.getWeight();
-					if (! virtualNodeAttributes.containsKey(targetID))
+					if (!virtualNodeAttributes.containsKey(targetID))
 					{
 						virtualNodeAttributes.put(targetID, new HashSet<String>());
 					}
@@ -117,7 +118,7 @@ public class NetworkIO
 			if (!nm.isContained(n, unduplicatedNodes))
 			{
 				// exclude virtual nodes when virtual edges should not be written
-				if (allowVirtualEdges || ! n.isVirtual())
+				if (allowVirtualEdges || !n.isVirtual())
 				{
 					unduplicatedNodes.add(n);
 				}
@@ -133,9 +134,9 @@ public class NetworkIO
 		{
 			Node n = sortedNodes.get(ID);
 			String tabRep = NodeIO.writeToTab(n);
-			
+
 			nodeWriter.append(tabRep);
-			if (! allowVirtualEdges)	// if there are no virtual edges, this information will be printed as node attributes
+			if (!allowVirtualEdges) // if there are no virtual edges, this information will be printed as node attributes
 			{
 				Set<String> attributes = virtualNodeAttributes.get(ID);
 				if (attributes == null || attributes.isEmpty())
@@ -316,7 +317,7 @@ public class NetworkIO
 	/**
 	 * Read a set of {@link InputNetwork} from a directory, one network per subdirectory.
 	 * 
-	 * @param dir the output dir in which the subdirectories contain previously written tab files defining the different networks 
+	 * @param dir the output dir in which the subdirectories contain previously written tab files defining the different networks
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @return a set of InputNetwork representations of the nodes and edges in the files
 	 * 
@@ -327,8 +328,11 @@ public class NetworkIO
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		for (File f : dir.listFiles())
 		{
-			InputNetwork net = readGenericInputNetworkFromDir(f, nm);
-			networks.add(net);
+			if (f.isDirectory())
+			{
+				InputNetwork net = readGenericInputNetworkFromDir(f, nm);
+				networks.add(net);
+			}
 		}
 		return networks;
 	}
@@ -377,6 +381,7 @@ public class NetworkIO
 
 	/**
 	 * Retrieve a view on this set of nodes which is mapped by their unique IDs
+	 * 
 	 * @param nodes the original set of nodes
 	 * @return the same set of nodes, mapped by their unique IDs
 	 */
@@ -398,7 +403,7 @@ public class NetworkIO
 	 * @param reference the ReferenceNetwork linked to this differential network
 	 * @param condNetworks the set of condition-specific networks linked to this differential network
 	 * @return a DifferentialNetwork representation of the nodes and edges in the files
-	 *
+	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
 	public static DifferentialNetwork readDifferentialNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks) throws IOException

@@ -13,6 +13,7 @@ import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -45,8 +46,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
@@ -199,7 +200,7 @@ public class RunAnalysis
 			InputNetwork cleannet = cleaning.fullInputCleaning(net, nm, eo);
 			networks.add(cleannet);
 			
-			for (String msg : logger.getAllLogMessages())
+			for (LogEntry msg : logger.getAllLogMessages())
 			{
 				System.out.println(msg);
 			}

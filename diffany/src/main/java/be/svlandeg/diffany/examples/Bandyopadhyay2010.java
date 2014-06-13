@@ -11,6 +11,7 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
@@ -131,7 +132,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		
 		System.out.println("Log:");
 		Logger logger = p.getLogger(ID);
-		for (String log : logger.getAllLogMessages())
+		for (LogEntry log : logger.getAllLogMessages())
 		{
 			System.out.println(log);
 		}

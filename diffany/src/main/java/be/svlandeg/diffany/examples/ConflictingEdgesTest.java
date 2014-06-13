@@ -11,6 +11,7 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -148,7 +149,7 @@ public class ConflictingEdgesTest extends GenericExample
 		ex.printAllNetworks(p, ID);
 		
 		System.out.println("Logs:");
-		for (String l : p.getLogger(ID).getAllLogMessages())
+		for (LogEntry l : p.getLogger(ID).getAllLogMessages())
 		{
 			System.out.println(l);
 		}

@@ -1,11 +1,22 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.networks.*;
+import be.svlandeg.diffany.core.networks.Condition;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.semantics.*;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
  * Testing class that tries to simulate a range of possibilities in activity flow networks
@@ -151,7 +162,7 @@ public class ActivityFlowTest extends GenericExample
 		ex.printAllNetworks(p, ID);
 		
 		System.out.println("Logs:");
-		for (String l : p.getLogger(ID).getAllLogMessages())
+		for (LogEntry l : p.getLogger(ID).getAllLogMessages())
 		{
 			System.out.println(l);
 		}

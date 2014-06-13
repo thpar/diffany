@@ -11,6 +11,7 @@ import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -67,7 +68,7 @@ public class ExampleCode
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(rcID);
-		for (String msg : logger.getAllLogMessages())
+		for (LogEntry msg : logger.getAllLogMessages())
 		{
 			System.out.println(msg);
 		}

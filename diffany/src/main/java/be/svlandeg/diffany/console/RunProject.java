@@ -13,6 +13,7 @@ import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
@@ -96,7 +97,7 @@ public class RunProject
 		/** WRITE LOG OUTPUT **/
 		if (toLog)
 		{
-			for (String msg : l.getAllLogMessages())
+			for (LogEntry msg : l.getAllLogMessages())
 			{
 				System.out.println(msg);
 			}

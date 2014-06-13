@@ -3,7 +3,6 @@ package be.svlandeg.diffany.cytoscape.tasks;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -11,24 +10,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.subnetwork.CyRootNetwork;
-import org.cytoscape.model.subnetwork.CySubNetwork;
-import org.cytoscape.view.layout.CyLayoutAlgorithm;
-import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.Task;
-import org.cytoscape.work.TaskIterator;
-import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.networks.DifferentialNetwork;
-import be.svlandeg.diffany.core.networks.Network;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
-import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
@@ -105,8 +94,8 @@ public class RunProjectTask implements Task {
 		reportDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		StringBuffer reportContent = new StringBuffer();
-		for (String msg : logger.getAllLogMessages()){
-			reportContent.append(msg);
+		for (LogEntry msg : logger.getAllLogMessages()){
+			reportContent.append(msg.toString());
 			reportContent.append(System.getProperty("line.separator"));
 		}
 		

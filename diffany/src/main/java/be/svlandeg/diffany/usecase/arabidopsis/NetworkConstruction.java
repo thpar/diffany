@@ -57,7 +57,7 @@ public class NetworkConstruction
 					symbol = id;
 				}
 				double FC = data.getFoldchange(id);
-				nodes.put(new Node(id, symbol), FC);
+				nodes.put(new Node(id.toLowerCase(), symbol), FC);
 			}
 		}
 		return nodes;
@@ -87,7 +87,7 @@ public class NetworkConstruction
 			}
 
 			String ID = type.charAt(0) + "_" + n.getID();
-			String fullname = regulator + "_of_" + n.getID();
+			String fullname = regulator + "_of_" + n.getDisplayName();
 			if (!virtualNodes.containsKey(ID))
 			{
 				virtualNodes.put(ID, new Node(ID, fullname, true));
@@ -110,7 +110,8 @@ public class NetworkConstruction
 	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = getNodesByLocustag(nodes);
+		Map<String, Node> origNodes = getNodesByID(nodes);
+		Map<String, Node> mappedNodes = new HashMap<String, Node>();
 
 		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetDataFile);
 		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
@@ -127,8 +128,8 @@ public class NetworkConstruction
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			@SuppressWarnings("unused")
 			String id = stok.nextToken();
-			String locus1 = stok.nextToken();
-			String locus2 = stok.nextToken();
+			String locus1 = stok.nextToken().toLowerCase();
+			String locus2 = stok.nextToken().toLowerCase();
 			String type = stok.nextToken();
 
 			String ppiRead = locus1 + locus2 + type;
@@ -140,8 +141,8 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 				
-				boolean foundL1 = mappedNodes.keySet().contains(locus1);
-				boolean foundL2 = mappedNodes.keySet().contains(locus2);
+				boolean foundL1 = origNodes.keySet().contains(locus1);
+				boolean foundL2 = origNodes.keySet().contains(locus2);
 
 				// include the interaction when both are in the nodeset
 				if (foundL1 && foundL2)
@@ -149,8 +150,10 @@ public class NetworkConstruction
 					// include when the loci are different, or when self interactions are allowed
 					if (includeSelfInteractions || !locus1.equals(locus2))
 					{
-						Node source = mappedNodes.get(locus1);
-						Node target = mappedNodes.get(locus2);
+						Node source = origNodes.get(locus1);
+						Node target = origNodes.get(locus2);
+						mappedNodes.put(locus1, source);
+						mappedNodes.put(locus2, target);
 						Edge ppi = new Edge(type, source, target, symmetrical);
 						edges.add(ppi);
 					}
@@ -198,8 +201,8 @@ public class NetworkConstruction
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			@SuppressWarnings("unused")
 			String id = stok.nextToken();
-			String locus1 = stok.nextToken();
-			String locus2 = stok.nextToken();
+			String locus1 = stok.nextToken().toLowerCase();
+			String locus2 = stok.nextToken().toLowerCase();
 			String type = stok.nextToken();
 
 			String ppiRead = locus1 + locus2 + type;
@@ -211,8 +214,8 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 				
-				boolean foundL1 = mappedNodes.keySet().contains(locus1);
-				boolean foundL2 = mappedNodes.keySet().contains(locus2);
+				boolean foundL1 = origNodes.keySet().contains(locus1);
+				boolean foundL2 = origNodes.keySet().contains(locus2);
 				
 				boolean neighbourL1 = allowedNeighbours.contains(locus1);
 				boolean neighbourL2 = allowedNeighbours.contains(locus2);
@@ -254,7 +257,7 @@ public class NetworkConstruction
 	 * @param nodes
 	 * @return
 	 */
-	private Map<String, Node> getNodesByLocustag(Set<Node> nodes)
+	private Map<String, Node> getNodesByID(Set<Node> nodes)
 	{
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
 		for (Node n : nodes)

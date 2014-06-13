@@ -76,7 +76,7 @@ public class RunAnalysis
 		
 		boolean selfInteractions = false;
 		boolean neighbours = true;
-		int min_neighbourcount = 2;
+		int min_neighbourcount = 1;
 		
 		System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount);
 		System.out.println("");
@@ -91,6 +91,7 @@ public class RunAnalysis
 
 		System.out.println("");
 		System.out.println("3. Writing output networks to " + outputDir);
+		System.out.println("   allowVirtualEdges " + allowVirtualEdges);
 
 		for (InputNetwork net : networks)
 		{
@@ -209,7 +210,7 @@ public class RunAnalysis
 				System.out.println(msg);
 			}
 			
-			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges");
+			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges of which " + cleannet.getEdgesByVirtualState(true).size() + " virtual edges");
 		}
 		
 		

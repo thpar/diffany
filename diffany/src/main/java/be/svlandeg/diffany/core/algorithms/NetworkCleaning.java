@@ -66,15 +66,15 @@ public class NetworkCleaning
 		logger.log(" Removing redundant symmetrical edges from network " + net.getName());
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
-		
-		Set<Edge> oldEdges = net.getEdges();
+
+		Set<Edge> oldEdges = new HashSet<Edge>(net.getEdges());
 
 		// remove duplicate symmetrical edges between source-target and target-source
 		for (Edge et : oldEdges)
 		{
 			Node n1 = et.getSource();
 			Node n2 = et.getTarget();
-			
+
 			Set<Edge> all_edges = net.getAllEdges(n1, n2);
 			for (Edge eb : all_edges)
 			{
@@ -214,51 +214,47 @@ public class NetworkCleaning
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();
 		Set<String> roots = eo.retrieveAllSourceRootCats();
-		
+
 		// first, determine all node pairs which are relevant in this network
 		Set<Edge> oldEdges = net.getEdges();
 		Map<String, Set<String>> pairs = new HashMap<String, Set<String>>();
-		
+
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
-		
+
 		for (Edge e : oldEdges)
 		{
 			Node source = e.getSource();
 			Node target = e.getTarget();
-			
+
 			String sourceID = source.getID();
 			String targetID = target.getID();
-			
-			if (sourceID.compareTo(targetID) < 0)
+
+			if (!pairs.containsKey(sourceID))
 			{
-				if (! pairs.containsKey(sourceID))
-				{
-					pairs.put(sourceID, new HashSet<String>());
-				}
-				pairs.get(sourceID).add(targetID);
+				pairs.put(sourceID, new HashSet<String>());
 			}
-			else
+			pairs.get(sourceID).add(targetID);
+
+			if (!pairs.containsKey(targetID))
 			{
-				if (! pairs.containsKey(targetID))
-				{
-					pairs.put(targetID, new HashSet<String>());
-				}
-				pairs.get(targetID).add(sourceID);
+				pairs.put(targetID, new HashSet<String>());
 			}
+			pairs.get(targetID).add(sourceID);
+
 			mappedNodes.put(sourceID, source);
 			mappedNodes.put(targetID, target);
 		}
-		
+
 		// For each node pair, perform a cleaning step
 		for (String ID1 : pairs.keySet())
 		{
 			Node n1 = mappedNodes.get(ID1);
 			Set<String> partners = pairs.get(ID1);
-			
+
 			for (String ID2 : partners)
 			{
 				Node n2 = mappedNodes.get(ID2);
-				
+
 				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(n1, n2);
 				if (!edges.isEmpty())
 				{
@@ -271,8 +267,10 @@ public class NetworkCleaning
 			}
 		}
 		net.setNodesAndEdges(allNodes, newEdges);
+		// TODO: the above step introduces redundancy which needs to be cleaned again in the next step ... this should be dealt with more properly!
 		System.out.println("   Removing redundant symmetry " + new Date());
 		removeRedundantSymmetricalEdges(net);
+
 	}
 
 	/**

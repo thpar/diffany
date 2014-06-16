@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.core.algorithms;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -191,13 +190,11 @@ public class NetworkCleaning
 	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
 		// make edges directed when defined as such by the edge ontology
-		System.out.println("   Unifying direction " + new Date());
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		System.out.println("   Cleaning edges " + new Date());
 		cleanEdges(net, nm, eo);
 	}
 
@@ -268,7 +265,6 @@ public class NetworkCleaning
 		}
 		net.setNodesAndEdges(allNodes, newEdges);
 		// TODO: the above step introduces redundancy which needs to be cleaned again in the next step ... this should be dealt with more properly!
-		System.out.println("   Removing redundant symmetry " + new Date());
 		removeRedundantSymmetricalEdges(net);
 
 	}

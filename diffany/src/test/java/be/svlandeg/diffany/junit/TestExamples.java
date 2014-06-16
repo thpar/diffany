@@ -456,7 +456,7 @@ public class TestExamples
 	 */
 	private void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, boolean normalized, String type, boolean negated, double weight)
 	{
-		Set<Edge> edges = n.getAllEdgesByName(sourceName, targetName, symm, normalized);
+		Set<Edge> edges = n.getAllEdgesByName(sourceName.toLowerCase(), targetName.toLowerCase(), symm, normalized);
 		boolean found = false;
 		for (Edge edge : edges)
 		{

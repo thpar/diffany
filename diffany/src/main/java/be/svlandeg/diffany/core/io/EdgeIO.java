@@ -34,7 +34,7 @@ public class EdgeIO
 		String result = "";
 		for (Edge e : edges)
 		{
-			result += EdgeIO.writeToTab(e);
+			result += writeToTab(e);
 			result += System.getProperty("line.separator");
 		}
 		return result;
@@ -53,6 +53,40 @@ public class EdgeIO
 		String result = e.getSource().getID() + '\t' + e.getTarget().getID() + '\t' + defResult;
 		return result;
 	}
+	
+	/**
+	 * Get a string representation of an edge definition.
+	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
+	 * 
+	 * @return a string representation of this edge definition, ready for printing
+	 */
+	public static String writeDefinitionToTab(EdgeDefinition def)
+	{
+		String symm = symmString;
+		if (! def.isSymmetrical())
+		{
+			symm = directString;
+		}
+		String neg = negatedString;
+		if (! def.isNegated())
+		{
+			neg = notnegatedString;
+		}
+		double weight = def.getWeight();
+		String result = def.getType() + '\t' + symm + '\t' + weight + '\t' + neg;
+		
+		return result;
+	}
+	
+	/**
+	 * Write the header line, i.e. a tab-delimited summary of the information that is printed with writeToTab.
+	 * @return
+	 */
+	public static String getHeader()
+    {
+		String result = "source" + '\t' + "target" + '\t' + "interaction" + '\t' + "symmetry" + '\t' + "weight" + '\t' + "negation";
+		return result;
+    }
 	
 	
 	/**
@@ -80,30 +114,6 @@ public class EdgeIO
 		return new Edge(nodes.get(source), nodes.get(target), def);
 	}
 	
-
-	/**
-	 * Get a string representation of an edge definition.
-	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
-	 * 
-	 * @return a string representation of this edge definition, ready for printing
-	 */
-	public static String writeDefinitionToTab(EdgeDefinition def)
-	{
-		String symm = symmString;
-		if (! def.isSymmetrical())
-		{
-			symm = directString;
-		}
-		String neg = negatedString;
-		if (! def.isNegated())
-		{
-			neg = notnegatedString;
-		}
-		double weight = def.getWeight();
-		String result = def.getType() + '\t' + symm + '\t' + weight + '\t' + neg;
-		
-		return result;
-	}
 	
 	
 	/**
@@ -141,6 +151,8 @@ public class EdgeIO
 		}
 		return new EdgeDefinition(type, symmetrical, weight, negated);
 	}
+
+	
 	
 	
 

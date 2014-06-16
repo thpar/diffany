@@ -50,6 +50,12 @@ public class NodeIO
 		return result;
 	}
 	
+	public static CharSequence getHeader()
+    {
+		String result = "ID" + '\t' + "official_symbol" + '\t' + "virtual";
+		return result;
+    }
+	
 	/**
 	 * Get a string representation of the boolean virtual state.
 	 * 
@@ -101,4 +107,5 @@ public class NodeIO
 		
 		return new Node(ID, name, isVirtual);
 	}
+
 }

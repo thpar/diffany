@@ -47,6 +47,7 @@ public class RunProject
 
 		/** PARSE INPUT **/
 		boolean toLog = false;
+		boolean skipHeader = true;
 		if (cmd.hasOption(DiffanyOptions.logShort))
 		{
 			toLog = true;
@@ -61,10 +62,10 @@ public class RunProject
 		}
 		
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm, skipHeader);
 
 		File condDir = getRequiredDir(cmd, DiffanyOptions.conShort);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm, skipHeader);
 
 		/** THE ACTUAL ALGORITHM **/
 		Integer rcID = p.addRunConfiguration(refNet, condNet);
@@ -82,14 +83,15 @@ public class RunProject
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
+		boolean writeHeaders = true;
 		boolean allowVirtualEdges = true;
 		
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
 		l.log("Writing the differential network to " + diffDir);
 
 		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, writeHeaders, allowVirtualEdges);
 		l.log("Writing the overlap network to " + overlapDir);
 		
 		l.log("Done !");

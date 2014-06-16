@@ -46,8 +46,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
@@ -87,6 +87,7 @@ public class RunAnalysis
 		 * STEP 3: WRITE NETWORKS TO FILE
 		 */
 		String outputDir = osmoticStressDir + File.separator + "output";
+		boolean writeHeaders = true;
 		boolean allowVirtualEdges = false;
 
 		System.out.println("");
@@ -95,7 +96,7 @@ public class RunAnalysis
 
 		for (InputNetwork net : networks)
 		{
-			NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()), allowVirtualEdges);
+			NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()), writeHeaders, allowVirtualEdges);
 		}
 
 		/*
@@ -104,7 +105,7 @@ public class RunAnalysis
 		System.out.println("");
 		System.out.println("4. Reading networks from " + outputDir);
 
-		Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper());
+		Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper(), writeHeaders);
 
 		
 		for (InputNetwork rn : readNetworks)

@@ -79,12 +79,13 @@ public class TestIO
 			
 		// WRITING
 		boolean allowVirtualEdges = true;
+		boolean writeHeader = true;
 		try
 		{
-			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir, allowVirtualEdges);
-			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir, allowVirtualEdges);
-			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir, allowVirtualEdges);
-			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir, allowVirtualEdges);
+			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir, allowVirtualEdges, writeHeader);
+			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir, allowVirtualEdges, writeHeader);
+			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir, allowVirtualEdges, writeHeader);
+			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir, allowVirtualEdges, writeHeader);
 		}
 		catch(IOException io)
 		{
@@ -94,22 +95,22 @@ public class TestIO
 		// READING
 		try
 		{
-			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, nm);
+			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, nm, writeHeader);
 			assertEquals(3, rReadNetwork.getEdges().size());
 			assertEquals(5, rReadNetwork.getNodes().size());
 			
-			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, nm);
+			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, nm, writeHeader);
 			assertEquals(3, cReadNetwork.getEdges().size());
 			assertEquals(4, cReadNetwork.getNodes().size());
 			
 			Set<ConditionNetwork> cReadNetworks = new HashSet<ConditionNetwork>();
 			cReadNetworks.add(cReadNetwork);
 			
-			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, nm, rReadNetwork, cReadNetworks);
+			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, nm, rReadNetwork, cReadNetworks, writeHeader);
 			assertEquals(3, dReadNetwork.getEdges().size());
 			assertEquals(4, dReadNetwork.getNodes().size());
 			
-			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks);
+			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks, writeHeader);
 			assertEquals(2, oReadNetwork.getEdges().size());
 			assertEquals(3, oReadNetwork.getNodes().size());
 		}

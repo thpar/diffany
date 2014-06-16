@@ -36,11 +36,12 @@ public class ExampleCode
 		Project p = new Project("testProject", eo, nm);
 
 		/** READ THE INPUT NETWORKS **/
+		boolean skipHeader = true;
 		File refDir = new File(refLocation);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm, skipHeader);
 
 		File condDir = new File(condLocation);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm, skipHeader);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
@@ -58,13 +59,14 @@ public class ExampleCode
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
+		boolean writeHeaders = true;
 		boolean allowVirtualEdges = true;
 		
 		File diffDir = new File(diffLocation);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
 
 		File overlapDir = new File(overlapLocation);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, writeHeaders, allowVirtualEdges);
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(rcID);

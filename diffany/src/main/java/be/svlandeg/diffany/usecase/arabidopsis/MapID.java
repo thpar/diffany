@@ -37,7 +37,7 @@ public class MapID
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String array_element = stok.nextToken().trim();
+			String array_element = stok.nextToken().trim().toLowerCase();
 			Set<String> locusIDs = new HashSet<String>();
 			
 			if (map.containsKey(array_element))
@@ -47,7 +47,7 @@ public class MapID
 			
 			while (stok.hasMoreTokens())
 			{
-				String locus = stok.nextToken().trim();
+				String locus = stok.nextToken().trim().toLowerCase();
 				locusIDs.add(locus);
 			}
 			
@@ -77,7 +77,7 @@ public class MapID
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			String EGID = stok.nextToken().trim();
-			String locusID = stok.nextToken().trim();
+			String locusID = stok.nextToken().trim().toLowerCase();
 			
 			if (map.containsKey(locusID))
 			{

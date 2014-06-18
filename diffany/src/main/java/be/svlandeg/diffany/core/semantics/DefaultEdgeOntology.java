@@ -309,6 +309,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("affect", "regulation", overwrite);
 		addSourceCategoryMapping("affects", "regulation", overwrite);
 		addSourceCategoryMapping("affecting", "regulation", overwrite);
+		addSourceCategoryMapping("unknown_regulation", "regulation", overwrite);	
 
 		// positive regulation category and common synonyms
 		addSourceCategoryMapping("positive regulation", "positive_regulation", overwrite);
@@ -321,6 +322,10 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("positively regulating", "positive_regulation", overwrite);
 		addSourceCategoryMapping("upregulation", "positive_regulation", overwrite);
 		addSourceCategoryMapping("upregulated", "positive_regulation", overwrite);
+		addSourceCategoryMapping("activate", "positive_regulation", overwrite);
+		addSourceCategoryMapping("activates", "positive_regulation", overwrite);
+		addSourceCategoryMapping("activating", "positive_regulation", overwrite);
+		addSourceCategoryMapping("activation", "positive_regulation", overwrite);
 
 		addSourceCategoryMapping("catalysis", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyzis", "catalysis", overwrite);
@@ -347,6 +352,11 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("inhibits", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibiting", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibition", "inhibition", overwrite);
+		addSourceCategoryMapping("repress", "inhibition", overwrite);
+		addSourceCategoryMapping("represses", "inhibition", overwrite);
+		addSourceCategoryMapping("repressing", "inhibition", overwrite);
+		addSourceCategoryMapping("repression", "inhibition", overwrite);
+
 
 		// genetic interactions
 		addSourceCategoryMapping("positive genetic interaction", "positive_genetic_interaction", overwrite);

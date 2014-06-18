@@ -13,6 +13,7 @@ import java.util.Set;
 /**
  * This class allows printing gene information in a human-readable format, by taking the original array ID,
  * fetching its corresponding locus tags and Entrez Gene IDs, and gene symbols.
+ * All data is compared in a case independent fashion.
  * 
  * @author Sofie Van Landeghem
  */
@@ -67,6 +68,7 @@ public class GenePrinter
 	 */
 	public List<String> getSynonymsByArrayID(String arrayID)
 	{
+		arrayID = arrayID.toLowerCase();
 		List<String> results = new ArrayList<String>();
 
 		Set<String> locusIDs = arrayidmapping.get(arrayID);
@@ -93,6 +95,7 @@ public class GenePrinter
 	 */
 	public Set<String> getSymbolByArrayID(String arrayID)
 	{
+		arrayID = arrayID.toLowerCase();
 		Set<String> results = new HashSet<String>();
 
 		Set<String> locusIDs = arrayidmapping.get(arrayID);
@@ -118,6 +121,7 @@ public class GenePrinter
 	 */
 	public String getSynonymsByLocusID(String locusID)
 	{
+		locusID = locusID.toLowerCase();
 		String egid = locusidmapping.get(locusID);
 		String result = " - GID:" + egid;
 		if (egid != null)
@@ -143,6 +147,7 @@ public class GenePrinter
 	 */
 	public String getSymbolByLocusID(String locusID)
 	{
+		locusID = locusID.toLowerCase();
 		String egid = locusidmapping.get(locusID);
 		if (egid != null)
 		{

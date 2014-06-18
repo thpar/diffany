@@ -29,6 +29,20 @@ public class NetworkConstruction
 
 	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
 	private static String cornetRegDataFile = "reg_net_20100205.tab";
+	
+	private GenePrinter gp;
+	
+	public NetworkConstruction()
+	{
+		try
+		{
+			gp = new GenePrinter();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * 
@@ -36,10 +50,8 @@ public class NetworkConstruction
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 */
-	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold) throws IOException, URISyntaxException
+	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold) 
 	{
-		GenePrinter gp = new GenePrinter();
-
 		boolean arrayID = data.indexedByRawArrayIDs();
 
 		Map<Node, Double> nodes = new HashMap<Node, Double>();
@@ -60,7 +72,7 @@ public class NetworkConstruction
 					symbol = id;
 				}
 				double FC = data.getFoldchange(id);
-				nodes.put(new Node(id.toLowerCase(), symbol), FC);
+				nodes.put(new Node(id.toLowerCase(), symbol, false), FC);
 			}
 		}
 		return nodes;
@@ -232,14 +244,24 @@ public class NetworkConstruction
 						Node source = mappedNodes.get(locus1);
 						if (source == null)
 						{
-							source = new Node(locus1);
+							String symbol = gp.getSymbolByLocusID(locus1);
+							if (symbol == null)
+							{
+								symbol = locus1;
+							}
+							source = new Node(locus1, symbol, false);
 							mappedNodes.put(locus1, source);
 						}
 						
 						Node target = mappedNodes.get(locus2);
 						if (target == null)
 						{
-							target = new Node(locus2);
+							String symbol = gp.getSymbolByLocusID(locus2);
+							if (symbol == null)
+							{
+								symbol = locus2;
+							}
+							target = new Node(locus2, symbol, false);
 							mappedNodes.put(locus2, target);
 						}
 
@@ -291,7 +313,12 @@ public class NetworkConstruction
 			String direct = stok.nextToken();
 			String confirmed = stok.nextToken();
 			String description = stok.nextToken();
-			String type = stok.nextToken(); 
+			String type = stok.nextToken().toLowerCase(); 
+			
+			if (type.equals("unknown"))
+			{
+				type = "unknown_regulation";
+			}
 
 			String regRead = cause_locus + target_locus + type;
 
@@ -367,7 +394,12 @@ public class NetworkConstruction
 			String direct = stok.nextToken();
 			String confirmed = stok.nextToken();
 			String description = stok.nextToken();
-			String type = stok.nextToken();
+			String type = stok.nextToken().toLowerCase(); 
+			
+			if (type.equals("unknown"))
+			{
+				type = "unknown_regulation";
+			}
 
 			String regRead = cause_locus + target_locus + type;
 
@@ -391,14 +423,24 @@ public class NetworkConstruction
 						Node source = mappedNodes.get(cause_locus);
 						if (source == null)
 						{
-							source = new Node(cause_locus);
+							String symbol = gp.getSymbolByLocusID(cause_locus);
+							if (symbol == null)
+							{
+								symbol = cause_locus;
+							}
+							source = new Node(cause_locus, symbol, false);
 							mappedNodes.put(cause_locus, source);
 						}
 						
 						Node target = mappedNodes.get(target_locus);
 						if (target == null)
 						{
-							target = new Node(target_locus);
+							String symbol = gp.getSymbolByLocusID(target_locus);
+							if (symbol == null)
+							{
+								symbol = target_locus;
+							}
+							target = new Node(target_locus, symbol, false);
 							mappedNodes.put(target_locus, target);
 						}
 

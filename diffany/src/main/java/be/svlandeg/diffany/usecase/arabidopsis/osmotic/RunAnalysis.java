@@ -204,7 +204,7 @@ public class RunAnalysis
 			
 			if (addPPI)
 			{
-				Set<Edge> regEdges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
+				Set<Edge> regEdges = constr.readRegsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
 				System.out.println("  Found " + regEdges.size() + " regulations");
 				edges.addAll(regEdges);
 			}

@@ -46,8 +46,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic";					// Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		RunAnalysis ra = new RunAnalysis();
@@ -77,17 +77,19 @@ public class RunAnalysis
 		boolean selfInteractions = false;
 		boolean neighbours = true;
 		int min_neighbourcount = 1;
+		boolean addPPI = true;
+		boolean addReg = true;
 		
-		System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount);
+		System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount + " / addPPI " + addPPI + " / addReg " + addReg);
 		System.out.println("");
 		
-		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions, neighbours, min_neighbourcount);
+		Set<InputNetwork> networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 0.05, selfInteractions, neighbours, min_neighbourcount, addPPI, addReg);
 
 		/*
 		 * STEP 3: WRITE NETWORKS TO FILE
 		 */
 		String outputDir = osmoticStressDir + File.separator + "output";
-		boolean writeHeaders = true;
+		boolean writeHeaders = true; 
 		boolean allowVirtualEdges = false;
 
 		System.out.println("");
@@ -168,7 +170,7 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		
@@ -190,13 +192,23 @@ public class RunAnalysis
 			Map<Node, Double> nodes = constr.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
 
-			Set<Edge> virtualRegulations = constr.constructVirtualRegulations(nodes);
-			System.out.println("  Found " + virtualRegulations.size() + " virtual regulations");
+			Set<Edge> edges = constr.constructVirtualRegulations(nodes);
+			System.out.println("  Found " + edges.size() + " virtual regulations");
 
-			Set<Edge> edges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
-			System.out.println("  Found " + edges.size() + " PPIs");
+			if (addPPI)
+			{
+				Set<Edge> PPIedges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
+				System.out.println("  Found " + PPIedges.size() + " PPIs");
+				edges.addAll(PPIedges);
+			}
+			
+			if (addPPI)
+			{
+				Set<Edge> regEdges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
+				System.out.println("  Found " + regEdges.size() + " regulations");
+				edges.addAll(regEdges);
+			}
 
-			edges.addAll(virtualRegulations);
 			System.out.println("  Found " + edges.size() + " total edges");
 
 			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), edges, nm);

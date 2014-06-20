@@ -54,7 +54,7 @@ public class AnalyseDiffExpression
 		System.out.println("  Probe sets: " + probesets.length);
 
 		List<String> suffixes = new ArrayList<String>();
-		suffixes.add("_mannitol");
+		//suffixes.add("_mannitol");
 		suffixes.add("_1.5");
 		suffixes.add("_3");
 		suffixes.add("_12");

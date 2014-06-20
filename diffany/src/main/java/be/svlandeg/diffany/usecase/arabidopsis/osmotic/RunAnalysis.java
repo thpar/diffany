@@ -54,16 +54,17 @@ public class RunAnalysis
 
 		/*
 		 * STEP 1 - OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY
-		 * 
+		 */ 
 		System.out.println("1. Transforming CELL data into overexpression values");
 		System.out.println("");
 		String fileName = "differential_values.txt";
 		String overexpressionFile = ra.fromRawToOverexpression(osmoticStressDir, fileName);
-		*/
+		System.out.println(" written to " + overexpressionFile);
+		
 
 		/*
 		 * STEP 1 - OPTION 2: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER
-		 */
+		 *
 		System.out.println("1. Reading published overexpression values");
 		System.out.println("");
 
@@ -71,7 +72,7 @@ public class RunAnalysis
 
 		/*
 		 * STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS
-		 */
+		 *
 		System.out.println("2. Transforming overexpression values into networks");
 		
 		boolean selfInteractions = false;
@@ -87,7 +88,7 @@ public class RunAnalysis
 
 		/*
 		 * STEP 3: WRITE NETWORKS TO FILE
-		 */
+		 *
 		String outputDir = osmoticStressDir + File.separator + "output";
 		boolean writeHeaders = true; 
 		boolean allowVirtualEdges = false;
@@ -103,7 +104,7 @@ public class RunAnalysis
 
 		/*
 		 * STEP 4: READ NETWORKS BACK IN FROM FILE
-		 */
+		 *
 		System.out.println("");
 		System.out.println("4. Reading networks from " + outputDir);
 
@@ -117,6 +118,7 @@ public class RunAnalysis
 			System.out.print(" " + rn.getNodes().size() + " nodes and " + rn.getEdges().size() + " edges");
 			System.out.println(" (" + rn.getNodesByVirtualState(true).size() + " virtual nodes)");
 		}
+		*/
 
 		System.out.println("");
 		System.out.println("Done!");
@@ -125,7 +127,6 @@ public class RunAnalysis
 	/**
 	 * This first step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
 	 */
-	@SuppressWarnings("unused")
 	private String fromRawToOverexpression(File osmoticStressDir, String overExpressionFile)
 	{
 		InputProcessing input = new InputProcessing();

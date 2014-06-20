@@ -24,14 +24,14 @@ import be.svlandeg.diffany.core.networks.Node;
  */
 public class NetworkConstruction
 {
-	
+
 	// TODO make this class more generic / generalizable
 
 	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
 	private static String cornetRegDataFile = "reg_net_20100205.tab";
-	
+
 	private GenePrinter gp;
-	
+
 	public NetworkConstruction()
 	{
 		try
@@ -50,7 +50,7 @@ public class NetworkConstruction
 	 * @throws URISyntaxException 
 	 * @throws IOException 
 	 */
-	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold) 
+	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold)
 	{
 		boolean arrayID = data.indexedByRawArrayIDs();
 
@@ -133,7 +133,7 @@ public class NetworkConstruction
 
 		boolean symmetrical = true;
 		Set<String> ppisRead = new HashSet<String>();
-		
+
 		// for each new neighbour, store its interaction partners from the original set of nodes, to check whether there are more than min_neighbourcount
 		Map<String, Set<String>> neighbourCounts = new HashMap<String, Set<String>>();
 
@@ -155,7 +155,7 @@ public class NetworkConstruction
 			{
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
-				
+
 				boolean foundL1 = origNodes.keySet().contains(locus1);
 				boolean foundL2 = origNodes.keySet().contains(locus2);
 
@@ -175,16 +175,16 @@ public class NetworkConstruction
 				}
 				if (foundL1 && !foundL2)
 				{
-					if (! neighbourCounts.containsKey(locus2))
+					if (!neighbourCounts.containsKey(locus2))
 					{
 						neighbourCounts.put(locus2, new HashSet<String>());
 					}
 					neighbourCounts.get(locus2).add(locus1);
 				}
-				
+
 				if (foundL2 && !foundL1)
 				{
-					if (! neighbourCounts.containsKey(locus1))
+					if (!neighbourCounts.containsKey(locus1))
 					{
 						neighbourCounts.put(locus1, new HashSet<String>());
 					}
@@ -194,17 +194,20 @@ public class NetworkConstruction
 			line = reader.readLine();
 		}
 		reader.close();
-		
+
 		// Check which neighbours can be added to the network (when they are sufficiently connected)
 		Set<String> allowedNeighbours = new HashSet<String>();
-		for (String neighbour : neighbourCounts.keySet())
+		if (includeNeighbours)
 		{
-			if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
+			for (String neighbour : neighbourCounts.keySet())
 			{
-				allowedNeighbours.add(neighbour);
+				if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
+				{
+					allowedNeighbours.add(neighbour);
+				}
 			}
 		}
-		
+
 		// read a second time to include the proper neighbours
 		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
 
@@ -228,10 +231,10 @@ public class NetworkConstruction
 			{
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
-				
+
 				boolean foundL1 = origNodes.keySet().contains(locus1);
 				boolean foundL2 = origNodes.keySet().contains(locus2);
-				
+
 				boolean neighbourL1 = allowedNeighbours.contains(locus1);
 				boolean neighbourL2 = allowedNeighbours.contains(locus2);
 
@@ -252,7 +255,7 @@ public class NetworkConstruction
 							source = new Node(locus1, symbol, false);
 							mappedNodes.put(locus1, source);
 						}
-						
+
 						Node target = mappedNodes.get(locus2);
 						if (target == null)
 						{
@@ -273,10 +276,10 @@ public class NetworkConstruction
 			line = reader.readLine();
 		}
 		reader.close();
-		
+
 		return edges;
 	}
-	
+
 	/**
 	 * TODO
 	 * @param locusIDs
@@ -296,7 +299,7 @@ public class NetworkConstruction
 
 		boolean symmetrical = false;
 		Set<String> regsRead = new HashSet<String>();
-		
+
 		// for each new neighbour, store its interaction partners from the original set of nodes, to check whether there are more than min_neighbourcount
 		Map<String, Set<String>> neighbourCounts = new HashMap<String, Set<String>>();
 
@@ -313,8 +316,8 @@ public class NetworkConstruction
 			String direct = stok.nextToken();
 			String confirmed = stok.nextToken();
 			String description = stok.nextToken();
-			String type = stok.nextToken().toLowerCase(); 
-			
+			String type = stok.nextToken().toLowerCase();
+
 			if (type.equals("unknown"))
 			{
 				type = "unknown_regulation";
@@ -326,7 +329,7 @@ public class NetworkConstruction
 			if (!regsRead.contains(regRead))
 			{
 				regsRead.add(regRead);
-				
+
 				boolean foundCause = origNodes.keySet().contains(cause_locus);
 				boolean foundTarget = origNodes.keySet().contains(target_locus);
 
@@ -346,16 +349,16 @@ public class NetworkConstruction
 				}
 				if (foundCause && !foundTarget)
 				{
-					if (! neighbourCounts.containsKey(target_locus))
+					if (!neighbourCounts.containsKey(target_locus))
 					{
 						neighbourCounts.put(target_locus, new HashSet<String>());
 					}
 					neighbourCounts.get(target_locus).add(cause_locus);
 				}
-				
+
 				if (foundTarget && !foundCause)
 				{
-					if (! neighbourCounts.containsKey(cause_locus))
+					if (!neighbourCounts.containsKey(cause_locus))
 					{
 						neighbourCounts.put(cause_locus, new HashSet<String>());
 					}
@@ -365,17 +368,20 @@ public class NetworkConstruction
 			line = reader.readLine();
 		}
 		reader.close();
-		
+
 		// Check which neighbours can be added to the network (when they are sufficiently connected)
 		Set<String> allowedNeighbours = new HashSet<String>();
-		for (String neighbour : neighbourCounts.keySet())
+		if (includeNeighbours)
 		{
-			if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
+			for (String neighbour : neighbourCounts.keySet())
 			{
-				allowedNeighbours.add(neighbour);
+				if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
+				{
+					allowedNeighbours.add(neighbour);
+				}
 			}
 		}
-		
+
 		// read a second time to include the proper neighbours
 		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
 
@@ -394,8 +400,8 @@ public class NetworkConstruction
 			String direct = stok.nextToken();
 			String confirmed = stok.nextToken();
 			String description = stok.nextToken();
-			String type = stok.nextToken().toLowerCase(); 
-			
+			String type = stok.nextToken().toLowerCase();
+
 			if (type.equals("unknown"))
 			{
 				type = "unknown_regulation";
@@ -407,10 +413,10 @@ public class NetworkConstruction
 			if (!regsRead.contains(regRead))
 			{
 				regsRead.add(regRead);
-				
+
 				boolean foundCause = origNodes.keySet().contains(cause_locus);
 				boolean foundTarget = origNodes.keySet().contains(target_locus);
-				
+
 				boolean neighbourCause = allowedNeighbours.contains(cause_locus);
 				boolean neighbourTarget = allowedNeighbours.contains(target_locus);
 
@@ -431,7 +437,7 @@ public class NetworkConstruction
 							source = new Node(cause_locus, symbol, false);
 							mappedNodes.put(cause_locus, source);
 						}
-						
+
 						Node target = mappedNodes.get(target_locus);
 						if (target == null)
 						{
@@ -452,7 +458,7 @@ public class NetworkConstruction
 			line = reader.readLine();
 		}
 		reader.close();
-		
+
 		return edges;
 	}
 

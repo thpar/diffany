@@ -89,6 +89,9 @@ public class Model extends Observable implements NetworkAddedListener,
 		}
 	}
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
+	
+	private boolean generateDiffNets = true;
+	private boolean generateOverlapNets = true;
 
 	private double cutoff = 0;
 
@@ -275,6 +278,29 @@ public class Model extends Observable implements NetworkAddedListener,
 	public void setCutoff(double cutoff) {
 		this.cutoff  = cutoff;
 	}
+	
+
+	public boolean isGenerateDiffNets() {
+		return generateDiffNets;
+	}
+
+	public void setGenerateDiffNets(boolean generateDiffNets) {
+		this.generateDiffNets = generateDiffNets;
+	}
+
+
+
+	public boolean isGenerateOverlapNets() {
+		return generateOverlapNets;
+	}
+
+
+
+	public void setGenerateOverlapNets(boolean generateOverlapNets) {
+		this.generateOverlapNets = generateOverlapNets;
+	}
+
+
 
 	@Override
 	public void handleEvent(SetCurrentNetworkViewEvent e) {

@@ -216,14 +216,17 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		outputSelectionPanel.setAlignmentX(LEFT_ALIGNMENT);
 		outputSelectionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 		outputSelectionPanel.setLayout(new BoxLayout(outputSelectionPanel, BoxLayout.PAGE_AXIS));
+		
 		JCheckBox generateDiffNetCheckBox = new JCheckBox("Differential networks");
 		generateDiffNetCheckBox.setActionCommand(GENERATE_DIFF_ACTION);
 		generateDiffNetCheckBox.addActionListener(this);
+		generateDiffNetCheckBox.setSelected(model.isGenerateDiffNets());
 		outputSelectionPanel.add(generateDiffNetCheckBox);
 		
 		JCheckBox generateOverlapNetCheckBox = new JCheckBox("Overlap networks");
 		generateOverlapNetCheckBox.setActionCommand(GENERATE_OVERLAP_ACTION);
 		generateOverlapNetCheckBox.addActionListener(this);
+		generateOverlapNetCheckBox.setSelected(model.isGenerateOverlapNets());
 		outputSelectionPanel.add(generateOverlapNetCheckBox);
 		
 		optionPanel.add(outputSelectionPanel);
@@ -293,6 +296,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			JComboBox source = (JComboBox)e.getSource();
 			ComparisonMode mode = (Model.ComparisonMode)source.getSelectedItem();
 			model.setMode(mode);
+		} else if (action.equals(GENERATE_DIFF_ACTION)){
+			JCheckBox cb = (JCheckBox)e.getSource();
+			model.setGenerateDiffNets(cb.isSelected());
+		} else if (action.equals(GENERATE_OVERLAP_ACTION)){
+			JCheckBox cb = (JCheckBox)e.getSource();
+			model.setGenerateOverlapNets(cb.isSelected());
 		}
 	}
 

@@ -12,6 +12,7 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
@@ -150,17 +151,34 @@ public class CyProject{
 			throw new InvalidRunConfigurationException();
 		}
 		
-		ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
-				project.getEdgeOntology(), project.getNodeMapper());
 		
-		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
-		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
-					project.getEdgeOntology(), project.getNodeMapper());
-			condNets.add(condNet);			
+		int runConfigID;
+		if (model.isGenerateDiffNets()){
+			ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
+					project.getEdgeOntology(), project.getNodeMapper());						
+			Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
+			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
+				ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
+						project.getEdgeOntology(), project.getNodeMapper());
+				condNets.add(condNet);			
+			}
+			runConfigID = project.addRunConfiguration(refNet, condNets);
+			
+		} else {
+			Set<InputNetwork> inputNetworks = new HashSet<InputNetwork>();
+			
+			if (this.getReferenceNetwork() != null){
+				inputNetworks.add(CyNetworkBridge.getInputNetwork(this.getReferenceNetwork(), project.getEdgeOntology(), project.getNodeMapper()));
+			}
+			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
+				InputNetwork condNet = CyNetworkBridge.getInputNetwork(cyCondNet, 
+						project.getEdgeOntology(), project.getNodeMapper());
+				inputNetworks.add(condNet);			
+			}
+			runConfigID = project.addRunConfiguration(inputNetworks);
+			
 		}
-		
-		int runConfigID = project.addRunConfiguration(refNet, condNets);
+
 		
 		this.latestRunConfigID = runConfigID;
 		

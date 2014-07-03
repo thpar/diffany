@@ -25,6 +25,7 @@ import org.cytoscape.work.TaskManager;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
@@ -160,7 +161,7 @@ public class CyNetworkBridge {
 	 *
 	 */
 	public enum NetworkType{
-		REFERENCE, CONDITION;
+		REFERENCE, CONDITION, GENERIC;
 	}
 	
 	/**
@@ -190,6 +191,19 @@ public class CyNetworkBridge {
 	}
 	
 	/**
+	 * Gets the {@link CyNetwork} from Cytoscape and creates a {@link InputNetwork} out of it.
+	 * 
+	 * @param network the "shared name" of the network in the network table.
+	 * @param edgeOntology will determine which edge types are considered symmetrical
+	 * @param nodeMapper will determine which nodes are considered identical
+	 * 
+	 * @return the equivalent {@link Network} object
+	 */
+	public static InputNetwork getInputNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+		return (InputNetwork)getNetwork(network, NetworkType.GENERIC, edgeOntology, nodeMapper);
+	}
+	
+	/**
 	 * Gets the {@link CyNetwork} from Cytoscape, based on the name,
 	 * and creates a {@link Network} out of it.
 	 * 
@@ -213,6 +227,9 @@ public class CyNetworkBridge {
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
 			network = new ConditionNetwork(netName, conditions, nodeMapper);
+			break;
+		case GENERIC:
+			network = new InputNetwork(netName, nodeMapper);
 			break;
 		}
 				

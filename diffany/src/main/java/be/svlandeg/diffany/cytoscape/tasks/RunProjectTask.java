@@ -69,8 +69,6 @@ public class RunProjectTask implements Task {
 	private void runAlgorithm() throws InvalidRunConfigurationException{
 		int runId = cyProject.generateRunConfiguration(model);
 		
-		// TODO (after Sofie's refactoring): determine whether to calculate differential and/or overlap networks (currently both true)
-		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 

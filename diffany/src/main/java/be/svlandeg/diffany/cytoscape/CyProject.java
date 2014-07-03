@@ -145,8 +145,8 @@ public class CyProject{
 	 * @return the ID of the generated {@link RunConfiguration}
 	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
-	public int generateRunConfiguration() throws InvalidRunConfigurationException{
-		if (!canExecute()){
+	public int generateRunConfiguration(Model model) throws InvalidRunConfigurationException{
+		if (!canExecute(model)){
 			throw new InvalidRunConfigurationException();
 		}
 		
@@ -176,9 +176,20 @@ public class CyProject{
 	 * 
 	 * @return true when minimal input parameters are set
 	 */
-	public boolean canExecute(){
-		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
+	public boolean canExecute(Model model){
+		if (model.isGenerateDiffNets()){
+			return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();			
+		} else if (model.isGenerateOverlapNets()){
+			int numberOfNetworks = this.conditionalNetworks.size();
+			if (this.referenceNetwork!=null){
+				numberOfNetworks+=1;
+			}
+			return numberOfNetworks>=2;
+		} else {
+			return false;
+		}
 	}
+	
 
 	
 	/**

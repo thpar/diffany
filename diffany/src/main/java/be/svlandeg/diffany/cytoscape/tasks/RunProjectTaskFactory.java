@@ -36,7 +36,7 @@ public class RunProjectTaskFactory implements TaskFactory {
 
 	@Override
 	public boolean isReady() {
-		return model.getSelectedProject().canExecute();
+		return model.getSelectedProject().canExecute(model);
 	}
 
 }

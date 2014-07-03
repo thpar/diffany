@@ -286,6 +286,8 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	public void setGenerateDiffNets(boolean generateDiffNets) {
 		this.generateDiffNets = generateDiffNets;
+		setChanged();
+		notifyObservers();
 	}
 
 
@@ -298,6 +300,8 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	public void setGenerateOverlapNets(boolean generateOverlapNets) {
 		this.generateOverlapNets = generateOverlapNets;
+		setChanged();
+		notifyObservers();
 	}
 
 

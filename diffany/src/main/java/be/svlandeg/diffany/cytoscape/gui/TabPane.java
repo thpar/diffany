@@ -100,7 +100,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		CyProject selectedProject = model.getSelectedProject();
 		if (selectedProject!=null){
-			runButton.setEnabled(model.getSelectedProject().canExecute());
+			runButton.setEnabled(model.getSelectedProject().canExecute(model));
 			updateVizButton.setEnabled(true);
 		} else {
 			runButton.setEnabled(false);
@@ -272,6 +272,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 					table.setRowSelectionInterval(focusRow, focusRow);					
 				}
 			}
+			
+			refreshCyProject();
 		} else {
 			this.networkTableModel.clear();
 		}
@@ -316,14 +318,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	public void refreshCyProject(){
 		CyProject cyProject = model.getSelectedProject();
-		cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
-		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
-		this.runButton.setEnabled(cyProject.canExecute());
-		
-		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
-		TaskIterator it = tf.createTaskIterator();
-		DialogTaskManager dtm = model.getServices().getDialogTaskManager();
-		dtm.execute(it);		
+		if (cyProject !=null){
+			cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
+			cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
+			this.runButton.setEnabled(cyProject.canExecute(model));
+			
+			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
+			TaskIterator it = tf.createTaskIterator();
+			DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+			dtm.execute(it);					
+		}
 	}
 
 	@Override

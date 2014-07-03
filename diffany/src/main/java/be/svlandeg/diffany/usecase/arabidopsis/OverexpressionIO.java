@@ -51,7 +51,7 @@ public class OverexpressionIO
 		// DATA
 		DecimalFormat df = new DecimalFormat("#.###");
 		DecimalFormatSymbols symbols = df.getDecimalFormatSymbols();
-		symbols.setDecimalSeparator('.');
+		symbols.setDecimalSeparator(',');
 		df.setDecimalFormatSymbols(symbols);
 		
 		boolean rawArrayIDs = datasets.get(0).indexedByRawArrayIDs();

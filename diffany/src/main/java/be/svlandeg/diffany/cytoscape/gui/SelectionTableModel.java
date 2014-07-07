@@ -77,14 +77,12 @@ public class SelectionTableModel extends AbstractTableModel{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		NetworkEntry entry = networkEntries.get(rowIndex);
 		switch(columnIndex){
 		case 1:
 			return false;
 		case 0:
-			return !entry.isReference();
 		case 2:
-			return !entry.isReference();
+			return true;
 		}
 		return false;
 	}
@@ -113,13 +111,21 @@ public class SelectionTableModel extends AbstractTableModel{
 			this.fireTableDataChanged();
 			break;
 		case 2:
-			if (!entry.isSelected()){
+			//a reference network should be selected anyway
+			if (!entry.isSelected() && check){
 				entry.setSelected(true);
 			}
-			this.setReference(rowIndex);
+			
+			if (check){
+				this.setReference(rowIndex);				
+			} else {
+				this.unselectReference(rowIndex);
+			}
 			break;
 		}
 	}
+
+
 
 	/**
 	 * Set the given row to contain the reference network
@@ -140,6 +146,11 @@ public class SelectionTableModel extends AbstractTableModel{
 		
 	}
 	
+	private void unselectReference(int row) {
+		this.referenceRow = -1;
+		this.networkEntries.get(row).setReference(false);
+		this.fireTableDataChanged();
+	}
 
 	/**
 	 * Reload the {@link NetworkEntry}s based on the subnetworks from the selected network collections.
@@ -217,7 +228,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	/**
 	 * Gets the {@link CyNetwork} to be used as reference network.
 	 * 
-	 * @return the {@link CyNetwork} to be used as reference network. Returns null is no reference network has been set yet.
+	 * @return the {@link CyNetwork} to be used as reference network. Returns null if no reference network is set.
 	 */
 	public CyNetwork getReferenceNetwork(){
 		if (this.referenceRow < 0){

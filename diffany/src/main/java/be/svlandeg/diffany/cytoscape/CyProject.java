@@ -88,9 +88,9 @@ public class CyProject{
 	}
 
 	/**
-	 * Set the referenceNetwork for this project. Register it with the {@link Project}
+	 * Set the referenceNetwork for this project. Register it with the {@link Project}. 
 	 * 
-	 * @param referenceNetwork
+	 * @param referenceNetwork the reference network for this {@link CyProject}. NULL if no reference network is selected.
 	 */
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
 		this.referenceNetwork = referenceNetwork;

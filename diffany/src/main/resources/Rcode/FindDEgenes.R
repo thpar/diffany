@@ -25,9 +25,9 @@ design_stress_time <- model.matrix(~0+Setup, data=pData(expressionSet));
 colnames(design_stress_time) <- gsub("Setup","",colnames(design_stress_time));
 
 # CHOSE WHETHER OR NOT TO MODEL THE REPLICATES AS RANDOM VARIABLES
-#corfit_stress_time <- duplicateCorrelation(expressionSet, design=design_stress_time, block=targets$Replicate);
-#fit_stress_time <- lmFit(expressionSet, design_stress_time, block=targets$Replicate, cor=corfit_stress_time$consensus);
-fit_stress_time <- lmFit(expressionSet, design_stress_time);
+corfit_stress_time <- duplicateCorrelation(expressionSet, design=design_stress_time, block=targets$Replicate);
+fit_stress_time <- lmFit(expressionSet, design_stress_time, block=targets$Replicate, cor=corfit_stress_time$consensus);
+#fit_stress_time <- lmFit(expressionSet, design_stress_time);
 
 # TURN THIS ON WHEN ALL CONTROL MEASURES ARE GROUPED
 # contrasts_stress_time <- makeContrasts(response_3h=mannitol_3h-control_0h, response_12h=mannitol_12h-control_0h, response_24h=mannitol_24h-control_0h, response_1.5h=mannitol_1.5h-control_0h, levels=design_stress_time);

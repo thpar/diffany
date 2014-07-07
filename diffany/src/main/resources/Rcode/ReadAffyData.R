@@ -4,6 +4,7 @@
 
 library(affy);
 library(limma);
+#library(ath1121501attairtcdf);
 
 targets <- readTargets("RNAtargets_Sofie.txt");
 
@@ -14,6 +15,7 @@ cols <- c("Stress","Time");
 targets[, "Setup"] <- do.call(paste, c(targets [cols], sep="_"));
 pheno <- new("AnnotatedDataFrame", data=targets);
 
-rawProbeData <- ReadAffy(phenoData=pheno);
+rawProbeData <- ReadAffy(phenoData=pheno, filenames=pheno$FileName);
+#rawProbeData <- ReadAffy(phenoData=pheno, filenames=pheno$FileName, cdfname="ath1121501attairtcdf");
 #probeValues <- exprs(rawProbeData);
 #probeNames <- probeNames(rawProbeData);

@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,6 +61,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
+	private final String GENERATE_DIFF_ACTION = "generate differential networks";
+	private final String GENERATE_OVERLAP_ACTION = "generate overlap networks";
+	
 	private JButton runButton;
 	private JButton updateVizButton;
 	private JTable table;
@@ -87,6 +91,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 		JPanel runPanel = new JPanel();
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
+		runPanel.setAlignmentX(CENTER_ALIGNMENT);
 		runButton = new JButton(new RunProjectAction(model));
 		updateVizButton = new JButton(new UpdateVisualStyleAction(model));
 		
@@ -95,7 +100,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		CyProject selectedProject = model.getSelectedProject();
 		if (selectedProject!=null){
-			runButton.setEnabled(model.getSelectedProject().canExecute());
+			runButton.setEnabled(model.getSelectedProject().canExecute(model));
 			updateVizButton.setEnabled(true);
 		} else {
 			runButton.setEnabled(false);
@@ -119,6 +124,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.setBorder(BorderFactory.createTitledBorder("Input networks"));
+		panel.setAlignmentX(CENTER_ALIGNMENT);
 		
 		collectionModel = new ProjectDropDownModel(model);
 		
@@ -169,9 +175,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 * @return the panel to be added to the side pane
 	 */
 	private Component createOptionPanel() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		panel.setBorder(BorderFactory.createTitledBorder("Options"));
+		JPanel optionPanel = new JPanel();
+		optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.PAGE_AXIS));
+		optionPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+		optionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		optionPanel.setAlignmentX(CENTER_ALIGNMENT);
+		
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
+		topPanel.setAlignmentX(LEFT_ALIGNMENT);
+		topPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
 		
 		JPanel modePanel = new JPanel();
 		JLabel label = new JLabel("Comparison mode: ");
@@ -185,7 +198,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		modeDropDown.addActionListener(this);
 		modePanel.add(modeDropDown);
 		
-		panel.add(modePanel);
+		topPanel.add(modePanel);
 		
 		JPanel cutoffPanel = new JPanel();
 		SpinnerNumberModel spinModel = new SpinnerNumberModel(model.getCutoff(),
@@ -195,9 +208,31 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		cutoffPanel.add(cutoffSpinner);
 		cutoffSpinner.addChangeListener(this);
 		
-		panel.add(cutoffPanel);
+		topPanel.add(cutoffPanel);
+		optionPanel.add(topPanel);
 		
-		return panel;
+		
+		JPanel outputSelectionPanel = new JPanel();
+		outputSelectionPanel.setAlignmentX(LEFT_ALIGNMENT);
+		outputSelectionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		outputSelectionPanel.setLayout(new BoxLayout(outputSelectionPanel, BoxLayout.PAGE_AXIS));
+		
+		JCheckBox generateDiffNetCheckBox = new JCheckBox("Differential networks");
+		generateDiffNetCheckBox.setActionCommand(GENERATE_DIFF_ACTION);
+		generateDiffNetCheckBox.addActionListener(this);
+		generateDiffNetCheckBox.setSelected(model.isGenerateDiffNets());
+		outputSelectionPanel.add(generateDiffNetCheckBox);
+		
+		JCheckBox generateOverlapNetCheckBox = new JCheckBox("Overlap networks");
+		generateOverlapNetCheckBox.setActionCommand(GENERATE_OVERLAP_ACTION);
+		generateOverlapNetCheckBox.addActionListener(this);
+		generateOverlapNetCheckBox.setSelected(model.isGenerateOverlapNets());
+		outputSelectionPanel.add(generateOverlapNetCheckBox);
+		
+		optionPanel.add(outputSelectionPanel);
+		
+				
+		return optionPanel;
 	}
 
 	@Override
@@ -237,6 +272,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 					table.setRowSelectionInterval(focusRow, focusRow);					
 				}
 			}
+			
+			refreshCyProject();
 		} else {
 			this.networkTableModel.clear();
 		}
@@ -261,6 +298,12 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			JComboBox source = (JComboBox)e.getSource();
 			ComparisonMode mode = (Model.ComparisonMode)source.getSelectedItem();
 			model.setMode(mode);
+		} else if (action.equals(GENERATE_DIFF_ACTION)){
+			JCheckBox cb = (JCheckBox)e.getSource();
+			model.setGenerateDiffNets(cb.isSelected());
+		} else if (action.equals(GENERATE_OVERLAP_ACTION)){
+			JCheckBox cb = (JCheckBox)e.getSource();
+			model.setGenerateOverlapNets(cb.isSelected());
 		}
 	}
 
@@ -275,14 +318,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	 */
 	public void refreshCyProject(){
 		CyProject cyProject = model.getSelectedProject();
-		cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
-		cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
-		this.runButton.setEnabled(cyProject.canExecute());
-		
-		UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
-		TaskIterator it = tf.createTaskIterator();
-		DialogTaskManager dtm = model.getServices().getDialogTaskManager();
-		dtm.execute(it);		
+		if (cyProject !=null){
+			cyProject.setReferenceNetwork(this.networkTableModel.getReferenceNetwork());
+			cyProject.setConditionalNetworks(this.networkTableModel.getConditionalNetworks());
+			this.runButton.setEnabled(cyProject.canExecute(model));
+			
+			UpdateVisualStyleTaskFactory tf = new UpdateVisualStyleTaskFactory(model, cyProject);
+			TaskIterator it = tf.createTaskIterator();
+			DialogTaskManager dtm = model.getServices().getDialogTaskManager();
+			dtm.execute(it);					
+		}
 	}
 
 	@Override

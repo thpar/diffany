@@ -12,6 +12,7 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
@@ -19,7 +20,6 @@ import be.svlandeg.diffany.core.project.DifferentialOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
-import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
@@ -37,6 +37,7 @@ public class CyProject{
 	
 	/**
 	 * Internal class to link a differential network to its overlap counterpart.
+	 * A pair is not necessary complete. If only one of both has been generated, the counterpart will be null.
 	 * 
 	 * @author Thomas Van Parys
 	 *
@@ -145,22 +146,45 @@ public class CyProject{
 	 * @return the ID of the generated {@link RunConfiguration}
 	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
-	public int generateRunConfiguration() throws InvalidRunConfigurationException{
-		if (!canExecute()){
+	public int generateRunConfiguration(Model model) throws InvalidRunConfigurationException{
+		if (!canExecute(model)){
 			throw new InvalidRunConfigurationException();
 		}
 		
-		ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
-				project.getEdgeOntology(), project.getNodeMapper());
 		
-		Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
-		for (CyNetwork cyCondNet : this.getConditionalNetworks()){
-			ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
-					project.getEdgeOntology(), project.getNodeMapper());
-			condNets.add(condNet);			
+		int runConfigID;
+		if (model.isGenerateDiffNets()){
+			//"classic" ref/cond configuration
+			ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
+					project.getEdgeOntology(), project.getNodeMapper());						
+			Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
+			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
+				ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
+						project.getEdgeOntology(), project.getNodeMapper());
+				condNets.add(condNet);			
+			}
+			runConfigID = project.addRunConfiguration(refNet, condNets);
+			
+		} else if (model.isGenerateOverlapNets()) {
+			Set<InputNetwork> inputNetworks = new HashSet<InputNetwork>();
+			
+			//model might still mark one network as reference, if one was selected already. Treat it as input network in this configuration
+			if (this.getReferenceNetwork() != null){
+				inputNetworks.add(CyNetworkBridge.getInputNetwork(this.getReferenceNetwork(), project.getEdgeOntology(), project.getNodeMapper()));
+			}
+			//then add all the conditional networks
+			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
+				InputNetwork condNet = CyNetworkBridge.getInputNetwork(cyCondNet, 
+						project.getEdgeOntology(), project.getNodeMapper());
+				inputNetworks.add(condNet);			
+			}
+			runConfigID = project.addRunConfiguration(inputNetworks);
+			
+		} else {
+			//if we're not generating diffs or overlaps, then what are we doing here?
+			throw new InvalidRunConfigurationException();
 		}
-		
-		int runConfigID = project.addRunConfiguration(refNet, condNets);
+
 		
 		this.latestRunConfigID = runConfigID;
 		
@@ -176,9 +200,20 @@ public class CyProject{
 	 * 
 	 * @return true when minimal input parameters are set
 	 */
-	public boolean canExecute(){
-		return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();
+	public boolean canExecute(Model model){
+		if (model.isGenerateDiffNets()){
+			return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();			
+		} else if (model.isGenerateOverlapNets()){
+			int numberOfNetworks = this.conditionalNetworks.size();
+			if (this.referenceNetwork!=null){
+				numberOfNetworks+=1;
+			}
+			return numberOfNetworks>=2;
+		} else {
+			return false;
+		}
 	}
+	
 
 	
 	/**
@@ -262,8 +297,12 @@ public class CyProject{
 			networks.add(conNet);
 		}
 		for (CyNetworkPair netPair : this.resultNetworks){
-			networks.add(netPair.diffNet);
-			networks.add(netPair.overlapNet);
+			if (netPair.diffNet != null){
+				networks.add(netPair.diffNet);				
+			}
+			if (netPair.overlapNet!=null){
+				networks.add(netPair.overlapNet);				
+			}
 		}
 		return networks;
 	}
@@ -283,7 +322,9 @@ public class CyProject{
 			networks.add(conNet);
 		}
 		for (CyNetworkPair netPair : this.resultNetworks){
-			networks.add(netPair.overlapNet);
+			if (netPair.overlapNet !=null){
+				networks.add(netPair.overlapNet);				
+			}
 		}
 		return networks;
 	}
@@ -296,7 +337,9 @@ public class CyProject{
 	private Set<CyNetwork> getAllDifferentialNetworks(){
 		Set<CyNetwork> networks = new HashSet<CyNetwork>();
 		for (CyNetworkPair netPair : this.resultNetworks){
-			networks.add(netPair.diffNet);
+			if (netPair.diffNet != null){
+				networks.add(netPair.diffNet);				
+			}
 		}
 		return networks;
 	}
@@ -441,13 +484,13 @@ public class CyProject{
 	/**
 	 * Updates this {@link CyProject} after a run.
 	 * After running a {@link RunConfiguration}, the newly generated differential and overlap networks
-	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProct}
+	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProject}
 	 */
 	public void update(Services services) {
-		// TODO (after Sofie's refactoring) check type of current ronConfigurationID
-		RunDiffConfiguration runConfig = (RunDiffConfiguration) project.getRunConfiguration(latestRunConfigID);
+		RunConfiguration runConfig = project.getRunConfiguration(latestRunConfigID);
 		DifferentialOutput differentialOutput = runConfig.getDifferentialOutput();
 		this.addDifferentialNetworks(differentialOutput, services);
+		
 	}
 	
 	
@@ -459,16 +502,44 @@ public class CyProject{
 	 * @param services 
 	 */
 	private void addDifferentialNetworks(DifferentialOutput differentialOutput, Services services) {
+		Set<DifferentialNetwork> addedDiffNets = new HashSet<DifferentialNetwork>();
+		Set<OverlappingNetwork> addedOverlapNets = new HashSet<OverlappingNetwork>();
+		
 		for (OutputNetworkPair pair: differentialOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
 			OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
+			addedDiffNets.add(differentialNetwork);
+			addedOverlapNets.add(overlappingNetwork);
+			
 			//add the diffnet
-			CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);
+			CyNetwork cyDiffNet = null; 
+			if (differentialNetwork != null){
+				cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);				
+			}
 				
 			//add the overlap
-			CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);
+			CyNetwork cyOverlapNet = null;
+			if (overlappingNetwork != null){
+				cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);				
+			}
 				
 			this.addResultPair(cyDiffNet, cyOverlapNet);
+		}
+		
+		//add differential networks that were not added as a pair
+		for (DifferentialNetwork diffNet : differentialOutput.getDifferentialNetworks()){
+			if (!addedDiffNets.contains(diffNet)){
+				CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(diffNet, this.collection, services);
+				this.addResultPair(cyDiffNet, null);
+			}
+		}
+		
+		//add overlapping networks that were not added as a pair
+		for (OverlappingNetwork overlapNet : differentialOutput.getOverlappingNetworks()){
+			if (!addedOverlapNets.contains(overlapNet)){
+				CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlapNet, this.collection, services);
+				this.addResultPair(null, cyOverlapNet);
+			}
 		}
 	}
 	

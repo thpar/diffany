@@ -55,7 +55,7 @@ public class RunProject
 
 		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
 
-		double cutoff = diffAlgo.default_cutoff;
+		double cutoff = diffAlgo.default_weight_cutoff;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));

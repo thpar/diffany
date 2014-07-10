@@ -20,9 +20,11 @@ public class RunConfiguration
 	protected Set<InputNetwork> inputNetworks;
 	protected DifferentialOutput differentialOutput;
 	
+	protected int overlapNo_cutoff;
+	
 	
 	/**
-	 * Create a new configuration with a set of input networks. 
+	 * Create a new configuration with a set of input networks. The required overlap cutoff is by default set to the size of this set.
 	 * The output result set is initialized to be empty.
 	 * 
 	 * @param inputNetworks the input networks (not null or empty!)
@@ -31,6 +33,7 @@ public class RunConfiguration
 	public RunConfiguration(Set<InputNetwork> inputNetworks)
 	{
 		setInputs(inputNetworks);
+		overlapNo_cutoff = inputNetworks.size();
 		differentialOutput = new DifferentialOutput(); 
 	}
 	
@@ -49,6 +52,15 @@ public class RunConfiguration
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.inputNetworks = inputNetworks;
+	}
+	
+	/**
+	 * Alter the required number of overlapping edges needed before the edge will be present in the overlap network.
+	 * @param overlapNo_cutoff
+	 */
+	public void setOverlapCutoff(int overlapNo_cutoff)
+	{
+		this.overlapNo_cutoff = overlapNo_cutoff;
 	}
 	
 	
@@ -70,6 +82,15 @@ public class RunConfiguration
 	public DifferentialOutput getDifferentialOutput()
 	{
 		return differentialOutput;
+	}
+	
+	/**
+	 * Return the required number of overlapping edges needed before the edge will be present in the overlap network.
+	 * @return the minimal number of required overlapping edges, which is the size of the input set unless specifically stated otherwise
+	 */
+	public int getOverlapCutoff()
+	{
+		return overlapNo_cutoff;
 	}
 
 }

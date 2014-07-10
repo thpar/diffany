@@ -250,6 +250,7 @@ public class EdgeByEdge
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlap_name the name to give to the overlapping network
+	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
 	 * @param weight_cutoff the minimal weight that the resulting overlap edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
@@ -257,7 +258,7 @@ public class EdgeByEdge
 	 *         
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, double weight_cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
 		int noNetworks = networks.size();
 		
@@ -321,7 +322,7 @@ public class EdgeByEdge
 						allEdges.add(eg.getVoidEdge(symm));
 					}
 	
-					EdgeDefinition overlap_edge_def = ec.getOverlapEdge(allEdges, noNetworks, noNetworks, weight_cutoff, minOperator);
+					EdgeDefinition overlap_edge_def = ec.getOverlapEdge(allEdges, noNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
 					if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)

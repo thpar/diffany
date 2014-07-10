@@ -127,7 +127,23 @@ public class Project
 	{
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
 		cs.add(condition);
-		return addRunConfiguration(reference, cs);
+		return addRunConfiguration(reference, cs, 1);
+	}
+	
+	/**
+	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
+	 * This configuration will allow the calculation of both differential and overlapping networks.
+	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * This option will use the default requirement of all networks having an overlapping edge before it can be include in the OverlapNetwork.
+	 * 
+	 * @param reference the reference network (not null!)
+	 * @param conditions the condition-specific networks (at least 1!)
+	 * 
+	 * @return the unique ID assigned to the RunConfiguration in this project
+	 */
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
+	{
+		return addRunConfiguration(reference, conditions, conditions.size() + 1);
 	}
 	
 	/**
@@ -137,10 +153,11 @@ public class Project
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
+	 * @param overlapNo_cutoff the number of networks that should at least match for overlap to be defined: min. 2, max conditions.size + 1.
 	 * 
 	 * @return the unique ID assigned to the RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
 	{
 		Logger logger = new Logger();
 		registerSourceNetwork(reference, logger);
@@ -174,12 +191,27 @@ public class Project
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
 	 * This configuration will NOT be able to calculate differential networks; only overlapping networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * This option will use the default requirement of all networks having an overlapping edge before it can be include in the OverlapNetwork.
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * 
 	 * @return the unique ID assigned to the RunConfiguration in this project
 	 */
 	public int addRunConfiguration(Set<InputNetwork> networks)
+	{
+		return addRunConfiguration(networks, networks.size());
+	}
+	
+	/**
+	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
+	 * This configuration will NOT be able to calculate differential networks; only overlapping networks.
+	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
+	 * 
+	 * @param inputNetworks all the input networks (at least 1!)
+	 * 
+	 * @return the unique ID assigned to the RunConfiguration in this project
+	 */
+	public int addRunConfiguration(Set<InputNetwork> networks, int overlapNo_cutoff)
 	{
 		Logger logger = new Logger();
 		

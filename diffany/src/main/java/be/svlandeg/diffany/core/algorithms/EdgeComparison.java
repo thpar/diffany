@@ -258,6 +258,8 @@ public class EdgeComparison
 	 */
 	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int no_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
+		// TODO use no_cutoff properly
+		
 		if (edges == null || edges.isEmpty())
 		{
 			String errormsg = "The set of edges should not be null or empty!";
@@ -279,7 +281,7 @@ public class EdgeComparison
 			{
 				countNegated++;
 			}
-
+			
 			if (e.isSymmetrical())
 			{
 				countSymmetrical++;

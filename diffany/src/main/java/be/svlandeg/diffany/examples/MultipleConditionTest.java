@@ -12,6 +12,8 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
+import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -225,6 +227,15 @@ public class MultipleConditionTest extends GenericExample
 		System.out.println("");
 		ex.printAllNetworks(p, ID_diff);
 		
+		System.out.println(" **************************************************************** ");
+		
+		Logger log = p.getLogger(ID_diff);
+		for (LogEntry e: log.getAllLogMessages())
+		{
+			System.out.println(e);
+		}
+		
+		/*
 		System.out.println(" ");
 		System.out.println(" **************************************************************** ");
 		System.out.println(" ");
@@ -244,5 +255,9 @@ public class MultipleConditionTest extends GenericExample
 		
 		System.out.println("");
 		ex.printAllOverlapNetworks(p, ID_diff);
+		*/
+		
+		
+		
 	}
 }

@@ -226,17 +226,36 @@ public class NetworkCleaning
 			String sourceID = source.getID();
 			String targetID = target.getID();
 
-			if (!pairs.containsKey(sourceID))
+			// edge is directed: store source -> target as a valid pair in the network
+			if (! e.isSymmetrical())
 			{
-				pairs.put(sourceID, new HashSet<String>());
+				if (!pairs.containsKey(sourceID))
+				{
+					pairs.put(sourceID, new HashSet<String>());
+				}
+				pairs.get(sourceID).add(targetID);
 			}
-			pairs.get(sourceID).add(targetID);
 
-			if (!pairs.containsKey(targetID))
+			// if the edge is symmetrical, store X -> Y with X's ID smaller than Y's ID
+			if (e.isSymmetrical())
 			{
-				pairs.put(targetID, new HashSet<String>());
+				if (sourceID.compareTo(targetID) < 0)
+				{
+					if (!pairs.containsKey(sourceID))
+					{
+						pairs.put(sourceID, new HashSet<String>());
+					}
+					pairs.get(sourceID).add(targetID);
+				}
+				else
+				{
+					if (!pairs.containsKey(targetID))
+					{
+						pairs.put(targetID, new HashSet<String>());
+					}
+					pairs.get(targetID).add(sourceID);
+				}
 			}
-			pairs.get(targetID).add(sourceID);
 
 			mappedNodes.put(sourceID, source);
 			mappedNodes.put(targetID, target);
@@ -264,9 +283,6 @@ public class NetworkCleaning
 			}
 		}
 		net.setNodesAndEdges(allNodes, newEdges);
-		// TODO: the above step introduces redundancy which needs to be cleaned again in the next step ... this should be dealt with more properly!
-		removeRedundantSymmetricalEdges(net);
-
 	}
 
 	/**

@@ -248,13 +248,15 @@ public class EdgeComparison
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in the overlapping network).
 	 * 
 	 * @param edges the original edge definitions (can contain EdgeDefinition.getVoidEdge()), should not be empty!
-	 * @param cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param noNetworks the number of original input networks
+	 * @param no_cutoff the number of networks that need to have the overlap for it to be included
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
-	 * 
+
 	 * @return the edge definition in the overlapping network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, double cutoff, boolean minOperator) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int no_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		if (edges == null || edges.isEmpty())
 		{
@@ -263,7 +265,7 @@ public class EdgeComparison
 		}
 		EdgeDefinition overlap_edge = eg.getDefaultEdge();
 		int countEdges = edges.size();
-
+		
 		// 1. DETERMINE NEGATION AND SYMMETRY //
 		int countNegated = 0;
 		int countSymmetrical = 0;
@@ -296,6 +298,12 @@ public class EdgeComparison
 
 		boolean symm = countSymmetrical == countEdges;
 		overlap_edge.makeSymmetrical(symm);
+		
+		// If there are less input edges than the cutoff requires, there will not be an overlap edge, return eg.getVoidEdge(symm)
+		if (countEdges < no_cutoff)
+		{
+			return eg.getVoidEdge(symm);
+		}
 
 		// some are negated, some are not -> no overlap
 		if (countNegated != 0 && countNegated != countEdges)
@@ -314,7 +322,7 @@ public class EdgeComparison
 		{
 			overlapWeight = maxWeight;
 		}
-		if (overlapWeight <= cutoff)
+		if (overlapWeight <= weight_cutoff)
 		{
 			return eg.getVoidEdge(symm);
 		}

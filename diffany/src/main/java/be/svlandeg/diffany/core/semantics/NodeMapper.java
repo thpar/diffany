@@ -1,7 +1,9 @@
 package be.svlandeg.diffany.core.semantics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +27,7 @@ public abstract class NodeMapper
 	 * @return whether or not they should considered to be equal
 	 */
 	public abstract boolean areEqual(Node node1, Node node2);
-	
-	
+
 	/**
 	 * Return a 'consensus' ID for a set of nodes that were previously determined to be equal. 
 	 * Null or empty nodes are ignored. Otherwise, all IDs in the set will be the same, and this will be the result of this method.
@@ -36,7 +37,7 @@ public abstract class NodeMapper
 	 * @throws IllegalArgumentException when the nodes are not all equal (when not null)
 	 */
 	public abstract String getConsensusID(Set<Node> nodes) throws IllegalArgumentException;
-	
+
 	/**
 	 * Return a 'consensus' name for a set of nodes that were previously determined to be equal. 
 	 * Null or empty nodes are ignored.
@@ -47,7 +48,6 @@ public abstract class NodeMapper
 	 */
 	public abstract String getConsensusName(Set<Node> nodes) throws IllegalArgumentException;
 
-	
 	/**
 	 * Define whether or not this node is already in the set.
 	 * 
@@ -67,7 +67,7 @@ public abstract class NodeMapper
 		}
 		return contained;
 	}
-	
+
 	/**
 	 * Define all equal nodes in the two networks, mapping one node in network 1 to a set of nodes in network 2.
 	 * 
@@ -92,7 +92,47 @@ public abstract class NodeMapper
 		}
 		return allEquals;
 	}
-	
+
+	/**
+	 * Define all equal nodes in a set of networks, creating non-overlapping sets of nodes.
+	 * 
+	 * @param networks all input networks
+	 * @return all equal nodes grouped in sets
+	 */
+	public List<Set<Node>> getAllEquals(Set<Network> networks)
+	{
+		List<Set<Node>> allEqualSets = new ArrayList<Set<Node>>();
+
+		for (Network n : networks)
+		{
+			// for each network, try to find the equals of each node
+			for (Node queryNode : n.getNodes())
+			{
+				boolean foundEquals = false;
+				for (Set<Node> equalsSet : allEqualSets)
+				{
+					Node compareNode = equalsSet.iterator().next();
+					if (!foundEquals && compareNode != null)
+					{
+						// we assume equality transitivity: if one node is equal to our querynode, then all will be
+						if (areEqual(queryNode, compareNode))
+						{
+							foundEquals = true;
+							equalsSet.add(queryNode);
+						}
+					}
+				}
+				if (! foundEquals)
+				{
+					Set<Node> newEqualsSet = new HashSet<Node>();
+					newEqualsSet.add(queryNode);
+					allEqualSets.add(newEqualsSet);
+				}
+			}
+		}
+		return allEqualSets;
+	}
+
 	/**
 	 * Get all nodes, without duplicating equal nodes. 
 	 * 

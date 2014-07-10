@@ -8,6 +8,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
+import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
@@ -74,7 +75,7 @@ public class CalculateDiff
 	 * @return the overlapping network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	private OverlappingNetwork calculateOverlappingNetwork(Set<InputNetwork> networks, TreeEdgeOntology eo,
+	private OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
 			NodeMapper nm, String overlapping_name, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
@@ -172,7 +173,8 @@ public class CalculateDiff
 		
 		if (overlapNetwork)
 		{
-			Set<InputNetwork> inputs = new HashSet<InputNetwork>(rc.getInputNetworks());
+			Set<Network> inputs = new HashSet<Network>();
+			inputs.addAll(rc.getInputNetworks());
 			String overlapping_name = overlapnameprefix + diff_name;
 			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
 		}
@@ -321,7 +323,7 @@ public class CalculateDiff
 						overlapping_name = overlapnameprefix + c.getName() + "_" + r.getName();
 					}
 					
-					Set<InputNetwork> inputs = new HashSet<InputNetwork>();
+					Set<Network> inputs = new HashSet<Network>();
 					inputs.add(r);
 					inputs.add(c);
 					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, cutoff, log);
@@ -356,7 +358,7 @@ public class CalculateDiff
 						overlapping_name = overlapnameprefix + n2.getName() + "_" + n1.getName();
 					}
 					
-					Set<InputNetwork> twoInputs = new HashSet<InputNetwork>();
+					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
 					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, cutoff, log);

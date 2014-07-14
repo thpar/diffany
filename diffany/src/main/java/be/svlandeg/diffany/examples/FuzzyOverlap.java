@@ -42,7 +42,7 @@ public class FuzzyOverlap extends GenericExample
 	 * Get a custom project.
 	 * @return an example project illustrating figure 1C.
 	 */
-	public Project getProjectFigure1C()
+	public Project getProject()
 	{
 		String name = "FuzzyOverlap";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
@@ -222,7 +222,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		
 		System.out.println("Defining network for FuzzyOverlap configuration");
-		Project p = ex.getProjectFigure1C();
+		Project p = ex.getProject();
 		int ID_1 = ex.getTestConfigurationWithReference(p);
 		//int ID_2 = ex.getTestConfigurationWithoutReference(p);
 		

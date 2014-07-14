@@ -272,6 +272,7 @@ public class CalculateDiff
 
 	/**
 	 * Calculate all pairwise differential networks and/or overlapping networks between the reference and each condition-specific network in the project.
+	 * The overlap cutoff will always be 2, and will thus no tbe queried from the corresponding RunConfiguration object.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
 	 * The name of the overlapping networks will be prefix 'overlap_' + the two names of the networks.
@@ -295,7 +296,7 @@ public class CalculateDiff
 
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
 		rc.getDifferentialOutput().clean();
-		int overlapCutoff = rc.getOverlapCutoff();
+		int overlapCutoff = 2;
 		
 		if (diffNetwork)
 		{

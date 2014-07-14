@@ -265,13 +265,14 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, int overlapNo_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		calculateAllPairwiseDifferentialNetworks(p, configurationID, default_weight_cutoff, diffNetwork, overlapNetwork);
 	}
 
 	/**
 	 * Calculate all pairwise differential networks and/or overlapping networks between the reference and each condition-specific network in the project.
+	 * The overlap cutoff will always be 2, and will thus no tbe queried from the corresponding RunConfiguration object.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
 	 * The name of the overlapping networks will be prefix 'overlap_' + the two names of the networks.
@@ -281,7 +282,7 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param configurationID the configuration ID of the configuration that needs to be run
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 
@@ -295,7 +296,7 @@ public class CalculateDiff
 
 		RunConfiguration rc = p.getRunConfiguration(configurationID);
 		rc.getDifferentialOutput().clean();
-		int overlapCutoff = rc.getOverlapCutoff();
+		int overlapCutoff = 2;
 		
 		if (diffNetwork)
 		{

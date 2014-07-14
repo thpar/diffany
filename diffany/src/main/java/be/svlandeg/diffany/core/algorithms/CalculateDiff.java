@@ -265,7 +265,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, int overlapNo_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		calculateAllPairwiseDifferentialNetworks(p, configurationID, default_weight_cutoff, diffNetwork, overlapNetwork);
 	}
@@ -281,7 +281,7 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param configurationID the configuration ID of the configuration that needs to be run
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 

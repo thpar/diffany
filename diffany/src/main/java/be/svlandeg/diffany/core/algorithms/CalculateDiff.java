@@ -16,6 +16,7 @@ import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.core.project.RunDiffConfiguration;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
@@ -137,28 +138,29 @@ public class CalculateDiff
 	 * The calculated differential networks are added to the project directly, after cleaning previous output first.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
-	 * @param configurationID the configuration ID of the configuration that needs to be run
+	 * @param runID the ID of the configuration that needs to be run
 	 * @param diff_name the name to give to the differential network. The overlapping network will get this name + the prefix 'overlap_'.
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int configurationID, String diff_name, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
-		Logger log = p.getLogger(configurationID);
+		Logger log = p.getLogger(runID);
 
-		RunConfiguration rc = p.getRunConfiguration(configurationID);
-		rc.getDifferentialOutput().clean();
+		RunConfiguration rc = p.getRunConfiguration(runID);
+		RunOutput output = p.getOutput(runID);
+		output.clean();
 		
 		DifferentialNetwork diff = null;
 		OverlappingNetwork on = null;
 		
 		if (diffNetwork)
 		{
-			if (! p.isDiffType(configurationID))
+			if (! p.isDiffType(runID))
 			{
 				String errormsg = "The provided runconfiguration is not suited to calculated differential networks!";
 				throw new IllegalArgumentException(errormsg);
@@ -181,15 +183,15 @@ public class CalculateDiff
 		
 		if (diff != null && on != null)
 		{
-			rc.getDifferentialOutput().addPair(new OutputNetworkPair(diff, on));
+			output.addPair(new OutputNetworkPair(diff, on));
 		}
 		else if (diff != null)
 		{
-			rc.getDifferentialOutput().addDifferential(diff);
+			output.addDifferential(diff);
 		}
 		else if (on != null)
 		{
-			rc.getDifferentialOutput().addOverlap(on);
+			output.addOverlap(on);
 		}
 		log.log("Done!");
 	}
@@ -206,16 +208,16 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
-	 * @param configurationID the configuration ID of the configuration that needs to be run
+	 * @param runID the ID of the configuration that needs to be run
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int configurationID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, configurationID, diff_name, default_weight_cutoff, diffNetwork, overlapNetwork);
+		calculateOneDifferentialNetwork(p, runID, diff_name, default_weight_cutoff, diffNetwork, overlapNetwork);
 	}
 
 	/**
@@ -230,17 +232,17 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
-	 * @param configurationID the configuration ID of the configuration that needs to be run
+	 * @param runID the ID of the configuration that needs to be run
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int configurationID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, configurationID, diff_name, weight_cutoff, diffNetwork, overlapNetwork);
+		calculateOneDifferentialNetwork(p, runID, diff_name, weight_cutoff, diffNetwork, overlapNetwork);
 	}
 
 	
@@ -259,20 +261,20 @@ public class CalculateDiff
 	 * The logger object will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
-	 * @param configurationID the configuration ID of the configuration that needs to be run
+	 * @param runID the ID of the configuration that needs to be run
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
-		calculateAllPairwiseDifferentialNetworks(p, configurationID, default_weight_cutoff, diffNetwork, overlapNetwork);
+		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, overlapNetwork);
 	}
 
 	/**
 	 * Calculate all pairwise differential networks and/or overlapping networks between the reference and each condition-specific network in the project.
-	 * The overlap cutoff will always be 2, and will thus no tbe queried from the corresponding RunConfiguration object.
+	 * The overlap cutoff will always be 2, and will thus not be queried from the corresponding RunConfiguration object.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
 	 * The name of the overlapping networks will be prefix 'overlap_' + the two names of the networks.
@@ -281,26 +283,27 @@ public class CalculateDiff
 	 * The logger object and the output result will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
-	 * @param configurationID the configuration ID of the configuration that needs to be run
+	 * @param runID the ID of the configuration that needs to be run
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int configurationID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
-		Logger log = p.getLogger(configurationID);
+		Logger log = p.getLogger(runID);
 
-		RunConfiguration rc = p.getRunConfiguration(configurationID);
-		rc.getDifferentialOutput().clean();
+		RunConfiguration rc = p.getRunConfiguration(runID);
+		RunOutput output = p.getOutput(runID);
+		output.clean();
 		int overlapCutoff = 2;
 		
 		if (diffNetwork)
 		{
-			if (! p.isDiffType(configurationID))
+			if (! p.isDiffType(runID))
 			{
 				String errormsg = "The provided runconfiguration is not suited to calculated differential networks!";
 				throw new IllegalArgumentException(errormsg);
@@ -337,11 +340,11 @@ public class CalculateDiff
 				
 				if (on != null)
 				{
-					rc.getDifferentialOutput().addPair(new OutputNetworkPair(diff, on));
+					output.addPair(new OutputNetworkPair(diff, on));
 				}
 				else 
 				{
-					rc.getDifferentialOutput().addDifferential(diff);
+					output.addDifferential(diff);
 				}
 			}
 		}
@@ -369,7 +372,7 @@ public class CalculateDiff
 					twoInputs.add(n2);
 					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, overlapCutoff, weight_cutoff, log);
 					
-					rc.getDifferentialOutput().addOverlap(on);
+					output.addOverlap(on);
 				}
 			}
 		}

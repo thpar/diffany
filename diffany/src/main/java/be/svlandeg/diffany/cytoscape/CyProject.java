@@ -16,10 +16,9 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
@@ -487,10 +486,8 @@ public class CyProject{
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProject}
 	 */
 	public void update(Services services) {
-		RunConfiguration runConfig = project.getRunConfiguration(latestRunConfigID);
-		DifferentialOutput differentialOutput = runConfig.getDifferentialOutput();
-		this.addDifferentialNetworks(differentialOutput, services);
-		
+		RunOutput runOutput = project.getOutput(latestRunConfigID);
+		this.addDifferentialNetworks(runOutput, services);
 	}
 	
 	
@@ -498,14 +495,14 @@ public class CyProject{
 	 * Convert and add the resulting networks after running the algorithm. 
 	 * Add these networks to the set of results of this {@link CyProject}
 	 * 
-	 * @param differentialOutput
+	 * @param runOutput
 	 * @param services 
 	 */
-	private void addDifferentialNetworks(DifferentialOutput differentialOutput, Services services) {
+	private void addDifferentialNetworks(RunOutput runOutput, Services services) {
 		Set<DifferentialNetwork> addedDiffNets = new HashSet<DifferentialNetwork>();
 		Set<OverlappingNetwork> addedOverlapNets = new HashSet<OverlappingNetwork>();
 		
-		for (OutputNetworkPair pair: differentialOutput.getOutputAsPairs()){
+		for (OutputNetworkPair pair: runOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
 			OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
 			addedDiffNets.add(differentialNetwork);
@@ -527,7 +524,7 @@ public class CyProject{
 		}
 		
 		//add differential networks that were not added as a pair
-		for (DifferentialNetwork diffNet : differentialOutput.getDifferentialNetworks()){
+		for (DifferentialNetwork diffNet : runOutput.getDifferentialNetworks()){
 			if (!addedDiffNets.contains(diffNet)){
 				CyNetwork cyDiffNet = CyNetworkBridge.addCyNetwork(diffNet, this.collection, services);
 				this.addResultPair(cyDiffNet, null);
@@ -535,7 +532,7 @@ public class CyProject{
 		}
 		
 		//add overlapping networks that were not added as a pair
-		for (OverlappingNetwork overlapNet : differentialOutput.getOverlappingNetworks()){
+		for (OverlappingNetwork overlapNet : runOutput.getOverlappingNetworks()){
 			if (!addedOverlapNets.contains(overlapNet)){
 				CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlapNet, this.collection, services);
 				this.addResultPair(null, cyOverlapNet);

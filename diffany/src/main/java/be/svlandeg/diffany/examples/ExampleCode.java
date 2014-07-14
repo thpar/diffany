@@ -10,11 +10,10 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
@@ -45,15 +44,14 @@ public class ExampleCode
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
-		int rcID = p.addRunConfiguration(refNet, condNet);
+		int runID = p.addRunConfiguration(refNet, condNet);
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff, true, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, true, true);
 
 		// In this case, there will be exactly one DifferentialNetwork
-		RunConfiguration rc = p.getRunConfiguration(rcID);
-		DifferentialOutput output = rc.getDifferentialOutput();
+		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
 		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
@@ -69,7 +67,7 @@ public class ExampleCode
 		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, writeHeaders, allowVirtualEdges);
 
 		/** WRITE LOG OUTPUT **/
-		Logger logger = p.getLogger(rcID);
+		Logger logger = p.getLogger(runID);
 		for (LogEntry msg : logger.getAllLogMessages())
 		{
 			System.out.println(msg);

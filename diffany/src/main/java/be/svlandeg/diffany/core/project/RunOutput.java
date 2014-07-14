@@ -16,7 +16,7 @@ import be.svlandeg.diffany.core.networks.merged.MergedOverlappingNetwork;
  * 
  * @author Sofie Van Landeghem
  */
-public class DifferentialOutput
+public class RunOutput
 {
 
 	private Set<DifferentialNetwork> dns;
@@ -28,7 +28,7 @@ public class DifferentialOutput
 	 *
 	 * @throws IllegalArgumentException when either of the provided networks is null
 	 */
-	public DifferentialOutput()
+	public RunOutput()
 	{
 		clean();
 	}

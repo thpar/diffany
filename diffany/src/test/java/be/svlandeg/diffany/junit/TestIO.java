@@ -17,7 +17,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -68,7 +68,7 @@ public class TestIO
 		ConditionNetwork cWriteNetwork = rc.getConditionNetworks().iterator().next();
 		
 		// There is exactly one differential network created
-		DifferentialOutput output = rc.getDifferentialOutput();
+		RunOutput output = p.getOutput(ID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				

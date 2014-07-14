@@ -8,7 +8,7 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 
@@ -34,11 +34,11 @@ public abstract class GenericExample
 	/**
 	 * Print an entire project.
 	 * @param p the project to be printed
-	 * @param configurationID the ID of the RunConfiguration
+	 * @param runID the ID of the Run
 	 */
-	protected void printAllNetworks(Project p, int configurationID)
+	protected void printAllNetworks(Project p, int runID)
 	{
-		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(configurationID);
+		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(runID);
 		
 		System.out.println("Reference network : ");
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -51,7 +51,7 @@ public abstract class GenericExample
 			printNetwork(c);
 		}
 		System.out.println("Differential network(s) : ");
-		DifferentialOutput output = rc.getDifferentialOutput();
+		RunOutput output = p.getOutput(runID);
 		
 		for (OutputNetworkPair pair : output.getOutputAsPairs())
 		{
@@ -63,11 +63,11 @@ public abstract class GenericExample
 	/**
 	 * Print all overlap networks in an entire project.
 	 * @param p the project to be printed
-	 * @param configurationID the ID of the RunConfiguration
+	 * @param runID the ID of the Run
 	 */
-	protected void printAllOverlapNetworks(Project p, int configurationID)
+	protected void printAllOverlapNetworks(Project p, int runID)
 	{
-		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(configurationID);
+		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(runID);
 		
 		System.out.println("Reference network : ");
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -80,7 +80,7 @@ public abstract class GenericExample
 			printNetwork(c);
 		}
 		System.out.println("Overlap network(s) : ");
-		DifferentialOutput output = rc.getDifferentialOutput();
+		RunOutput output = p.getOutput(runID);
 		
 		for (OverlappingNetwork on : output.getOverlappingNetworks())
 		{

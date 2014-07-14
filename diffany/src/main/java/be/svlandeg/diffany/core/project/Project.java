@@ -23,10 +23,11 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  * A project consists of a number of Diffany runs and the ontology settings within one user session.
  * 
  * Specifically, it contains one or more {@link RunConfiguration}s which is a subset of networks that can together
- * be used as input for the Diffany algorithms.
+ * be used as input for the Diffany algorithms. 
+ * Further, for each ID corresponding to such configuration, there is a RunOutput and a Logger object.
+ * 
  * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types,
  * and a {@link NodeMapper} that establishes equality of nodes across networks.
- * Finally, a Logger instance keeps a logfile of all runs in the project.
  * 
  * Project data can be saved and loaded through the {@link ProjectIO} class.
  * 
@@ -40,13 +41,16 @@ public class Project
 	protected TreeEdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
 	
-	// runs by Configuration IDs
-	protected Map<Integer, RunConfiguration> runs;
+	// configurations by Run IDs
+	protected Map<Integer, RunConfiguration> configurations;
 	
-	// run types by Configuration IDs
+	// outputs by Run IDs
+	protected Map<Integer, RunOutput> runOutputs;
+	
+	// types by Run IDs
 	protected Map<Integer, Boolean> runTypes;	// boolean: can do differential
 	
-	// loggers by Configuration ID
+	// loggers by Run ID
 	protected Map<Integer, Logger> runLogs;
 	
 	/**
@@ -82,35 +86,36 @@ public class Project
 		setEdgeOntology(edgeOntology);
 		setNodeMapper(nodeMapper);
 		
-		runs = new HashMap<Integer, RunConfiguration>();
+		configurations = new HashMap<Integer, RunConfiguration>();
+		runOutputs = new HashMap<Integer, RunOutput>();
 		runTypes = new HashMap<Integer, Boolean>();
 		runLogs = new HashMap<Integer, Logger>();
 	}
 	
 	/**
-	 * Retrieve all run configuration IDs stored in this project
-	 * @return all 
+	 * Retrieve all run IDs stored in this project
+	 * @return all run IDs
 	 */
-	public Set<Integer> getAllRunConfigurations()
+	public Set<Integer> getAllRunIDs()
 	{
-		return runs.keySet();
+		return configurations.keySet();
 	}
 	
 	/**
-	 * Get a specific RunConfiguration by its unique ID
+	 * Get a specific RunConfiguration by its unique run ID
 	 * 
-	 * @param configurationID the (unique) ID of the configuration
+	 * @param runID the (unique) run ID of the configuration
 	 * @return the corresponding RunConfiguration
-	 * @throws IllegalArgumentException if the configuration ID is invalid (i.e. non-existing)
+	 * @throws IllegalArgumentException if the run ID is invalid (i.e. non-existing)
 	 */
-	public RunConfiguration getRunConfiguration(int configurationID) throws IllegalArgumentException
+	public RunConfiguration getRunConfiguration(int runID) throws IllegalArgumentException
 	{
-		if (! runs.containsKey(configurationID))
+		if (! configurations.containsKey(runID))
 		{
-			String errormsg = "Unknown configuration ID " + configurationID + " in Project " + name;
+			String errormsg = "Unknown run ID " + runID + " in Project " + name;
 			throw new IllegalArgumentException(errormsg);
 		}
-		return runs.get(configurationID);
+		return configurations.get(runID);
 	}
 	
 	
@@ -121,7 +126,7 @@ public class Project
 	 * @param reference the reference network (not null!)
 	 * @param condition the condition-specific networks (not null!)
 	 * 
-	 * @return the unique ID assigned to the RunConfiguration in this project
+	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
 	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition)
 	{
@@ -139,7 +144,7 @@ public class Project
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * 
-	 * @return the unique ID assigned to the RunConfiguration in this project
+	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
 	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
 	{
@@ -155,7 +160,7 @@ public class Project
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param overlapNo_cutoff the number of networks that should at least match for overlap to be defined: min. 2, max conditions.size + 1.
 	 * 
-	 * @return the unique ID assigned to the RunConfiguration in this project
+	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
 	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
 	{
@@ -173,17 +178,18 @@ public class Project
 		
 		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions);
 		int nextID;
-		if (runs.keySet().isEmpty())
+		if (configurations.keySet().isEmpty())
 		{
 			nextID = 1;
 		}
 		else
 		{
-			nextID = Collections.max(runs.keySet()) + 1;
+			nextID = Collections.max(configurations.keySet()) + 1;
 		}
-		runs.put(nextID, rc);
+		configurations.put(nextID, rc);
 		runTypes.put(nextID, true);
 		runLogs.put(nextID, logger);
+		runOutputs.put(nextID, new RunOutput());
 		return nextID;
 	}
 	
@@ -195,7 +201,7 @@ public class Project
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * 
-	 * @return the unique ID assigned to the RunConfiguration in this project
+	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
 	public int addRunConfiguration(Set<InputNetwork> networks)
 	{
@@ -209,7 +215,7 @@ public class Project
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * 
-	 * @return the unique ID assigned to the RunConfiguration in this project
+	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
 	public int addRunConfiguration(Set<InputNetwork> networks, int overlapNo_cutoff)
 	{
@@ -225,36 +231,46 @@ public class Project
 		
 		RunConfiguration rc = new RunConfiguration(cleanNetworks);
 		int nextID;
-		if (runs.keySet().isEmpty())
+		if (configurations.keySet().isEmpty())
 		{
 			nextID = 1;
 		}
 		else
 		{
-			nextID = Collections.max(runs.keySet()) + 1;
+			nextID = Collections.max(configurations.keySet()) + 1;
 		}
-		runs.put(nextID, rc);
+		configurations.put(nextID, rc);
 		runTypes.put(nextID, false);
 		runLogs.put(nextID, logger);
+		runOutputs.put(nextID, new RunOutput());
 		return nextID;
 	}
 	
 	/**
-	 * Get the logger for a specific runconfiguration. The logs will be empty if the runconfiguration was not deployed.
-	 * @return the logs of a specific run configuration.
+	 * Get the output for a specific run ID. The RunOutput object will be empty if the corresponding run configuration was not deployed.
+	 * @return the output of a specific run.
 	 */
-	public Logger getLogger(int configurationID)
+	public RunOutput getOutput(int runID)
 	{
-		return runLogs.get(configurationID);
+		return runOutputs.get(runID);
+	}
+	
+	/**
+	 * Get the logger for a specific run ID. The logs will be empty if the corresponding run configuration was not deployed.
+	 * @return the logs of a specific run.
+	 */
+	public Logger getLogger(int runID)
+	{
+		return runLogs.get(runID);
 	}
 	
 	/**
 	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only overlappingà.
 	 * @return the type of a specific run configuration.
 	 */
-	public boolean isDiffType(int configurationID)
+	public boolean isDiffType(int runID)
 	{
-		return runTypes.get(configurationID);
+		return runTypes.get(runID);
 	}
 	
 	

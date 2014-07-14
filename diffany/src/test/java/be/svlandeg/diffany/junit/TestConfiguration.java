@@ -12,7 +12,7 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
-import be.svlandeg.diffany.core.project.DifferentialOutput;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.examples.MultipleConditionTest;
 
@@ -90,12 +90,12 @@ public class TestConfiguration
 	 */
 	private void testIni(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
 	{
-		assertEquals(0, p.getAllRunConfigurations().size());
+		assertEquals(0, p.getAllRunIDs().size());
 
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+		assertEquals(calls + 1, p.getAllRunIDs().size());
 		
-		DifferentialOutput dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
+		RunOutput dOutput = p.getOutput(ID);
 		assertNrDiffNetworks(dOutput, 0);
 	}
 
@@ -105,12 +105,12 @@ public class TestConfiguration
 	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+		assertEquals(calls + 1, p.getAllRunIDs().size());
 
 		// it should not make a difference how many times this method is called!
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
-		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		RunOutput output = p.getOutput(ID);
 		
 		if (diff && overlap)
 		{
@@ -156,18 +156,18 @@ public class TestConfiguration
 	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
 	{
 		int ID = ex.getTestOverlapConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+		assertEquals(calls + 1, p.getAllRunIDs().size());
 
 		assertException(p, calc, ID, true, true);
 		assertException(p, calc, ID, true, false);
 
-		DifferentialOutput dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
+		RunOutput dOutput = p.getOutput(ID);
 		assertNrPairs(dOutput, 0);
 		assertNrDiffNetworks(dOutput, 0);
 		assertNrOverlapNetworks(dOutput, 0);
 
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true);
-		dOutput = p.getRunConfiguration(ID).getDifferentialOutput();
+		dOutput = p.getOutput(ID);
 
 		assertNrPairs(dOutput, 0);
 		assertNrDiffNetworks(dOutput, 0);
@@ -183,10 +183,10 @@ public class TestConfiguration
 	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunConfigurations().size());
+		assertEquals(calls + 1, p.getAllRunIDs().size());
 
 		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap);
-		DifferentialOutput output = p.getRunConfiguration(ID).getDifferentialOutput();
+		RunOutput output = p.getOutput(ID);
 
 		// First, test the number of result networks, depending on the settings.
 		if (diff)
@@ -279,7 +279,7 @@ public class TestConfiguration
 	/**
 	 * Private method that asserts the number of differential output pairs in the output result (may be 0).
 	 */
-	private void assertNrPairs(DifferentialOutput output, int number)
+	private void assertNrPairs(RunOutput output, int number)
 	{
 		int pairs = output.getOutputAsPairs().size();
 		assertEquals(number, pairs);
@@ -288,7 +288,7 @@ public class TestConfiguration
 	/**
 	 * Private method that asserts the number of differential networks in the output result (may be 0).
 	 */
-	private void assertNrDiffNetworks(DifferentialOutput output, int number)
+	private void assertNrDiffNetworks(RunOutput output, int number)
 	{
 		int diffs = output.getDifferentialNetworks().size();
 		assertEquals(number, diffs);
@@ -297,7 +297,7 @@ public class TestConfiguration
 	/**
 	 * Private method that asserts the number of overlap networks in the output result (may be 0).
 	 */
-	private void assertNrOverlapNetworks(DifferentialOutput output, int number)
+	private void assertNrOverlapNetworks(RunOutput output, int number)
 	{
 		int overlaps = output.getOverlappingNetworks().size();
 		assertEquals(number, overlaps);

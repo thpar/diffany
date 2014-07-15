@@ -367,7 +367,7 @@ public class EdgeComparison
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
-	 * @return the edge definitions in the overlapping network, or a set containing only EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
+	 * @return the edge definitions in the overlapping network, or an empty set, but never null
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
 	public Set<EdgeDefinition> getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
@@ -426,7 +426,7 @@ public class EdgeComparison
 				{
 					overlap_edge.setWeight(aff_result.maxWeight);
 				}
-				if (overlap_edge.getWeight() <= weight_cutoff)
+				if (overlap_edge.getWeight() >= weight_cutoff)
 				{
 					overlaps.add(overlap_edge);
 				}
@@ -444,17 +444,13 @@ public class EdgeComparison
 				{
 					overlap_edge.setWeight(neg_result.maxWeight);
 				}
-				if (overlap_edge.getWeight() <= weight_cutoff)
+				if (overlap_edge.getWeight() >= weight_cutoff)
 				{
 					overlaps.add(overlap_edge);
 				}
 			}
 		}
 
-		if (overlaps.isEmpty())
-		{
-			overlaps.add(eg.getVoidEdge(final_symm));
-		}
 		return overlaps;
 	}
 

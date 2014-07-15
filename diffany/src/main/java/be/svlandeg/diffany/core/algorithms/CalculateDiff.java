@@ -93,7 +93,7 @@ public class CalculateDiff
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, overlapNo_cutoff, weight_cutoff, default_MIN);
-			new NetworkCleaning(log).fullOutputCleaning(on);
+			new NetworkCleaning(log).fullOverlapOutputCleaning(on, nm, eo);
 			return on;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -129,7 +129,7 @@ public class CalculateDiff
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
-			new NetworkCleaning(log).fullOutputCleaning(dn);
+			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn, nm, eo);
 			return dn;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);

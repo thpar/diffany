@@ -41,15 +41,58 @@ public class NetworkCleaning
 		}
 		this.logger = logger;
 	}
+	
+	/**
+	 * Clean an input network:
+	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
+	 * 
+	 * Be aware: this function changes the input network object!
+	 * 
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper
+	 * @param eo the edge ontology
+	 */
+	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	{
+		// make edges directed when defined as such by the edge ontology
+		Set<Node> nodes = net.getNodes();
+		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		net.setNodesAndEdges(nodes, edges);
+
+		// clean edges per semantic category
+		cleanEdges(net, nm, eo);
+	}
+	
+	/**
+	 * Clean an output network: Remove redundant/duplicate edges in the network.
+	 * 
+	 * Be aware: this function changes the network object!
+	 * 
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper for the network
+	 * @param eo the edge ontology
+	 */
+	public void fullOverlapOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	{
+		net.setNodesAndEdges(net.getNodes(), net.getEdges());
+		fullCleaning(net, nm, eo);
+		
+		//removeRedundantSymmetricalEdges(net);
+	}
 
 	/**
 	 * Clean an output network: Remove redundant/duplicate edges in the network.
 	 * 
+	 * Be aware: this function changes the network object!
+	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper for the network
+	 * @param eo the edge ontology
 	 */
-	public void fullOutputCleaning(Network net)
+	public void fullDifferentialOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
+		// Note: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX"
 		removeRedundantSymmetricalEdges(net);
 	}
 
@@ -197,27 +240,6 @@ public class NetworkCleaning
 		return resultNet;
 	}
 
-	/**
-	 * Clean an input network:
-	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
-	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
-	 * 
-	 * Be aware: this function changes the input network object!
-	 * 
-	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
-	 * @param eo the edge ontology
-	 */
-	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
-	{
-		// make edges directed when defined as such by the edge ontology
-		Set<Node> nodes = net.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
-		net.setNodesAndEdges(nodes, edges);
-
-		// clean edges per semantic category
-		cleanEdges(net, nm, eo);
-	}
 
 	/**
 	 * For each node pair and each semantic root category, resolve conflicts by calling {@link cleanEdgesBetweenNodes}.

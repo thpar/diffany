@@ -20,7 +20,6 @@ import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
-
 /**
  * This class calculates overlap/differential networks on an edge-by-edge basis.
  * 
@@ -28,21 +27,22 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  */
 public class EdgeByEdge
 {
-	
+
 	protected static String EMPTY_ID = "*empty*";
 	protected static String EMPTY_DISPLAY_NAME = "Empty node";
-	
+
 	protected Logger log;
-	
+
 	/**
 	 * The constructor initializes the algorithm.
+	 * 
 	 * @param log the logger that records logging messages
 	 */
 	public EdgeByEdge(Logger log)
 	{
 		this.log = log;
 	}
-	
+
 	/**
 	 * Calculate the differential network between the reference and condition-specific networks.
 	 * The overlapping network should be calculated independently!
@@ -243,14 +243,13 @@ public class EdgeByEdge
 		return diff;
 	}
 
-
 	/**
-	 * Calculate the overlapping network between a set of networks. 
+	 * Calculate the overlapping network between a set of networks.
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
 	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
 	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed 
+	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param networks a set of networks (at least 2)
@@ -262,22 +261,22 @@ public class EdgeByEdge
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
 	 * @return the overlapping network between the two
-	 *         
+	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
 		int noNetworks = networks.size();
-		
+
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
-		
+
 		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, networks, nm);
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
-		
+
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
@@ -288,20 +287,20 @@ public class EdgeByEdge
 			Node example_source = sources.iterator().next();
 			String sourceconsensusID = nm.getConsensusID(sources);
 			String sourceconsensusName = nm.getConsensusName(sources);
-			
+
 			for (Set<Node> targets : allEqualSets) // target nodes (equals across networks)
 			{
 				Node example_target = targets.iterator().next();
 				String targetconsensusID = nm.getConsensusID(targets);
 				String targetconsensusName = nm.getConsensusName(targets);
-				
+
 				// get all edges from the input network
 				Map<String, Set<Edge>> edgesBySemanticRoot = new HashMap<String, Set<Edge>>();
 				for (String root : roots)
 				{
 					edgesBySemanticRoot.put(root, new HashSet<Edge>());
 				}
-				for (Network n: networks)
+				for (Network n : networks)
 				{
 					Set<Edge> allEdges = n.getAllEdges(example_source, example_target);
 					for (Edge e : allEdges)
@@ -316,7 +315,7 @@ public class EdgeByEdge
 						}
 					}
 				}
-				
+
 				for (String root : roots)
 				{
 					boolean symm = eo.isSymmetricalSourceCat(root);
@@ -327,38 +326,43 @@ public class EdgeByEdge
 					{
 						allEdges.add(eg.getVoidEdge(symm));
 					}
-	
+
 					allEdges = cleaning.unifyDirection(allEdges);
-					EdgeDefinition overlap_edge_def = ec.getOverlapEdge(allEdges, noNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
+					
+					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
+					Set<EdgeDefinition> overlap_edge_defs = ec.getOverlapEdge(allEdges, noNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
-					if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
+					for (EdgeDefinition overlap_edge_def : overlap_edge_defs)
 					{
-						if (!allDiffNodes.containsKey(sourceconsensusID))
+						if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
 						{
-							allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
-						}
-						Node sourceresult = allDiffNodes.get(sourceconsensusID);
+							if (!allDiffNodes.containsKey(sourceconsensusID))
+							{
+								allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
+							}
+							Node sourceresult = allDiffNodes.get(sourceconsensusID);
 
-						if (!allDiffNodes.containsKey(targetconsensusID))
-						{
-							allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
-						}
-						Node targetresult = allDiffNodes.get(targetconsensusID);
+							if (!allDiffNodes.containsKey(targetconsensusID))
+							{
+								allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
+							}
+							Node targetresult = allDiffNodes.get(targetconsensusID);
 
-						Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
-						overlap.addEdge(overlapdiff);
+							Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
+							overlap.addEdge(overlapdiff);
+						}
 					}
 				}
 			}
 		}
-		
+
 		return overlap;
 	}
-	
-	
+
 	/**
 	 * Return one single node from a collection, assuming that there will only be 1
+	 * 
 	 * @param nodes the set of nodes
 	 * @return the one node in the set, or an UnsupportedOperationException if there are more than 1
 	 */
@@ -376,6 +380,5 @@ public class EdgeByEdge
 		}
 		return nodes.iterator().next();
 	}
-	
-	
+
 }

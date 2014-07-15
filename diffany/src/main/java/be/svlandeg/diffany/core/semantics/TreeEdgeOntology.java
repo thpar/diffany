@@ -12,7 +12,10 @@ import be.svlandeg.diffany.core.networks.EdgeDefinition;
 public abstract class TreeEdgeOntology extends EdgeOntology
 {
 
+	// map children to parents
 	protected Map<String, String> sourceCatHierarchy;
+	
+	// prefixes for easy classification of types
 	private String negPrefix_symm;
 	private String negPrefix_dir;
 	private String posPrefix_symm;
@@ -92,6 +95,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve the parent category of a specific child category, or null if there is none.
+	 * This method only goes one level up, so no grandparents etc. will be included.
 	 * 
 	 * @param childCat the subclass category
 	 * @return the superclass category, or null if there is none
@@ -101,13 +105,15 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		return sourceCatHierarchy.get(childCat);
 	}
 
+
 	/**
-	 * Retrieve the set of child categories of a specific parent category, or an empty set if there are none.
+	 * Retrieve the set of child categories of a specific parent category, or an empty set if there are none and this category is thus a 'leaf'.
+	 * This method only goes one level deep, so no grandchildren etc. will be included.
 	 * 
 	 * @param parentCat the superclass category
-	 * @return the set of subclass categories, or an empty set if there are none.
+	 * @return the set of subclass categories, or an empty set if there are none
 	 */
-	protected Set<String> retrieveCatChildren(String parentCat)
+	public Set<String> retrieveCatChildren(String parentCat)
 	{
 		Set<String> children = new HashSet<String>();
 		for (String childCat : sourceCatHierarchy.keySet())

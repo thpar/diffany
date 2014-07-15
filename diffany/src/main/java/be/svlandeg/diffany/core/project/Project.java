@@ -229,7 +229,7 @@ public class Project
 			cleanNetworks.add(cleanNet);
 		}
 		
-		RunConfiguration rc = new RunConfiguration(cleanNetworks);
+		RunConfiguration rc = new RunConfiguration(cleanNetworks, overlapNo_cutoff);
 		int nextID;
 		if (configurations.keySet().isEmpty())
 		{

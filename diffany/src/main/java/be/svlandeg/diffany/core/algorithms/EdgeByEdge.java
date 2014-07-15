@@ -243,8 +243,12 @@ public class EdgeByEdge
 
 
 	/**
-	 * Calculate the overlapping network between a set of networks.
+	 * Calculate the overlapping network between a set of networks. 
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
+	 * 
+	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
+	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
+	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application.
 	 * 
 	 * @param networks a set of networks (at least 2)
 	 * @param eo the edge ontology that provides meaning to the edge types

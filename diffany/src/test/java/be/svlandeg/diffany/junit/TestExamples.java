@@ -455,7 +455,7 @@ public class TestExamples
 	 * @param negated whether or not the edge should be negated
 	 * @param weight the weight the edge should have
 	 */
-	protected void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, boolean normalized, String type, boolean negated, double weight)
+	private void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, boolean normalized, String type, boolean negated, double weight)
 	{
 		Set<Edge> edges = n.getAllEdgesByName(sourceName.toLowerCase(), targetName.toLowerCase(), symm, normalized);
 		boolean found = false;
@@ -478,7 +478,7 @@ public class TestExamples
 	/**
 	 * Private method that asserts the number of differential output pairs in the output result (may be 0).
 	 */
-	protected void assertNrPairs(RunOutput output, int number)
+	private void assertNrPairs(RunOutput output, int number)
 	{
 		int pairs = output.getOutputAsPairs().size();
 		assertEquals(number, pairs);
@@ -487,7 +487,7 @@ public class TestExamples
 	/**
 	 * Private method that asserts the number of overlap networks in the output result (may be 0).
 	 */
-	protected void assertNrOverlapNetworks(RunOutput output, int number)
+	private void assertNrOverlapNetworks(RunOutput output, int number)
 	{
 		int overlaps = output.getOverlappingNetworks().size();
 		assertEquals(number, overlaps);

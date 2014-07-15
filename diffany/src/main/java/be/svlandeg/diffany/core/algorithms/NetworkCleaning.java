@@ -95,22 +95,43 @@ public class NetworkCleaning
 			}
 		}
 	}
-
+	
 	/**
-	 * Create a new Set of edges with all interactions directed.
+	 * Create a new set of edges with either all interactions directed, or all symmetrical. As soon as one input edge is directed, the whole set will become directed.
+	 * This method does not impose any other conditions such as whether the edges are between the same nodes or not, of the same type or not. 
+	 * A sensible grouping of the edges should thus have been done by the calling method.
 	 * 
 	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
 	 * 
-	 * @return the new edge set with only directed, or only symmetrical edges
+	 * @return the new edge set with either only directed edges, or only symmetrical edges
 	 */
-	public Set<EdgeDefinition> makeAllDirected(Set<EdgeDefinition> oldSet)
+	public Set<EdgeDefinition> unifyDirection(Set<EdgeDefinition> oldSet)
+	{
+		boolean symmetrical = true;
+		for (EdgeDefinition edge : oldSet)
+		{
+			symmetrical = symmetrical && edge.isSymmetrical();
+		}
+		
+		return imposeSymmetry(oldSet, symmetrical);
+	}
+
+	/**
+	 * Create a new set of edges with all interactions either directed, or all symmetrical.
+	 * 
+	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
+	 * @param directed if true, all will be symmetrical; if false, all will be directed
+	 * 
+	 * @return the new edge set with either only directed edges, or only symmetrical edges
+	 */
+	protected Set<EdgeDefinition> imposeSymmetry(Set<EdgeDefinition> oldSet, boolean symmetrical)
 	{
 		Set<EdgeDefinition> newSet = new HashSet<EdgeDefinition>();
 
-		for (EdgeDefinition referenceEdge : oldSet)
+		for (EdgeDefinition edge : oldSet)
 		{
-			EdgeDefinition newEdge = new EdgeDefinition(referenceEdge);
-			newEdge.makeSymmetrical(false);
+			EdgeDefinition newEdge = new EdgeDefinition(edge);
+			newEdge.makeSymmetrical(symmetrical);
 			newSet.add(newEdge);
 		}
 		return newSet;

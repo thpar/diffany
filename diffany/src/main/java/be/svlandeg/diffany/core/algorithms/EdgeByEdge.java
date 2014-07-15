@@ -48,6 +48,8 @@ public class EdgeByEdge
 	 * The overlapping network should be calculated independently!
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
+	 * TODO: currently the differential network is calculated with the philosophy of 100% overlap between the condition-specific networks. Can this definition be made more fuzzy?
+	 * 
 	 * @param reference the reference network
 	 * @param conditions a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
@@ -248,7 +250,8 @@ public class EdgeByEdge
 	 * 
 	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
 	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application.
+	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed 
+	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param networks a set of networks (at least 2)
 	 * @param eo the edge ontology that provides meaning to the edge types
@@ -278,20 +281,19 @@ public class EdgeByEdge
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
+		NetworkCleaning cleaning = new NetworkCleaning(log);
 
 		for (Set<Node> sources : allEqualSets) // source nodes (equals across networks) 
 		{
 			Node example_source = sources.iterator().next();
 			String sourceconsensusID = nm.getConsensusID(sources);
 			String sourceconsensusName = nm.getConsensusName(sources);
-			//System.out.println("   source " + example_source + " " + sources.size());
 			
 			for (Set<Node> targets : allEqualSets) // target nodes (equals across networks)
 			{
 				Node example_target = targets.iterator().next();
 				String targetconsensusID = nm.getConsensusID(targets);
 				String targetconsensusName = nm.getConsensusName(targets);
-				//System.out.println("   target " + example_target + " " + targets.size());
 				
 				// get all edges from the input network
 				Map<String, Set<Edge>> edgesBySemanticRoot = new HashMap<String, Set<Edge>>();
@@ -326,6 +328,7 @@ public class EdgeByEdge
 						allEdges.add(eg.getVoidEdge(symm));
 					}
 	
+					allEdges = cleaning.unifyDirection(allEdges);
 					EdgeDefinition overlap_edge_def = ec.getOverlapEdge(allEdges, noNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge

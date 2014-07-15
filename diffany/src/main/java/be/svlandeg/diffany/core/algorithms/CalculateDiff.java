@@ -85,6 +85,11 @@ public class CalculateDiff
 			String errormsg = "Found null parameter in calculateOverlappingNetwork!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		if (overlapNo_cutoff < 0 || overlapNo_cutoff > networks.size())
+		{
+			String errormsg = "The overlapNo_cutoff (" + overlapNo_cutoff + ") should be between 0 and the number of input networks (" + networks.size() + ")";
+			throw new IllegalArgumentException(errormsg);
+		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, overlapNo_cutoff, weight_cutoff, default_MIN);

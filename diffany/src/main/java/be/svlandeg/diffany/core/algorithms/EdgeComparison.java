@@ -247,19 +247,22 @@ public class EdgeComparison
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in the overlapping network).
 	 * 
+	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
+	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
+	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed 
+	 * as a minimal number of supporting edges (networks).
+	 * 
 	 * @param edges the original edge definitions (can contain EdgeDefinition.getVoidEdge()), should not be empty!
 	 * @param noNetworks the number of original input networks
-	 * @param no_cutoff the number of networks that need to have the overlap for it to be included
+	 * @param overlapNo_cutoff the number of networks that need to have the overlap for it to be included
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 
 	 * @return the edge definition in the overlapping network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int no_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
+	public EdgeDefinition getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
-		// TODO use no_cutoff properly
-		
 		if (edges == null || edges.isEmpty())
 		{
 			String errormsg = "The set of edges should not be null or empty!";
@@ -297,12 +300,18 @@ public class EdgeComparison
 				maxWeight = weight;
 			}
 		}
+		
+		if (countSymmetrical != countEdges && countSymmetrical != 0)
+		{
+			String errormsg = "The set of edges should either be all symmetrical, or all asymmetrical - clean the input first with NetworkCleaning.unifyDirection !";
+			throw new IllegalArgumentException(errormsg);
+		}
 
 		boolean symm = countSymmetrical == countEdges;
 		overlap_edge.makeSymmetrical(symm);
 		
 		// If there are less input edges than the cutoff requires, there will not be an overlap edge, return eg.getVoidEdge(symm)
-		if (countEdges < no_cutoff)
+		if (countEdges < overlapNo_cutoff)
 		{
 			return eg.getVoidEdge(symm);
 		}

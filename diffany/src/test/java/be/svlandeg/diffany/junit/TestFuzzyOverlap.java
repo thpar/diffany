@@ -150,13 +150,15 @@ public class TestFuzzyOverlap
 		{
 			System.out.println(e);
 		}*/
-		assertEquals(4, sEdges.size());
+		assertEquals(3, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.8);
 		assertAnEdge(on, "B", "A", false, false, "ppi", false, 0.8);
 		
 		assertAnEdge(on, "X", "Y", false, false, "positive regulation", false, 0.8);
-		assertAnEdge(on, "X", "Y", false, false, "negative regulation", false, 0.5);
+		
+		// current cleaning will take only the edge with the highest weight!
+		//assertAnEdge(on, "X", "Y", false, false, "negative regulation", false, 0.5);
 	}
 	
 	/**

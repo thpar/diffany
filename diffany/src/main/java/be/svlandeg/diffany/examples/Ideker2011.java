@@ -1,11 +1,23 @@
 package be.svlandeg.diffany.examples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.networks.*;
+import be.svlandeg.diffany.core.networks.Condition;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.project.LogEntry;
+import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
-import be.svlandeg.diffany.core.semantics.*;
+import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 
 /** 
@@ -123,5 +135,11 @@ public class Ideker2011 extends GenericExample
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID);
+		
+		Logger l = p.getLogger(ID);
+		for (LogEntry msg : l.getAllLogMessages())
+		{
+			System.out.println(msg);
+		}
 	}
 }

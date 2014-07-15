@@ -93,13 +93,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		sourceCatHierarchy.put(childCat, parentCat);
 	}
 
-	/**
-	 * Retrieve the parent category of a specific child category, or null if there is none.
-	 * This method only goes one level up, so no grandparents etc. will be included.
-	 * 
-	 * @param childCat the subclass category
-	 * @return the superclass category, or null if there is none
-	 */
+	@Override
 	public String retrieveCatParent(String childCat)
 	{
 		return sourceCatHierarchy.get(childCat);

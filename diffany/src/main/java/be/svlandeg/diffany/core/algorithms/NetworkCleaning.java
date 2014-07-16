@@ -56,7 +56,7 @@ public class NetworkCleaning
 	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
 		logger.log(" Full cleaning of " + net.getName());
-		
+
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
@@ -421,6 +421,8 @@ public class NetworkCleaning
 	 */
 	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
 	{
+		boolean print = edges.size() > 1;
+
 		double maxWeight = 0.0;
 
 		for (EdgeDefinition e : edges)
@@ -449,10 +451,10 @@ public class NetworkCleaning
 				}
 			}
 		}
-		
+
 		// For the non-negated types, we'll take the most specific one that still covers all 
 		String affirmativeConsensus = null;
-		for (String aff_cat :  affirmative_cats)
+		for (String aff_cat : affirmative_cats)
 		{
 			if (affirmativeConsensus == null)
 			{
@@ -460,9 +462,9 @@ public class NetworkCleaning
 			}
 			else
 			{
-				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus); 	// if positive, aff_type is a child of the consensus
-				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat); 	// if positive, aff_type is a parent of the consensus
-				
+				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus); // if positive, aff_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat); // if positive, aff_type is a parent of the consensus
+
 				// they are siblings or something such: take the first common parent
 				if (child < 0 && parent < 0)
 				{
@@ -478,10 +480,10 @@ public class NetworkCleaning
 				}
 			}
 		}
-		
+
 		// For the negated types, we'll take the most general one
 		String negatedConsensus = null;
-		for (String neg_cat :  negated_cats)
+		for (String neg_cat : negated_cats)
 		{
 			if (negatedConsensus == null)
 			{
@@ -489,9 +491,9 @@ public class NetworkCleaning
 			}
 			else
 			{
-				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus); 	// if positive, neg_type is a child of the consensus
-				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat); 	// if positive, neg_type is a parent of the consensus
-				
+				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus); // if positive, neg_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat); // if positive, neg_type is a parent of the consensus
+
 				// they are siblings or something such: take the first common parent
 				// TODO: this is not entirely correct because negative evidence shouldn't travel up the tree... but it seems the most sensible thing to do to summarize the given information
 				if (child < 0 && parent < 0)
@@ -508,7 +510,6 @@ public class NetworkCleaning
 				}
 			}
 		}
-		
 		// we have both negated and affirmative edges
 		if (negatedConsensus != null && affirmativeConsensus != null)
 		{
@@ -525,12 +526,12 @@ public class NetworkCleaning
 				negatedConsensus = null;
 			}
 		}
-		
+
 		if (edges.size() > 1)
 		{
 			logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
 		}
-		
+
 		// we only had affirmative edges -> returning the most specific one
 		if (affirmativeConsensus == null && negatedConsensus != null)
 		{
@@ -542,7 +543,7 @@ public class NetworkCleaning
 				}
 			}
 		}
-		
+
 		// we only had negated edges -> returning the most general one
 		if (negatedConsensus == null && affirmativeConsensus != null)
 		{

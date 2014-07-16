@@ -225,7 +225,7 @@ public class MultipleConditionTest extends GenericExample
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, true, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID_diff);
+		ex.printAllNetworks(p, ID_diff, true, false);
 		
 		System.out.println(" **************************************************************** ");
 		

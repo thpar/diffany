@@ -159,7 +159,7 @@ public class ActivityFlowTest extends GenericExample
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID);
+		ex.printAllNetworks(p, ID, true, false);
 		
 		System.out.println("Logs:");
 		for (LogEntry l : p.getLogger(ID).getAllLogMessages())

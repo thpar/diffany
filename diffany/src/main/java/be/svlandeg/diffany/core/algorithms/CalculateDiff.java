@@ -183,6 +183,7 @@ public class CalculateDiff
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
 			String overlapping_name = overlapnameprefix + diff_name;
+			log.log("Calculating the overlap network between " + inputs.size() + " input network(s)");
 			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, rc.getOverlapCutoff(), weight_cutoff, log);
 		}
 		

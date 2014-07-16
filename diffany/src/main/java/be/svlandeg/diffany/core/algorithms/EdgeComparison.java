@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.EdgeGenerator;
@@ -22,23 +25,98 @@ public class EdgeComparison
 	protected EdgeGenerator eg;
 
 	/**
+	 * Initialize this object by defining the Edge Ontology which will be used for semantically comparing edges.
+	 * 
+	 * @param eo the edge ontology defining the interaction semantics
+	 */
+	public EdgeComparison(TreeEdgeOntology teo)
+	{
+		this.teo = teo;
+		eg = new EdgeGenerator();
+	}
+
+	/**
 	 * Private class that will be used to store intermediate calculations at all levels of the edge ontology.
 	 */
 	protected class IntermediateComparison
 	{
-		private double minWeight;
-		private double maxWeight;
+		private SortedMap<Double, Integer> allWeights;
 		private String type;
 
 		private int support; // the number of edges matching this level of the ontology
 
 		protected IntermediateComparison(String type)
 		{
-			minWeight = Double.MAX_VALUE;
-			maxWeight = Double.MIN_VALUE;
+			allWeights = new TreeMap<Double, Integer>();
 			support = 0;
 			this.type = type;
 		}
+		
+		public String toString()
+		{
+			String result = "intermediate comparison at type " + type + " : support " + support + " :";
+			for (double d : allWeights.keySet())
+			{
+				result += " " + d + " (" + allWeights.get(d) + ") - ";
+			}
+			return result;
+		}
+	}
+
+	/**
+	 * This method adds one additional piece of support to an intermediate result.
+	 * 
+	 * @param intermediate the current result
+	 * @param weight the weight of the edges that further supports this result
+	 */
+	protected void addResult(IntermediateComparison intermediate, double weight)
+	{
+		Integer count = intermediate.allWeights.get(weight);
+		if (count == null)
+		{
+			count = 0;
+		}
+		count++;
+		intermediate.allWeights.put(weight, count);
+		intermediate.support = intermediate.support + 1;
+	}
+
+	/**
+	 * Determine the optimal weight to be given to an edge, depending on the needed level of support and the min/max operator
+	 * Return null when an appropriate weight could not be found
+	 * 
+	 * TODO javadoc
+	 */
+	protected Double determineWeight(IntermediateComparison intermediate, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	{
+		// we can take the maximum value, if there is enough support
+		if (! minOperator)
+		{
+			double maxWeight = intermediate.allWeights.lastKey();
+			if (intermediate.support >= overlapNo_cutoff)
+			{
+				return maxWeight;
+			}
+			return null;
+		}
+		else
+		{
+			// we need to find the maximal minimum value that has enough support
+			// starting with the highest weights, their support is passed on to the lower weights until the cutoff is reached
+			int accumulatedSupport = 0;
+			
+			TreeSet<Double> allWs = new TreeSet<Double>(intermediate.allWeights.keySet());
+			for (double w : allWs.descendingSet())
+			{
+				int currentSupport = intermediate.allWeights.get(w);
+				accumulatedSupport += currentSupport;
+				if (accumulatedSupport >= overlapNo_cutoff)
+				{	
+					return w;	// the first (highest) value that has enough support
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -51,7 +129,7 @@ public class EdgeComparison
 	 */
 	protected void addEdgeToTree(EdgeDefinition e, Map<String, IntermediateComparison> affirmative_results, Map<String, IntermediateComparison> negated_results)
 	{
-		Set<String> processedCategories = new HashSet<String>(); // make sure we do not process any ontology category twice
+		Set<String> processedCategories = new HashSet<String>(); // make sure we do not process any ontology category twice for the same edge
 
 		if (e.isNegated())
 		{
@@ -97,7 +175,7 @@ public class EdgeComparison
 
 					addResult(intermediate, e.getWeight());
 					affirmative_results.put(category, intermediate);
-					
+
 					processedCategories.add(category);
 					category = teo.retrieveCatParent(category);
 				}
@@ -107,36 +185,6 @@ public class EdgeComparison
 				}
 			}
 		}
-	}
-
-	/**
-	 * This method adds one additional piece of support to an intermediate result.
-	 * 
-	 * @param intermediate the current result
-	 * @param weight the weight of the edges that further supports this result
-	 */
-	protected void addResult(IntermediateComparison intermediate, double weight)
-	{
-		if (intermediate.maxWeight < weight)
-		{
-			intermediate.maxWeight = weight;
-		}
-		if (intermediate.minWeight > weight)
-		{
-			intermediate.minWeight = weight;
-		}
-		intermediate.support = intermediate.support + 1;
-	}
-
-	/**
-	 * Initialize this object by defining the Edge Ontology which will be used for semantically comparing edges.
-	 * 
-	 * @param eo the edge ontology defining the interaction semantics
-	 */
-	public EdgeComparison(TreeEdgeOntology teo)
-	{
-		this.teo = teo;
-		eg = new EdgeGenerator();
 	}
 
 	/**
@@ -213,10 +261,10 @@ public class EdgeComparison
 		// DEFINE THE COMMON PARENT OF ALL EDGES
 		allEdges.addAll(conEdges2);
 		allEdges.add(refEdge);
-		
+
 		Set<String> cats = new HashSet<String>();
 		int countEmpty = 0;
-		
+
 		for (EdgeDefinition e : allEdges)
 		{
 			String cat = teo.getSourceCategory(e.getType());
@@ -229,13 +277,13 @@ public class EdgeComparison
 				cats.add(cat);
 			}
 		}
-		
+
 		String firstParent = null;
 		if (countEmpty != allEdges.size())
 		{
 			firstParent = teo.retrieveFirstCommonParent(cats);
 		}
-		
+
 		if (firstParent == null)
 		{
 			return eg.getVoidEdge(conSymm);
@@ -442,13 +490,11 @@ public class EdgeComparison
 				overlap_edge.makeSymmetrical(final_symm);
 				overlap_edge.makeNegated(false);
 				overlap_edge.setType(aff_result.type);
-				overlap_edge.setWeight(aff_result.minWeight);
-				if (!minOperator)
+				
+				Double weight = determineWeight(aff_result, overlapNo_cutoff, weight_cutoff, minOperator);
+				if (weight != null)
 				{
-					overlap_edge.setWeight(aff_result.maxWeight);
-				}
-				if (overlap_edge.getWeight() >= weight_cutoff)
-				{
+					overlap_edge.setWeight(weight);
 					overlaps.add(overlap_edge);
 				}
 			}
@@ -460,13 +506,11 @@ public class EdgeComparison
 				overlap_edge.makeSymmetrical(final_symm);
 				overlap_edge.makeNegated(true);
 				overlap_edge.setType(neg_result.type);
-				overlap_edge.setWeight(neg_result.minWeight);
-				if (!minOperator)
+				
+				Double weight = determineWeight(neg_result, overlapNo_cutoff, weight_cutoff, minOperator);
+				if (weight != null)
 				{
-					overlap_edge.setWeight(neg_result.maxWeight);
-				}
-				if (overlap_edge.getWeight() >= weight_cutoff)
-				{
+					overlap_edge.setWeight(weight);
 					overlaps.add(overlap_edge);
 				}
 			}

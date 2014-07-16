@@ -45,10 +45,6 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		/*for (Edge e : sEdges)
-		{
-			System.out.println(e);
-		}*/
 		assertEquals(1, sEdges.size());
 
 		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.3);
@@ -77,10 +73,6 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		/*for (Edge e : sEdges)
-		{
-			System.out.println(e);
-		}*/
 		assertEquals(2, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.3);
@@ -101,7 +93,7 @@ public class TestFuzzyOverlap
 		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, false, true);
-
+		
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
@@ -110,10 +102,6 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		/*for (Edge e : sEdges)
-		{
-			System.out.println(e);
-		}*/
 		assertEquals(3, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.6);
@@ -146,10 +134,6 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		/*for (Edge e : sEdges)
-		{
-			System.out.println(e);
-		}*/
 		assertEquals(3, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.8);

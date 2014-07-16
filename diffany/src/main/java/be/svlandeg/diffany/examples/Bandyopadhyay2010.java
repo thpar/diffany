@@ -128,7 +128,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID);
+		ex.printAllNetworks(p, ID, true, false);
 		
 		System.out.println("Log:");
 		Logger logger = p.getLogger(ID);

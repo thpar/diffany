@@ -223,20 +223,20 @@ public class FuzzyOverlap extends GenericExample
 		
 		System.out.println("Defining network for FuzzyOverlap configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID_1 = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		//int ID_2 = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
+		int overlap_cutoff = 2;
+		//int ID_1 = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int ID_2 = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 		
-		System.out.println("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
+		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_1, weight_cutoff, false, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, false, true);
 		
 		System.out.println("");
-		ex.printAllOverlapNetworks(p, ID_1);
+		ex.printAllNetworks(p, ID_2, false, true);
 		
 		System.out.println("Log:");
-		Logger logger = p.getLogger(ID_1);
+		Logger logger = p.getLogger(ID_2);
 		for (LogEntry log : logger.getAllLogMessages())
 		{
 			System.out.println(log);

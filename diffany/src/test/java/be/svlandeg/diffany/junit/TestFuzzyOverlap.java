@@ -75,7 +75,7 @@ public class TestFuzzyOverlap
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
 
-		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.3);
+		assertAnEdge(on, "A", "B", false, false, "colocalization", false, 0.3);
 		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.5);
 		assertAnEdge(on, "M", "N", false, false, "ptm", true, 0.3);
 	}
@@ -105,7 +105,7 @@ public class TestFuzzyOverlap
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(4, sEdges.size());
 
-		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.6);
+		assertAnEdge(on, "A", "B", false, false, "colocalization", false, 0.6);
 		assertAnEdge(on, "B", "A", false, false, "ppi", false, 0.4);
 
 		//assertAnEdge(on, "X", "Y", false, false, "positive regulation", false, 0.3);	will be removed after clean-up of the network because 'regulation' has higher weight

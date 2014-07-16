@@ -131,7 +131,7 @@ public class FuzzyOverlap extends GenericExample
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), false, 0.6));
+		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.8));
 		

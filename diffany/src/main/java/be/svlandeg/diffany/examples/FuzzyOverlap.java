@@ -255,7 +255,7 @@ public class FuzzyOverlap extends GenericExample
 		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, false, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, false, true, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID_2, false, true);

@@ -143,7 +143,7 @@ public class ConflictingEdgesTest extends GenericExample
 		int ID = ex.getTestConfiguration(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false);

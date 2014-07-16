@@ -57,7 +57,7 @@ public class TestIO
 		Project p = ex.getProjectFigure1C();
 		int ID = ex.getTestConfiguration1C(p);
 		double cutoff = 0.0;
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, true);
 		
 		RunDiffConfiguration rc = (RunDiffConfiguration) p.getRunConfiguration(ID);
 		

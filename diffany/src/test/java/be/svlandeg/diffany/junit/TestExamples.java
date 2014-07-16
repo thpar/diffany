@@ -43,7 +43,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getProjectFigure1C();
 		int ID = ex.getTestConfiguration1C(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -79,7 +79,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getProjectFigure3A();
 		int ID = ex.getTestConfiguration3A(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -117,7 +117,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -160,7 +160,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -207,7 +207,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -253,7 +253,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there are exactly two differential networks created (1 for each condition)
 		
@@ -346,7 +346,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true, true);
 
 		// Testing that there are exactly three overlap networks created (3 pairs)
 		RunOutput output = p.getOutput(ID);
@@ -405,7 +405,7 @@ public class TestExamples
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

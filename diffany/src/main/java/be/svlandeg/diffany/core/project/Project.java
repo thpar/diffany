@@ -165,6 +165,8 @@ public class Project
 	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
 	{
 		Logger logger = new Logger();
+		logger.log("Analysing the reference and condition-specific network(s) ");
+		
 		registerSourceNetwork(reference, logger);
 		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology);
 		
@@ -220,6 +222,7 @@ public class Project
 	public int addRunConfiguration(Set<InputNetwork> networks, int overlapNo_cutoff)
 	{
 		Logger logger = new Logger();
+		logger.log("Analysing the input networks ");
 		
 		Set<InputNetwork> cleanNetworks = new HashSet<InputNetwork>();
 		for (InputNetwork inputNet : networks)

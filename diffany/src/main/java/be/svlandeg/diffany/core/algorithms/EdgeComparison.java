@@ -213,8 +213,29 @@ public class EdgeComparison
 		// DEFINE THE COMMON PARENT OF ALL EDGES
 		allEdges.addAll(conEdges2);
 		allEdges.add(refEdge);
-
-		String firstParent = teo.retrieveFirstCommonParent(allEdges, true);
+		
+		Set<String> cats = new HashSet<String>();
+		int countEmpty = 0;
+		
+		for (EdgeDefinition e : allEdges)
+		{
+			String cat = teo.getSourceCategory(e.getType());
+			if (cat.equals(teo.getVoidCategory(e.isSymmetrical())))
+			{
+				countEmpty++;
+			}
+			else
+			{
+				cats.add(cat);
+			}
+		}
+		
+		String firstParent = null;
+		if (countEmpty != allEdges.size())
+		{
+			firstParent = teo.retrieveFirstCommonParent(cats);
+		}
+		
 		if (firstParent == null)
 		{
 			return eg.getVoidEdge(conSymm);
@@ -415,7 +436,7 @@ public class EdgeComparison
 		for (String cat : teo.getAllSourceCategories())
 		{
 			IntermediateComparison aff_result = affirmative_results.get(cat);
-			if (aff_result != null && aff_result.support >= overlapNo_cutoff)
+			if (aff_result != null && aff_result.support <= overlapNo_cutoff)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
 				overlap_edge.makeSymmetrical(final_symm);
@@ -433,7 +454,7 @@ public class EdgeComparison
 			}
 
 			IntermediateComparison neg_result = negated_results.get(cat);
-			if (neg_result != null && neg_result.support >= overlapNo_cutoff)
+			if (neg_result != null && neg_result.support <= overlapNo_cutoff)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
 				overlap_edge.makeSymmetrical(final_symm);

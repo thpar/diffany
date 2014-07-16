@@ -114,6 +114,15 @@ public abstract class EdgeOntology
 	 * @return the common parent (super) category, or null if there is none such
 	 */
 	public abstract String commonSourceCatParent(String childCat1, String childCat2);
+	
+	/**
+	 * For a set of categories, determine their most specific common parent/ancestor.
+	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole categories set.
+	 * 
+	 * @param cats the original set of categories
+	 * @return the most specific common parent, or null if there is none
+	 */
+	public abstract String retrieveFirstCommonParent(Collection<String> cats);
 
 	/**
 	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in a differential network

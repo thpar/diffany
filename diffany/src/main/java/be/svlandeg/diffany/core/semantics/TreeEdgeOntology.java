@@ -14,14 +14,13 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	// map children to parents
 	protected Map<String, String> sourceCatHierarchy;
-	
+
 	// prefixes for easy classification of types
 	private String negPrefix_symm;
 	private String negPrefix_dir;
 	private String posPrefix_symm;
 	private String posPrefix_dir;
 	private String unspecifiedPrefix;
-	
 
 	/**
 	 * Create a new ontology, defining the set of categories. a
@@ -99,7 +98,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		return sourceCatHierarchy.get(childCat);
 	}
 
-
 	/**
 	 * Retrieve the set of child categories of a specific parent category, or an empty set if there are none and this category is thus a 'leaf'.
 	 * This method only goes one level deep, so no grandchildren etc. will be included.
@@ -119,7 +117,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		}
 		return children;
 	}
-	
+
 	@Override
 	public int isSourceTypeChildOf(String childType, String grandparentCat)
 	{
@@ -277,20 +275,19 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	}
 
 	/**
-	 * For a set of EdgeDefinition objects, determine all their common parents/ancestors.
+	 * For a set of edge types, determine all their common parents/ancestors.
 	 * 
-	 * @param edges the original set of edges
-	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
+	 * @param cats the original set of edge types
 	 * @return a map of all common parents and their maximal distance to the original edges
 	 */
-	protected Map<String, Integer> retrieveAllCommonParents(Collection<EdgeDefinition> edges, boolean excludeEmpty)
+	protected Map<String, Integer> retrieveAllCommonParents(Collection<String> cats)
 	{
-		int countEdges = edges.size();
+		int countEdges = cats.size();
 		Map<String, Integer> allCommonParents = new HashMap<String, Integer>();
 
 		if (countEdges == 1)
 		{
-			String cat = getSourceCategory(edges.iterator().next().getType());
+			String cat = cats.iterator().next();
 			allCommonParents.put(cat, 0);
 			return allCommonParents;
 		}
@@ -301,43 +298,26 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		// count the depth (up) in the ontology tree
 		Map<String, Integer> parentByDepth = new HashMap<String, Integer>();
 
-		int countEmpty = 0;
 
-		for (EdgeDefinition e : edges)
+		for (String cat : cats)
 		{
 			int depth = 0;
-			String cat = getSourceCategory(e.getType());
-			if (cat.equals(getVoidCategory(true)) || cat.equals(getVoidCategory(false)))
-			{
-				countEmpty++;
-			}
-			else
-			{
-				// each cat is its own parent of depth 0
-				addOne(parentCatsByCount, cat);
-				recordMaxDepth(parentByDepth, cat, depth);
+			// each cat is its own parent of depth 0
+			addOne(parentCatsByCount, cat);
+			recordMaxDepth(parentByDepth, cat, depth);
 
-				// record all parents up in the hierarchy
-				String parentCat = retrieveCatParent(cat);
-				while (parentCat != null)
-				{
-					depth++;
-					addOne(parentCatsByCount, parentCat);
-					recordMaxDepth(parentByDepth, parentCat, depth);
-					parentCat = retrieveCatParent(parentCat);
-				}
+			// record all parents up in the hierarchy
+			String parentCat = retrieveCatParent(cat);
+			while (parentCat != null)
+			{
+				depth++;
+				addOne(parentCatsByCount, parentCat);
+				recordMaxDepth(parentByDepth, parentCat, depth);
+				parentCat = retrieveCatParent(parentCat);
 			}
-		}
-		if (countEmpty == countEdges)
-		{
-			allCommonParents.put(getVoidCategory(true), 0);
-			return allCommonParents;
-		}
-		if (excludeEmpty)
-		{
-			countEdges = countEdges - countEmpty;
-		}
 
+		}
+		
 		for (String cat : parentCatsByCount.keySet())
 		{
 			if (parentCatsByCount.get(cat) == countEdges)
@@ -353,17 +333,10 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		return allCommonParents;
 	}
 
-	/**
-	 * For a set of EdgeDefinition objects, determine their most specific common parent/ancestor.
-	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole edge set.
-	 * 
-	 * @param edges the original set of edges
-	 * @param excludeEmpty whether or not to exclude empty edges when looking for a common ancestor
-	 * @return the most specific common parent, or null if there is none
-	 */
-	public String retrieveFirstCommonParent(Collection<EdgeDefinition> edges, boolean excludeEmpty)
+	@Override
+	public String retrieveFirstCommonParent(Collection<String> cats)
 	{
-		Map<String, Integer> allCommonParents = retrieveAllCommonParents(edges, excludeEmpty);
+		Map<String, Integer> allCommonParents = retrieveAllCommonParents(cats);
 		Set<String> allFirstParents = new HashSet<String>();
 
 		int minParentDepth = Integer.MAX_VALUE;
@@ -392,8 +365,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		}
 		return allFirstParents.iterator().next();
 	}
-
-
 
 	////////////// DIFFERENTIAL EDGE STATE //////////////////////////////////
 
@@ -444,9 +415,10 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		return category.startsWith(posPrefix_symm);
 
 	}
-	
+
 	/**
 	 * Retrieve the prefix used for negative symmetrical edges
+	 * 
 	 * @return the prefix used for negative symmetrical edges
 	 */
 	public String getNegPrefix_symm()
@@ -456,6 +428,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve the prefix used for negative directed edges
+	 * 
 	 * @return the prefix used for negative directed edges
 	 */
 	public String getNegPrefix_dir()
@@ -465,6 +438,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve the prefix used for positive symmetrical edges
+	 * 
 	 * @return the prefix used for positive symmetrical edges
 	 */
 	public String getPosPrefix_symm()
@@ -474,13 +448,14 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 
 	/**
 	 * Retrieve the prefix used for positive directed edges
+	 * 
 	 * @return the prefix used for positive directed edges
 	 */
 	public String getPosPrefix_dir()
 	{
 		return posPrefix_dir;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -489,7 +464,5 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	{
 		return unspecifiedPrefix;
 	}
-
-	
 
 }

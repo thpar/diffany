@@ -55,6 +55,8 @@ public class NetworkCleaning
 	 */
 	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
+		logger.log(" Full cleaning of " + net.getName());
+		
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
@@ -77,8 +79,6 @@ public class NetworkCleaning
 	{
 		net.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(net, nm, eo);
-
-		//removeRedundantSymmetricalEdges(net);
 	}
 
 	/**
@@ -408,6 +408,8 @@ public class NetworkCleaning
 	 * It is assumed that resolveEdgesPerRoot was previously used to provide an set of edges which only contains edges for one root category,
 	 * and that all edges within this category are either symmetrical, or all directed.
 	 * 
+	 * This method currently only works for input networks as it uses the source categories of the edge ontology!
+	 * 
 	 * @param edges the original set of input edges
 	 * @param eo the edge ontology
 	 * @param network_name the name/type of input network (used for logging)
@@ -448,7 +450,7 @@ public class NetworkCleaning
 			}
 		}
 		
-		// For the non-negated types, we'll take the most specific one
+		// For the non-negated types, we'll take the most specific one that still covers all 
 		String affirmativeConsensus = null;
 		for (String aff_cat :  affirmative_cats)
 		{
@@ -460,11 +462,14 @@ public class NetworkCleaning
 			{
 				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus); 	// if positive, aff_type is a child of the consensus
 				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat); 	// if positive, aff_type is a parent of the consensus
+				
+				// they are siblings or something such: take the first common parent
 				if (child < 0 && parent < 0)
 				{
-					String msg = "Could not relate these (affirmative) edge types to eachother: " + child + " and " + parent;
-					logger.log("Fatal error: " + msg);
-					throw new RuntimeException(msg);
+					Set<String> cats = new HashSet<String>();
+					cats.add(aff_cat);
+					cats.add(affirmativeConsensus);
+					affirmativeConsensus = eo.retrieveFirstCommonParent(cats);
 				}
 				if (child > 0)
 				{
@@ -474,7 +479,7 @@ public class NetworkCleaning
 			}
 		}
 		
-		// For the negated types, we'll take the least specific one
+		// For the negated types, we'll take the most general one
 		String negatedConsensus = null;
 		for (String neg_cat :  negated_cats)
 		{
@@ -486,11 +491,15 @@ public class NetworkCleaning
 			{
 				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus); 	// if positive, neg_type is a child of the consensus
 				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat); 	// if positive, neg_type is a parent of the consensus
+				
+				// they are siblings or something such: take the first common parent
+				// TODO: this is not entirely correct because negative evidence shouldn't travel up the tree... but it seems the most sensible thing to do to summarize the given information
 				if (child < 0 && parent < 0)
 				{
-					String msg = "Could not relate these (negated) edge types to eachother: " + child + " and " + parent;
-					logger.log("Fatal error: " + msg);
-					throw new RuntimeException(msg);
+					Set<String> cats = new HashSet<String>();
+					cats.add(neg_cat);
+					cats.add(negatedConsensus);
+					negatedConsensus = eo.retrieveFirstCommonParent(cats);
 				}
 				if (parent > 0)
 				{

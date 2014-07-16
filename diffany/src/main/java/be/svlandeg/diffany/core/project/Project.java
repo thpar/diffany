@@ -178,7 +178,7 @@ public class Project
 			cleanConditions.add(cleanCon);
 		}
 		
-		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions);
+		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions, overlapNo_cutoff);
 		int nextID;
 		if (configurations.keySet().isEmpty())
 		{

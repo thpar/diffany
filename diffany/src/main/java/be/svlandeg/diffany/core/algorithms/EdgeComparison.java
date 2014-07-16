@@ -436,7 +436,7 @@ public class EdgeComparison
 		for (String cat : teo.getAllSourceCategories())
 		{
 			IntermediateComparison aff_result = affirmative_results.get(cat);
-			if (aff_result != null && aff_result.support <= overlapNo_cutoff)
+			if (aff_result != null && aff_result.support >= overlapNo_cutoff)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
 				overlap_edge.makeSymmetrical(final_symm);
@@ -454,7 +454,7 @@ public class EdgeComparison
 			}
 
 			IntermediateComparison neg_result = negated_results.get(cat);
-			if (neg_result != null && neg_result.support <= overlapNo_cutoff)
+			if (neg_result != null && neg_result.support >= overlapNo_cutoff)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
 				overlap_edge.makeSymmetrical(final_symm);

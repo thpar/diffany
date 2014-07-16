@@ -26,7 +26,7 @@ public class RunConfiguration
 	 * The output result set is initialized to be empty.
 	 * 
 	 * @param inputNetworks the input networks (not null or empty!)
-	 * @param overlapNo_cutoff the number of input networks that need to overlap to be included in the overlapping network.
+	 * @param overlapNo_cutoff the number of input networks that need to overlap to be included in the overlapping network
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
 	public RunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff)

@@ -73,10 +73,11 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		assertEquals(2, sEdges.size());
+		assertEquals(3, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.3);
 		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.5);
+		assertAnEdge(on, "M", "N", false, false, "ptm", true, 0.3);
 	}
 
 	/**
@@ -102,13 +103,15 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		assertEquals(3, sEdges.size());
+		assertEquals(4, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.6);
 		assertAnEdge(on, "B", "A", false, false, "ppi", false, 0.4);
 
 		//assertAnEdge(on, "X", "Y", false, false, "positive regulation", false, 0.3);	will be removed after clean-up of the network because 'regulation' has higher weight
 		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.6);
+		
+		assertAnEdge(on, "M", "N", false, false, "ptm", true, 0.5);
 	}
 
 	/**
@@ -134,7 +137,7 @@ public class TestFuzzyOverlap
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		assertEquals(3, sEdges.size());
+		assertEquals(4, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, false, "ppi", false, 0.8);
 		assertAnEdge(on, "B", "A", false, false, "ppi", false, 0.8);
@@ -143,6 +146,8 @@ public class TestFuzzyOverlap
 
 		// current cleaning will take only the edge with the highest weight!
 		//assertAnEdge(on, "X", "Y", false, false, "negative regulation", false, 0.5);
+		
+		assertAnEdge(on, "M", "N", false, false, "ptm", false, 0.7);
 	}
 
 	/**

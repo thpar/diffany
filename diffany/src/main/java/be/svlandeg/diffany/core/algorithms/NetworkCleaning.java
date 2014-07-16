@@ -421,8 +421,6 @@ public class NetworkCleaning
 	 */
 	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
 	{
-		boolean print = edges.size() > 1;
-
 		double maxWeight = 0.0;
 
 		for (EdgeDefinition e : edges)

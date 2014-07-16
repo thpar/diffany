@@ -135,7 +135,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.8));
 		
-		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), false, 0.3, true));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), false, 0.3, true));
 
 		return network;
 	}
@@ -199,7 +199,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.3));
 		
-		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), false, 0.7, false));
+		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), false, 0.7, false));
 
 		return network;
 	}

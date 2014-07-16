@@ -77,7 +77,7 @@ public class TestFuzzyOverlap
 
 		assertAnEdge(on, "A", "B", false, false, "colocalization", false, 0.3);
 		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.5);
-		assertAnEdge(on, "M", "N", false, false, "ptm", true, 0.3);
+		assertAnEdge(on, "M", "N", false, false, "phosphorylation", true, 0.3);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class TestFuzzyOverlap
 		// current cleaning will take only the edge with the highest weight!
 		//assertAnEdge(on, "X", "Y", false, false, "negative regulation", false, 0.5);
 		
-		assertAnEdge(on, "M", "N", false, false, "ptm", false, 0.7);
+		assertAnEdge(on, "M", "N", false, false, "phosphorylation", false, 0.7);
 	}
 
 	/**

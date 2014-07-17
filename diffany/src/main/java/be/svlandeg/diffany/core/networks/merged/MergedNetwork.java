@@ -21,10 +21,10 @@ public abstract class MergedNetwork extends Network
 	 * 
 	 * @param name the name of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
-	 * @param conditionEdges the edges of this network
+	 * @param mergedEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedNetwork(String name, Set<Node> nodes, Set<ConditionEdge> conditionEdges, NodeMapper nm)
+	public MergedNetwork(String name, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
 	{
 		super(name, nm);
 		if (nm == null)
@@ -35,7 +35,7 @@ public abstract class MergedNetwork extends Network
 
 		this.name = name;
 		this.nm = nm;
-		Set<Edge> edges = MergedConvertor.castToNormalEdges(conditionEdges);
+		Set<Edge> edges = MergedConvertor.castToNormalEdges(mergedEdges);
 		setNodesAndEdges(nodes, edges);
 	}
 
@@ -46,7 +46,7 @@ public abstract class MergedNetwork extends Network
 	 */
 	public MergedNetwork(String name, NodeMapper nm)
 	{
-		this(name, new HashSet<Node>(), new HashSet<ConditionEdge>(), nm);
+		this(name, new HashSet<Node>(), new HashSet<MergedEdge>(), nm);
 	}
 
 }

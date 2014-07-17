@@ -248,7 +248,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		System.out.println("Defining network for FuzzyOverlap configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 1;
+		int overlap_cutoff = 3;
 		//int ID_1 = ex.getTestConfigurationWithReference(p, overlap_cutoff);
 		int ID_2 = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 		

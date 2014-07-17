@@ -26,10 +26,10 @@ public class MergedConvertor
 	 * @param cEdges the condition-specific edges
 	 * @return the set of normal edges
 	 */
-	public static Set<Edge> castToNormalEdges(Set<ConditionEdge> cEdges)
+	public static Set<Edge> castToNormalEdges(Set<MergedEdge> cEdges)
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		for (ConditionEdge e : cEdges)
+		for (MergedEdge e : cEdges)
 		{
 			edges.add(e);
 		}
@@ -40,14 +40,14 @@ public class MergedConvertor
 	 * Convert a set of normal edges to a set of condition edges.
 	 * @param edges a set of normal edges which are actually condition-specific (and can thus be cast!)
 	 * @return the set of condition-specific edges
-	 * @throws ClassCastException when the set of input edges are not of the type ConditionEdge
+	 * @throws ClassCastException when the set of input edges are not of the type MergedEdge
 	 */
-	public static Set<ConditionEdge> castToConditionEdges(Set<Edge> edges)
+	public static Set<MergedEdge> castToConditionEdges(Set<Edge> edges)
 	{
-		Set<ConditionEdge> cEdges = new HashSet<ConditionEdge>();
+		Set<MergedEdge> cEdges = new HashSet<MergedEdge>();
 		for (Edge e : edges)
 		{
-			cEdges.add((ConditionEdge) e);
+			cEdges.add((MergedEdge) e);
 		}
 		return cEdges;
 	}
@@ -73,7 +73,7 @@ public class MergedConvertor
 		Set<InputNetwork> inputs = new HashSet<InputNetwork>();
 		SortedSet<String> names = new TreeSet<String>();
 		Set<Node> nodes = new HashSet<Node>();
-		Set<ConditionEdge> edges = new HashSet<ConditionEdge>();
+		Set<MergedEdge> edges = new HashSet<MergedEdge>();
 		NodeMapper nm = null;
 
 		for (DifferentialNetwork dn : diffSet)

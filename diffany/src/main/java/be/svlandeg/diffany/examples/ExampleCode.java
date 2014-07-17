@@ -48,7 +48,7 @@ public class ExampleCode
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, true, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, true, true, true);
 
 		// In this case, there will be exactly one DifferentialNetwork
 		RunOutput output = p.getOutput(runID);

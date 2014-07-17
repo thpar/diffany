@@ -20,12 +20,12 @@ public class MergedInputNetwork extends MergedNetwork
 	 * 
 	 * @param name the name of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
-	 * @param conditionEdges the edges of this network
+	 * @param mergedEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedInputNetwork(String name, Set<Node> nodes, Set<ConditionEdge> conditionEdges, NodeMapper nm)
+	public MergedInputNetwork(String name, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
 	{
-		super(name, nodes, conditionEdges, nm);
+		super(name, nodes, mergedEdges, nm);
 	}
 
 	@Override

@@ -19,7 +19,6 @@ import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.examples.ActivityFlowTest;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.ConflictingEdgesTest;
-import be.svlandeg.diffany.examples.FuzzyOverlap;
 import be.svlandeg.diffany.examples.Ideker2011;
 import be.svlandeg.diffany.examples.MultipleConditionTest;
 import be.svlandeg.diffany.examples.ProcessTest;
@@ -44,7 +43,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getProjectFigure1C();
 		int ID = ex.getTestConfiguration1C(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -80,7 +79,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getProjectFigure3A();
 		int ID = ex.getTestConfiguration3A(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -118,7 +117,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -161,7 +160,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -208,7 +207,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -254,7 +253,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, true);
 
 		// Testing that there are exactly two differential networks created (1 for each condition)
 		
@@ -347,7 +346,7 @@ public class TestExamples
 		double weight_cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestDiffConfiguration(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true, true);
 
 		// Testing that there are exactly three overlap networks created (3 pairs)
 		RunOutput output = p.getOutput(ID);
@@ -395,65 +394,6 @@ public class TestExamples
 		assertAnEdge(draughtStressOverlap, "P", "M", false, false, "ptm", false, 2);
 	}
 	
-	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
-	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
-	 */
-	@Test
-	public void testFuzzyOverlapWithoutReference()
-	{
-		FuzzyOverlap ex = new FuzzyOverlap();
-		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
-		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, false, true);
-
-		// Testing that there is exactly one differential network created
-		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
-
-		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
-
-		Set<Edge> sEdges = on.getEdges();
-		for (Edge e : sEdges)
-		{
-			System.out.println(e);
-		}
-		assertEquals(1, sEdges.size());
-
-		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.3);
-	}
-	
-	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
-	 * This method defines one of the networks to be a reference network.
-	 */
-	@Test
-	public void testFuzzyOverlapWithReference()
-	{
-		FuzzyOverlap ex = new FuzzyOverlap();
-		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, false, true);
-
-		// Testing that there is exactly one differential network created
-		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
-
-		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
-
-		Set<Edge> sEdges = on.getEdges();
-		assertEquals(1, sEdges.size());
-
-		assertAnEdge(on, "X", "Y", false, false, "regulation", false, 0.3);
-	}
 
 	/**
 	 * JUNIT Test: check whether the example network with edge conflicts produces correct results.
@@ -465,7 +405,7 @@ public class TestExamples
 		double cutoff = 0.0;
 		Project p = ex.getTestProject();
 		int ID = ex.getTestConfiguration(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, true, true, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

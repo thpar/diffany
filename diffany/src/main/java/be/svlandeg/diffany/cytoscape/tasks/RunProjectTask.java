@@ -68,15 +68,17 @@ public class RunProjectTask implements Task {
 	 */
 	private void runAlgorithm() throws InvalidRunConfigurationException{
 		int runId = cyProject.generateRunConfiguration(model);
+		// TODO quick hack by Sofie
+		boolean minOperator = true;
 		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateOverlapNets());
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateOverlapNets(), minOperator);
 			break;
 		case REF_TO_ALL:	
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateOverlapNets());
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateOverlapNets(), minOperator);
 			break;
 		}
 		

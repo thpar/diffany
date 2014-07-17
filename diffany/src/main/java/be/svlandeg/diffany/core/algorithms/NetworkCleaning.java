@@ -43,13 +43,56 @@ public class NetworkCleaning
 	}
 
 	/**
+	 * Clean an input network:
+	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
+	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
+	 * 
+	 * Be aware: this function changes the input network object!
+	 * 
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper
+	 * @param eo the edge ontology
+	 */
+	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	{
+		logger.log(" Full cleaning of " + net.getName());
+
+		// make edges directed when defined as such by the edge ontology
+		Set<Node> nodes = net.getNodes();
+		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		net.setNodesAndEdges(nodes, edges);
+
+		// clean edges per semantic category
+		cleanEdges(net, nm, eo);
+	}
+
+	/**
 	 * Clean an output network: Remove redundant/duplicate edges in the network.
+	 * 
+	 * Be aware: this function changes the network object!
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper for the network
+	 * @param eo the edge ontology
 	 */
-	public void fullOutputCleaning(Network net)
+	public void fullOverlapOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
 	{
+		net.setNodesAndEdges(net.getNodes(), net.getEdges());
+		fullCleaning(net, nm, eo);
+	}
+
+	/**
+	 * Clean an output network: Remove redundant/duplicate edges in the network.
+	 * 
+	 * Be aware: this function changes the network object!
+	 * 
+	 * @param net the network that needs cleaning
+	 * @param nm the node mapper for the network
+	 * @param eo the edge ontology
+	 */
+	public void fullDifferentialOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	{
+		// Note: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX"
 		removeRedundantSymmetricalEdges(net);
 	}
 
@@ -97,20 +140,41 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Create a new Set of edges with all interactions directed.
+	 * Create a new set of edges with either all interactions directed, or all symmetrical. As soon as one input edge is directed, the whole set will become directed.
+	 * This method does not impose any other conditions such as whether the edges are between the same nodes or not, of the same type or not.
+	 * A sensible grouping of the edges should thus have been done by the calling method.
 	 * 
 	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
 	 * 
-	 * @return the new edge set with only directed, or only symmetrical edges
+	 * @return the new edge set with either only directed edges, or only symmetrical edges
 	 */
-	public Set<EdgeDefinition> makeAllDirected(Set<EdgeDefinition> oldSet)
+	public Set<EdgeDefinition> unifyDirection(Set<EdgeDefinition> oldSet)
+	{
+		boolean symmetrical = true;
+		for (EdgeDefinition edge : oldSet)
+		{
+			symmetrical = symmetrical && edge.isSymmetrical();
+		}
+
+		return imposeSymmetry(oldSet, symmetrical);
+	}
+
+	/**
+	 * Create a new set of edges with all interactions either directed, or all symmetrical.
+	 * 
+	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
+	 * @param directed if true, all will be symmetrical; if false, all will be directed
+	 * 
+	 * @return the new edge set with either only directed edges, or only symmetrical edges
+	 */
+	protected Set<EdgeDefinition> imposeSymmetry(Set<EdgeDefinition> oldSet, boolean symmetrical)
 	{
 		Set<EdgeDefinition> newSet = new HashSet<EdgeDefinition>();
 
-		for (EdgeDefinition referenceEdge : oldSet)
+		for (EdgeDefinition edge : oldSet)
 		{
-			EdgeDefinition newEdge = new EdgeDefinition(referenceEdge);
-			newEdge.makeSymmetrical(false);
+			EdgeDefinition newEdge = new EdgeDefinition(edge);
+			newEdge.makeSymmetrical(symmetrical);
 			newSet.add(newEdge);
 		}
 		return newSet;
@@ -177,28 +241,6 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Clean an input network:
-	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
-	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
-	 * 
-	 * Be aware: this function changes the input network object!
-	 * 
-	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
-	 * @param eo the edge ontology
-	 */
-	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
-	{
-		// make edges directed when defined as such by the edge ontology
-		Set<Node> nodes = net.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
-		net.setNodesAndEdges(nodes, edges);
-
-		// clean edges per semantic category
-		cleanEdges(net, nm, eo);
-	}
-
-	/**
 	 * For each node pair and each semantic root category, resolve conflicts by calling {@link cleanEdgesBetweenNodes}.
 	 * This method also removes redundant symmetrical edges at the end.
 	 * 
@@ -227,7 +269,7 @@ public class NetworkCleaning
 			String targetID = target.getID();
 
 			// edge is directed: store source -> target as a valid pair in the network
-			if (! e.isSymmetrical())
+			if (!e.isSymmetrical())
 			{
 				if (!pairs.containsKey(sourceID))
 				{
@@ -361,9 +403,12 @@ public class NetworkCleaning
 
 	/**
 	 * Resolve a set of edges to one. This is currently implemented by taking the edge with the highest weight.
+	 * If there are more of the same (highest) weight, take the most specific one, unless it's a negated edge, in which case the most general one is chosen.
 	 * 
 	 * It is assumed that resolveEdgesPerRoot was previously used to provide an set of edges which only contains edges for one root category,
 	 * and that all edges within this category are either symmetrical, or all directed.
+	 * 
+	 * This method currently only works for input networks as it uses the source categories of the edge ontology!
 	 * 
 	 * @param edges the original set of input edges
 	 * @param eo the edge ontology
@@ -376,31 +421,139 @@ public class NetworkCleaning
 	 */
 	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
 	{
-		// TODO v2.0: should we also take into account whether or not one of the edges is more specific / negated?
 		double maxWeight = 0.0;
-		int numberOriginal = 0;
 
 		for (EdgeDefinition e : edges)
 		{
 			double weight = e.getWeight();
-			if (weight > 0)
-			{
-				numberOriginal++;
-			}
 			maxWeight = Math.max(maxWeight, weight);
 		}
+
+		Set<EdgeDefinition> thickestEdges = new HashSet<EdgeDefinition>();
+
+		Set<String> affirmative_cats = new HashSet<String>();
+		Set<String> negated_cats = new HashSet<String>();
 
 		for (EdgeDefinition e : edges)
 		{
 			if (maxWeight == e.getWeight())
 			{
-				if (numberOriginal > 1)
+				thickestEdges.add(e);
+				if (e.isNegated())
 				{
-					logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+					negated_cats.add(eo.getSourceCategory(e.getType()));
 				}
-				return e;
+				else
+				{
+					affirmative_cats.add(eo.getSourceCategory(e.getType()));
+				}
 			}
 		}
+
+		// For the non-negated types, we'll take the most specific one that still covers all 
+		String affirmativeConsensus = null;
+		for (String aff_cat : affirmative_cats)
+		{
+			if (affirmativeConsensus == null)
+			{
+				affirmativeConsensus = aff_cat;
+			}
+			else
+			{
+				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus); // if positive, aff_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat); // if positive, aff_type is a parent of the consensus
+
+				// they are siblings or something such: take the first common parent
+				if (child < 0 && parent < 0)
+				{
+					Set<String> cats = new HashSet<String>();
+					cats.add(aff_cat);
+					cats.add(affirmativeConsensus);
+					affirmativeConsensus = eo.retrieveFirstCommonParent(cats);
+				}
+				if (child > 0)
+				{
+					// this one is more specific!
+					affirmativeConsensus = aff_cat;
+				}
+			}
+		}
+
+		// For the negated types, we'll take the most general one
+		String negatedConsensus = null;
+		for (String neg_cat : negated_cats)
+		{
+			if (negatedConsensus == null)
+			{
+				negatedConsensus = neg_cat;
+			}
+			else
+			{
+				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus); // if positive, neg_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat); // if positive, neg_type is a parent of the consensus
+
+				// they are siblings or something such: take the first common parent
+				// TODO: this is not entirely correct because negative evidence shouldn't travel up the tree... but it seems the most sensible thing to do to summarize the given information
+				if (child < 0 && parent < 0)
+				{
+					Set<String> cats = new HashSet<String>();
+					cats.add(neg_cat);
+					cats.add(negatedConsensus);
+					negatedConsensus = eo.retrieveFirstCommonParent(cats);
+				}
+				if (parent > 0)
+				{
+					// this one is more general!
+					negatedConsensus = neg_cat;
+				}
+			}
+		}
+		// we have both negated and affirmative edges
+		if (negatedConsensus != null && affirmativeConsensus != null)
+		{
+			String negatedParent = eo.retrieveCatParent(negatedConsensus);
+			if (negatedParent == null)
+			{
+				// the whole branch is negated -> remove the affirmative edges
+				affirmativeConsensus = null;
+			}
+			else
+			{
+				// a part of the branch is still affirmative: keep this bit
+				affirmativeConsensus = negatedParent;
+				negatedConsensus = null;
+			}
+		}
+
+		if (edges.size() > 1)
+		{
+			logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+		}
+
+		// we only had affirmative edges -> returning the most specific one
+		if (affirmativeConsensus == null && negatedConsensus != null)
+		{
+			for (EdgeDefinition e : edges)
+			{
+				if (e.isNegated() && maxWeight == e.getWeight() && negatedConsensus.equals(eo.getSourceCategory(e.getType())))
+				{
+					return e;
+				}
+			}
+		}
+
+		// we only had negated edges -> returning the most general one
+		if (negatedConsensus == null && affirmativeConsensus != null)
+		{
+			for (EdgeDefinition e : edges)
+			{
+				if (!e.isNegated() && maxWeight == e.getWeight() && affirmativeConsensus.equals(eo.getSourceCategory(e.getType())))
+				{
+					return e;
+				}
+			}
+		}
+
 		String msg = "Could not resolve the set of edges to one.";
 		logger.log("Fatal error: " + msg);
 		throw new RuntimeException(msg);

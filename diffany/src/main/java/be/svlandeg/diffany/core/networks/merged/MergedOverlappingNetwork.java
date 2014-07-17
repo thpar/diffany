@@ -15,14 +15,14 @@ public class MergedOverlappingNetwork extends MergedNetwork
 	 * 
 	 * @param name the name of this network
 	 * @param nodes the nodes of this network
-	 * @param conditionEdges the edges of this network
+	 * @param mergedEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * @param input the merged input network
 	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public MergedOverlappingNetwork(String name, Set<Node> nodes, Set<ConditionEdge> conditionEdges, NodeMapper nm, MergedInputNetwork input) 
+	public MergedOverlappingNetwork(String name, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm, MergedInputNetwork input) 
 			throws IllegalArgumentException
 	{
 		super(name, nm);

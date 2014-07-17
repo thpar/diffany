@@ -42,6 +42,23 @@ public class RunDiffConfiguration extends RunConfiguration
 	}
 	
 	/**
+	 * Create a new configuration with a reference network and a set of condition-specific networks. 
+	 * The output result set is initialized to be empty.
+	 * 
+	 * @param reference the reference network (not null!)
+	 * @param conditions the condition-specific networks (at least 1!)
+	 * @param overlapNo_cutoff the number of input networks that need to overlap to be included in the overlapping network.
+	 * 
+	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
+	 */
+	public RunDiffConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
+	{
+		super(defineInputNetworks(reference, conditions), overlapNo_cutoff);
+		setReference(reference);
+		setConditions(conditions);
+	}
+
+	/**
 	 * Join the reference network and the condition-specific networks into one set of generic networks.
 	 * 
 	 * param reference the reference network (not null!)

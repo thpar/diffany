@@ -74,7 +74,7 @@ public class RunProject
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
 		// TODO v2.0: allow to change mode
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, cutoff, true, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, cutoff, true, true, true);
 		
 		// TODO v2.0: check number of differential networks generated
 		RunOutput output = p.getOutput(runID);

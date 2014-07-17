@@ -108,8 +108,8 @@ public class TestConfiguration
 		assertEquals(calls + 1, p.getAllRunIDs().size());
 
 		// it should not make a difference how many times this method is called!
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
 		RunOutput output = p.getOutput(ID);
 		
 		if (diff && overlap)
@@ -166,7 +166,7 @@ public class TestConfiguration
 		assertNrDiffNetworks(dOutput, 0);
 		assertNrOverlapNetworks(dOutput, 0);
 
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true, true);
 		dOutput = p.getOutput(ID);
 
 		assertNrPairs(dOutput, 0);
@@ -185,7 +185,7 @@ public class TestConfiguration
 		int ID = ex.getTestDiffConfiguration(p);
 		assertEquals(calls + 1, p.getAllRunIDs().size());
 
-		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap);
+		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap, true);
 		RunOutput output = p.getOutput(ID);
 
 		// First, test the number of result networks, depending on the settings.
@@ -267,7 +267,7 @@ public class TestConfiguration
 		boolean exceptionThrown = false;
 		try
 		{
-			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap);
+			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
 		}
 		catch (IllegalArgumentException e)
 		{

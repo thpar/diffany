@@ -96,6 +96,15 @@ public abstract class EdgeOntology
 	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated, 0 if equal)
 	 */
 	public abstract int isSourceCatChildOf(String childCat, String parentCat);
+	
+	/**
+	 * Retrieve the parent category of a specific child category, or null if there is none.
+	 * This method only goes one level up, so no grandparents etc. will be included.
+	 * 
+	 * @param childCat the subclass category
+	 * @return the superclass category, or null if there is none
+	 */
+	public abstract String retrieveCatParent(String childCat);
 
 	/**
 	 * Return the common parent of two categories, or null if there is none
@@ -105,6 +114,15 @@ public abstract class EdgeOntology
 	 * @return the common parent (super) category, or null if there is none such
 	 */
 	public abstract String commonSourceCatParent(String childCat1, String childCat2);
+	
+	/**
+	 * For a set of categories, determine their most specific common parent/ancestor.
+	 * Most specific is seen as a minimal maximum distance up to that ancestor across the whole categories set.
+	 * 
+	 * @param cats the original set of categories
+	 * @return the most specific common parent, or null if there is none
+	 */
+	public abstract String retrieveFirstCommonParent(Collection<String> cats);
 
 	/**
 	 * Retrieve an {@link EdgeDrawing} object which knows how to define the visual styles in a differential network

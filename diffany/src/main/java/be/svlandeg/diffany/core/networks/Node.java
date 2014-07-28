@@ -17,6 +17,7 @@ public class Node
 	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
 	 * 
 	 * @param name the name of this node - should be unique within a network!
+	 * @throws IllegalArgumentException when the name is null
 	 */
 	public Node(String name) throws IllegalArgumentException
 	{
@@ -28,6 +29,7 @@ public class Node
 	 * 
 	 * @param ID the ID of this node - should be unique within a network!
 	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
+	 * @throws IllegalArgumentException when the name or ID is null
 	 */
 	public Node(String ID, String name) throws IllegalArgumentException
 	{
@@ -40,6 +42,7 @@ public class Node
 	 * @param ID the ID of this node - should be unique within a network!
 	 * @param name the name of this node - should be unique within a network!
 	 * @param virtual whether this node is virtual
+	 * @throws IllegalArgumentException when the name or ID is null
 	 */
 	public Node(String ID, String name, boolean virtual) throws IllegalArgumentException
 	{

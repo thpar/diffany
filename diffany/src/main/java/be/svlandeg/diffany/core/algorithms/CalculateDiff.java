@@ -73,7 +73,7 @@ public class CalculateDiff
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param log the logger that records logging messages
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum
 	 * 
 	 * @return the overlapping network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
@@ -149,7 +149,7 @@ public class CalculateDiff
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
@@ -225,7 +225,7 @@ public class CalculateDiff
 	 * @param runID the ID of the configuration that needs to be run
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
@@ -251,7 +251,7 @@ public class CalculateDiff
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
@@ -280,7 +280,7 @@ public class CalculateDiff
 	 * @param runID the ID of the configuration that needs to be run
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
@@ -304,7 +304,7 @@ public class CalculateDiff
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
-	 * @param boolean minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */

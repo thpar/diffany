@@ -40,6 +40,7 @@ public class Condition
 	 * The set of ontology terms will be initialized to an empty set.
 	 * 
 	 * @param description free-text description of the condition
+	 * @throws IllegalArgumentException when the description is null
 	 */
 	public Condition(String description) throws IllegalArgumentException
 	{

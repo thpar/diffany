@@ -44,7 +44,7 @@ public class Ideker2011 extends GenericExample
 	
 	/**
 	 * Get a custom project.
-	 * @return an example project illustrating figure 1C.
+	 * @return an example project illustrating figure 1C
 	 */
 	public Project getProjectFigure3A()
 	{
@@ -56,7 +56,8 @@ public class Ideker2011 extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project.
-	 * @return the resulting configuration ID.
+	 * @param p the input project
+	 * @return the resulting configuration ID
 	 */
 	public int getTestConfiguration3A(Project p)
 	{
@@ -120,6 +121,7 @@ public class Ideker2011 extends GenericExample
 
 	/**
 	 * Testing the example using console output (use TestExamples for the JUnit version!)
+	 * @param args the (ignored) input argument list
 	 */
 	public static void main(String[] args)
 	{

@@ -41,7 +41,7 @@ public class TestConfiguration
 		int calls = 0;
 
 		// before calculation
-		testIni(p, calc, ex, calls);
+		testIni(p, ex, calls);
 		calls++;
 
 		// 1-all differential configuration : differential+overlap calculation
@@ -88,7 +88,7 @@ public class TestConfiguration
 	/**
 	 * Test an initial empty project: should contain no differential output.
 	 */
-	private void testIni(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
+	private void testIni(Project p, MultipleConditionTest ex, int calls)
 	{
 		assertEquals(0, p.getAllRunIDs().size());
 

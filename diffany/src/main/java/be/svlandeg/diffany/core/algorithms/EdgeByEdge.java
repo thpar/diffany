@@ -266,8 +266,6 @@ public class EdgeByEdge
 	 */
 	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
-		int noNetworks = networks.size();
-
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
 
@@ -330,7 +328,7 @@ public class EdgeByEdge
 					allEdges = cleaning.unifyDirection(allEdges);
 					
 					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					Set<EdgeDefinition> overlap_edge_defs = ec.getOverlapEdge(allEdges, noNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
+					Set<EdgeDefinition> overlap_edge_defs = ec.getOverlapEdge(allEdges, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
 					for (EdgeDefinition overlap_edge_def : overlap_edge_defs)

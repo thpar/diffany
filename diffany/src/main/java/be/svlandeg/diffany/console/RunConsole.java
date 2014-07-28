@@ -155,10 +155,7 @@ public class RunConsole
 			// Windows Dos Terminal is of width 80 by default
 			return 80;
 		}
-		else
-		{
-			return 130;
-		}
+		return 130;
 	}
 
 }

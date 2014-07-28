@@ -19,9 +19,10 @@ public class ExpressionData
 	/**
 	 * Create a new expression dataset
 	 * @param collectionName the name of the experiment
-	 * @param rows the names of the rows (genes)
-	 * @param columns the names of the columns (samples)
+	 * @param rows_genes the names of the rows (genes)
+	 * @param columns_samples the names of the columns (samples)
 	 * @param expvalues the actual expression values
+	 * @param normalized whether or not the data is already normalized
 	 */
 	public ExpressionData(String collectionName, List<String> rows_genes, List<String> columns_samples, double[][] expvalues, boolean normalized)
 	{

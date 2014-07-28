@@ -31,6 +31,7 @@ public class MergedEdge extends Edge
 	 * @param target the target node
 	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 */
 	public MergedEdge(Node source, Node target, EdgeDefinition def, Set<Condition> conditions, int support, boolean inReference)
@@ -50,6 +51,7 @@ public class MergedEdge extends Edge
 	 * @param weight the weight or confidence of this edge (should be positive)
 	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
@@ -69,6 +71,7 @@ public class MergedEdge extends Edge
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
 	 */
 	public MergedEdge(String type, Node source, Node target, boolean symmetrical, boolean negated, Set<Condition> conditions, int support)
 	{
@@ -85,6 +88,7 @@ public class MergedEdge extends Edge
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 * @param weight the weight or confidence of this edge (should be positive)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
 	 */
 	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, Set<Condition> conditions, int support)
 	{
@@ -100,6 +104,7 @@ public class MergedEdge extends Edge
 	 * @param target the target node
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
 	 */
 	public MergedEdge(String type, Node source, Node target, boolean symmetrical, Set<Condition> conditions, int support)
 	{
@@ -128,8 +133,8 @@ public class MergedEdge extends Edge
 	}
 
 	/**
-	 * 
-	 * @return
+	 * TODO javadoc
+	 * @return conditions
 	 */
 	public Set<Condition> getConditions()
 	{

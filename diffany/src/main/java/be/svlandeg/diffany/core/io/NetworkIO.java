@@ -196,7 +196,7 @@ public class NetworkIO
 	 * 
 	 * @param network the {@link ConditionNetwork} that needs to be written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param network the Network that needs to be written
+	 * @param conditionsFile the file to which the input network should be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */

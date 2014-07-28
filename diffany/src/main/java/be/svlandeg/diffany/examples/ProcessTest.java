@@ -28,7 +28,7 @@ public class ProcessTest extends GenericExample
 	
 	/**
 	 * Get a custom project.
-	 * @return an example project.
+	 * @return an example project
 	 */
 	public Project getTestProject()
 	{
@@ -41,7 +41,8 @@ public class ProcessTest extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project.
-	 * @return the resulting configuration ID.
+	 * @param p the input project
+	 * @return the resulting configuration ID
 	 */
 	public int getTestConfiguration(Project p)
 	{
@@ -121,6 +122,7 @@ public class ProcessTest extends GenericExample
 	
 	/**
 	 * Testing the example
+	 * @param args the (ignored) input argument list
 	 */
 	public static void main(String[] args)
 	{

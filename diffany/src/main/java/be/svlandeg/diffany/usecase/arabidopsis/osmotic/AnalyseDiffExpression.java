@@ -31,9 +31,9 @@ public class AnalyseDiffExpression
 	 * 
 	 * @param exeR the environment to execute R scripts
 	 * @param osmoticStressDir the directory containing the experimental data
-	 * @param writeOutputFile whether or not to write an output file containing all p-values and other results
+	 * @param outputValues the location to which to write the results (if null, no results will be written)
 	 * 
-	 * @throws URISyntaxException
+	 * @throws URISyntaxException when the R code can not be read properly
 	 * @throws IOException when an IO error occurs
 	 */
 	public void findDEGenes(ExecuteR exeR, File osmoticStressDir, String outputValues) throws URISyntaxException, IOException
@@ -66,7 +66,6 @@ public class AnalyseDiffExpression
 
 		if (outputValues != null)
 		{
-			
 			System.out.println("");
 			System.out.println("All results are being written to " + outputValues);
 			System.out.println(" This may take a few minutes, but please do not interfere with the file during this process");

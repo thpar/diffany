@@ -51,7 +51,8 @@ public class ActivityFlowTest extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project.
-	 * @return the resulting configuration ID.
+	 * @param p the input project
+	 * @return the resulting configuration ID
 	 */
 	public int getTestConfiguration(Project p)
 	{
@@ -145,6 +146,7 @@ public class ActivityFlowTest extends GenericExample
 	
 	/**
 	 * Testing the example
+	 * @param args the (ignored) input argument list
 	 */
 	public static void main(String[] args)
 	{

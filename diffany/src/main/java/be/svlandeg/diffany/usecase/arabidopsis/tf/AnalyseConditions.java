@@ -15,8 +15,9 @@ public class AnalyseConditions
 {
 	
 	/**
-	 * TODO v2.1 documentation
-	 * @param datasets
+	 * Run the full pipeline: integrate TF and expression data
+	 * @param tfNetwork the TF network
+	 * @param datasets the expression datasets
 	 */
 	public void integrateTFandExpr(InputNetwork tfNetwork, Set<ExpressionData> datasets)
 	{

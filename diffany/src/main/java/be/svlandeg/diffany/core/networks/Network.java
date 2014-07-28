@@ -3,6 +3,7 @@ package be.svlandeg.diffany.core.networks;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
@@ -111,6 +112,7 @@ public abstract class Network
 	
 	/**
 	 * Get the set of edges in this network with a certain virtuality.
+	 * @param virtual the virtuality state for which to return edges
 	 * @return the set of all virtual, or all non-virtual edges (can be empty, but not null)
 	 */
 	public Set<Edge> getEdgesByVirtualState(boolean virtual)

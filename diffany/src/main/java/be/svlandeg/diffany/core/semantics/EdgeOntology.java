@@ -201,7 +201,7 @@ public abstract class EdgeOntology
 
 	/**
 	 * Get the semantic category of a certain edge type.
-	 * Matching is done with {@link getCanonicalForm()}.
+	 * Matching is done by comparing the canonical forms of the edge types (lowercase, alphanumerical only).
 	 * 
 	 * @param edgeType the original type of the edge in a network
 	 * @return the semantic category of that edge or null if it is not mapped in this ontology
@@ -227,7 +227,7 @@ public abstract class EdgeOntology
 
 	/**
 	 * Check whether a certain edge type is present in this ontology.
-	 * Matching is done using {@link getCanonicalForm()}.
+	 * Matching is done by comparing the canonical forms of the edge types (lowercase, alphanumerical only).
 	 * 
 	 * @param edgeType the original type of the edge in a network
 	 * @return whether or not this edge type is present in this ontology
@@ -244,7 +244,7 @@ public abstract class EdgeOntology
 
 	/**
 	 * Check whether a certain edge category is present in this ontology.
-	 * Matching is done using {@link getCanonicalForm()}.
+	 * Matching is done by comparing the canonical forms of the edge types (lowercase, alphanumerical only).
 	 * 
 	 * @param category the original category of the edge in a network
 	 * @return whether or not this edge category is present in this ontology (will always be false when the category is null)
@@ -359,8 +359,8 @@ public abstract class EdgeOntology
 	}
 
 	/**
-	 * Create a new mapping from edge type to category. Matching is done independent of upper/lower casing,
-	 * considering only alphanumerical characters with the method {@link getCanonicalForm()}.
+	 * Create a new mapping from edge type to category. 
+	 * Matching is done independent of upper/lower casing, considering only alphanumerical characters.
 	 * 
 	 * @param edgeType the original edge type - its canonical form should not have been defined in this ontology before
 	 * @param category the category to be assigned to this edge type - this category should already exist in this ontology!

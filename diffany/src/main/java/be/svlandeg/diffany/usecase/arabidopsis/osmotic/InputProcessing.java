@@ -21,8 +21,11 @@ public class InputProcessing
 	 * Currently, the needed R script is loaded from the context, and is defined in the 'resources' folder of the Maven project.
 	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 * 
-	 * @throws URISyntaxException
-	 * @throws IOException
+	 * @param exeR the class that can execute R code
+	 * @param osmoticStressDir the directory which contains the .CEL files
+	 * 
+	 * @throws URISyntaxException when the R code can not be read properly
+	 * @throws IOException when the R code can not be read properly
 	 */
 	public void processOsmoticCELLData(ExecuteR exeR, File osmoticStressDir) throws URISyntaxException, IOException
 	{

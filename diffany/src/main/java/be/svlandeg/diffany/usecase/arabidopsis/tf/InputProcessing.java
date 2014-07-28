@@ -32,7 +32,9 @@ public class InputProcessing
 	 * 
 	 * @param TFtargetFile the file containing the TF-target interactions
 	 * @param networkName the name the network should have
-	 * @throws IOException
+	 * 
+	 * @return the input network containing the TF data
+	 * @throws IOException when the TF file can not be read properly
 	 */
 	public InputNetwork processTFData(File TFtargetFile, String networkName) throws IOException
 	{
@@ -77,10 +79,12 @@ public class InputProcessing
 	}
 
 	/**
-	 * Process the expression data
+	 * Process the expression data by reading from the appropriate input file
 	 * 
 	 * @param expDir the directory containing the pre-processed expression files
-	 * @throws IOException
+	 * 
+	 * @return the expression datasets
+	 * @throws IOException when the files in the given directory can not be read properly
 	 */
 	public Set<ExpressionData> processExpressionData(File expDir) throws IOException
 	{

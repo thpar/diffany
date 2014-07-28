@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 /**
  * This data object stores the fold changes, p-values and FDR rates per array ID, for a certain analysis (uniquely identified by name).
+ * The data can also be indexed by locus IDs, in which case the boolean value 'arrayIDs' is set to false
  * 
  * @author Sofie Van Landeghem
  */
@@ -59,7 +60,8 @@ public class OverexpressionData
 	}
 	
 	/**
-	 * TODO
+	 * Return whether or not this dataset is indexed by array IDs (if not, they are locus IDs)
+	 * @return whether or not this dataset is indexed by array IDs
 	 */
 	public boolean indexedByRawArrayIDs()
 	{
@@ -76,8 +78,8 @@ public class OverexpressionData
 	}
 	
 	/**
-	 * TODO
-	 * @return
+	 * Retrieve all IDs indexed in this dataset
+	 * @return all indexed IDs
 	 */
 	public SortedSet<String> getArrayIDs()
 	{
@@ -85,9 +87,9 @@ public class OverexpressionData
 	}
 	
 	/**
-	 * TODO
-	 * @param arrayID
-	 * @return
+	 * Retrieve the fold change of a certain ID
+	 * @param arrayID the query ID
+	 * @return the fold change (FC) of this ID
 	 */
 	public double getFoldchange(String arrayID)
 	{
@@ -95,9 +97,9 @@ public class OverexpressionData
 	}
 	
 	/**
-	 * TODO
-	 * @param arrayID
-	 * @return
+	 * Retrieve the p-value of a certain ID
+	 * @param arrayID the query ID
+	 * @return the p-value of this ID
 	 */
 	public double getPvalue(String arrayID)
 	{
@@ -105,9 +107,9 @@ public class OverexpressionData
 	}
 	
 	/**
-	 * TODO
-	 * @param arrayID
-	 * @return
+	 * Retrieve the false discovery rate (FDR) of a certain ID
+	 * @param arrayID the query ID
+	 * @return the false discovery rate (sort of normalized p-value) of this ID
 	 */
 	public double getFDR(String arrayID)
 	{

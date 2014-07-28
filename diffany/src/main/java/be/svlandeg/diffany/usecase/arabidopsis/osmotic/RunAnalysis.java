@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
-import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
@@ -39,9 +38,8 @@ public class RunAnalysis
 	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
 	 * 
 	 * @param args these requirede CL arguments are currently not parsed
-	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws IOException, URISyntaxException
+	public static void main(String[] args) 
 	{
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
@@ -171,7 +169,8 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg) throws IOException, URISyntaxException
+	@SuppressWarnings("unused")
+    private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		

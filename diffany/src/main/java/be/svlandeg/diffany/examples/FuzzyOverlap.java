@@ -52,6 +52,8 @@ public class FuzzyOverlap extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project: 1 reference network and 3 condition-specific.
+	 * @param p the fuzzy project
+	 * @param overlapCutoff the cutoff for overlap %
 	 * @return the resulting configuration ID.
 	 */
 	public int getTestConfigurationWithReference(Project p, int overlapCutoff)
@@ -61,12 +63,14 @@ public class FuzzyOverlap extends GenericExample
 		c.add(getCondition1());
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(r, c);
+		int ID = p.addRunConfiguration(r, c, overlapCutoff);
 		return ID;
 	}
 	
 	/**
 	 * Add some custom-defined networks to the project: 4 condition-specific networks, no reference.
+	 * @param p the fuzzy project
+	 * @param overlapCutoff the cutoff for overlap %
 	 * @return the resulting configuration ID.
 	 */
 	public int getTestConfigurationWithoutReference(Project p, int overlapCutoff)
@@ -239,6 +243,7 @@ public class FuzzyOverlap extends GenericExample
 
 	/**
 	 * Testing the example using console output (use TestFuzzyOverlap for the JUnit version!)
+	 * @param args (ignored) argument list
 	 */
 	public static void main(String[] args)
 	{

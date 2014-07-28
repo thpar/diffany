@@ -27,7 +27,7 @@ public class EdgeComparison
 	/**
 	 * Initialize this object by defining the Edge Ontology which will be used for semantically comparing edges.
 	 * 
-	 * @param eo the edge ontology defining the interaction semantics
+	 * @param teo the edge ontology defining the interaction semantics
 	 */
 	public EdgeComparison(TreeEdgeOntology teo)
 	{
@@ -51,7 +51,7 @@ public class EdgeComparison
 			support = 0;
 			this.type = type;
 		}
-		
+
 		public String toString()
 		{
 			String result = "intermediate comparison at type " + type + " : support " + support + " :";
@@ -85,37 +85,38 @@ public class EdgeComparison
 	 * Determine the optimal weight to be given to an edge, depending on the needed level of support and the min/max operator
 	 * Return null when an appropriate weight could not be found
 	 * 
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * 
 	 * TODO javadoc
 	 */
 	protected Double determineWeight(IntermediateComparison intermediate, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
 		// we can take the maximum value, if there is enough support
-		if (! minOperator)
+		if (!minOperator)
 		{
 			double maxWeight = intermediate.allWeights.lastKey();
-			if (intermediate.support >= overlapNo_cutoff)
+			if (intermediate.support >= overlapNo_cutoff && maxWeight >= weight_cutoff)
 			{
 				return maxWeight;
 			}
 			return null;
 		}
-		else
+
+		// we need to find the maximal minimum value that has enough support
+		// starting with the highest weights, their support is passed on to the lower weights until the cutoff is reached
+		int accumulatedSupport = 0;
+
+		TreeSet<Double> allWs = new TreeSet<Double>(intermediate.allWeights.keySet());
+		for (double w : allWs.descendingSet())
 		{
-			// we need to find the maximal minimum value that has enough support
-			// starting with the highest weights, their support is passed on to the lower weights until the cutoff is reached
-			int accumulatedSupport = 0;
-			
-			TreeSet<Double> allWs = new TreeSet<Double>(intermediate.allWeights.keySet());
-			for (double w : allWs.descendingSet())
+			int currentSupport = intermediate.allWeights.get(w);
+			accumulatedSupport += currentSupport;
+			if (accumulatedSupport >= overlapNo_cutoff && w >= weight_cutoff)
 			{
-				int currentSupport = intermediate.allWeights.get(w);
-				accumulatedSupport += currentSupport;
-				if (accumulatedSupport >= overlapNo_cutoff)
-				{	
-					return w;	// the first (highest) value that has enough support
-				}
+				return w; // the first (highest) value that has enough support
 			}
 		}
+
 		return null;
 	}
 
@@ -431,7 +432,6 @@ public class EdgeComparison
 	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param edges the original edge definitions (can contain EdgeDefinition.getVoidEdge()), should not be empty!
-	 * @param noNetworks the number of original input networks
 	 * @param overlapNo_cutoff the minimal number of networks (inclusive) that need to have the overlap for it to be included
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
@@ -439,7 +439,7 @@ public class EdgeComparison
 	 * @return the edge definitions in the overlapping network, or an empty set, but never null
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public Set<EdgeDefinition> getOverlapEdge(Collection<EdgeDefinition> edges, int noNetworks, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
+	public Set<EdgeDefinition> getOverlapEdge(Collection<EdgeDefinition> edges, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		Set<EdgeDefinition> overlaps = new HashSet<EdgeDefinition>();
 
@@ -490,7 +490,7 @@ public class EdgeComparison
 				overlap_edge.makeSymmetrical(final_symm);
 				overlap_edge.makeNegated(false);
 				overlap_edge.setType(aff_result.type);
-				
+
 				Double weight = determineWeight(aff_result, overlapNo_cutoff, weight_cutoff, minOperator);
 				if (weight != null)
 				{
@@ -506,7 +506,7 @@ public class EdgeComparison
 				overlap_edge.makeSymmetrical(final_symm);
 				overlap_edge.makeNegated(true);
 				overlap_edge.setType(neg_result.type);
-				
+
 				Double weight = determineWeight(neg_result, overlapNo_cutoff, weight_cutoff, minOperator);
 				if (weight != null)
 				{

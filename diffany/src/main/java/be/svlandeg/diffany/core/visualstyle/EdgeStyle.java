@@ -20,7 +20,8 @@ public class EdgeStyle
 	
 	/**
 	 * Constructor: creates a visual edge style which cannot be modified
-	 * @param color object 
+	 * @param color the color of the edge 
+	 * @param ah the type of arrowhead
 	 */
 	public EdgeStyle(Color color, ArrowHead ah)
 	{

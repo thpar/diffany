@@ -45,10 +45,10 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * 
-	 * @param datasets
-	 * @throws URISyntaxException 
-	 * @throws IOException 
+	 * Retrieve all the significant genes in an overexpression dataset, by using the threshold as a minimal cutoff of the FDR values.
+	 * @param data the input datasets
+	 * @param threshold the FDR cutoff
+	 * @return all nodes above the threshold, mapped to their corresponding fold change
 	 */
 	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold)
 	{
@@ -79,9 +79,9 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * TODO
-	 * @param targets
-	 * @return
+	 * Create virtual regulation edges for a collection of targets, which are down-regulated (negative weight) or up-regulated.
+	 * @param targets the map of target nodes with their corresponding regulation weights (negative weights refer to down-regulation)
+	 * @return the set of corresponding virtual edges 
 	 */
 	public Set<Edge> constructVirtualRegulations(Map<Node, Double> targets)
 	{
@@ -116,11 +116,18 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * TODO
-	 * @param locusIDs
-	 * @return
-	 * @throws URISyntaxException
-	 * @throws IOException
+	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from 'cornetPPIDataFile'. 
+	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
+	 * to avoid including outliers in the networks
+	 * 
+	 * @param nodes the set of input nodes
+	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
+	 * @param includeNeighbours whether or not to include PPI neighbours of the original set
+	 * @param min_neighbourcount the minimal number of neighbours ('connectedness') which is required for a node to be include (put to 0 if this is not important)
+	 * 
+	 * @return the corresponding set of PPI edges
+	 * @throws URISyntaxException when the PPI datafile from CORNET can not be read properly
+	 * @throws IOException when the PPI datafile from CORNET can not be read properly
 	 */
 	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException
 	{
@@ -281,11 +288,18 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * TODO
-	 * @param locusIDs
-	 * @return
-	 * @throws URISyntaxException
-	 * @throws IOException
+	 * Construct a set of regulation edges from a certain input set of nodes, and reading input from 'cornetRegDataFile'. 
+	 * This method can either only include regulations between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
+	 * to avoid including outliers in the networks
+	 * 
+	 * @param nodes the set of input nodes
+	 * @param includeSelfInteractions whether or not to include self interactions
+	 * @param includeNeighbours whether or not to include neighbours (regulators/targets) of the original set
+	 * @param min_neighbourcount the minimal number of neighbours ('connectedness') which is required for a node to be include (put to 0 if this is not important)
+	 * 
+	 * @return the corresponding set of regulation edges
+	 * @throws URISyntaxException when the regulation datafile from CORNET can not be read properly
+	 * @throws IOException when the regulation datafile from CORNET can not be read properly
 	 */
 	@SuppressWarnings("unused")
 	public Set<Edge> readRegsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException

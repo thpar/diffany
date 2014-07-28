@@ -298,7 +298,6 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 		// count the depth (up) in the ontology tree
 		Map<String, Integer> parentByDepth = new HashMap<String, Integer>();
 
-
 		for (String cat : cats)
 		{
 			int depth = 0;
@@ -317,7 +316,7 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 			}
 
 		}
-		
+
 		for (String cat : parentCatsByCount.keySet())
 		{
 			if (parentCatsByCount.get(cat) == countEdges)
@@ -457,8 +456,9 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	}
 
 	/**
+	 * Retrieve the prefix used for unspecified edges
 	 * 
-	 * @return
+	 * @return the prefix used for unspecified edges
 	 */
 	public String getUnspecifiedPrefix()
 	{

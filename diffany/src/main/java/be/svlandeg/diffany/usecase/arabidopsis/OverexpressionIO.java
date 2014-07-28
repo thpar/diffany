@@ -29,7 +29,7 @@ public class OverexpressionIO
 	/**
 	 * Print all genes in the experiments and their values across all types of statistical comparisons
 	 * @param filename the file location where all calculated p-values etc will be written
-	 * @param datasets
+	 * @param datasets the overexpression datasets
 	 * @param gp the gene printer which can fetch the locus IDs and synonyms for array IDs
 	 * @throws IOException when the file could not be written properly
 	 */
@@ -88,9 +88,12 @@ public class OverexpressionIO
 
 	/**
 	 * Read all genes and their corresponding p-values of the statistical comparisons defined by the header line
+	 * 
 	 * @param filename the file location where all calculated p-values etc are recorded
 	 * @param rawArrayIDs whether or not this refers to raw array IDs (if not, locus tags are expected)
+	 * @return the list of overexpression datasets
 	 * @throws IOException when the file could not be read properly
+	 * @throws IllegalArgumentException if the input file is not formatted as expected
 	 */
 	public List<OverexpressionData> readDatasets(String filename, boolean rawArrayIDs) throws IOException, IllegalArgumentException
 	{
@@ -101,7 +104,9 @@ public class OverexpressionIO
 	 * Read all genes and their corresponding p-values of the statistical comparisons defined by the header line
 	 * @param inputfile the file which stores all calculated p-values etc 
 	 * @param rawArrayIDs whether or not this refers to raw array IDs (if not, locus tags are expected)
+	 * @return the list of overexpression datasets
 	 * @throws IOException when the file could not be read properly
+	 * @throws IllegalArgumentException if the input file is not formatted as expected
 	 */
 	public List<OverexpressionData> readDatasets(File inputfile, boolean rawArrayIDs) throws IOException, IllegalArgumentException
 	{

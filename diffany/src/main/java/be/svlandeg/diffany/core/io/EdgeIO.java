@@ -58,6 +58,7 @@ public class EdgeIO
 	 * Get a string representation of an edge definition.
 	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
 	 * 
+	 * @param def the original edge definition
 	 * @return a string representation of this edge definition, ready for printing
 	 */
 	public static String writeDefinitionToTab(EdgeDefinition def)
@@ -80,7 +81,7 @@ public class EdgeIO
 	
 	/**
 	 * Write the header line, i.e. a tab-delimited summary of the information that is printed with writeToTab.
-	 * @return
+	 * @return a tab-delimited string respresentation of edge data, useful as header in .tab files
 	 */
 	public static String getHeader()
     {
@@ -119,7 +120,9 @@ public class EdgeIO
 	/**
 	 * Read an EdgeDefinition from a tab-delimited String.
 	 * 
-	 * @return a string representation of this edge , ready for printing
+	 * @param def the original edge definition, in string format
+	 * @return the edge definition represented by the input string
+	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static EdgeDefinition readDefinitionFromTab(String def) throws IOException

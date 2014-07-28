@@ -58,6 +58,7 @@ public class NodeIO
 	
 	/**
 	 * Get a string representation of the boolean virtual state.
+	 * @param n the original node
 	 * 
 	 * @return a string representation of this node's virtual state
 	 */

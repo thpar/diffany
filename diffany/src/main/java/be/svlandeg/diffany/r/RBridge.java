@@ -63,9 +63,9 @@ public class RBridge
 	 * 
 	 * @param logfile the absolute file path which will contain the R log file
 	 */
-	public RBridge(String outputfile)
+	public RBridge(String logfile)
 	{
-		this(DEFAULT_ARGS, DEFAULT_LOOP, null, outputfile);
+		this(DEFAULT_ARGS, DEFAULT_LOOP, null, logfile);
 	}
 
 	/**

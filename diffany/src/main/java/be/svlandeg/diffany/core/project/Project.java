@@ -205,9 +205,9 @@ public class Project
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> networks)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks)
 	{
-		return addRunConfiguration(networks, networks.size());
+		return addRunConfiguration(inputNetworks, inputNetworks.size());
 	}
 	
 	/**
@@ -216,16 +216,17 @@ public class Project
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
+	 * @param overlapNo_cutoff the required number of input networks that need to match for an overlap edge to be present
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> networks, int overlapNo_cutoff)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
 		
 		Set<InputNetwork> cleanNetworks = new HashSet<InputNetwork>();
-		for (InputNetwork inputNet : networks)
+		for (InputNetwork inputNet : inputNetworks)
 		{
 			registerSourceNetwork(inputNet, logger);
 			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, nodeMapper, edgeOntology);
@@ -251,7 +252,8 @@ public class Project
 	
 	/**
 	 * Get the output for a specific run ID. The RunOutput object will be empty if the corresponding run configuration was not deployed.
-	 * @return the output of a specific run.
+	 * @param runID the run ID
+	 * @return the output of a specific run
 	 */
 	public RunOutput getOutput(int runID)
 	{
@@ -260,6 +262,7 @@ public class Project
 	
 	/**
 	 * Get the logger for a specific run ID. The logs will be empty if the corresponding run configuration was not deployed.
+	 * @param runID the run ID
 	 * @return the logs of a specific run.
 	 */
 	public Logger getLogger(int runID)
@@ -268,7 +271,8 @@ public class Project
 	}
 	
 	/**
-	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only overlappingà.
+	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only overlapping).
+	 * @param runID the run ID
 	 * @return the type of a specific run configuration.
 	 */
 	public boolean isDiffType(int runID)
@@ -283,6 +287,7 @@ public class Project
 	 * There is NO check whether or not this network was added previously.
 	 * 
 	 * @param source the new Network that will be used within this project
+	 * @param logger the logger instance that can store log messages
 	 */
 	public void registerSourceNetwork(Network source, Logger logger)
 	{

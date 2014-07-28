@@ -147,8 +147,8 @@ public class ExecuteR
 	 * Execute a certain script in R by evaluating each line consequently.
 	 * 
 	 * @param scriptURL the URL (location) of the script that needs to be executed.
-	 * @throws URISyntaxException
-	 * @throws IOException
+	 * @throws URISyntaxException if the URL is malformed
+	 * @throws IOException if the file can not be read properly
 	 */
 	public void executeScript(URL scriptURL) throws URISyntaxException, IOException
 	{

@@ -52,7 +52,8 @@ public class Bandyopadhyay2010 extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project.
-	 * @return the resulting configuration ID.
+	 * @param p the input project
+	 * @return the resulting configuration ID
 	 */
 	public int getTestConfiguration1C(Project p)
 	{
@@ -114,6 +115,7 @@ public class Bandyopadhyay2010 extends GenericExample
 
 	/**
 	 * Testing the example using console output (use TestExamples for the JUnit version!)
+	 * @param args the (ignored) input argument list
 	 */
 	public static void main(String[] args)
 	{

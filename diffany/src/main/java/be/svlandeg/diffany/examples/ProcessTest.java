@@ -72,7 +72,7 @@ public class ProcessTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1", nm);
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, nm);
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 3, false));
 		network.addEdge(new Edge("ptm", nodes.get("X"), nodes.get("Y"), true, 4, false));
@@ -94,7 +94,7 @@ public class ProcessTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -134,7 +134,7 @@ public class ProcessTest extends GenericExample
 		int ID = ex.getTestConfiguration(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false);

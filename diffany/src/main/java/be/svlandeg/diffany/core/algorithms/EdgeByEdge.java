@@ -54,11 +54,12 @@ public class EdgeByEdge
 	 * @param conditions a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the differential network.
+	 * @param diff_name the name to give to the differential network
+	 * @param ID the ID of the resulting network
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diff_name, double cutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diff_name, int ID, double cutoff)
 	{
 		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
 
@@ -66,7 +67,7 @@ public class EdgeByEdge
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
 
-		DifferentialNetwork diff = new DifferentialNetwork(diff_name, reference, conditionNetworks, nm);
+		DifferentialNetwork diff = new DifferentialNetwork(diff_name, ID, reference, conditionNetworks, nm);
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
@@ -256,6 +257,7 @@ public class EdgeByEdge
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlap_name the name to give to the overlapping network
+	 * @param ID the ID of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
 	 * @param weight_cutoff the minimal weight that the resulting overlap edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
@@ -264,12 +266,12 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
 		List<Network> listedNetworks = new ArrayList<Network>();
 		listedNetworks.addAll(networks);
 
-		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, networks, nm);
+		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, ID, networks, nm);
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 
@@ -293,45 +295,64 @@ public class EdgeByEdge
 				String targetconsensusName = nm.getConsensusName(targets);
 
 				// get all edges from the input network
-				Map<String, Set<Edge>> edgesBySemanticRoot = new HashMap<String, Set<Edge>>();
+				Map<String, Map<Integer, Set<Edge>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<Edge>>>();
 				for (String root : roots)
 				{
-					edgesBySemanticRoot.put(root, new HashSet<Edge>());
+					edgesBySemanticRoot.put(root, new HashMap<Integer, Set<Edge>>());
 				}
 				for (Network n : networks)
 				{
 					Set<Edge> allEdges = n.getAllEdges(example_source, example_target);
-					for (Edge e : allEdges)
+					for (String root : roots)
 					{
-						String type = e.getType();
-						for (String root : roots)
+						Set<Edge> rootEdges = new HashSet<Edge>();
+						for (Edge e : allEdges)
 						{
+							String type = e.getType();
 							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								edgesBySemanticRoot.get(root).add(e);
+								rootEdges.add(e);
 							}
 						}
+						if (! rootEdges.isEmpty())
+						{
+							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
+						}
 					}
+					
 				}
 
 				for (String root : roots)
 				{
 					boolean symm = eo.isSymmetricalSourceCat(root);
-					Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
-					allEdges.addAll(edgesBySemanticRoot.get(root));
+					Map<EdgeDefinition, Set<Integer>> allEdges = new HashMap<EdgeDefinition, Set<Integer>>();
+					
+					Map<Integer, Set<Edge>> edgesByNetwork = edgesBySemanticRoot.get(root);
+					
+					for (int networkID : edgesByNetwork.keySet())
+					{
+						for (EdgeDefinition e : edgesByNetwork.get(networkID))
+						{
+							if (! allEdges.containsKey(e))
+							{
+								allEdges.put(e, new HashSet<Integer>());
+							}
+							allEdges.get(e).add(networkID);
+						}
+					}
 
 					if (allEdges.isEmpty())
 					{
-						allEdges.add(eg.getVoidEdge(symm));
+						allEdges.put(eg.getVoidEdge(symm), new HashSet<Integer>());
 					}
 
-					allEdges = cleaning.unifyDirection(allEdges);
+					cleaning.unifyDirection(allEdges.keySet());
 					
 					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					Set<EdgeDefinition> overlap_edge_defs = ec.getOverlapEdge(allEdges, overlapNo_cutoff, weight_cutoff, minOperator);
+					Map<EdgeDefinition, Set<Integer>> overlap_edge_defs = ec.getOverlapEdge(allEdges, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
-					for (EdgeDefinition overlap_edge_def : overlap_edge_defs)
+					for (EdgeDefinition overlap_edge_def : overlap_edge_defs.keySet())
 					{
 						if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
 						{

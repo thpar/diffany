@@ -54,6 +54,8 @@ public class RunProject
 		}
 
 		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
+		int diffID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.diffID));
+		int overlapID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.overlapID));
 
 		double cutoff = diffAlgo.default_weight_cutoff;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
@@ -74,7 +76,7 @@ public class RunProject
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
 		// TODO v2.0: allow to change mode
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, cutoff, true, true, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, overlapID, cutoff, true);
 		
 		// TODO v2.0: check number of differential networks generated
 		RunOutput output = p.getOutput(runID);

@@ -22,19 +22,22 @@ public abstract class Network
 	protected Set<Node> nodes; // ensure this set is kept consistent with the edge set!
 	protected Set<Edge> edges;
 
+	protected int ID;
 	protected String name;
 	protected NodeMapper nm;
 
 	/**
-	 * Create a new network with a specific name and sets of nodes and edges.
+	 * Create a new network with a specific name, ID, and sets of nodes and edges.
+	 * The ID should be unique within a project, the name is preferably unique as well.
 	 * All source and target nodes of each edge will be automatically added to the internal set of nodes.
 	 * 
-	 * @param name the name of this network (should be enforced to be unique within one project)
+	 * @param name the name of this network 
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
+	public Network(String name, int ID, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
 	{
 		if (nm == null)
 		{
@@ -43,27 +46,39 @@ public abstract class Network
 		}
 
 		this.name = name;
+		this.ID = ID;
 		this.nm = nm;
 		setNodesAndEdges(nodes, edges);
 	}
 
 	/**
 	 * Create a new network with an empty set of nodes and edges.
-	 * @param name the name of this network (should be enforced to be unique within one project)
+	 * 
+	 * @param name the name of this network 
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name, NodeMapper nm)
+	public Network(String name, int ID, NodeMapper nm)
 	{
-		this(name, new HashSet<Node>(), new HashSet<Edge>(), nm);
+		this(name, ID, new HashSet<Node>(), new HashSet<Edge>(), nm);
 	}
 
 	/**
-	 * Return the name of this network (which should be unique within one project)
+	 * Return the name of this network
 	 * @return the name of this network
 	 */
 	public String getName()
 	{
 		return name;
+	}
+	
+	/**
+	 * Return the ID of this network (which should be unique within one project)
+	 * @return the ID of this network
+	 */
+	public int getID()
+	{
+		return ID;
 	}
 
 	/**
@@ -209,10 +224,9 @@ public abstract class Network
 	 * @param source the name of the required source node (normalized version in case that option is chosen)
 	 * @param target the name of the required target node (normalized version in case that option is chosen)
 	 * @param addSyms defined whether or not to also include symmetrical target-source edges
-	 * @param normalized wehther or not the names of the nodes should be normalized before comparison to the given strings
 	 * @return the set of edges between these two nodes (can be empty, but not null)
 	 */
-	public Set<Edge> getAllEdgesByName(String source, String target, boolean addSyms, boolean normalized)
+	public Set<Edge> getAllEdgesByName(String source, String target, boolean addSyms)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		if (source == null || target == null)

@@ -20,14 +20,15 @@ public class ConditionNetwork extends InputNetwork
 	 * 
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 * 
 	 */
-	public ConditionNetwork(String name, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (conditions == null || conditions.isEmpty())
 		{
 			String errormsg = "Please define at least 1 condition!";
@@ -39,15 +40,16 @@ public class ConditionNetwork extends InputNetwork
 	/**
 	 * Create a new condition-specific network.
 	 * 
-	 * @param condition one condition describing the experimental condition  (not null)
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param condition one condition describing the experimental condition  (not null)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 */
-	public ConditionNetwork(String name, Condition condition, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Condition condition, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (condition == null)
 		{
 			String errormsg = "Please define a non-null condition!";

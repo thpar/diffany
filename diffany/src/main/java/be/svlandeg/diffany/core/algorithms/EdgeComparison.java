@@ -424,14 +424,14 @@ public class EdgeComparison
 
 	/**
 	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
-	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in the overlapping network).
+	 * Returns an empty set when the edge should be deleted (i.e. not present in the overlapping network).
 	 * 
 	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
 	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
 	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
-	 * @param edges the original edge definitions (can contain EdgeDefinition.getVoidEdge()), should not be empty!
+	 * @param edges the original edge definitions, linked to unique IDs for identifying the input networks (should not be null or empty!)
 	 * @param overlapNo_cutoff the minimal number of networks (inclusive) that need to have the overlap for it to be included
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
@@ -439,9 +439,9 @@ public class EdgeComparison
 	 * @return the edge definitions in the overlapping network, or an empty set, but never null
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public Set<EdgeDefinition> getOverlapEdge(Collection<EdgeDefinition> edges, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
+	public Map<EdgeDefinition, Set<Integer>> getOverlapEdge(Map<EdgeDefinition, Set<Integer>> edges, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
-		Set<EdgeDefinition> overlaps = new HashSet<EdgeDefinition>();
+		Map<EdgeDefinition, Set<Integer>> overlaps = new HashMap<EdgeDefinition, Set<Integer>>();
 
 		if (edges == null || edges.isEmpty())
 		{
@@ -453,7 +453,7 @@ public class EdgeComparison
 		// 0. CHECK SYMMETRY //
 		int countSymmetrical = 0;
 
-		for (EdgeDefinition e : edges)
+		for (EdgeDefinition e : edges.keySet())
 		{
 			if (e.isSymmetrical())
 			{
@@ -474,7 +474,7 @@ public class EdgeComparison
 		Map<String, IntermediateComparison> affirmative_results = new HashMap<String, IntermediateComparison>();
 		Map<String, IntermediateComparison> negated_results = new HashMap<String, IntermediateComparison>();
 
-		for (EdgeDefinition e : edges)
+		for (EdgeDefinition e : edges.keySet())
 		{
 			addEdgeToTree(e, affirmative_results, negated_results);
 		}
@@ -484,39 +484,57 @@ public class EdgeComparison
 		for (String cat : teo.getAllSourceCategories())
 		{
 			IntermediateComparison aff_result = affirmative_results.get(cat);
+			boolean aff = false;
 			if (aff_result != null && aff_result.support >= overlapNo_cutoff)
 			{
-				EdgeDefinition overlap_edge = eg.getDefaultEdge();
-				overlap_edge.makeSymmetrical(final_symm);
-				overlap_edge.makeNegated(false);
-				overlap_edge.setType(aff_result.type);
-
-				Double weight = determineWeight(aff_result, overlapNo_cutoff, weight_cutoff, minOperator);
-				if (weight != null)
-				{
-					overlap_edge.setWeight(weight);
-					overlaps.add(overlap_edge);
-				}
+				aff = true;
 			}
-
+			
 			IntermediateComparison neg_result = negated_results.get(cat);
+			boolean neg = false;
 			if (neg_result != null && neg_result.support >= overlapNo_cutoff)
 			{
-				EdgeDefinition overlap_edge = eg.getDefaultEdge();
-				overlap_edge.makeSymmetrical(final_symm);
-				overlap_edge.makeNegated(true);
-				overlap_edge.setType(neg_result.type);
-
-				Double weight = determineWeight(neg_result, overlapNo_cutoff, weight_cutoff, minOperator);
-				if (weight != null)
+				neg = true;
+			}
+			
+			if (aff)
+			{
+				EdgeDefinition overlap_edge = createEdge(aff_result, final_symm, false, overlapNo_cutoff, weight_cutoff, minOperator);
+				if (overlap_edge != null)
 				{
-					overlap_edge.setWeight(weight);
-					overlaps.add(overlap_edge);
+					overlaps.put(overlap_edge, null);	// TODO
+				}
+			}
+			if (neg)
+			{
+				EdgeDefinition overlap_edge = createEdge(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff, minOperator);
+				if (overlap_edge != null)
+				{
+					overlaps.put(overlap_edge, null);	// TODO
 				}
 			}
 		}
 
 		return overlaps;
+	}
+	
+	/**
+	 * TODO
+	 * 
+	 */
+	private EdgeDefinition createEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	{
+		EdgeDefinition overlap_edge = eg.getDefaultEdge();
+		overlap_edge.makeSymmetrical(final_symm);
+		overlap_edge.makeNegated(negation);
+		overlap_edge.setType(inter.type);
+		Double weight = determineWeight(inter, overlapNo_cutoff, weight_cutoff, minOperator);
+		if (weight != null)
+		{
+			overlap_edge.setWeight(weight);
+			return overlap_edge;
+		}
+		return null;
 	}
 
 }

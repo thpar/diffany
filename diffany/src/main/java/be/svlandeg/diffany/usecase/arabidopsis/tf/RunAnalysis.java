@@ -39,7 +39,7 @@ public class RunAnalysis
 		
 		try
 		{
-			InputNetwork tfNetwork = input.processTFData(tfTargetFile, "TF-network");
+			InputNetwork tfNetwork = input.processTFData(tfTargetFile, "TF-network", 1);
 			Set<ExpressionData> datasets = input.processExpressionData(expDir);
 			ana.integrateTFandExpr(tfNetwork, datasets);
 		}

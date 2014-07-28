@@ -57,6 +57,7 @@ public class MergedConvertor
 	 * @param inputs the original set of separate input networks (assumed not-null and not empty!)
 	 * @return the merged input network
 	 */
+	@SuppressWarnings("unused")
 	public static MergedInputNetwork convertInput(Set<InputNetwork> inputs)
 	{
 		// TODO
@@ -65,6 +66,8 @@ public class MergedConvertor
 
 	/**
 	 * Convert a set of differential networks to one large merged network
+	 * The name is created by appending all individual input names to the prefix 'merged_' and the ID is determined as the maximum + 1.
+	 * 
 	 * @param diffSet the original set of separate differential networks (assumed not-null and not empty!)
 	 * @return the merged differential network
 	 */
@@ -72,14 +75,16 @@ public class MergedConvertor
 	{
 		Set<InputNetwork> inputs = new HashSet<InputNetwork>();
 		SortedSet<String> names = new TreeSet<String>();
+		SortedSet<Integer> IDs = new TreeSet<Integer>();
 		Set<Node> nodes = new HashSet<Node>();
 		Set<MergedEdge> edges = new HashSet<MergedEdge>();
 		NodeMapper nm = null;
 
 		for (DifferentialNetwork dn : diffSet)
 		{
-			// all names are stored alphabetically
+			// all names are stored alphabetically, IDs as well
 			names.add(dn.getName());
+			IDs.add(dn.getID());
 			
 			// all input networks
 			inputs.add(dn.getReferenceNetwork());
@@ -114,9 +119,11 @@ public class MergedConvertor
 		{
 			name += n + "_";
 		}
+		
+		int ID = IDs.last() + 1;
 
 		MergedInputNetwork input = convertInput(inputs);
-		MergedDifferentialNetwork result = new MergedDifferentialNetwork(name, nodes, edges, nm, input);
+		MergedDifferentialNetwork result = new MergedDifferentialNetwork(name, ID, nodes, edges, nm, input);
 		
 		return result;
 	}
@@ -126,7 +133,8 @@ public class MergedConvertor
 	 * @param overlapSet the original set of separate overlapping networks (assumed not-null and not empty!)
 	 * @return the merged overlapping network
 	 */
-	public static MergedOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
+	@SuppressWarnings("unused")
+    public static MergedOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
 	{
 		// TODO
 		return null;

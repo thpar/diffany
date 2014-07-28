@@ -101,7 +101,7 @@ public class FuzzyOverlap extends GenericExample
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", nm);
+		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", 1, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8));
 		
@@ -123,7 +123,7 @@ public class FuzzyOverlap extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 1", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -155,7 +155,7 @@ public class FuzzyOverlap extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 2", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -187,7 +187,7 @@ public class FuzzyOverlap extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 3", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -219,7 +219,7 @@ public class FuzzyOverlap extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 0", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 0", 10, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -260,7 +260,7 @@ public class FuzzyOverlap extends GenericExample
 		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, false, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, -1, 20, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID_2, false, true);

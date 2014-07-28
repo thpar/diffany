@@ -23,6 +23,7 @@ public class DifferentialNetwork extends Network
 	 * and 1 or more condition-specific networks
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param reference the corresponding reference network (not null!)
 	 * @param conditionNetworks the corresponding condition-specific networks (not null or empty!)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
@@ -30,10 +31,11 @@ public class DifferentialNetwork extends Network
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public DifferentialNetwork(String name, ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, NodeMapper nm) 
+	public DifferentialNetwork(String name, int ID, 
+			ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, NodeMapper nm) 
 			throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";
@@ -52,6 +54,7 @@ public class DifferentialNetwork extends Network
 	 * Create a new differential network, referring to exactly one static reference network and one condition-specific network
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param reference the corresponding reference network (not null!)
 	 * @param conditionNetwork the corresponding condition-specific network (not null!)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
@@ -59,10 +62,10 @@ public class DifferentialNetwork extends Network
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public DifferentialNetwork(String name, ReferenceNetwork reference, ConditionNetwork conditionNetwork, NodeMapper nm) 
+	public DifferentialNetwork(String name, int ID, ReferenceNetwork reference, ConditionNetwork conditionNetwork, NodeMapper nm) 
 			throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";

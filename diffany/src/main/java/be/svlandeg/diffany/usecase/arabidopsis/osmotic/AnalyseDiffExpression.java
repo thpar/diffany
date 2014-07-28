@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,13 +29,12 @@ public class AnalyseDiffExpression
 	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 * 
 	 * @param exeR the environment to execute R scripts
-	 * @param osmoticStressDir the directory containing the experimental data
 	 * @param outputValues the location to which to write the results (if null, no results will be written)
 	 * 
 	 * @throws URISyntaxException when the R code can not be read properly
 	 * @throws IOException when an IO error occurs
 	 */
-	public void findDEGenes(ExecuteR exeR, File osmoticStressDir, String outputValues) throws URISyntaxException, IOException
+	public void findDEGenes(ExecuteR exeR, String outputValues) throws URISyntaxException, IOException
 	{
 		// TODO V2.1: currently this assumes libs "affy", "limma", etc are pre-installed!
 		URL script3URL = Thread.currentThread().getContextClassLoader().getResource("Rcode/FindDEgenes.R");

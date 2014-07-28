@@ -69,7 +69,8 @@ public class CalculateDiff
 	 * @param networks a set of networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param overlapping_name the name to give to the overlapping network.
+	 * @param overlapping_name the name to give to the overlapping network
+	 * @param ID the unique identifier of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param log the logger that records logging messages
@@ -79,7 +80,7 @@ public class CalculateDiff
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
-			NodeMapper nm, String overlapping_name, int overlapNo_cutoff, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
+			NodeMapper nm, String overlapping_name, int ID, int overlapNo_cutoff, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
 		{
@@ -93,8 +94,8 @@ public class CalculateDiff
 		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, overlapNo_cutoff, weight_cutoff, minOperator);
-			new NetworkCleaning(log).fullOverlapOutputCleaning(on, nm, eo);
+			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, weight_cutoff, minOperator);
+			new NetworkCleaning(log).fullOverlapOutputCleaning(on, eo);
 			return on;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -110,8 +111,8 @@ public class CalculateDiff
 	 * @param conditions a set of condition-specific networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the differential network.
-	 * The overlapping network will get this name + the prefix 'overlap_'.
+	 * @param diff_name the name to give to the differential network
+	 * @param ID the unique identifier of the resulting network
 	 * @param cutoff the minimal value of a resulting edge for it to be included in the differential/overlapping networks
 	 * @param log the logger that records logging messages
 	 * 
@@ -119,7 +120,7 @@ public class CalculateDiff
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
-			NodeMapper nm, String diff_name, double cutoff, Logger log) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, int ID, double cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
 		{
@@ -129,8 +130,8 @@ public class CalculateDiff
 
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, cutoff);
-			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn, nm, eo);
+			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, cutoff);
+			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn);
 			return dn;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -145,15 +146,15 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diff_name the name to give to the differential network. The overlapping network will get this name + the prefix 'overlap_'.
+	 * @param diff_name the name to give to the differential network. The overlapping network will get this name + the prefix 'overlap_'
+	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
+	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
-	 * @param diffNetwork whether or not to calculate a differential network
-	 * @param overlapNetwork whether or not to calculate an overlapping network
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int overlap_ID, double weight_cutoff, Boolean minOperator) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
@@ -171,7 +172,7 @@ public class CalculateDiff
 			minOperator = default_MIN;
 		}
 		
-		if (diffNetwork)
+		if (diff_ID >= 0)
 		{
 			if (! p.isDiffType(runID))
 			{
@@ -183,16 +184,16 @@ public class CalculateDiff
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
 			log.log("Calculating the differential and overlap network between " + r.getName() + " and "
 					+ cs.size() + " condition-dependent network(s)");
-			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, weight_cutoff, log);
+			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, diff_ID, weight_cutoff, log);
 		}
 		
-		if (overlapNetwork)
+		if (overlap_ID >= 0)
 		{
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
 			String overlapping_name = overlapnameprefix + diff_name;
 			log.log("Calculating the overlap network between " + inputs.size() + " input network(s)");
-			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, rc.getOverlapCutoff(), weight_cutoff, log, minOperator);
+			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, overlap_ID, rc.getOverlapCutoff(), weight_cutoff, log, minOperator);
 		}
 		
 		if (diff != null && on != null)
@@ -223,16 +224,16 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diffNetwork whether or not to calculate a differential network
-	 * @param overlapNetwork whether or not to calculate an overlapping network
+	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
+	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, boolean diffNetwork, boolean overlapNetwork, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int overlap_ID, Boolean minOperator) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, default_weight_cutoff, diffNetwork, overlapNetwork, minOperator);
+		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, overlap_ID, default_weight_cutoff, minOperator);
 	}
 
 	/**
@@ -249,16 +250,16 @@ public class CalculateDiff
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
-	 * @param diffNetwork whether or not to calculate a differential network
-	 * @param overlapNetwork whether or not to calculate an overlapping network
+	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
+	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, double weight_cutoff, int diff_ID, int overlap_ID, Boolean minOperator) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, weight_cutoff, diffNetwork, overlapNetwork, minOperator);
+		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, overlap_ID, weight_cutoff, minOperator);
 	}
 
 	
@@ -278,15 +279,16 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diffNetwork whether or not to calculate a differential network
-	 * @param overlapNetwork whether or not to calculate an overlapping network
+	 * @param diffNetwork whether or not to calculate differential networks
+	 * @param overlapNetwork whether or not to calculate overlapping networks
+	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean overlapNetwork, Boolean minOperator) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean overlapNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
 	{
-		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, overlapNetwork, minOperator);
+		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, overlapNetwork, firstID, minOperator);
 	}
 
 	/**
@@ -304,11 +306,12 @@ public class CalculateDiff
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param overlapNetwork whether or not to calculate an overlapping network
+	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork, Boolean minOperator) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
@@ -341,7 +344,7 @@ public class CalculateDiff
 				log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
-				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, weight_cutoff, log);
+				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, weight_cutoff, log);
 				
 				OverlappingNetwork on = null;
 				
@@ -358,7 +361,7 @@ public class CalculateDiff
 					Set<Network> inputs = new HashSet<Network>();
 					inputs.add(r);
 					inputs.add(c);
-					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, overlapCutoff, weight_cutoff, log, minOperator);
+					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, firstID++, overlapCutoff, weight_cutoff, log, minOperator);
 				}
 				
 				if (on != null)
@@ -393,7 +396,7 @@ public class CalculateDiff
 					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
-					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, overlapCutoff, weight_cutoff, log, minOperator);
+					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, overlapCutoff, weight_cutoff, log, minOperator);
 					
 					output.addOverlap(on);
 				}

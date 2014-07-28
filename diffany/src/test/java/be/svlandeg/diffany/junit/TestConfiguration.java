@@ -45,43 +45,43 @@ public class TestConfiguration
 		calls++;
 
 		// 1-all differential configuration : differential+overlap calculation
-		testDifferentialOneMulti(p, calc, ex, calls, true, true);
+		testDifferentialOneMulti(p, calc, ex, calls, 10, 11);
 		calls++;
 
 		// (the exact same) 1-all differential+overlap calculation
-		testDifferentialOneMulti(p, calc, ex, calls, true, true);
+		testDifferentialOneMulti(p, calc, ex, calls, 12, 13);
 		calls++;
 
 		// 1-all differential (only) calculation
-		testDifferentialOneMulti(p, calc, ex, calls, true, false);
+		testDifferentialOneMulti(p, calc, ex, calls, 14, -1);
 		calls++;
 
 		// 1-all overlap (only) calculation - with differential configuration
-		testDifferentialOneMulti(p, calc, ex, calls, false, true);
+		testDifferentialOneMulti(p, calc, ex, calls, -1, 15);
 		calls++;
 
 		// 1-all calculation which doesn't actually do anything (no diff, no overlap)
-		testDifferentialOneMulti(p, calc, ex, calls, false, false);
+		testDifferentialOneMulti(p, calc, ex, calls, -1, -1);
 		calls++;
 
 		// 1-all overlap configuration - assess correct failure of differential calculation
-		testOverlapOneMulti(p, calc, ex, calls);
+		testOverlapOneMulti(p, calc, ex, calls, 20);
 		calls++;
 
 		// pairwise differential configuration : differential+overlap calculation
-		testDifferentialPairwise(p, calc, ex, calls, true, true);
+		testDifferentialPairwise(p, calc, ex, calls, true, true, 30);
 		calls++;
 
 		// pairwise differential (only) calculation
-		testDifferentialPairwise(p, calc, ex, calls, true, false);
+		testDifferentialPairwise(p, calc, ex, calls, true, false, 40);
 		calls++;
 
 		// pairwise overlap (only) calculation - with differential configuration
-		testDifferentialPairwise(p, calc, ex, calls, false, true);
+		testDifferentialPairwise(p, calc, ex, calls, false, false, 50);
 		calls++;
 
 		// pairwise calculation which doesn't actually do anything (no diff, no overlap)
-		testDifferentialPairwise(p, calc, ex, calls, false, false);
+		testDifferentialPairwise(p, calc, ex, calls, false, false, 60);
 		calls++;
 	}
 
@@ -102,15 +102,18 @@ public class TestConfiguration
 	/**
 	 * Test a 1-multi differential configuration, with differential and/or overlap calculation.
 	 */
-	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
+	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int diffID, int overlapID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
 		assertEquals(calls + 1, p.getAllRunIDs().size());
 
 		// it should not make a difference how many times this method is called!
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
 		RunOutput output = p.getOutput(ID);
+		
+		boolean diff = diffID >= 0;
+		boolean overlap = overlapID >= 0;
 		
 		if (diff && overlap)
 		{
@@ -153,20 +156,20 @@ public class TestConfiguration
 	/**
 	 * Test a 1-multi overlap configuration, should not contain differential networks.
 	 */
-	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls)
+	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int overlapID)
 	{
 		int ID = ex.getTestOverlapConfiguration(p);
 		assertEquals(calls + 1, p.getAllRunIDs().size());
 
-		assertException(p, calc, ID, true, true);
-		assertException(p, calc, ID, true, false);
+		assertException(p, calc, ID, overlapID++, overlapID++);
+		assertException(p, calc, ID, overlapID++, -1);
 
 		RunOutput dOutput = p.getOutput(ID);
 		assertNrPairs(dOutput, 0);
 		assertNrDiffNetworks(dOutput, 0);
 		assertNrOverlapNetworks(dOutput, 0);
 
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, false, true, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, -1, overlapID, true);
 		dOutput = p.getOutput(ID);
 
 		assertNrPairs(dOutput, 0);
@@ -180,12 +183,12 @@ public class TestConfiguration
 	/**
 	 * Test a pairwise differential configuration, with differential and/or overlap calculation.
 	 */
-	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap)
+	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap, int firstID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
 		assertEquals(calls + 1, p.getAllRunIDs().size());
 
-		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap, true);
+		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap, firstID, true);
 		RunOutput output = p.getOutput(ID);
 
 		// First, test the number of result networks, depending on the settings.
@@ -262,12 +265,12 @@ public class TestConfiguration
 	/**
 	 * Private method that asserts an error will result from calling the oneMulti calculation with a specific runconfiguration ID.
 	 */
-	private void assertException(Project p, CalculateDiff calc, int ID, boolean diff, boolean overlap)
+	private void assertException(Project p, CalculateDiff calc, int ID, int diffID, int overlapID)
 	{
 		boolean exceptionThrown = false;
 		try
 		{
-			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diff, overlap, true);
+			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
 		}
 		catch (IllegalArgumentException e)
 		{

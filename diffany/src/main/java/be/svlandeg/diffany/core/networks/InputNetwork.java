@@ -19,25 +19,27 @@ public class InputNetwork extends Network
 	 * Create a new generic input network.
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 */
-	public InputNetwork(String name, NodeMapper nm)
+	public InputNetwork(String name, int ID, NodeMapper nm)
 	{
-		super(name, nm);
+		super(name, ID, nm);
 	}
 
 	/**
 	 * Create a new generic input network.
 	 * 
-	 * @param networkName the name of this network (should be enforced to be unique within one project)
+	 * @param networkName the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public InputNetwork(String networkName, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
+	public InputNetwork(String networkName, int ID, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
 	{
-		super(networkName, nodes, edges, nm);
+		super(networkName, ID, nodes, edges, nm);
 	}
 
 	@Override

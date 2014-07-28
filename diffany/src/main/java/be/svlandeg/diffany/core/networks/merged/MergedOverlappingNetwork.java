@@ -14,6 +14,7 @@ public class MergedOverlappingNetwork extends MergedNetwork
 	 * Create a new overlapping network, referring to a merged input network.
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param mergedEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
@@ -22,10 +23,10 @@ public class MergedOverlappingNetwork extends MergedNetwork
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public MergedOverlappingNetwork(String name, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm, MergedInputNetwork input) 
+	public MergedOverlappingNetwork(String name, int ID, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm, MergedInputNetwork input) 
 			throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nodes, mergedEdges, nm);
 		if (input == null)
 		{
 			String errormsg = "Please define a non-null merged input network!";

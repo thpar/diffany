@@ -92,7 +92,7 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.7, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.8, false));
@@ -138,7 +138,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Salty", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Salty", 2, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -180,7 +180,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Draughty", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Draughty", 3, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -225,7 +225,7 @@ public class MultipleConditionTest extends GenericExample
 		int ID_diff = ex.getTestDiffConfiguration(p);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, true, true, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, 10, 11, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID_diff, true, false);

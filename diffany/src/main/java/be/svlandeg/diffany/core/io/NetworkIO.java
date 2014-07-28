@@ -41,6 +41,7 @@ public class NetworkIO
 	private static String default_definition_file = "network.txt";
 
 	private static String name_field = "Name";
+	private static String ID_field = "ID";
 	private static String type_field = "Type";
 
 	/**
@@ -174,10 +175,13 @@ public class NetworkIO
 		nodeWriter.flush();
 		nodeWriter.close();
 
-		// DEFINITION: NAME and TYPE (CLASS)
+		// DEFINITION: NAME, ID and TYPE (CLASS)
 		// TODO create DefinitionIO to read and write the network definition
 		definitionFile.getParentFile().mkdirs();
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
+		
+		defWriter.append(ID_field + "\t" + network.getID());
+		defWriter.newLine();
 
 		defWriter.append(name_field + "\t" + network.getName());
 		defWriter.newLine();
@@ -195,12 +199,11 @@ public class NetworkIO
 	 * Subsequently, call this method to write the conditions (ontology terms).
 	 * 
 	 * @param network the {@link ConditionNetwork} that needs to be written
-	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param conditionsFile the file to which the input network should be written
 	 * 
 	 * @throws IOException when an error occurs during writing
 	 */
-	public static void writeConditionsToFiles(ConditionNetwork network, NodeMapper nm, File conditionsFile) throws IOException
+	public static void writeConditionsToFiles(ConditionNetwork network, File conditionsFile) throws IOException
 	{
 		Set<Condition> conditions = network.getConditions();
 
@@ -243,7 +246,7 @@ public class NetworkIO
 		if (network instanceof ConditionNetwork)
 		{
 			File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
-			writeConditionsToFiles((ConditionNetwork) network, nm, default_conditions_File);
+			writeConditionsToFiles((ConditionNetwork) network, default_conditions_File);
 		}
 	}
 
@@ -267,12 +270,13 @@ public class NetworkIO
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader);
 		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
 
+		int ID = readIDFromFile(definitionFile);
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
 
 		if (type.equals("ReferenceNetwork"))
 		{
-			ReferenceNetwork r = new ReferenceNetwork(name, nm);
+			ReferenceNetwork r = new ReferenceNetwork(name, ID, nm);
 			r.setNodesAndEdges(nodes, edges);
 			return r;
 		}
@@ -280,13 +284,13 @@ public class NetworkIO
 		else if (type.equals("ConditionNetwork"))
 		{
 			Set<Condition> conditions = readConditionsFromFile(conditionsFile);
-			ConditionNetwork c = new ConditionNetwork(name, conditions, nm);
+			ConditionNetwork c = new ConditionNetwork(name, ID, conditions, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
 		else if (type.equals("InputNetwork"))
 		{
-			InputNetwork c = new InputNetwork(name, nm);
+			InputNetwork c = new InputNetwork(name, ID, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
@@ -384,12 +388,13 @@ public class NetworkIO
 		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader);
 		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
 
+		int ID = readIDFromFile(definitionFile);
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
 
 		if (type.equals("DifferentialNetwork"))
 		{
-			DifferentialNetwork d = new DifferentialNetwork(name, reference, condNetworks, nm);
+			DifferentialNetwork d = new DifferentialNetwork(name, ID, reference, condNetworks, nm);
 			d.setNodesAndEdges(nodes, edges);
 			return d;
 		}
@@ -398,7 +403,7 @@ public class NetworkIO
 			Set<Network> allNetworks = new HashSet<Network>();
 			allNetworks.add(reference);
 			allNetworks.addAll(condNetworks);
-			OverlappingNetwork o = new OverlappingNetwork(name, allNetworks, nm);
+			OverlappingNetwork o = new OverlappingNetwork(name, ID, allNetworks, nm);
 			o.setNodesAndEdges(nodes, edges);
 			return o;
 		}
@@ -557,6 +562,36 @@ public class NetworkIO
 		reader.close();
 		return nodes;
 	}
+	
+	/**
+	 * Read the ID of a network from file. Specifically, a line of form "ID \t XYZ" is searched, and XYZ returned as the ID in integer form.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionFile the file containing the network definition data
+	 * @return the ID of the network, as read from the file, or -1 if no ID was found or it could not be parsed as Integer
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static int readIDFromFile(File definitionFile) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
+		String line = reader.readLine();
+
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			if (stok.nextToken().equals(ID_field))
+			{
+				String ID = stok.nextToken();
+				reader.close();
+				return Integer.parseInt(ID);
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+		return -1;
+	}
+
 
 	/**
 	 * Read the name of a network from file. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.

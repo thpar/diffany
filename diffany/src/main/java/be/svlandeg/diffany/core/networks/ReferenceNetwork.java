@@ -17,12 +17,13 @@ public class ReferenceNetwork extends InputNetwork
 	 * Create a new static reference network.
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 */
-	public ReferenceNetwork(String name, NodeMapper nm)
+	public ReferenceNetwork(String name, int ID, NodeMapper nm)
 	{
-		super(name, nm);
+		super(name, ID, nm);
 	}
 
 	/* (non-Javadoc)

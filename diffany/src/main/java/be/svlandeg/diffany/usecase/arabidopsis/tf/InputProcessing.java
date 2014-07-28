@@ -32,11 +32,12 @@ public class InputProcessing
 	 * 
 	 * @param TFtargetFile the file containing the TF-target interactions
 	 * @param networkName the name the network should have
+	 * @param ID the ID of the resulting network
 	 * 
 	 * @return the input network containing the TF data
 	 * @throws IOException when the TF file can not be read properly
 	 */
-	public InputNetwork processTFData(File TFtargetFile, String networkName) throws IOException
+	public InputNetwork processTFData(File TFtargetFile, String networkName, int ID) throws IOException
 	{
 		String path = TFtargetFile.getAbsolutePath();
 		System.out.println(" Reading " + path );
@@ -74,7 +75,7 @@ public class InputProcessing
 		}
 		reader.close();
 		
-		InputNetwork tfNetwork = new InputNetwork(networkName, new HashSet<Node>(nodes.values()), edges, nm);
+		InputNetwork tfNetwork = new InputNetwork(networkName, ID, new HashSet<Node>(nodes.values()), edges, nm);
 		return tfNetwork;
 	}
 

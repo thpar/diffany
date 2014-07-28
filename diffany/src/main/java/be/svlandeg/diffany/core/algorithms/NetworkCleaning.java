@@ -50,10 +50,9 @@ public class NetworkCleaning
 	 * Be aware: this function changes the input network object!
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
 	 * @param eo the edge ontology
 	 */
-	private void fullCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	private void fullCleaning(Network net, EdgeOntology eo)
 	{
 		logger.log(" Full cleaning of " + net.getName());
 
@@ -63,7 +62,7 @@ public class NetworkCleaning
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		cleanEdges(net, nm, eo);
+		cleanEdges(net, eo);
 	}
 
 	/**
@@ -72,13 +71,12 @@ public class NetworkCleaning
 	 * Be aware: this function changes the network object!
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper for the network
 	 * @param eo the edge ontology
 	 */
-	public void fullOverlapOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	public void fullOverlapOutputCleaning(Network net, EdgeOntology eo)
 	{
 		net.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(net, nm, eo);
+		fullCleaning(net, eo);
 	}
 
 	/**
@@ -87,10 +85,8 @@ public class NetworkCleaning
 	 * Be aware: this function changes the network object!
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper for the network
-	 * @param eo the edge ontology
 	 */
-	public void fullDifferentialOutputCleaning(Network net, NodeMapper nm, EdgeOntology eo)
+	public void fullDifferentialOutputCleaning(Network net)
 	{
 		// Note: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX"
 		removeRedundantSymmetricalEdges(net);
@@ -140,45 +136,25 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Create a new set of edges with either all interactions directed, or all symmetrical. As soon as one input edge is directed, the whole set will become directed.
+	 * Alter a set of edges by making either all interactions directed, or all symmetrical. As soon as one input edge is directed, the whole set will become directed.
 	 * This method does not impose any other conditions such as whether the edges are between the same nodes or not, of the same type or not.
 	 * A sensible grouping of the edges should thus have been done by the calling method.
 	 * 
-	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
-	 * 
-	 * @return the new edge set with either only directed edges, or only symmetrical edges
+	 * @param oldSet the original edgeset which might have a mixture of directed and symmetrical edges
 	 */
-	public Set<EdgeDefinition> unifyDirection(Set<EdgeDefinition> oldSet)
+	public void unifyDirection(Set<EdgeDefinition> oldSet)
 	{
 		boolean symmetrical = true;
 		for (EdgeDefinition edge : oldSet)
 		{
 			symmetrical = symmetrical && edge.isSymmetrical();
 		}
-
-		return imposeSymmetry(oldSet, symmetrical);
-	}
-
-	/**
-	 * Create a new set of edges with all interactions either directed, or all symmetrical.
-	 * 
-	 * @param oldSet the old edgeset which might have a mixture of directed and symmetrical edges
-	 * @param directed if true, all will be symmetrical; if false, all will be directed
-	 * 
-	 * @return the new edge set with either only directed edges, or only symmetrical edges
-	 */
-	protected Set<EdgeDefinition> imposeSymmetry(Set<EdgeDefinition> oldSet, boolean symmetrical)
-	{
-		Set<EdgeDefinition> newSet = new HashSet<EdgeDefinition>();
-
 		for (EdgeDefinition edge : oldSet)
 		{
-			EdgeDefinition newEdge = new EdgeDefinition(edge);
-			newEdge.makeSymmetrical(symmetrical);
-			newSet.add(newEdge);
+			edge.makeSymmetrical(symmetrical);
 		}
-		return newSet;
 	}
+
 
 	/**
 	 * Clean an input condition-specific network:
@@ -193,9 +169,9 @@ public class NetworkCleaning
 	 */
 	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo)
 	{
-		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getConditions(), nm);
+		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getConditions(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, nm, eo);
+		fullCleaning(resultNet, eo);
 
 		return resultNet;
 	}
@@ -213,9 +189,9 @@ public class NetworkCleaning
 	 */
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo)
 	{
-		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), nm);
+		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, nm, eo);
+		fullCleaning(resultNet, eo);
 
 		return resultNet;
 	}
@@ -233,9 +209,9 @@ public class NetworkCleaning
 	 */
 	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo)
 	{
-		InputNetwork resultNet = new InputNetwork(net.getName(), nm);
+		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, nm, eo);
+		fullCleaning(resultNet, eo);
 
 		return resultNet;
 	}
@@ -248,7 +224,7 @@ public class NetworkCleaning
 	 * @param nm the node mapper
 	 * @param eo the edge ontology
 	 */
-	protected void cleanEdges(Network net, NodeMapper nm, EdgeOntology eo)
+	protected void cleanEdges(Network net, EdgeOntology eo)
 	{
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();

@@ -138,7 +138,7 @@ public class RunAnalysis
 		{
 			ExecuteR exeR = new ExecuteR(bridge);
 			input.processOsmoticCELLData(exeR, osmoticStressDir);
-			deAnalysis.findDEGenes(exeR, osmoticStressDir, outputFile);
+			deAnalysis.findDEGenes(exeR, outputFile);
 		}
 		catch (IOException e)
 		{
@@ -170,7 +170,7 @@ public class RunAnalysis
 	 * @throws URISyntaxException
 	 */
 	@SuppressWarnings("unused")
-    private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg) throws IOException, URISyntaxException
+    private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		
@@ -211,7 +211,7 @@ public class RunAnalysis
 
 			System.out.println("  Found " + edges.size() + " total edges");
 
-			InputNetwork net = new InputNetwork(data.getName(), new HashSet<Node>(nodes.keySet()), edges, nm);
+			InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes.keySet()), edges, nm);
 			
 			System.out.println("  Cleaning network:");
 

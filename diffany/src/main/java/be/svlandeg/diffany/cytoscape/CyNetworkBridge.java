@@ -59,6 +59,12 @@ public class CyNetworkBridge {
 	 */
 	public static String NEGATED = "negated";
 	
+	/**
+	 * Unique ID for the next network (TODO this is a hack by Sofie!)
+	 * This will not work like this, because output networks should have unique IDs as well ...
+	 */
+	private static int nextID = 0;
+	
 	
 	/**
 	 * Creates a {@link CyNetwork} from a {@link Network} and adds it to Cytoscape.
@@ -220,16 +226,16 @@ public class CyNetworkBridge {
 		String netName = getName(cyNetwork, cyNetwork);
 		switch(type){
 		case REFERENCE: 
-			network = new ReferenceNetwork(netName, nodeMapper);
+			network = new ReferenceNetwork(netName, nextID++, nodeMapper);
 			break;
 		case CONDITION:
 			//TODO get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
-			network = new ConditionNetwork(netName, conditions, nodeMapper);
+			network = new ConditionNetwork(netName, nextID++, conditions, nodeMapper);
 			break;
 		case GENERIC:
-			network = new InputNetwork(netName, nodeMapper);
+			network = new InputNetwork(netName, nextID++, nodeMapper);
 			break;
 		}
 				

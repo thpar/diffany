@@ -19,14 +19,15 @@ public abstract class MergedNetwork extends Network
 	 * Create a new network with a specific name and sets of nodes and edges.
 	 * All source and target nodes of each edge will be automatically added to the internal set of nodes.
 	 * 
-	 * @param name the name of this network (should be enforced to be unique within one project)
+	 * @param name the name of this network 
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
 	 * @param mergedEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedNetwork(String name, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
+	public MergedNetwork(String name, int ID, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (nm == null)
 		{
 			String errormsg = "Please define a proper NodeMapper object!";
@@ -41,12 +42,14 @@ public abstract class MergedNetwork extends Network
 
 	/**
 	 * Create a new network with an empty set of nodes and edges.
-	 * @param name the name of this network (should be enforced to be unique within one project)
+	 * 
+	 * @param name the name of this network 
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedNetwork(String name, NodeMapper nm)
+	public MergedNetwork(String name, int ID, NodeMapper nm)
 	{
-		this(name, new HashSet<Node>(), new HashSet<MergedEdge>(), nm);
+		this(name, ID, new HashSet<Node>(), new HashSet<MergedEdge>(), nm);
 	}
 
 }

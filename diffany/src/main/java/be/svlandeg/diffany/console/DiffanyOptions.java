@@ -27,6 +27,9 @@ public class DiffanyOptions
 
 	protected static String diffnameShort = "name";
 	protected static String cutoffShort = "conf";
+	
+	protected static String diffID = "diffID";
+	protected static String overlapID = "overlapID";
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -116,6 +119,16 @@ public class DiffanyOptions
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the name of the generated differential network");
 		allParameters.add(OptionBuilder.create(diffnameShort));
+		
+		OptionBuilder.withLongOpt("diffID");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the ID of the generated differential network");
+		allParameters.add(OptionBuilder.create(diffID));
+		
+		OptionBuilder.withLongOpt("overlapID");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the ID of the generated overlapping network");
+		allParameters.add(OptionBuilder.create(overlapID));
 		
 		OptionBuilder.withLongOpt("confidenceMin");
 		OptionBuilder.hasArgs(1);

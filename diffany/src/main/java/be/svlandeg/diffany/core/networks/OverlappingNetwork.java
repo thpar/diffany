@@ -24,14 +24,15 @@ public class OverlappingNetwork extends Network
 	 * Create a new overlapping network, referring to the original networks it was created from.
 	 * 
 	 * @param name the name of this network
+	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param originalNetworks the original networks (at least 2!)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the list of original networks is null or contains less than 2 networks
 	 */
-	public OverlappingNetwork(String name, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
+	public OverlappingNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, nm);
+		super(name, ID, nm);
 		if (originalNetworks == null || originalNetworks.size() < 2)
 		{
 			String errormsg = "Please define at least 2 original networks!";

@@ -42,7 +42,7 @@ public class RunConsole
 		CommandLine meta_cmd = parseOptions(args, parser, metaOpt, true);
 
 		Options diffOpt = new DiffanyOptions().getDiffanyOptions();
-		boolean metaPrinted = displayMetaData(meta_cmd, metaOpt, diffOpt);
+		boolean metaPrinted = displayMetaData(meta_cmd, diffOpt);
 		if (!metaPrinted)
 		{
 			CommandLine diff_cmd = parseOptions(args, parser, diffOpt, false);
@@ -109,12 +109,11 @@ public class RunConsole
 	 * If no request for meta data was issued, this method will return false, signaling the calling method that the commandline parameters should containc valid project data.
 	 * 
 	 * @param cmd the parsed input arguments provided on the commandline
-	 * @param metaOptions the {@link MetaOptions} defined for this program (e.g. help, version)
-	 * @param diffanyOptions the {@link DiffanyOptions} object that defines the options of the actual Diffany program (this information is needed for printing the help message)
+	 * @param diffanyOptions defines the options of the actual Diffany program (this information is needed for printing the help message)
 	 * 
 	 * @return whether or not a meta message was printed.
 	 */
-	private boolean displayMetaData(CommandLine cmd, Options metaOptions, Options diffanyOptions)
+	private boolean displayMetaData(CommandLine cmd, Options diffanyOptions)
 	{
 		// TODO: keep version number updated
 		String version = "0.0.1";

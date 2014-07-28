@@ -82,7 +82,7 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1", nm);
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, nm);
 		
 		// non-alphanumerical chars (punctuation, spaces, ...) should be ignored!
 		network.addEdge(new Edge(" positi ve reg ulation", nodes.get("A"), nodes.get("B"), false, 2, false));
@@ -111,7 +111,7 @@ public class ActivityFlowTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -158,7 +158,7 @@ public class ActivityFlowTest extends GenericExample
 		int ID = ex.getTestConfiguration(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, true);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false);

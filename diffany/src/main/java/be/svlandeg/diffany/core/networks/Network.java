@@ -158,7 +158,7 @@ public abstract class Network
 		{
 			for (Edge e : edges)
 			{
-				if (!e.symmetrical)
+				if (!e.isSymmetrical())
 				{
 					if (nm.areEqual(e.getSource(), source) && nm.areEqual(e.getTarget(), target))
 					{
@@ -212,7 +212,7 @@ public abstract class Network
 		Set<Edge> resultEdges = getAllEdges(source, target);
 		for (Edge e : resultEdges)
 		{
-			resultEdgeDefinitions.add(e);
+			resultEdgeDefinitions.add(e.def);
 		}
 		return resultEdgeDefinitions;
 	}

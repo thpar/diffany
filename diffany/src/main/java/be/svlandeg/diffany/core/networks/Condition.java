@@ -47,6 +47,15 @@ public class Condition
 		this(description, new HashSet<String>());
 	}
 	
+	/**
+	 * Cloning constructor
+	 * @param oldCondition the condition that needs cloning
+	 */
+	public Condition(Condition oldCondition)
+	{
+		this(new String(oldCondition.description), new HashSet<String>(oldCondition.ontologies));
+	}
+	
 	
 	/**
 	 * Return a free-text description of the condition

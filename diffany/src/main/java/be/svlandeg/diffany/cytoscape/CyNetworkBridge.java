@@ -25,6 +25,7 @@ import org.cytoscape.work.TaskManager;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
@@ -258,12 +259,14 @@ public class CyNetworkBridge {
 			String interaction = getInteraction(cyNetwork, cyEdge);
 			
 			boolean isSymmetrical = edgeOntology.isSymmetricalSourceType(interaction);
-			
-			Edge edge = new Edge(interaction, fromNode, toNode, isSymmetrical);
-			if (getWeight(cyNetwork, cyEdge) !=null){
-				edge.setWeight(getWeight(cyNetwork, cyEdge));				
+			boolean isNegated = isNegated(cyNetwork, cyEdge);
+			Double weight = getWeight(cyNetwork, cyEdge); 
+			if (weight == null){
+				weight = EdgeDefinition.DEFAULT_WEIGHT;				
 			}
-			edge.makeNegated(isNegated(cyNetwork, cyEdge));
+			
+			Edge edge = new Edge(interaction, fromNode, toNode, isSymmetrical, weight, isNegated);
+			
 			edgeSet.add(edge);
 		}
 		

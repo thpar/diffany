@@ -5,16 +5,17 @@ import be.svlandeg.diffany.core.io.EdgeIO;
 /**
  * Class that represents an edge in a network: an edge has a source and target node
  * and can have a certain weight. It is symmetrical or not, and may or may not be negated.
+ * An edge can not be altered.
  * 
  * Edge data can be saved and loaded through the {@link EdgeIO} class
  * 
  * @author Sofie Van Landeghem
  */
-public class Edge extends EdgeDefinition
+public class Edge 
 {
-
 	protected Node source;
 	protected Node target;
+	protected EdgeDefinition def;
 
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
@@ -42,7 +43,7 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
 	{
-		super(type, symmetrical, weight, negated);
+		def = new EdgeDefinition(type, symmetrical, weight, negated);
 		if (source == null)
 		{
 			String errormsg = "The source node should not be null!";
@@ -68,7 +69,7 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, boolean negated)
 	{
-		this(type, source, target, symmetrical, DEFAULT_WEIGHT, negated);
+		this(type, source, target, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, negated);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical, double weight)
 	{
-		this(type, source, target, symmetrical, weight, DEFAULT_NEG);
+		this(type, source, target, symmetrical, weight, EdgeDefinition.DEFAULT_NEG);
 	}
 
 	/**
@@ -95,7 +96,7 @@ public class Edge extends EdgeDefinition
 	 */
 	public Edge(String type, Node source, Node target, boolean symmetrical)
 	{
-		this(type, source, target, symmetrical, DEFAULT_WEIGHT, DEFAULT_NEG);
+		this(type, source, target, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, EdgeDefinition.DEFAULT_NEG);
 	}
 
 	/**
@@ -127,6 +128,55 @@ public class Edge extends EdgeDefinition
 	{
 		return EdgeIO.writeToTab(this);
 	}
+	
+	/**
+	 * Get the definition of this edge
+	 * @return the edge definition
+	 */
+	public EdgeDefinition getDefinition()
+	{
+		return def;
+	}
+	
+	/**
+	 * Get the type of this edge
+	 * @return the edge type
+	 */
+	public String getType()
+	{
+		return def.type;
+	}
+	
+	/**
+	 * Return whether or not this edge is symmetrical 
+	 * (if not, it goes specifically from source to target, otherwise there is no real direction)
+	 * @return whether or not this edge is symmetrical
+	 */
+	public boolean isSymmetrical()
+	{
+		return def.symmetrical;
+	}
+	
+	/**
+	 * Return whether or not this edge is negated (e.g. does NOT bind) 
+	 * @return whether or not this edge is negated
+	 */
+	public boolean isNegated()
+	{
+		return def.negated;
+	}
+	
+	/**
+	 * Get the weight of this edge.
+	 * When it never has been set, it is 1.0 by default.
+	 * The edge weight should always be positive. When it is 0, the edge can be ignored.
+	 * @return the edge weight
+	 */
+	public double getWeight()
+	{
+		return def.weight;
+	}
+	
 	
 	/** 
 	 * Retrieve whether or not an edge is virtual. It is considered virtual if the source and/or target nodes are virtual.

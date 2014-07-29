@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 
@@ -113,27 +114,31 @@ public class Unification
 	{
 		Set<Edge> newEdges = new HashSet<Edge>();
 		
-		for (Edge e : oldEdges)
+		for (Edge oldE : oldEdges)
 		{
-			String type = e.getType();
-			boolean shouldBeSymmetrical = eo.isSymmetricalSourceType(type);
-			boolean isSymmetrical = e.isSymmetrical();
+			EdgeDefinition newDef = new EdgeDefinition(oldE.getDefinition());
+
+			boolean shouldBeSymmetrical = eo.isSymmetricalSourceType(newDef.getType());
+			boolean isSymmetrical = newDef.isSymmetrical();
+			
 			if (isSymmetrical && !shouldBeSymmetrical)
 			{
 				// source-target: make directed
-				e.makeSymmetrical(shouldBeSymmetrical);
-				newEdges.add(e);
+				newDef.makeSymmetrical(shouldBeSymmetrical);
+				
+				Edge newEdge1 = new Edge(oldE.getSource(), oldE.getTarget(), newDef);
+				newEdges.add(newEdge1);
 				
 				// make new directed target-source edge
-				Edge newE = new Edge(e.getTarget(), e.getSource(), e);
-				newEdges.add(newE);
+				Edge newEdge2 = new Edge(oldE.getTarget(), oldE.getSource(), newDef);
+				newEdges.add(newEdge2);
 			}
 			else
 			{
+				Edge newEdge = new Edge(oldE.getSource(), oldE.getTarget(), newDef);
 				// simply keep the current edge
-				newEdges.add(e);
+				newEdges.add(newEdge);
 			}
-			
 		}
 		return newEdges;
 	}

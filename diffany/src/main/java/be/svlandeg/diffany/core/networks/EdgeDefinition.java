@@ -6,6 +6,7 @@ import be.svlandeg.diffany.core.io.EdgeIO;
 /**
  * An edge definition holds all information of an edge, except its actual source and target nodes.
  * It is thus a virtual definition of an edge, free from any network context.
+ * In contrast to an edge, an edge definition can still be changed after construction.
  * 
  * It is used by the EdgeOntology to reason about edge types etc. without considering the actual nodes.
  * 
@@ -14,10 +15,10 @@ import be.svlandeg.diffany.core.io.EdgeIO;
 public class EdgeDefinition
 {
 	
-	protected static String DEFAULT_TYPE = "unspecified_connection";
-	protected static double DEFAULT_WEIGHT = 1.0;
-	protected static boolean DEFAULT_SYMM = true;
-	protected static boolean DEFAULT_NEG = false;
+	public static String DEFAULT_TYPE = "unspecified_connection";
+	public static double DEFAULT_WEIGHT = 1.0;
+	public static boolean DEFAULT_SYMM = true;
+	public static boolean DEFAULT_NEG = false;
 	
 	protected String type;
 	

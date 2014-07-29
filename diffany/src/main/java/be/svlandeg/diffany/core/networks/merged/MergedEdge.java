@@ -19,26 +19,17 @@ import be.svlandeg.diffany.core.networks.Node;
 public class MergedEdge extends Edge
 {
 
-	protected Set<Condition> conditions;
-	protected boolean inReference;
-	protected int support;
-
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
 	 * The EdgeDefinition object is not kept as such, its fields are copied (to make sure there is no dependency)
 	 * 
 	 * @param source the source node
 	 * @param target the target node
-	 * @param def the edge definition specifying the type, weight, symmetry and negation of the edge
-	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
-	 * @param support the number of supporting networks for this edge
-	 * @param inReference whether or not this edge is present in the reference network
+	 * @param mergedDef the edge definition specifying the type, weight, symmetry and negation of the edge, as well as the type of support
 	 */
-	public MergedEdge(Node source, Node target, EdgeDefinition def, Set<Condition> conditions, int support, boolean inReference)
+	public MergedEdge(Node source, Node target, MergedEdgeDefinition mergedDef)
 	{
-		super(source, target, def);
-		setConditions(conditions, support);
-		this.inReference = inReference;
+		super(source, target, mergedDef);
 	}
 
 	/**
@@ -57,9 +48,7 @@ public class MergedEdge extends Edge
 	 */
 	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
 	{
-		super(type, source, target, symmetrical, weight, negated);
-		setConditions(conditions, support);
-		this.inReference = inReference;
+		this(source, target, new MergedEdgeDefinition(type, symmetrical, weight, negated, conditions, support, inReference));
 	}
 
 	/**
@@ -72,11 +61,11 @@ public class MergedEdge extends Edge
 	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
 	 * @param support the number of supporting networks for this edge
+	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, boolean negated, Set<Condition> conditions, int support)
+	public MergedEdge(String type, Node source, Node target, boolean symmetrical, boolean negated, Set<Condition> conditions, int support, boolean inReference)
 	{
-		super(type, source, target, symmetrical, negated);
-		setConditions(conditions, support);
+		this(source, target, new MergedEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, negated, conditions, support, inReference));
 	}
 
 	/**
@@ -89,11 +78,11 @@ public class MergedEdge extends Edge
 	 * @param weight the weight or confidence of this edge (should be positive)
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
 	 * @param support the number of supporting networks for this edge
+	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, Set<Condition> conditions, int support)
+	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, Set<Condition> conditions, int support, boolean inReference)
 	{
-		super(type, source, target, symmetrical, weight);
-		setConditions(conditions, support);
+		this(source, target, new MergedEdgeDefinition(type, symmetrical, weight, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
 	}
 
 	/**
@@ -105,31 +94,11 @@ public class MergedEdge extends Edge
 	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
 	 * @param support the number of supporting networks for this edge
+	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, Set<Condition> conditions, int support)
+	public MergedEdge(String type, Node source, Node target, boolean symmetrical, Set<Condition> conditions, int support, boolean inReference)
 	{
-		super(type, source, target, symmetrical);
-		setConditions(conditions, support);
-	}
-
-	/**
-	 * Define the set of conditions in which this edge is present
-	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
-	 */
-	private void setConditions(Set<Condition> conditions, int support)
-	{
-		if (conditions == null || conditions.isEmpty())
-		{
-			String errormsg = "Please define at least 1 condition!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.conditions = conditions;
-		if (support < 0)
-		{
-			String errormsg = "The support needs to be a positive integer!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.support = support;
+		this(source, target, new MergedEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
 	}
 
 	/**
@@ -138,33 +107,17 @@ public class MergedEdge extends Edge
 	 */
 	public Set<Condition> getConditions()
 	{
-		return conditions;
+		return ((MergedEdgeDefinition) def).conditions;
 	}
 
 	public boolean inReferenceNetwork()
 	{
-		return inReference;
+		return ((MergedEdgeDefinition) def).inReference;
 	}
 
 	public int getSupport()
 	{
-		return support;
-	}
-
-	@Override
-	public String toString()
-	{
-		String result = super.toString();
-		result += " (" + support;
-		if (inReference)
-		{
-			result += ", including reference network)";
-		}
-		else
-		{
-			result += ", but not in reference network)";
-		}
-		return result;
+		return ((MergedEdgeDefinition) def).support;
 	}
 
 }

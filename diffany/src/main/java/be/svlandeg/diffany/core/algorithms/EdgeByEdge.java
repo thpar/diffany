@@ -170,7 +170,7 @@ public class EdgeByEdge
 						String type = e.getType();
 						if (eo.isSourceTypeChildOf(type, root) > -1)
 						{
-							rootRefs.add(e);
+							rootRefs.add(e.getDefinition());
 						}
 					}
 					if (rootRefs.isEmpty())
@@ -192,7 +192,7 @@ public class EdgeByEdge
 							String type = e.getType();
 							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								thisRootCons.add(e);
+								thisRootCons.add(e.getDefinition());
 							}
 						}
 						if (thisRootCons.isEmpty())
@@ -295,23 +295,23 @@ public class EdgeByEdge
 				String targetconsensusName = nm.getConsensusName(targets);
 
 				// get all edges from the input network
-				Map<String, Map<Integer, Set<Edge>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<Edge>>>();
+				Map<String, Map<Integer, Set<EdgeDefinition>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<EdgeDefinition>>>();
 				for (String root : roots)
 				{
-					edgesBySemanticRoot.put(root, new HashMap<Integer, Set<Edge>>());
+					edgesBySemanticRoot.put(root, new HashMap<Integer, Set<EdgeDefinition>>());
 				}
 				for (Network n : networks)
 				{
 					Set<Edge> allEdges = n.getAllEdges(example_source, example_target);
 					for (String root : roots)
 					{
-						Set<Edge> rootEdges = new HashSet<Edge>();
+						Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
 						for (Edge e : allEdges)
 						{
 							String type = e.getType();
 							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								rootEdges.add(e);
+								rootEdges.add(e.getDefinition());
 							}
 						}
 						if (! rootEdges.isEmpty())
@@ -329,7 +329,7 @@ public class EdgeByEdge
 					List<EdgeDefinition> edges = new ArrayList<EdgeDefinition>();
 					List<Set<Integer>> supportingNetworks = new ArrayList<Set<Integer>>();
 					
-					Map<Integer, Set<Edge>> edgesByNetwork = edgesBySemanticRoot.get(root);
+					Map<Integer, Set<EdgeDefinition>> edgesByNetwork = edgesBySemanticRoot.get(root);
 					
 					for (int networkID : edgesByNetwork.keySet())
 					{

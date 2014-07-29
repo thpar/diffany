@@ -96,19 +96,28 @@ public class EdgeComparison
 	 * 
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * 
-	 * TODO javadoc
+	 * TODO javadoc - should return a map with one value, or empty!
 	 */
-	protected Double determineWeight(IntermediateComparison intermediate, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	protected Map<Double, Set<Integer>> determineWeight(IntermediateComparison intermediate, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
+		Map<Double, Set<Integer>> foundWeights = new HashMap<Double, Set<Integer>>();
+		Set<Integer> supports = new HashSet<Integer>();
+		
 		// we can take the maximum value, if there is enough total support
 		if (!minOperator)
 		{
 			double maxWeight = intermediate.allWeights.lastKey();
 			if (intermediate.getTotalSupport() >= overlapNo_cutoff && maxWeight >= weight_cutoff)
 			{
-				return maxWeight;
+				for (double w : intermediate.allWeights.keySet())
+				{
+					supports.addAll(intermediate.allWeights.get(w));
+				}
+				
+				foundWeights.put(maxWeight, supports);
+				return foundWeights;
 			}
-			return null;
+			return foundWeights;
 		}
 
 		// we need to find the maximal minimum value that has enough support
@@ -119,14 +128,17 @@ public class EdgeComparison
 		for (double w : allWs.descendingSet())
 		{
 			int currentSupport = intermediate.allWeights.get(w).size();
+			supports.addAll(intermediate.allWeights.get(w));
+			
 			accumulatedSupport += currentSupport;
 			if (accumulatedSupport >= overlapNo_cutoff && w >= weight_cutoff)
 			{
-				return w; // the first (highest) value that has enough support
+				foundWeights.put(w, supports);	// the first (highest) value that has enough support
+				return foundWeights;
 			}
 		}
 
-		return null;
+		return foundWeights;
 	}
 
 	/**
@@ -208,17 +220,21 @@ public class EdgeComparison
 	 * Create an edge from an intermediate comparison, by determining the appropriate weight and type from it. Further define the symmetry and negation status of the new edge.
 	 * If the weight cutoff is not reached, null will be returned
 	 */
-	private EdgeDefinition createEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	private Map<EdgeDefinition, Set<Integer>> createEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
 		EdgeDefinition overlap_edge = eg.getDefaultEdge();
 		overlap_edge.makeSymmetrical(final_symm);
 		overlap_edge.makeNegated(negation);
 		overlap_edge.setType(inter.type);
-		Double weight = determineWeight(inter, overlapNo_cutoff, weight_cutoff, minOperator);
-		if (weight != null)
+		Map<Double, Set<Integer>> weightAndSupport = determineWeight(inter, overlapNo_cutoff, weight_cutoff, minOperator);
+		if (! weightAndSupport.isEmpty())
 		{
+			Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
+			
+			double weight = weightAndSupport.keySet().iterator().next();	// TODO check there's only one!
 			overlap_edge.setWeight(weight);
-			return overlap_edge;
+			map.put(overlap_edge, weightAndSupport.get(weight));
+			return map;
 		}
 		return null;
 	}
@@ -542,18 +558,23 @@ public class EdgeComparison
 			
 			if (aff)
 			{
-				EdgeDefinition overlap_edge = createEdge(aff_result, final_symm, false, overlapNo_cutoff, weight_cutoff, minOperator);
-				if (overlap_edge != null)
+				Map<EdgeDefinition, Set<Integer>> map = createEdge(aff_result, final_symm, false, overlapNo_cutoff, weight_cutoff, minOperator);
+				 
+				if (map != null)
 				{
-					overlaps.put(overlap_edge, null);	// TODO
+					EdgeDefinition overlap_edge = map.keySet().iterator().next(); 	// TODO check there's only 1!
+					Set<Integer> theseSupports = map.get(overlap_edge);
+					overlaps.put(overlap_edge, theseSupports);	
 				}
 			}
 			if (neg)
 			{
-				EdgeDefinition overlap_edge = createEdge(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff, minOperator);
-				if (overlap_edge != null)
+				Map<EdgeDefinition, Set<Integer>> map = createEdge(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff, minOperator);
+				if (map != null)
 				{
-					overlaps.put(overlap_edge, null);	// TODO
+					EdgeDefinition overlap_edge = map.keySet().iterator().next(); 	// TODO check there's only 1!
+					Set<Integer> theseSupports = map.get(overlap_edge);
+					overlaps.put(overlap_edge, theseSupports);	
 				}
 			}
 		}

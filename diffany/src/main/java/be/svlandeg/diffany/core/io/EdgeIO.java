@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.merged.MergedEdge;
 import be.svlandeg.diffany.core.networks.merged.MergedEdgeDefinition;
 
 /**
@@ -55,6 +56,10 @@ public class EdgeIO
 	public static String writeToTab(Edge e)
 	{
 		String defResult = writeDefinitionToTab(e.getDefinition());
+		if (e instanceof MergedEdge)
+		{
+			defResult += writeMergedDefinitionToTab((MergedEdgeDefinition) e.getDefinition());
+		}
 		String result = e.getSource().getID() + '\t' + e.getTarget().getID() + '\t' + defResult;
 		return result;
 	}
@@ -91,11 +96,9 @@ public class EdgeIO
 	 * @param def the original edge definition
 	 * @return a string representation of this edge definition, ready for printing
 	 */
-	public static String writeDefinitionToTab(MergedEdgeDefinition def)
+	public static String writeMergedDefinitionToTab(MergedEdgeDefinition def)
 	{
-		String result = writeDefinitionToTab(def);
-		
-		result += '\t' + def.getSupport();
+		String result = "\t" + def.getSupport();
 		if (def.inReferenceNetwork())
 		{
 			result += '\t' + referenceString;

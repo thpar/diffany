@@ -389,11 +389,9 @@ public class EdgeByEdge
 							Node targetresult = allDiffNodes.get(targetconsensusID);
 
 							Set<Condition> conditions = new HashSet<Condition>();
-							conditions.add(new Condition("FAKE"));
 							boolean inReference = false;
 							int support = 0;
 
-							/* TODO
 							for (int i : supports)
 							{
 								support++;
@@ -401,13 +399,18 @@ public class EdgeByEdge
 								if (input instanceof ReferenceNetwork)
 								{
 									inReference = true;
+									conditions.add(new Condition("Reference"));
 								}
 								if (input instanceof ConditionNetwork)
 								{
 									conditions.addAll(((ConditionNetwork) input).getConditions());
 								}
 							}
-							*/
+							if (conditions.isEmpty())
+							{
+								conditions.add(new Condition("Undefined conditions"));
+								// TODO this shouldn't happen ?!
+							}
 							MergedEdgeDefinition mergedDef = new MergedEdgeDefinition(def, conditions, support, inReference);
 
 							MergedEdge overlapdiff = new MergedEdge(sourceresult, targetresult, mergedDef);

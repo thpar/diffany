@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
@@ -16,6 +17,8 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.networks.merged.MergedEdge;
+import be.svlandeg.diffany.core.networks.merged.MergedEdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -275,6 +278,12 @@ public class EdgeByEdge
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 
+		Map<Integer, Network> allNetworks = new HashMap<Integer, Network>();
+		for (Network n : networks)
+		{
+			allNetworks.put(n.getID(), n);
+		}
+
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats();
@@ -314,23 +323,23 @@ public class EdgeByEdge
 								rootEdges.add(e.getDefinition());
 							}
 						}
-						if (! rootEdges.isEmpty())
+						if (!rootEdges.isEmpty())
 						{
 							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
 						}
 					}
-					
+
 				}
 
 				for (String root : roots)
 				{
 					boolean symm = eo.isSymmetricalSourceCat(root);
-					
+
 					List<EdgeDefinition> edges = new ArrayList<EdgeDefinition>();
 					List<Set<Integer>> supportingNetworks = new ArrayList<Set<Integer>>();
-					
+
 					Map<Integer, Set<EdgeDefinition>> edgesByNetwork = edgesBySemanticRoot.get(root);
-					
+
 					for (int networkID : edgesByNetwork.keySet())
 					{
 						for (EdgeDefinition e : edgesByNetwork.get(networkID))
@@ -357,14 +366,15 @@ public class EdgeByEdge
 					}
 
 					List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(edges);
-					
+
 					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					Map<EdgeDefinition, Set<Integer>> overlap_edge_defs = ec.getOverlapEdge(cleanedEdges, supportingNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
+					Map<EdgeDefinition, Set<Integer>> defs = ec.getOverlapEdge(cleanedEdges, supportingNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
-					for (EdgeDefinition overlap_edge_def : overlap_edge_defs.keySet())
+					for (EdgeDefinition def : defs.keySet())
 					{
-						if (overlap_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
+						Set<Integer> supports = defs.get(def);
+						if (def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
 						{
 							if (!allDiffNodes.containsKey(sourceconsensusID))
 							{
@@ -378,7 +388,29 @@ public class EdgeByEdge
 							}
 							Node targetresult = allDiffNodes.get(targetconsensusID);
 
-							Edge overlapdiff = new Edge(sourceresult, targetresult, overlap_edge_def);
+							Set<Condition> conditions = new HashSet<Condition>();
+							conditions.add(new Condition("FAKE"));
+							boolean inReference = false;
+							int support = 0;
+
+							/* TODO
+							for (int i : supports)
+							{
+								support++;
+								Network input = allNetworks.get(i);
+								if (input instanceof ReferenceNetwork)
+								{
+									inReference = true;
+								}
+								if (input instanceof ConditionNetwork)
+								{
+									conditions.addAll(((ConditionNetwork) input).getConditions());
+								}
+							}
+							*/
+							MergedEdgeDefinition mergedDef = new MergedEdgeDefinition(def, conditions, support, inReference);
+
+							MergedEdge overlapdiff = new MergedEdge(sourceresult, targetresult, mergedDef);
 							overlap.addEdge(overlapdiff);
 						}
 					}

@@ -14,6 +14,21 @@ public class MergedEdgeDefinition extends EdgeDefinition
 	protected int support;
 	
 	/**
+	 * Create a new 'merged' edge definition from a 'normal' edge definition
+	 * 
+	 * @param def the definition that contains the type, symmetry/negation status, and the weight
+	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
+	 * @param support the number of supporting networks for this edge
+	 * @param inReference whether or not this edge is present in the reference network
+	 * 
+	 * @throws IllegalArgumentException when the specified weight is a negative number
+	 */
+	public MergedEdgeDefinition(EdgeDefinition def, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
+	{
+		this(def.getType(), def.isSymmetrical(), def.getWeight(), def.isNegated(), conditions, support, inReference);
+	}
+	
+	/**
 	 * Create a new 'merged' edge definition with a certain type, direction, weight and directionality
 	 * 
 	 * @param type the interaction type of this edge

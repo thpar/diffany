@@ -77,7 +77,6 @@ public class NetworkCleaning
 	 */
 	public void fullOverlapOutputCleaning(Network net, EdgeOntology eo)
 	{
-		net.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(net, eo);
 	}
 

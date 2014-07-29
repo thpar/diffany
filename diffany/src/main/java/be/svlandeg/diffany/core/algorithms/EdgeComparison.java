@@ -38,29 +38,38 @@ public class EdgeComparison
 
 	/**
 	 * Private class that will be used to store intermediate calculations at all levels of the edge ontology.
+	 * Each IntermediateComparison object represents one type in the ontology 
+	 * and each possible weight for this type is stored together with the IDs of the supporting networks.
 	 */
 	protected class IntermediateComparison
 	{
-		private SortedMap<Double, Integer> allWeights;
+		private SortedMap<Double, Set<Integer>> allWeights;
 		private String type;
-
-		private int support; // the number of edges matching this level of the ontology
 
 		protected IntermediateComparison(String type)
 		{
-			allWeights = new TreeMap<Double, Integer>();
-			support = 0;
+			allWeights = new TreeMap<Double, Set<Integer>>();
 			this.type = type;
 		}
 
 		public String toString()
 		{
-			String result = "intermediate comparison at type " + type + " : support " + support + " :";
+			String result = "intermediate comparison at type " + type + " : support " + getTotalSupport() + " :";
 			for (double d : allWeights.keySet())
 			{
 				result += " " + d + " (" + allWeights.get(d) + ") - ";
 			}
 			return result;
+		}
+		
+		public int getTotalSupport()
+		{
+			int support = 0;
+			for (double w : allWeights.keySet())
+			{
+				support += allWeights.get(w).size();
+			}
+			return support;
 		}
 	}
 
@@ -70,16 +79,15 @@ public class EdgeComparison
 	 * @param intermediate the current result
 	 * @param weight the weight of the edges that further supports this result
 	 */
-	protected void addResult(IntermediateComparison intermediate, double weight)
+	protected void addResult(IntermediateComparison intermediate, int networkID, double weight)
 	{
-		Integer count = intermediate.allWeights.get(weight);
-		if (count == null)
+		Set<Integer> supports = intermediate.allWeights.get(weight);
+		if (supports == null)
 		{
-			count = 0;
+			supports = new HashSet<Integer>();
 		}
-		count++;
-		intermediate.allWeights.put(weight, count);
-		intermediate.support = intermediate.support + 1;
+		supports.add(networkID);
+		intermediate.allWeights.put(weight, supports);
 	}
 
 	/**
@@ -92,11 +100,11 @@ public class EdgeComparison
 	 */
 	protected Double determineWeight(IntermediateComparison intermediate, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
 	{
-		// we can take the maximum value, if there is enough support
+		// we can take the maximum value, if there is enough total support
 		if (!minOperator)
 		{
 			double maxWeight = intermediate.allWeights.lastKey();
-			if (intermediate.support >= overlapNo_cutoff && maxWeight >= weight_cutoff)
+			if (intermediate.getTotalSupport() >= overlapNo_cutoff && maxWeight >= weight_cutoff)
 			{
 				return maxWeight;
 			}
@@ -110,7 +118,7 @@ public class EdgeComparison
 		TreeSet<Double> allWs = new TreeSet<Double>(intermediate.allWeights.keySet());
 		for (double w : allWs.descendingSet())
 		{
-			int currentSupport = intermediate.allWeights.get(w);
+			int currentSupport = intermediate.allWeights.get(w).size();
 			accumulatedSupport += currentSupport;
 			if (accumulatedSupport >= overlapNo_cutoff && w >= weight_cutoff)
 			{
@@ -129,7 +137,7 @@ public class EdgeComparison
 	 * @param affirmative_results the (flattened) tree of support for non-negated edges
 	 * @param negated_results the (flattened) tree of support for negated edges
 	 */
-	protected void addEdgeToTree(EdgeDefinition e, Map<String, IntermediateComparison> affirmative_results, Map<String, IntermediateComparison> negated_results)
+	protected void addEdgeToTree(EdgeDefinition e, Set<Integer> support, Map<String, IntermediateComparison> affirmative_results, Map<String, IntermediateComparison> negated_results)
 	{
 		Set<String> processedCategories = new HashSet<String>(); // make sure we do not process any ontology category twice for the same edge
 
@@ -151,8 +159,11 @@ public class EdgeComparison
 						{
 							intermediate = new IntermediateComparison(category);
 						}
-
-						addResult(intermediate, e.getWeight());
+						
+						for (int networkID : support)
+						{
+							addResult(intermediate, networkID, e.getWeight());
+						}
 						negated_results.put(category, intermediate);
 
 						processedCategories.add(category);
@@ -175,7 +186,10 @@ public class EdgeComparison
 						intermediate = new IntermediateComparison(category);
 					}
 
-					addResult(intermediate, e.getWeight());
+					for (int networkID : support)
+					{
+						addResult(intermediate, networkID, e.getWeight());
+					}
 					affirmative_results.put(category, intermediate);
 
 					processedCategories.add(category);
@@ -187,6 +201,26 @@ public class EdgeComparison
 				}
 			}
 		}
+	}
+	
+	
+	/**
+	 * Create an edge from an intermediate comparison, by determining the appropriate weight and type from it. Further define the symmetry and negation status of the new edge.
+	 * If the weight cutoff is not reached, null will be returned
+	 */
+	private EdgeDefinition createEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	{
+		EdgeDefinition overlap_edge = eg.getDefaultEdge();
+		overlap_edge.makeSymmetrical(final_symm);
+		overlap_edge.makeNegated(negation);
+		overlap_edge.setType(inter.type);
+		Double weight = determineWeight(inter, overlapNo_cutoff, weight_cutoff, minOperator);
+		if (weight != null)
+		{
+			overlap_edge.setWeight(weight);
+			return overlap_edge;
+		}
+		return null;
 	}
 
 	/**
@@ -450,9 +484,9 @@ public class EdgeComparison
 			String errormsg = "The list of edges should not be null or empty!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (supports == null || supports.isEmpty())
+		if (supports == null || supports.isEmpty() || supports.size() != edges.size())
 		{
-			String errormsg = "The list of supporting networks should not be null or empty!";
+			String errormsg = "The list of supporting networks should be as large as the edge list!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		int countEdges = edges.size();
@@ -481,9 +515,11 @@ public class EdgeComparison
 		Map<String, IntermediateComparison> affirmative_results = new HashMap<String, IntermediateComparison>();
 		Map<String, IntermediateComparison> negated_results = new HashMap<String, IntermediateComparison>();
 
-		for (EdgeDefinition e : edges)
+		for (int i = 0; i < edges.size(); i++)
 		{
-			addEdgeToTree(e, affirmative_results, negated_results);
+			EdgeDefinition e = edges.get(i);
+			Set<Integer> support = supports.get(i);
+			addEdgeToTree(e, support, affirmative_results, negated_results);
 		}
 
 		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE RESULTS, USING THE OVERLAP NO CUTOFF PARAMETER
@@ -492,14 +528,14 @@ public class EdgeComparison
 		{
 			IntermediateComparison aff_result = affirmative_results.get(cat);
 			boolean aff = false;
-			if (aff_result != null && aff_result.support >= overlapNo_cutoff)
+			if (aff_result != null && aff_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				aff = true;
 			}
 			
 			IntermediateComparison neg_result = negated_results.get(cat);
 			boolean neg = false;
-			if (neg_result != null && neg_result.support >= overlapNo_cutoff)
+			if (neg_result != null && neg_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				neg = true;
 			}
@@ -524,24 +560,6 @@ public class EdgeComparison
 
 		return overlaps;
 	}
-	
-	/**
-	 * TODO
-	 * 
-	 */
-	private EdgeDefinition createEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
-	{
-		EdgeDefinition overlap_edge = eg.getDefaultEdge();
-		overlap_edge.makeSymmetrical(final_symm);
-		overlap_edge.makeNegated(negation);
-		overlap_edge.setType(inter.type);
-		Double weight = determineWeight(inter, overlapNo_cutoff, weight_cutoff, minOperator);
-		if (weight != null)
-		{
-			overlap_edge.setWeight(weight);
-			return overlap_edge;
-		}
-		return null;
-	}
+
 
 }

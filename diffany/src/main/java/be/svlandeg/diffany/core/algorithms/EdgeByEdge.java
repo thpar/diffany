@@ -325,7 +325,9 @@ public class EdgeByEdge
 				for (String root : roots)
 				{
 					boolean symm = eo.isSymmetricalSourceCat(root);
-					Map<EdgeDefinition, Set<Integer>> allEdges = new HashMap<EdgeDefinition, Set<Integer>>();
+					
+					List<EdgeDefinition> edges = new ArrayList<EdgeDefinition>();
+					List<Set<Integer>> supportingNetworks = new ArrayList<Set<Integer>>();
 					
 					Map<Integer, Set<Edge>> edgesByNetwork = edgesBySemanticRoot.get(root);
 					
@@ -333,23 +335,31 @@ public class EdgeByEdge
 					{
 						for (EdgeDefinition e : edgesByNetwork.get(networkID))
 						{
-							if (! allEdges.containsKey(e))
+							if (edges.contains(e))
 							{
-								allEdges.put(e, new HashSet<Integer>());
+								int position = edges.indexOf(e);
+								supportingNetworks.get(position).add(networkID);
 							}
-							allEdges.get(e).add(networkID);
+							else
+							{
+								edges.add(e);
+								Set<Integer> support = new HashSet<Integer>();
+								support.add(networkID);
+								supportingNetworks.add(support);
+							}
 						}
 					}
 
-					if (allEdges.isEmpty())
+					if (edges.isEmpty())
 					{
-						allEdges.put(eg.getVoidEdge(symm), new HashSet<Integer>());
+						edges.add(eg.getVoidEdge(symm));
+						supportingNetworks.add(new HashSet<Integer>());
 					}
 
-					cleaning.unifyDirection(allEdges.keySet());
+					List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(edges);
 					
 					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					Map<EdgeDefinition, Set<Integer>> overlap_edge_defs = ec.getOverlapEdge(allEdges, overlapNo_cutoff, weight_cutoff, minOperator);
+					Map<EdgeDefinition, Set<Integer>> overlap_edge_defs = ec.getOverlapEdge(cleanedEdges, supportingNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
 
 					// non-void overlapping edge
 					for (EdgeDefinition overlap_edge_def : overlap_edge_defs.keySet())

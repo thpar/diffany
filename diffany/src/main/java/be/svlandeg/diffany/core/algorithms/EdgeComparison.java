@@ -3,6 +3,7 @@ package be.svlandeg.diffany.core.algorithms;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -431,7 +432,8 @@ public class EdgeComparison
 	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
-	 * @param edges the original edge definitions, linked to unique IDs for identifying the input networks (should not be null or empty!)
+	 * @param edges the original edge definitions (should not be null or empty!)
+	 * @param supports the network IDs which support the corresponding edges in the other list 
 	 * @param overlapNo_cutoff the minimal number of networks (inclusive) that need to have the overlap for it to be included
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
@@ -439,13 +441,18 @@ public class EdgeComparison
 	 * @return the edge definitions in the overlapping network, or an empty set, but never null
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public Map<EdgeDefinition, Set<Integer>> getOverlapEdge(Map<EdgeDefinition, Set<Integer>> edges, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
+	public Map<EdgeDefinition, Set<Integer>> getOverlapEdge(List<EdgeDefinition> edges, List<Set<Integer>> supports, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
 	{
 		Map<EdgeDefinition, Set<Integer>> overlaps = new HashMap<EdgeDefinition, Set<Integer>>();
 
 		if (edges == null || edges.isEmpty())
 		{
-			String errormsg = "The set of edges should not be null or empty!";
+			String errormsg = "The list of edges should not be null or empty!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (supports == null || supports.isEmpty())
+		{
+			String errormsg = "The list of supporting networks should not be null or empty!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		int countEdges = edges.size();
@@ -453,7 +460,7 @@ public class EdgeComparison
 		// 0. CHECK SYMMETRY //
 		int countSymmetrical = 0;
 
-		for (EdgeDefinition e : edges.keySet())
+		for (EdgeDefinition e : edges)
 		{
 			if (e.isSymmetrical())
 			{
@@ -474,7 +481,7 @@ public class EdgeComparison
 		Map<String, IntermediateComparison> affirmative_results = new HashMap<String, IntermediateComparison>();
 		Map<String, IntermediateComparison> negated_results = new HashMap<String, IntermediateComparison>();
 
-		for (EdgeDefinition e : edges.keySet())
+		for (EdgeDefinition e : edges)
 		{
 			addEdgeToTree(e, affirmative_results, negated_results);
 		}

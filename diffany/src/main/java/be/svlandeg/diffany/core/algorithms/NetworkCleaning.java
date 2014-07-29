@@ -1,7 +1,9 @@
 package be.svlandeg.diffany.core.algorithms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -136,23 +138,29 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Alter a set of edges by making either all interactions directed, or all symmetrical. As soon as one input edge is directed, the whole set will become directed.
+	 * Create a new list of edges by making either all input interactions directed, or all symmetrical. 
+	 * As soon as one input edge is directed, the whole set will become directed.
 	 * This method does not impose any other conditions such as whether the edges are between the same nodes or not, of the same type or not.
 	 * A sensible grouping of the edges should thus have been done by the calling method.
 	 * 
-	 * @param oldSet the original edgeset which might have a mixture of directed and symmetrical edges
+	 * @param oldList the original edges which might have a mixture of directed and symmetrical edges - will not be altered!
+	 * @return a new list of edges with their edge directionality unified
 	 */
-	public void unifyDirection(Set<EdgeDefinition> oldSet)
+	public List<EdgeDefinition> unifyDirection(List<EdgeDefinition> oldList)
 	{
 		boolean symmetrical = true;
-		for (EdgeDefinition edge : oldSet)
+		for (EdgeDefinition oldEdge : oldList)
 		{
-			symmetrical = symmetrical && edge.isSymmetrical();
+			symmetrical = symmetrical && oldEdge.isSymmetrical();
 		}
-		for (EdgeDefinition edge : oldSet)
+		List<EdgeDefinition> newEdges = new ArrayList<EdgeDefinition>();
+		for (EdgeDefinition oldEdge : oldList)
 		{
-			edge.makeSymmetrical(symmetrical);
+			EdgeDefinition newEdge = new EdgeDefinition(oldEdge);
+			newEdge.makeSymmetrical(symmetrical);
+			newEdges.add(newEdge);
 		}
+		return newEdges;
 	}
 
 

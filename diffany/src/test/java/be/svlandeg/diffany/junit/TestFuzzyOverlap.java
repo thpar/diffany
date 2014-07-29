@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.Set;
 
+import org.junit.Test;
+
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Network;
@@ -24,7 +26,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 4 out of 4 100%.
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_4()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -52,7 +54,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 4 (75%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_3()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -82,7 +84,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 4 (75%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_3_maxOperator()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -112,7 +114,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 2 out of 4 (50%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_2()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -146,7 +148,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 1 out of 4 (25%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_1()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -182,7 +184,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 0 out of 4 (0%). This should not give any results.
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithoutReference_0()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
@@ -212,7 +214,7 @@ public class TestFuzzyOverlap
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
 	 * This method defines one of the networks to be a reference network.
 	 */
-	//@Test
+	@Test
 	public void testFuzzyOverlapWithReference()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();

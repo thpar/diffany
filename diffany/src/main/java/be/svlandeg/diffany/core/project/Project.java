@@ -207,7 +207,7 @@ public class Project
 	 */
 	public int addRunConfiguration(Set<InputNetwork> inputNetworks)
 	{
-		return addRunConfiguration(inputNetworks, inputNetworks.size());
+		return addRunConfiguration(inputNetworks, inputNetworks.size(), false);
 	}
 	
 	/**
@@ -217,10 +217,11 @@ public class Project
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * @param overlapNo_cutoff the required number of input networks that need to match for an overlap edge to be present
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff, boolean refRequired)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
@@ -233,7 +234,7 @@ public class Project
 			cleanNetworks.add(cleanNet);
 		}
 		
-		RunConfiguration rc = new RunConfiguration(cleanNetworks, overlapNo_cutoff);
+		RunConfiguration rc = new RunConfiguration(cleanNetworks, overlapNo_cutoff, refRequired);
 		int nextID;
 		if (configurations.keySet().isEmpty())
 		{

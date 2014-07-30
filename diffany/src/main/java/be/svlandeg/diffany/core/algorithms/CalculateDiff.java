@@ -72,6 +72,7 @@ public class CalculateDiff
 	 * @param overlapping_name the name to give to the overlapping network
 	 * @param ID the unique identifier of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network.
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
 	 * @param log the logger that records logging messages
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum
@@ -80,7 +81,7 @@ public class CalculateDiff
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
-			NodeMapper nm, String overlapping_name, int ID, int overlapNo_cutoff, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
+			NodeMapper nm, String overlapping_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
 		{
@@ -94,7 +95,7 @@ public class CalculateDiff
 		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, weight_cutoff, minOperator);
+			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, refRequired, weight_cutoff, minOperator);
 			new NetworkCleaning(log).fullOverlapOutputCleaning(on, eo);
 			return on;
 		}
@@ -193,7 +194,7 @@ public class CalculateDiff
 			inputs.addAll(rc.getInputNetworks());
 			String overlapping_name = overlapnameprefix + diff_name;
 			log.log("Calculating the overlap network between " + inputs.size() + " input network(s)");
-			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, overlap_ID, rc.getOverlapCutoff(), weight_cutoff, log, minOperator);
+			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, overlap_ID, rc.getOverlapCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator);
 		}
 		
 		if (diff != null && on != null)
@@ -361,7 +362,7 @@ public class CalculateDiff
 					Set<Network> inputs = new HashSet<Network>();
 					inputs.add(r);
 					inputs.add(c);
-					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, firstID++, overlapCutoff, weight_cutoff, log, minOperator);
+					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, firstID++, overlapCutoff, true, weight_cutoff, log, minOperator);
 				}
 				
 				if (on != null)
@@ -396,7 +397,7 @@ public class CalculateDiff
 					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
-					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, overlapCutoff, weight_cutoff, log, minOperator);
+					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, overlapCutoff, false, weight_cutoff, log, minOperator);
 					
 					output.addOverlap(on);
 				}

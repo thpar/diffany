@@ -80,7 +80,7 @@ public class FuzzyOverlap extends GenericExample
 		c.add(getCondition1());	
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(c, overlapCutoff);
+		int ID = p.addRunConfiguration(c, overlapCutoff, false);
 		return ID;
 	}
 

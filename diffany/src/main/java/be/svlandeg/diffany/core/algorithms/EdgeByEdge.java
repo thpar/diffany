@@ -257,11 +257,17 @@ public class EdgeByEdge
 	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
-	 * @param networks a set of networks (at least 2)
+	 * The additional parameter refRequired determines whether the reference network should always provide support for the overlap edge, or not.
+	 * If not, all networks are treated equal. If true, an overlap edge can never be produced if it does not have support in the reference network.
+	 * The reference network is determined by trying to cast the input networks to ReferenceNetwork and selecting the one and only unique result.
+	 * 
+	 * @param networks a set of networks (at least 2).
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param overlap_name the name to give to the overlapping network
 	 * @param ID the ID of the resulting network
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network.
+	 * When set to true, this method will raise an IllegalArgumentException when no or more than 1 reference network is found.
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
 	 * @param weight_cutoff the minimal weight that the resulting overlap edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
@@ -272,19 +278,26 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, double weight_cutoff, boolean minOperator)
+	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
 	{
-		List<Network> listedNetworks = new ArrayList<Network>();
-		listedNetworks.addAll(networks);
-
 		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, ID, networks, nm);
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 
+		Set<Integer> refNetworks = new HashSet<Integer>();
 		Map<Integer, Network> allNetworks = new HashMap<Integer, Network>();
 		for (Network n : networks)
 		{
 			allNetworks.put(n.getID(), n);
+			if (n instanceof ReferenceNetwork)
+			{
+				refNetworks.add(n.getID());
+			}
+		}
+		if (refRequired && refNetworks.size() != 1)
+		{
+			String errormsg = "Please define exactly 1 reference network (" + refNetworks.size() + "found) or change the refRequired parameter to false!";
+			throw new IllegalArgumentException(errormsg);
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
@@ -422,10 +435,14 @@ public class EdgeByEdge
 									System.out.println("Found odd network type : " + input);
 								}
 							}
-							MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
-
-							MetaEdge overlapdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
-							overlap.addEdge(overlapdiff);
+							// only add this edge when the reference network does not matter, or was actually present
+							if (!refRequired || inReference)
+							{
+								MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
+	
+								MetaEdge overlapdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
+								overlap.addEdge(overlapdiff);
+							}
 						}
 					}
 				}

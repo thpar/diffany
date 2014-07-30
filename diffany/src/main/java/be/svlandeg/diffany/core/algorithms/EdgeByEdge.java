@@ -17,8 +17,8 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.networks.merged.MergedEdge;
-import be.svlandeg.diffany.core.networks.merged.MergedEdgeDefinition;
+import be.svlandeg.diffany.core.networks.meta.MetaEdge;
+import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -406,14 +406,9 @@ public class EdgeByEdge
 									conditions.addAll(((ConditionNetwork) input).getConditions());
 								}
 							}
-							if (conditions.isEmpty())
-							{
-								conditions.add(new Condition("Undefined conditions"));
-								// TODO this shouldn't happen ?!
-							}
-							MergedEdgeDefinition mergedDef = new MergedEdgeDefinition(def, conditions, support, inReference);
+							MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
 
-							MergedEdge overlapdiff = new MergedEdge(sourceresult, targetresult, mergedDef);
+							MetaEdge overlapdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
 							overlap.addEdge(overlapdiff);
 						}
 					}

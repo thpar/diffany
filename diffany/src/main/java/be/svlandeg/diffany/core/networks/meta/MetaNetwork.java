@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +13,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class MergedNetwork extends Network
+public abstract class MetaNetwork extends Network
 {
 	/**
 	 * Create a new network with a specific name and sets of nodes and edges.
@@ -22,10 +22,10 @@ public abstract class MergedNetwork extends Network
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
-	 * @param mergedEdges the edges of this network
+	 * @param metaEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedNetwork(String name, int ID, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
+	public MetaNetwork(String name, int ID, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm)
 	{
 		super(name, ID, nm);
 		if (nm == null)
@@ -36,7 +36,7 @@ public abstract class MergedNetwork extends Network
 
 		this.name = name;
 		this.nm = nm;
-		Set<Edge> edges = MergedConvertor.castToNormalEdges(mergedEdges);
+		Set<Edge> edges = MetaConvertor.castToNormalEdges(metaEdges);
 		setNodesAndEdges(nodes, edges);
 	}
 
@@ -47,9 +47,9 @@ public abstract class MergedNetwork extends Network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedNetwork(String name, int ID, NodeMapper nm)
+	public MetaNetwork(String name, int ID, NodeMapper nm)
 	{
-		this(name, ID, new HashSet<Node>(), new HashSet<MergedEdge>(), nm);
+		this(name, ID, new HashSet<Node>(), new HashSet<MetaEdge>(), nm);
 	}
 
 }

@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 
-public class MergedEdgeDefinition extends EdgeDefinition
+public class MetaEdgeDefinition extends EdgeDefinition
 {
 	
 	protected Set<Condition> conditions;
@@ -23,7 +23,7 @@ public class MergedEdgeDefinition extends EdgeDefinition
 	 * 
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
-	public MergedEdgeDefinition(EdgeDefinition def, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
+	public MetaEdgeDefinition(EdgeDefinition def, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
 	{
 		this(def.getType(), def.isSymmetrical(), def.getWeight(), def.isNegated(), conditions, support, inReference);
 	}
@@ -41,7 +41,7 @@ public class MergedEdgeDefinition extends EdgeDefinition
 	 * 
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
-	public MergedEdgeDefinition(String type, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
+	public MetaEdgeDefinition(String type, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
 	{
 		super(type, symmetrical, weight, negated);
 		setConditions(conditions, support);
@@ -51,9 +51,9 @@ public class MergedEdgeDefinition extends EdgeDefinition
 	/**
 	 * Cloning constructor
 	 * 
-	 * @param old the MergedEdgeDefinition to be cloned
+	 * @param old the MetaEdgeDefinition to be cloned
 	 */
-	public MergedEdgeDefinition(MergedEdgeDefinition old)
+	public MetaEdgeDefinition(MetaEdgeDefinition old)
     {
 	    super(old);
 	    this.conditions = new HashSet<Condition>();

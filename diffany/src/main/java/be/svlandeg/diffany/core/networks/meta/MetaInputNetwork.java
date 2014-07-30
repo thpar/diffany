@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.Set;
 
@@ -11,7 +11,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public class MergedInputNetwork extends MergedNetwork
+public class MetaInputNetwork extends MetaNetwork
 {
 	
 	/**
@@ -21,12 +21,12 @@ public class MergedInputNetwork extends MergedNetwork
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
-	 * @param mergedEdges the edges of this network
+	 * @param metaEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MergedInputNetwork(String name, int ID, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm)
+	public MetaInputNetwork(String name, int ID, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm)
 	{
-		super(name, ID, nodes, mergedEdges, nm);
+		super(name, ID, nodes, metaEdges, nm);
 	}
 
 	@Override

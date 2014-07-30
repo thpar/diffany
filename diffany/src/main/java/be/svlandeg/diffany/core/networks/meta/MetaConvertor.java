@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,12 +13,12 @@ import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
- * This class allows quick conversion between merged input networks with condition edges, and normal input networks 
+ * This class allows quick conversion between meta input networks with condition edges, and normal input networks 
  * with normal edges.
  * 
  * @author Sofie Van Landeghem
  */
-public class MergedConvertor
+public class MetaConvertor
 {
 
 	/**
@@ -26,10 +26,10 @@ public class MergedConvertor
 	 * @param cEdges the condition-specific edges
 	 * @return the set of normal edges
 	 */
-	public static Set<Edge> castToNormalEdges(Set<MergedEdge> cEdges)
+	public static Set<Edge> castToNormalEdges(Set<MetaEdge> cEdges)
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		for (MergedEdge e : cEdges)
+		for (MetaEdge e : cEdges)
 		{
 			edges.add(e);
 		}
@@ -38,46 +38,46 @@ public class MergedConvertor
 
 	/**
 	 * Convert a set of normal edges to a set of condition edges.
-	 * @param edges a set of normal edges which are actually condition-specific (and can thus be cast!)
+	 * @param edges a set of normal edges which are actually condition-specific (and can thus be cast as MetaEdge)
 	 * @return the set of condition-specific edges
-	 * @throws ClassCastException when the set of input edges are not of the type MergedEdge
+	 * @throws ClassCastException when the set of input edges are not of the type MetaEdge
 	 */
-	public static Set<MergedEdge> castToConditionEdges(Set<Edge> edges)
+	public static Set<MetaEdge> castToConditionEdges(Set<Edge> edges)
 	{
-		Set<MergedEdge> cEdges = new HashSet<MergedEdge>();
+		Set<MetaEdge> cEdges = new HashSet<MetaEdge>();
 		for (Edge e : edges)
 		{
-			cEdges.add((MergedEdge) e);
+			cEdges.add((MetaEdge) e);
 		}
 		return cEdges;
 	}
 	
 	/**
-	 * Convert a set of input networks to one large merged network
+	 * Convert a set of input networks to one large merged (meta) network
 	 * @param inputs the original set of separate input networks (assumed not-null and not empty!)
-	 * @return the merged input network
+	 * @return the meta input network
 	 */
 	@SuppressWarnings("unused")
-	public static MergedInputNetwork convertInput(Set<InputNetwork> inputs)
+	public static MetaInputNetwork convertInput(Set<InputNetwork> inputs)
 	{
 		// TODO
 		return null;
 	}
 
 	/**
-	 * Convert a set of differential networks to one large merged network
-	 * The name is created by appending all individual input names to the prefix 'merged_' and the ID is determined as the maximum + 1.
+	 * Convert a set of differential networks to one large merged (meta) network
+	 * The name is created by appending all individual input names to the prefix 'meta_' and the ID is determined as the maximum + 1.
 	 * 
 	 * @param diffSet the original set of separate differential networks (assumed not-null and not empty!)
-	 * @return the merged differential network
+	 * @return the meta differential network
 	 */
-	public static MergedDifferentialNetwork convertDifferentials(Set<DifferentialNetwork> diffSet)
+	public static MetaDifferentialNetwork convertDifferentials(Set<DifferentialNetwork> diffSet)
 	{
 		Set<InputNetwork> inputs = new HashSet<InputNetwork>();
 		SortedSet<String> names = new TreeSet<String>();
 		SortedSet<Integer> IDs = new TreeSet<Integer>();
 		Set<Node> nodes = new HashSet<Node>();
-		Set<MergedEdge> edges = new HashSet<MergedEdge>();
+		Set<MetaEdge> edges = new HashSet<MetaEdge>();
 		NodeMapper nm = null;
 
 		for (DifferentialNetwork dn : diffSet)
@@ -114,7 +114,7 @@ public class MergedConvertor
 			// TODO: edges conversion
 		}
 
-		String name = "merged_";
+		String name = "meta_";
 		for (String n : names)
 		{
 			name += n + "_";
@@ -122,19 +122,19 @@ public class MergedConvertor
 		
 		int ID = IDs.last() + 1;
 
-		MergedInputNetwork input = convertInput(inputs);
-		MergedDifferentialNetwork result = new MergedDifferentialNetwork(name, ID, nodes, edges, nm, input);
+		MetaInputNetwork input = convertInput(inputs);
+		MetaDifferentialNetwork result = new MetaDifferentialNetwork(name, ID, nodes, edges, nm, input);
 		
 		return result;
 	}
 	
 	/**
-	 * Convert a set of overlapping networks to one large merged network
+	 * Convert a set of overlapping networks to one large merged (meta) network
 	 * @param overlapSet the original set of separate overlapping networks (assumed not-null and not empty!)
-	 * @return the merged overlapping network
+	 * @return the meta overlapping network
 	 */
 	@SuppressWarnings("unused")
-    public static MergedOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
+    public static MetaOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
 	{
 		// TODO
 		return null;

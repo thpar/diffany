@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.Set;
 
@@ -8,15 +8,13 @@ import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
 
 /**
- * Class that represents an edge in a {@link MergedInputNetwork}: 
+ * Class that represents an edge in a {@link MetaInputNetwork}: 
  * on top of having normal {@link Edge} properties, this edge also keeps track of the conditions in which it is present,
  * the number of (input) networks that it supports, and whether or not it is present in the reference network.
- * 
- * TODO javadoc
- * 
+ *  
  * @author Sofie Van Landeghem
  */
-public class MergedEdge extends Edge
+public class MetaEdge extends Edge
 {
 
 	/**
@@ -27,7 +25,7 @@ public class MergedEdge extends Edge
 	 * @param target the target node
 	 * @param mergedDef the edge definition specifying the type, weight, symmetry and negation of the edge, as well as the type of support
 	 */
-	public MergedEdge(Node source, Node target, MergedEdgeDefinition mergedDef)
+	public MetaEdge(Node source, Node target, MetaEdgeDefinition mergedDef)
 	{
 		super(source, target, mergedDef);
 	}
@@ -46,9 +44,9 @@ public class MergedEdge extends Edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
+	public MetaEdge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated, Set<Condition> conditions, int support, boolean inReference) throws IllegalArgumentException
 	{
-		this(source, target, new MergedEdgeDefinition(type, symmetrical, weight, negated, conditions, support, inReference));
+		this(source, target, new MetaEdgeDefinition(type, symmetrical, weight, negated, conditions, support, inReference));
 	}
 
 	/**
@@ -63,9 +61,9 @@ public class MergedEdge extends Edge
 	 * @param support the number of supporting networks for this edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, boolean negated, Set<Condition> conditions, int support, boolean inReference)
+	public MetaEdge(String type, Node source, Node target, boolean symmetrical, boolean negated, Set<Condition> conditions, int support, boolean inReference)
 	{
-		this(source, target, new MergedEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, negated, conditions, support, inReference));
+		this(source, target, new MetaEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, negated, conditions, support, inReference));
 	}
 
 	/**
@@ -80,9 +78,9 @@ public class MergedEdge extends Edge
 	 * @param support the number of supporting networks for this edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, double weight, Set<Condition> conditions, int support, boolean inReference)
+	public MetaEdge(String type, Node source, Node target, boolean symmetrical, double weight, Set<Condition> conditions, int support, boolean inReference)
 	{
-		this(source, target, new MergedEdgeDefinition(type, symmetrical, weight, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
+		this(source, target, new MetaEdgeDefinition(type, symmetrical, weight, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
 	}
 
 	/**
@@ -96,9 +94,9 @@ public class MergedEdge extends Edge
 	 * @param support the number of supporting networks for this edge
 	 * @param inReference whether or not this edge is present in the reference network
 	 */
-	public MergedEdge(String type, Node source, Node target, boolean symmetrical, Set<Condition> conditions, int support, boolean inReference)
+	public MetaEdge(String type, Node source, Node target, boolean symmetrical, Set<Condition> conditions, int support, boolean inReference)
 	{
-		this(source, target, new MergedEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
+		this(source, target, new MetaEdgeDefinition(type, symmetrical, EdgeDefinition.DEFAULT_WEIGHT, EdgeDefinition.DEFAULT_NEG, conditions, support, inReference));
 	}
 
 	/**
@@ -107,17 +105,17 @@ public class MergedEdge extends Edge
 	 */
 	public Set<Condition> getConditions()
 	{
-		return ((MergedEdgeDefinition) def).conditions;
+		return ((MetaEdgeDefinition) def).conditions;
 	}
 
 	public boolean inReferenceNetwork()
 	{
-		return ((MergedEdgeDefinition) def).inReference;
+		return ((MetaEdgeDefinition) def).inReference;
 	}
 
 	public int getSupport()
 	{
-		return ((MergedEdgeDefinition) def).support;
+		return ((MetaEdgeDefinition) def).support;
 	}
 
 }

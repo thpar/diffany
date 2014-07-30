@@ -6,9 +6,9 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
-import be.svlandeg.diffany.core.networks.merged.MergedConvertor;
-import be.svlandeg.diffany.core.networks.merged.MergedDifferentialNetwork;
-import be.svlandeg.diffany.core.networks.merged.MergedOverlappingNetwork;
+import be.svlandeg.diffany.core.networks.meta.MetaConvertor;
+import be.svlandeg.diffany.core.networks.meta.MetaDifferentialNetwork;
+import be.svlandeg.diffany.core.networks.meta.MetaOverlappingNetwork;
 
 /**
  * This class keeps the output of differential network algorithms, both differential networks as well overlapping networks.
@@ -118,26 +118,26 @@ public class RunOutput
 	 * Retrieve all differential networks as one large merged network
 	 * @return the differential networks in this output, all merged together (or null when there were no differential networks)
 	 */
-	public MergedDifferentialNetwork getMergedDifferential()
+	public MetaDifferentialNetwork getMergedDifferential()
 	{
 		if (dns == null || dns.isEmpty())
 		{
 			return null;
 		}
-		return MergedConvertor.convertDifferentials(dns);
+		return MetaConvertor.convertDifferentials(dns);
 	}
 
 	/**
 	 * Retrieve all overlapping networks as one large merged network
 	 * @return the overlapping networks in this output, all merged together
 	 */
-	public MergedOverlappingNetwork getMergedOverlapping()
+	public MetaOverlappingNetwork getMergedOverlapping()
 	{
 		if (ons == null || ons.isEmpty())
 		{
 			return null;
 		}
-		return MergedConvertor.convertOverlapping(ons);
+		return MetaConvertor.convertOverlapping(ons);
 	}
 
 }

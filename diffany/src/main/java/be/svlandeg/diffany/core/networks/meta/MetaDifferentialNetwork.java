@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.networks.merged;
+package be.svlandeg.diffany.core.networks.meta;
 
 import java.util.Set;
 
@@ -12,10 +12,10 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public class MergedDifferentialNetwork extends MergedNetwork
+public class MetaDifferentialNetwork extends MetaNetwork
 {
 	
-	protected MergedInputNetwork input;
+	protected MetaInputNetwork input;
 	
 	
 	/**
@@ -24,17 +24,17 @@ public class MergedDifferentialNetwork extends MergedNetwork
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodes the nodes of this network
-	 * @param mergedEdges the edges of this network
+	 * @param metaEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * @param input the merged input network
 	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public MergedDifferentialNetwork(String name, int ID, Set<Node> nodes, Set<MergedEdge> mergedEdges, NodeMapper nm, MergedInputNetwork input) 
+	public MetaDifferentialNetwork(String name, int ID, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm, MetaInputNetwork input) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, nodes, mergedEdges, nm);
+		super(name, ID, nodes, metaEdges, nm);
 		if (input == null)
 		{
 			String errormsg = "Please define a non-null merged input network!";
@@ -47,7 +47,7 @@ public class MergedDifferentialNetwork extends MergedNetwork
 	 * Get the reference network associated to this differential network
 	 * @return the reference network 
 	 */
-	public MergedInputNetwork getInputNetwork()
+	public MetaInputNetwork getInputNetwork()
 	{
 		return input;
 	}

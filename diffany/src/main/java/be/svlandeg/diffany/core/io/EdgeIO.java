@@ -8,8 +8,8 @@ import java.util.StringTokenizer;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.merged.MergedEdge;
-import be.svlandeg.diffany.core.networks.merged.MergedEdgeDefinition;
+import be.svlandeg.diffany.core.networks.meta.MetaEdge;
+import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 
 /**
  * This class allows reading/writing an {@link Edge} from/to File.
@@ -56,9 +56,9 @@ public class EdgeIO
 	public static String writeToTab(Edge e)
 	{
 		String defResult = writeDefinitionToTab(e.getDefinition());
-		if (e instanceof MergedEdge)
+		if (e instanceof MetaEdge)
 		{
-			defResult += writeMergedDefinitionToTab((MergedEdgeDefinition) e.getDefinition());
+			defResult += writeMergedDefinitionToTab((MetaEdgeDefinition) e.getDefinition());
 		}
 		String result = e.getSource().getID() + '\t' + e.getTarget().getID() + '\t' + defResult;
 		return result;
@@ -96,7 +96,7 @@ public class EdgeIO
 	 * @param def the original edge definition
 	 * @return a string representation of this edge definition, ready for printing
 	 */
-	public static String writeMergedDefinitionToTab(MergedEdgeDefinition def)
+	public static String writeMergedDefinitionToTab(MetaEdgeDefinition def)
 	{
 		String result = "\t" + def.getSupport();
 		if (def.inReferenceNetwork())
@@ -149,7 +149,7 @@ public class EdgeIO
 	
 	
 	/**
-	 * Read an EdgeDefinition from a tab-delimited String. TODO: MergedEdgeDefinition
+	 * Read an EdgeDefinition from a tab-delimited String. TODO: MetaEdgeDefinition
 	 * 
 	 * @param def the original edge definition, in string format
 	 * @return the edge definition represented by the input string

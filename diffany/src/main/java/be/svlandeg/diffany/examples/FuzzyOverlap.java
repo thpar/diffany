@@ -103,9 +103,9 @@ public class FuzzyOverlap extends GenericExample
 		
 		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", 1, nm);
 		
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8));
+		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6, false));
 		
-		network.addEdge(new Edge("negative regulation", nodes.get("X"), nodes.get("Y"), false, 0.5));
+		network.addEdge(new Edge("negative regulation", nodes.get("X"), nodes.get("Y"), false, 0.5, false));
 		
 		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), false, 0.5, true));
 		
@@ -135,7 +135,7 @@ public class FuzzyOverlap extends GenericExample
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
 		
-		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.8));
 		
@@ -231,7 +231,7 @@ public class FuzzyOverlap extends GenericExample
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8));
+		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6));
 		
 		network.addEdge(new Edge("negative regulation", nodes.get("X"), nodes.get("Y"), false, 0.5));
 		

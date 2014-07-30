@@ -151,32 +151,19 @@ public class TestFuzzyOverlap
 	public void testFuzzyOverlapWithoutReference_1()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
-		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
 		int overlap_cutoff = 1;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
-
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 50, true);
-
-		// Testing that there is exactly one differential network created
-		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
-
-		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
-
-		Set<Edge> sEdges = on.getEdges();
-		assertEquals(4, sEdges.size());
-
-		assertAnEdge(on, "A", "B", false, "ppi", false, 0.8);
-		assertAnEdge(on, "B", "A", false, "ppi", false, 0.8);
-
-		assertAnEdge(on, "X", "Y", false, "positive_regulation", false, 0.8);
-
-		// current cleaning will take only the edge with the highest weight!
-		//assertAnEdge(on, "X", "Y", false, false, "negative regulation", false, 0.5);
 		
-		assertAnEdge(on, "M", "N", false, "phosphorylation", false, 0.7);
+		boolean exception = false;
+		try 
+		{
+			ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
+		}
+		catch(IllegalArgumentException e)
+		{
+			exception = true;
+		}
+		assertTrue(exception);
 	}
 
 	/**
@@ -187,25 +174,19 @@ public class TestFuzzyOverlap
 	public void testFuzzyOverlapWithoutReference_0()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
-		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
 		int overlap_cutoff = 0;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
-		boolean exception = false;
 
+		boolean exception = false;
 		try
 		{
-			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 60, true);
+			ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 		}
 		catch (IllegalArgumentException e)
 		{
 			exception = true;
 		}
 		assertTrue(exception);
-
-		// Testing that there is no differential network created
-		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 0);
 	}
 
 	/**
@@ -306,26 +287,18 @@ public class TestFuzzyOverlap
 	public void testFuzzyOverlapWithReference_1()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
-		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
 		int overlap_cutoff = 1;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
-
-		// Testing that there is exactly one differential network created
-		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
-
-		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
-
-		Set<Edge> sEdges = on.getEdges();
-		assertEquals(3, sEdges.size());
-
-		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.6);		// important different with scenario without reference (ppi 0.8) !!!
-		assertAnEdge(on, "X", "Y", false, "negative_regulation", false, 0.5); 	// important different with scenario without reference (pos reg 0.8) !!!
-		assertAnEdge(on, "M", "N", false, "ptm", true, 0.5); 					// important different with scenario without reference (phos 0.7) !!!
+		boolean exception = false;
+		try
+		{
+			ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
+		}
+		catch (IllegalArgumentException e)
+		{
+			exception = true;
+		}
+		assertTrue(exception);
 	}
 
 

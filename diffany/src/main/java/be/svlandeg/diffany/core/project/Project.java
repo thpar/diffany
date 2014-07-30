@@ -132,7 +132,7 @@ public class Project
 	{
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
 		cs.add(condition);
-		return addRunConfiguration(reference, cs, 1);
+		return addRunConfiguration(reference, cs, 2);
 	}
 	
 	/**

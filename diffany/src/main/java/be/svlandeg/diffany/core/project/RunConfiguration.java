@@ -95,6 +95,11 @@ public class RunConfiguration
 	 */
 	protected void setOverlapCutoff(int overlapNo_cutoff)
 	{
+		if (overlapNo_cutoff < 2)
+		{
+			String errormsg = "The overlap cutoff should at least be 2!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.overlapNo_cutoff = overlapNo_cutoff;
 	}
 	

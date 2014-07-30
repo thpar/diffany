@@ -13,6 +13,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.EdgeGenerator;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
@@ -54,7 +55,7 @@ public class EdgeByEdge
 	 * TODO: currently the differential network is calculated with the philosophy of 100% overlap between the condition-specific networks. Can this definition be made more fuzzy?
 	 * 
 	 * @param reference the reference network
-	 * @param conditions a set of condition-specific networks (at least 2)
+	 * @param conditionNetworks a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network
@@ -265,7 +266,9 @@ public class EdgeByEdge
 	 * @param weight_cutoff the minimal weight that the resulting overlap edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
-	 * @return the overlapping network between the two
+	 * @return the overlapping network between the input networks. 
+	 * The network will contain Meta edges that store which input networks provide support, given by the original conditions when the input contains ConditionNetworks, or by artificial Conditions
+	 * displaying the name of the Networks.
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
@@ -391,6 +394,11 @@ public class EdgeByEdge
 							Set<Condition> conditions = new HashSet<Condition>();
 							boolean inReference = false;
 							int support = 0;
+							
+							if (supports.isEmpty())
+							{
+								System.out.println("Found no support for " + sourceresult + " - " + targetresult + " - " + def);
+							}
 
 							for (int i : supports)
 							{
@@ -399,11 +407,19 @@ public class EdgeByEdge
 								if (input instanceof ReferenceNetwork)
 								{
 									inReference = true;
-									conditions.add(new Condition("Reference"));
+									conditions.add(new Condition(input.getName()));
 								}
-								if (input instanceof ConditionNetwork)
+								else if (input instanceof ConditionNetwork)
 								{
 									conditions.addAll(((ConditionNetwork) input).getConditions());
+								}
+								else if (input instanceof InputNetwork)
+								{
+									conditions.add(new Condition(input.getName()));
+								}
+								else
+								{
+									System.out.println("Found odd network type : " + input);
 								}
 							}
 							MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);

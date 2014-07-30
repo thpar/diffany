@@ -19,7 +19,7 @@ public class Edge
 
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
-	 * The EdgeDefinition object is not kept as such, its fields are copied (to make sure there is no dependency).
+	 * The EdgeDefinition object is kept as such, and can also be of the class MetaEdgeDefinition.
 	 * 
 	 * @param source the source node
 	 * @param target the target node
@@ -27,23 +27,6 @@ public class Edge
 	 */
 	public Edge(Node source, Node target, EdgeDefinition def)
 	{
-		this(def.type, source, target, def.symmetrical, def.weight, def.negated);
-	}
-
-	/**
-	 * Create a new edge with specified source and target nodes, direction and weight.
-	 * 
-	 * @param type the interaction type of this edge
-	 * @param source the source node
-	 * @param target the target node
-	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
-	 * @param weight the weight or confidence of this edge (should be positive)
-	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
-	 * @throws IllegalArgumentException when the specified weight is a negative number
-	 */
-	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
-	{
-		def = new EdgeDefinition(type, symmetrical, weight, negated);
 		if (source == null)
 		{
 			String errormsg = "The source node should not be null!";
@@ -56,6 +39,24 @@ public class Edge
 		}
 		this.source = source;
 		this.target = target;
+		this.def = def;
+	}
+
+	/**
+	 * Create a new edge with specified source and target nodes, direction and weight.
+	 * The input parameters will be used to create an internal EdgeDefinition object.
+	 * 
+	 * @param type the interaction type of this edge
+	 * @param source the source node
+	 * @param target the target node
+	 * @param symmetrical defines whether the edge is symmetrical or directed from source to target
+	 * @param weight the weight or confidence of this edge (should be positive)
+	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
+	 * @throws IllegalArgumentException when the specified weight is a negative number
+	 */
+	public Edge(String type, Node source, Node target, boolean symmetrical, double weight, boolean negated) throws IllegalArgumentException
+	{
+		this(source, target, new EdgeDefinition(type, symmetrical, weight, negated));
 	}
 
 	/**

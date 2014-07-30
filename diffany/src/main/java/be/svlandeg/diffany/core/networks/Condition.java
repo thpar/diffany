@@ -101,4 +101,8 @@ public class Condition
 		ontologies.add(ontology);
 	}
 
+	public String toString()
+	{
+		return description;
+	}
 }

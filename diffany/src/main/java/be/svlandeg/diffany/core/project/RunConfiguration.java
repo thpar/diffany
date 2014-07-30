@@ -68,7 +68,7 @@ public class RunConfiguration
 	 * Alter the required number of overlapping edges needed before the edge will be present in the overlap network.
 	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
 	 * 
-	 * @param overlapNo_cutoff
+	 * @param overlapNo_cutoff the new cutoff
 	 */
 	protected void setOverlapCutoff(int overlapNo_cutoff)
 	{

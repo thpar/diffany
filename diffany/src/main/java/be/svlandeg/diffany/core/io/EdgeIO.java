@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
@@ -106,6 +107,11 @@ public class EdgeIO
 		else
 		{
 			result += '\t' + notreferenceString;
+		}
+		result += '\t';
+		for (Condition c : def.getConditions())
+		{
+			result += c + " --- ";
 		}
 		return result;
 	}

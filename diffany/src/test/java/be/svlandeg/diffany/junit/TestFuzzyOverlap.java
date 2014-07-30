@@ -47,7 +47,7 @@ public class TestFuzzyOverlap
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.3);
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.5);
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public class TestFuzzyOverlap
 		assertEquals(3, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.3);
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.5);
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.6);
 		assertAnEdge(on, "M", "N", false, "phosphorylation", true, 0.3);
 	}
 
@@ -138,8 +138,7 @@ public class TestFuzzyOverlap
 		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.6);
 		assertAnEdge(on, "B", "A", false, "ppi", false, 0.4);
 
-		//assertAnEdge(on, "X", "Y", false, "positive regulation", false, 0.3);	will be removed after clean-up of the network because 'regulation' has higher weight
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.6);
+		assertAnEdge(on, "X", "Y", false, "positive_regulation", false, 0.7);	
 		
 		assertAnEdge(on, "M", "N", false, "ptm", true, 0.5);
 	}
@@ -210,12 +209,11 @@ public class TestFuzzyOverlap
 	}
 
 	/**
-	 * TODO: different factors
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
 	 * This method defines one of the networks to be a reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReference()
+	public void testFuzzyOverlapWithReference_4()
 	{
 		FuzzyOverlap ex = new FuzzyOverlap();
 		double weight_cutoff = 0.0;
@@ -235,8 +233,101 @@ public class TestFuzzyOverlap
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.3);
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.5);
 	}
+	
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * This method defines one of the networks to be a reference network.
+	 */
+	@Test
+	public void testFuzzyOverlapWithReference_3()
+	{
+		FuzzyOverlap ex = new FuzzyOverlap();
+		double weight_cutoff = 0.0;
+		Project p = ex.getProject();
+		int overlap_cutoff = 3;
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+
+		// Testing that there is exactly one differential network created
+		RunOutput output = p.getOutput(ID);
+		assertNrOverlapNetworks(output, 1);
+
+		// Testing the edges in the overlap network
+		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+
+		Set<Edge> sEdges = on.getEdges();
+		assertEquals(3, sEdges.size());
+
+		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.3);
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 0.5);		// important different with scenario without reference (0.6) !!!
+		assertAnEdge(on, "M", "N", false, "phosphorylation", true, 0.3);
+	}
+
+	
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * This method defines one of the networks to be a reference network.
+	 */
+	@Test
+	public void testFuzzyOverlapWithReference_2()
+	{
+		FuzzyOverlap ex = new FuzzyOverlap();
+		double weight_cutoff = 0.0;
+		Project p = ex.getProject();
+		int overlap_cutoff = 2;
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+
+		// Testing that there is exactly one differential network created
+		RunOutput output = p.getOutput(ID);
+		assertNrOverlapNetworks(output, 1);
+
+		// Testing the edges in the overlap network
+		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+
+		Set<Edge> sEdges = on.getEdges();
+		assertEquals(3, sEdges.size());
+
+		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.6);
+		assertAnEdge(on, "X", "Y", false, "negative_regulation", false, 0.5);		// important different with scenario without reference (pos 0.7) !!!
+		assertAnEdge(on, "M", "N", false, "ptm", true, 0.5);
+	}
+
+	
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * This method defines one of the networks to be a reference network.
+	 */
+	@Test
+	public void testFuzzyOverlapWithReference_1()
+	{
+		FuzzyOverlap ex = new FuzzyOverlap();
+		double weight_cutoff = 0.0;
+		Project p = ex.getProject();
+		int overlap_cutoff = 1;
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+
+		// Testing that there is exactly one differential network created
+		RunOutput output = p.getOutput(ID);
+		assertNrOverlapNetworks(output, 1);
+
+		// Testing the edges in the overlap network
+		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+
+		Set<Edge> sEdges = on.getEdges();
+		assertEquals(3, sEdges.size());
+
+		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.6);		// important different with scenario without reference (ppi 0.8) !!!
+		assertAnEdge(on, "X", "Y", false, "negative_regulation", false, 0.5); 	// important different with scenario without reference (pos reg 0.8) !!!
+		assertAnEdge(on, "M", "N", false, "ptm", true, 0.5); 					// important different with scenario without reference (phos 0.7) !!!
+	}
+
 
 	/**
 	 * Private method that asserts whether a certain edge is present in a network.

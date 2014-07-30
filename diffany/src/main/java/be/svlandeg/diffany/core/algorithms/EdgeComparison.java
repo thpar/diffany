@@ -199,20 +199,20 @@ public class EdgeComparison
 		
 		// When we reach to this point, we need to apply the minimum operator of the edge weights!
 
-		// we need to find the all weight values that have enough support (these will be pruned later)
+		// we need to find all weight values that have enough support (these will be pruned later)
 		// starting with the highest weights, their support is passed on to the lower weights. 
 		// When the cutoff is reached, corresponding edges will be created
 		
 		int accumulatedSupport = 0;
+		
 		supports = new HashSet<Integer>();
-
 		TreeSet<Double> allWs = new TreeSet<Double>(inter.allWeights.keySet());
 		for (double w : allWs.descendingSet())
 		{
-			int currentSupport = inter.allWeights.get(w).size();
-			supports.addAll(inter.allWeights.get(w));
+			Set<Integer> currentSupport = inter.allWeights.get(w);
+			supports.addAll(currentSupport);
 			
-			accumulatedSupport += currentSupport;
+			accumulatedSupport += currentSupport.size();
 			if (accumulatedSupport >= overlapNo_cutoff && w >= weight_cutoff)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
@@ -220,7 +220,7 @@ public class EdgeComparison
 				overlap_edge.makeNegated(negation);
 				overlap_edge.setType(inter.type);
 				overlap_edge.setWeight(w);
-				map.put(overlap_edge, supports);
+				map.put(overlap_edge, new HashSet<Integer>(supports));
 			}
 		}
 
@@ -547,7 +547,6 @@ public class EdgeComparison
 			if (aff)
 			{
 				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(aff_result, final_symm, false, overlapNo_cutoff, weight_cutoff, minOperator);
-				 
 				if (map != null)
 				{
 					for (EdgeDefinition overlap_edge : map.keySet())

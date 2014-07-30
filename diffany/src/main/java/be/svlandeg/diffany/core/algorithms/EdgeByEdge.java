@@ -426,13 +426,9 @@ public class EdgeByEdge
 								{
 									conditions.addAll(((ConditionNetwork) input).getConditions());
 								}
-								else if (input instanceof InputNetwork)
+								else 
 								{
 									conditions.add(new Condition(input.getName()));
-								}
-								else
-								{
-									System.out.println("Found odd network type : " + input);
 								}
 							}
 							// only add this edge when the reference network does not matter, or was actually present

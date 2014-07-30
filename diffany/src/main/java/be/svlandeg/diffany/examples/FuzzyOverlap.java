@@ -169,7 +169,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), false, 0.3));
 		
-		network.addEdge(new Edge("regulation", nodes.get("X"), nodes.get("Y"), false, 0.6));
+		network.addEdge(new Edge("negative regulation", nodes.get("X"), nodes.get("Y"), false, 0.6));
 		
 		network.addEdge(new Edge("ptm", nodes.get("M"), nodes.get("N"), false, 0.6, true));
 
@@ -201,7 +201,7 @@ public class FuzzyOverlap extends GenericExample
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), false, 0.4));
 		
-		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.3));
+		network.addEdge(new Edge("positive regulation", nodes.get("X"), nodes.get("Y"), false, 0.7));
 		
 		network.addEdge(new Edge("phosphorylation", nodes.get("M"), nodes.get("N"), false, 0.7, false));
 
@@ -250,23 +250,22 @@ public class FuzzyOverlap extends GenericExample
 		FuzzyOverlap ex = new FuzzyOverlap();
 		double weight_cutoff = 0.0;
 		
-		
 		System.out.println("Defining network for FuzzyOverlap configuration");
 		Project p = ex.getProject();
 		int overlap_cutoff = 2;
-		//int ID_1 = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		int ID_2 = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		//int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 		
 		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_2, weight_cutoff, -1, 20, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID_2, false, true);
+		ex.printAllNetworks(p, ID, false, true);
 		
 		System.out.println("Log:");
-		Logger logger = p.getLogger(ID_2);
+		Logger logger = p.getLogger(ID);
 		for (LogEntry log : logger.getAllLogMessages())
 		{
 			System.out.println(log);

@@ -35,7 +35,7 @@ public class TestFuzzyOverlap
 		int overlap_cutoff = 4;
 		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 10, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -63,7 +63,19 @@ public class TestFuzzyOverlap
 		int overlap_cutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);
+		
+		boolean exception = false;
+		try
+		{
+			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 10, true);		// this is an ID of an input network and should thus not work!
+		}
+		catch (IllegalArgumentException e)
+		{
+			exception = true;
+		}
+		assertTrue(exception);
+		
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);		// this is an ID of an input network and should thus not work!
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

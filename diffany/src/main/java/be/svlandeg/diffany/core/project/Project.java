@@ -145,6 +145,7 @@ public class Project
 	 * @param overlapNo_cutoff the number of networks that should at least match for overlap to be defined: min. 2, max conditions.size + 1.
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
+	 * @throws IllegalArgumentException when the IDs of the provided networks are not unique
 	 */
 	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
 	{
@@ -166,6 +167,14 @@ public class Project
 		
 		int nextID = runs.size();
 		Run run = new Run(this, nextID, rc, true, logger);
+		
+		boolean IDsOK = run.checkInputIDs();
+		if (! IDsOK)
+		{
+			String errormsg = "The IDs of the input networks should be unique!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		runs.add(run);
 		
 		return nextID;
@@ -214,6 +223,14 @@ public class Project
 		
 		int nextID = runs.size();
 		Run run = new Run(this, nextID, rc, false, logger);
+		
+		boolean IDsOK = run.checkInputIDs();
+		if (! IDsOK)
+		{
+			String errormsg = "The IDs of the input networks should be unique!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		runs.add(run);
 		
 		return nextID;

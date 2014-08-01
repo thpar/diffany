@@ -18,6 +18,9 @@ import be.svlandeg.diffany.core.networks.meta.MetaOverlappingNetwork;
  */
 public class RunOutput
 {
+	
+	protected Project p;
+	protected int runID;
 
 	private Set<DifferentialNetwork> dns;
 	private Set<OverlappingNetwork> ons;
@@ -33,6 +36,8 @@ public class RunOutput
 	public RunOutput(Project p, int runID)
 	{
 		clean();
+		this.p = p;
+		this.runID = runID;
 	}
 
 	/**
@@ -46,7 +51,10 @@ public class RunOutput
 	}
 
 	/**
-	 * Add a pair of differential+overlap networks to this output.
+	 * Add a pair of differential+overlap networks to this output. 
+	 * This will automatically also register the output networks to the list of differential and overlap networks, correspondingly.
+	 * When adding these networks, the IDs of the output networks will be checked for uniquenesss.
+	 * 
 	 * @param pair the pair of differential and overlap output networks
 	 */
 	public void addPair(OutputNetworkPair pair)
@@ -56,13 +64,15 @@ public class RunOutput
 			String errormsg = "The specified output pair can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		pairs.add(pair);
+		
 		addDifferential(pair.getDifferentialNetwork());
 		addOverlap(pair.getOverlappingNetwork());
+		
+		pairs.add(pair);
 	}
 
 	/**
-	 * Add a differential output network.
+	 * Add a differential output network. When adding this network, its IDs will be checked for uniquenesss.
 	 * @param dn the differential output network
 	 */
 	public void addDifferential(DifferentialNetwork dn)
@@ -72,11 +82,18 @@ public class RunOutput
 			String errormsg = "The specified output differential network(s) can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		
+		if (! p.runs.get(runID).checkoutputID(dn.getID()))
+		{
+			String errormsg = "The provided ID of the differential network (" + dn.getID() + ") should be unique in this run!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		dns.add(dn);
 	}
 
 	/**
-	 * Add an overlap output network.
+	 * Add an overlap output network. When adding this network, its IDs will be checked for uniquenesss.
 	 * @param on the overlap output network
 	 */
 	public void addOverlap(OverlappingNetwork on)
@@ -86,6 +103,13 @@ public class RunOutput
 			String errormsg = "The specified output overlap network(s) can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		
+		if (! p.runs.get(runID).checkoutputID(on.getID()))
+		{
+			String errormsg = "The provided ID of the overlap network (" + on.getID() + ") should be unique in this run!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		ons.add(on);
 	}
 

@@ -77,6 +77,7 @@ public class EdgeComparison
 	 * This method adds one additional piece of support to an intermediate result.
 	 * 
 	 * @param intermediate the current result
+	 * @param networkID the ID of the network which provides this support
 	 * @param weight the weight of the edges that further supports this result
 	 */
 	protected void addResult(IntermediateComparison intermediate, int networkID, double weight)
@@ -96,6 +97,7 @@ public class EdgeComparison
 	 * In case the edge is negated, we go down the tree, because the support then travels the other direction.
 	 * 
 	 * @param e the edge that needs to be added to the intermediate results
+	 * @param support the IDs of the networks that provide support for this edge
 	 * @param affirmative_results the (flattened) tree of support for non-negated edges
 	 * @param negated_results the (flattened) tree of support for negated edges
 	 */

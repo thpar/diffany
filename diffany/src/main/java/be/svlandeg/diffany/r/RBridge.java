@@ -108,6 +108,7 @@ public class RBridge
 
 	/**
 	 * Evaluate an R statement through the Java-R bridge.
+	 * @param statement the original R statement
 	 * 
 	 * @return the REXP object resulting from the execution of the R code.
 	 */

@@ -57,12 +57,13 @@ public class EdgeByEdge
 	 * @param conditionNetworks a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diff_name the name to give to the differential network
+	 * @param diffName the name to give to the differential network
 	 * @param ID the ID of the resulting network
+	 * @param weightCutoff the minimal weight a differential edge should have to be included
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diff_name, int ID, double cutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, double weightCutoff)
 	{
 		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
 
@@ -70,7 +71,7 @@ public class EdgeByEdge
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
 
-		DifferentialNetwork diff = new DifferentialNetwork(diff_name, ID, reference, conditionNetworks, nm);
+		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
@@ -215,7 +216,7 @@ public class EdgeByEdge
 					}
 					if (atLeastOneCon || aRef)
 					{
-						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, cutoff);
+						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, weightCutoff);
 
 						String sourceconsensusName = nm.getConsensusName(allSources);
 						String sourceconsensusID = nm.getConsensusID(allSources);

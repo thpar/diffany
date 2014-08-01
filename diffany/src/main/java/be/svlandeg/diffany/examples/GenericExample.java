@@ -70,6 +70,8 @@ public abstract class GenericExample
 	 * 
 	 * @param p the project to be printed
 	 * @param runID the ID of the Run
+	 * @param pair whether the output contains output pairs
+	 * @param overlapOnly whether only overlap networks are generated
 	 */
 	protected void printAllNetworks(Project p, int runID, boolean pair, boolean overlapOnly)
 	{

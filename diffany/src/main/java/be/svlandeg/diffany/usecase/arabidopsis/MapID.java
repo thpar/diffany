@@ -211,6 +211,7 @@ public class MapID
 	 * 
 	 * Currently, the output (written to the D disk), has been stored as a resources file in Maven.
 	 * There is thus no need to execute this method again.
+	 * @throws IOException when the input or output files can not be read properly
 	 */
 	protected void processRawMAinfo() throws IOException
 	{

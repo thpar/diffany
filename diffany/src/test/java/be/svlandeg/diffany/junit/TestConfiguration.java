@@ -90,10 +90,10 @@ public class TestConfiguration
 	 */
 	private void testIni(Project p, MultipleConditionTest ex, int calls)
 	{
-		assertEquals(0, p.getAllRunIDs().size());
+		assertTrue(0 == p.getNumberOfRuns());
 
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunIDs().size());
+		assertTrue(calls + 1 == p.getNumberOfRuns());
 		
 		RunOutput dOutput = p.getOutput(ID);
 		assertNrDiffNetworks(dOutput, 0);
@@ -105,7 +105,7 @@ public class TestConfiguration
 	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int diffID, int overlapID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunIDs().size());
+		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		// it should not make a difference how many times this method is called!
 		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
@@ -159,7 +159,7 @@ public class TestConfiguration
 	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int overlapID)
 	{
 		int ID = ex.getTestOverlapConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunIDs().size());
+		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		assertException(p, calc, ID, overlapID++, overlapID++);
 		assertException(p, calc, ID, overlapID++, -1);
@@ -186,7 +186,7 @@ public class TestConfiguration
 	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap, int firstID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
-		assertEquals(calls + 1, p.getAllRunIDs().size());
+		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap, firstID, true);
 		RunOutput output = p.getOutput(ID);

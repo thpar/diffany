@@ -12,6 +12,8 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
  * 
  * This configuration can be used to calculate overlap networks, but differential networks can only be calculated with a RunDiffConfiguration object.
  * 
+ * A runconfiguration object should not change after construction!
+ * 
  * @author Sofie Van Landeghem
  */
 public class RunConfiguration
@@ -51,8 +53,7 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Set the input networks in this configuration.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
+	 * Set the input networks in this configuration. By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param inputNetworks the input networks (not null or empty!)
 	 * @throws IllegalArgumentException if the set is null or empty
@@ -68,8 +69,8 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Alter the fact whether or not the reference network needs to have an edge for it to be allowed inclusion in the overlap network
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
+	 * Alter the fact whether or not the reference network needs to have an edge for it to be allowed inclusion in the overlap network.
+	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param refRequired the new boolean state
 	 */
@@ -89,7 +90,7 @@ public class RunConfiguration
 	
 	/**
 	 * Alter the required number of overlapping edges needed before the edge will be present in the overlap network.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
+	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param overlapNo_cutoff the new cutoff
 	 */

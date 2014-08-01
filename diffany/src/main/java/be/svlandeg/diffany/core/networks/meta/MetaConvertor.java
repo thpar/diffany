@@ -57,7 +57,6 @@ public class MetaConvertor
 	 * @param inputs the original set of separate input networks (assumed not-null and not empty!)
 	 * @return the meta input network
 	 */
-	@SuppressWarnings("unused")
 	public static MetaInputNetwork convertInput(Set<InputNetwork> inputs)
 	{
 		// TODO
@@ -133,7 +132,6 @@ public class MetaConvertor
 	 * @param overlapSet the original set of separate overlapping networks (assumed not-null and not empty!)
 	 * @return the meta overlapping network
 	 */
-	@SuppressWarnings("unused")
     public static MetaOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
 	{
 		// TODO

@@ -25,10 +25,12 @@ public class RunOutput
 
 	/**
 	 * Create a new empty output object.
+	 * @param p the project to which this output object belongs
+	 * @param runID the corresponding run ID within the project
 	 *
 	 * @throws IllegalArgumentException when either of the provided networks is null
 	 */
-	public RunOutput()
+	public RunOutput(Project p, int runID)
 	{
 		clean();
 	}

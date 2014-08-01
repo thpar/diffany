@@ -16,6 +16,8 @@ import be.svlandeg.diffany.core.networks.ReferenceNetwork;
  * It should contain exactly 1 reference network, at least 1 condition-specific network, 
  * and it may contain 1 or more differential network pairs.
  * 
+ * A runconfiguration object should not change after construction!
+ * 
  * @author Sofie Van Landeghem
  */
 public class RunDiffConfiguration extends RunConfiguration
@@ -76,7 +78,7 @@ public class RunDiffConfiguration extends RunConfiguration
 	
 	/**
 	 * Set the condition-specific networks in this configuration.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
+	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param conditions the condition-specific networks (not null or empty!)
 	 * @throws IllegalArgumentException if the set is null or empty
@@ -93,7 +95,7 @@ public class RunDiffConfiguration extends RunConfiguration
 	
 	/**
 	 * Set the reference network of this configuration.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
+	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param reference the reference network
 	 * @throws IllegalArgumentException if the network is null
@@ -109,8 +111,7 @@ public class RunDiffConfiguration extends RunConfiguration
 	}
 	
 	/**
-	 * Get the reference network of this configuration, against which the condition
-	 * dependent network(s) will be compared to.
+	 * Get the reference network of this configuration, against which the condition dependent network(s) will be compared to.
 	 * 
 	 * @return the reference network in this configuration (should not be null)
 	 */

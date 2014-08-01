@@ -1,9 +1,8 @@
 package be.svlandeg.diffany.core.project;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
@@ -22,10 +21,6 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 /**
  * A project consists of a number of Diffany runs and the ontology settings within one user session.
  * 
- * Specifically, it contains one or more {@link RunConfiguration}s which is a subset of networks that can together
- * be used as input for the Diffany algorithms. 
- * Further, for each ID corresponding to such configuration, there is a RunOutput and a Logger object.
- * 
  * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types,
  * and a {@link NodeMapper} that establishes equality of nodes across networks.
  * 
@@ -41,17 +36,9 @@ public class Project
 	protected TreeEdgeOntology edgeOntology;
 	protected NodeMapper nodeMapper;
 	
-	// configurations by Run IDs
-	protected Map<Integer, RunConfiguration> configurations;
+	// List of runs; their IDs are given by the index in this list
+	protected List<Run> runs;
 	
-	// outputs by Run IDs
-	protected Map<Integer, RunOutput> runOutputs;
-	
-	// types by Run IDs
-	protected Map<Integer, Boolean> runTypes;	// boolean: can do differential
-	
-	// loggers by Run ID
-	protected Map<Integer, Logger> runLogs;
 	
 	/**
 	 * Create a new project with a default node mapper and a default edge ontology that can interpret the differential edges.
@@ -86,19 +73,16 @@ public class Project
 		setEdgeOntology(edgeOntology);
 		setNodeMapper(nodeMapper);
 		
-		configurations = new HashMap<Integer, RunConfiguration>();
-		runOutputs = new HashMap<Integer, RunOutput>();
-		runTypes = new HashMap<Integer, Boolean>();
-		runLogs = new HashMap<Integer, Logger>();
+		runs = new ArrayList<Run>();
 	}
 	
 	/**
-	 * Retrieve all run IDs stored in this project
-	 * @return all run IDs
+	 * Retrieve the number of runs in this project
+	 * @return the number of run IDs
 	 */
-	public Set<Integer> getAllRunIDs()
+	public Integer getNumberOfRuns()
 	{
-		return configurations.keySet();
+		return runs.size();
 	}
 	
 	/**
@@ -110,12 +94,12 @@ public class Project
 	 */
 	public RunConfiguration getRunConfiguration(int runID) throws IllegalArgumentException
 	{
-		if (! configurations.containsKey(runID))
+		if (runID < 0 || runID >= runs.size())
 		{
 			String errormsg = "Unknown run ID " + runID + " in Project " + name;
 			throw new IllegalArgumentException(errormsg);
 		}
-		return configurations.get(runID);
+		return runs.get(runID).configuration;
 	}
 	
 	
@@ -179,19 +163,11 @@ public class Project
 		}
 		
 		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions, overlapNo_cutoff);
-		int nextID;
-		if (configurations.keySet().isEmpty())
-		{
-			nextID = 1;
-		}
-		else
-		{
-			nextID = Collections.max(configurations.keySet()) + 1;
-		}
-		configurations.put(nextID, rc);
-		runTypes.put(nextID, true);
-		runLogs.put(nextID, logger);
-		runOutputs.put(nextID, new RunOutput());
+		
+		int nextID = runs.size();
+		Run run = new Run(this, nextID, rc, true, logger);
+		runs.add(run);
+		
 		return nextID;
 	}
 	
@@ -235,19 +211,11 @@ public class Project
 		}
 		
 		RunConfiguration rc = new RunConfiguration(cleanNetworks, overlapNo_cutoff, refRequired);
-		int nextID;
-		if (configurations.keySet().isEmpty())
-		{
-			nextID = 1;
-		}
-		else
-		{
-			nextID = Collections.max(configurations.keySet()) + 1;
-		}
-		configurations.put(nextID, rc);
-		runTypes.put(nextID, false);
-		runLogs.put(nextID, logger);
-		runOutputs.put(nextID, new RunOutput());
+		
+		int nextID = runs.size();
+		Run run = new Run(this, nextID, rc, false, logger);
+		runs.add(run);
+		
 		return nextID;
 	}
 	
@@ -258,7 +226,7 @@ public class Project
 	 */
 	public RunOutput getOutput(int runID)
 	{
-		return runOutputs.get(runID);
+		return runs.get(runID).output;
 	}
 	
 	/**
@@ -268,7 +236,7 @@ public class Project
 	 */
 	public Logger getLogger(int runID)
 	{
-		return runLogs.get(runID);
+		return runs.get(runID).logger;
 	}
 	
 	/**
@@ -278,7 +246,7 @@ public class Project
 	 */
 	public boolean isDiffType(int runID)
 	{
-		return runTypes.get(runID);
+		return runs.get(runID).type;
 	}
 	
 	

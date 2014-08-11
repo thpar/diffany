@@ -69,14 +69,19 @@ public class FuzzyOverlap extends GenericExample
 	
 	/**
 	 * Add some custom-defined networks to the project: 4 condition-specific networks, no reference.
+	 * 
 	 * @param p the fuzzy project
 	 * @param overlapCutoff the cutoff for overlap %
+	 * @param refAsCond whether or not to include the reference network as "condition 0". If not, only 3 input networks are used.
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfigurationWithoutReference(Project p, int overlapCutoff)
+	public int getTestConfigurationWithoutReference(Project p, int overlapCutoff, boolean refAsCond)
 	{
 		Set<InputNetwork> c = new HashSet<InputNetwork>();
-		c.add(getCondition0());	
+		if (refAsCond)
+		{
+			c.add(getCondition0());	
+		}
 		c.add(getCondition1());	
 		c.add(getCondition2());
 		c.add(getCondition3());	
@@ -253,8 +258,8 @@ public class FuzzyOverlap extends GenericExample
 		System.out.println("Defining network for FuzzyOverlap configuration");
 		Project p = ex.getProject();
 		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		//int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff);
+		//int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
 		
 		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);

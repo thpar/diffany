@@ -33,9 +33,9 @@ public class OverlappingNetwork extends Network
 	public OverlappingNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
 	{
 		super(name, ID, nm);
-		if (originalNetworks == null || originalNetworks.size() < 2)
+		if (originalNetworks == null || originalNetworks.size() < 1)
 		{
-			String errormsg = "Please define at least 2 original networks!";
+			String errormsg = "Please define at least 1 original network!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.originalNetworks = originalNetworks;

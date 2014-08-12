@@ -228,7 +228,6 @@ public class EdgeComparison
 		return map;
 	}
 
-
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
@@ -259,17 +258,17 @@ public class EdgeComparison
 			String errormsg = "The list of supporting conditional networks should be as large as the conditional edge list!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		
+
 		EdgeDefinition diff_edge = eg.getDefaultEdge();
-		
+
 		int originalEdges = conEdges.size() + 1;
-		
+
 		// 0. DEAL WITH SYMMETRY AND NEGATION //
-		
+
 		// create the set of condition edges by removing the negated ones, and count symmetry while we're at it
 		List<EdgeDefinition> conEdgesPos = new ArrayList<EdgeDefinition>();
 		int countSymmetrical = 0;
-		
+
 		for (EdgeDefinition e : conEdges)
 		{
 			if (e.isSymmetrical())
@@ -277,7 +276,7 @@ public class EdgeComparison
 				countSymmetrical++;
 			}
 			// negated edges are set to void
-			if (! e.isNegated())
+			if (!e.isNegated())
 			{
 				conEdgesPos.add(e);
 			}
@@ -290,11 +289,11 @@ public class EdgeComparison
 		{
 			countSymmetrical++;
 		}
-		
+
 		boolean refNeg = refEdge.isNegated();
 		if (refNeg)
 		{
-				refEdge = eg.getVoidEdge(refEdge.isSymmetrical());
+			refEdge = eg.getVoidEdge(refEdge.isSymmetrical());
 		}
 
 		if (countSymmetrical != originalEdges && countSymmetrical != 0)
@@ -305,23 +304,23 @@ public class EdgeComparison
 		// a differential edge is only symmetrical if all input edges are
 		boolean final_symm = countSymmetrical == originalEdges;
 		diff_edge.makeSymmetrical(final_symm);
-		
+
 		// a differential edge is never negated 
-		diff_edge.makeNegated(false); 
-		
+		diff_edge.makeNegated(false);
+
 		// 1. PROCESS ALL EDGES ONE BY ONE AND ADD THEM TO THE INTERMEDIATE RESULTS //
 
 		Map<String, IntermediateComparison> con_results = new HashMap<String, IntermediateComparison>();
-		
+
 		for (int i = 0; i < conEdgesPos.size(); i++)
 		{
 			EdgeDefinition e = conEdgesPos.get(i);
 			Set<Integer> support = supports.get(i);
 			addEdgeToTree(e, support, con_results, null);
 		}
-		
+
 		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE CONSENSUS OVERLAP RESULTS  //
-		
+
 		Set<EdgeDefinition> overlaps = new HashSet<EdgeDefinition>();
 		double refWeight = refEdge.getWeight();
 		boolean minOperator = true;
@@ -332,24 +331,20 @@ public class EdgeComparison
 
 			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
 			{
-				//System.out.println(" map_below : " + map_below);
 				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, Double.NEGATIVE_INFINITY, refWeight, minOperator);
-				
-				//System.out.println(" map_above : " + map_above);
 				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight, Double.POSITIVE_INFINITY, minOperator);
-				
-				if (! map_below.isEmpty() && ! map_above.isEmpty())
+
+				if (!map_below.isEmpty() && !map_above.isEmpty())
 				{
 					// there can be no differential edge because there is evidence for both higher and lower weights
 					return eg.getVoidEdge(final_symm);
 				}
 				// keep only the consensus condition edge with the highest weight
-				else if (! map_below.isEmpty())
+				else if (!map_below.isEmpty())
 				{
 					double max = Double.NEGATIVE_INFINITY;
 					for (EdgeDefinition overlap_edge : map_below.keySet())
 					{
-						System.out.println(" found below " + overlap_edge);
 						max = Math.max(max, overlap_edge.getWeight());
 					}
 					for (EdgeDefinition overlap_edge : map_below.keySet())
@@ -361,12 +356,11 @@ public class EdgeComparison
 					}
 				}
 				// keep only the consensus condition edge with the highest weight
-				else if (! map_above.isEmpty())
+				else if (!map_above.isEmpty())
 				{
 					double max = Double.NEGATIVE_INFINITY;
 					for (EdgeDefinition overlap_edge : map_above.keySet())
 					{
-						System.out.println(" found above " + overlap_edge);
 						max = Math.max(max, overlap_edge.getWeight());
 					}
 					for (EdgeDefinition overlap_edge : map_above.keySet())
@@ -379,7 +373,7 @@ public class EdgeComparison
 				}
 			}
 		}
-		
+
 		if (overlaps.size() == 0)
 		{
 			overlaps.add(eg.getVoidEdge(final_symm));
@@ -396,23 +390,22 @@ public class EdgeComparison
 			}
 			overlaps = newOverlaps;
 		}
-		
+
 		EdgeDefinition consensusConEdge = overlaps.iterator().next();
-		//System.out.println("consensusConEdge " + consensusConEdge);
-		
+		System.out.println("consensusConEdge " + consensusConEdge);
+
 		// 3. DETERMINE THE FINAL TYPE AND WEIGHT //
-		
+
 		String refCat = teo.getSourceCategory(refEdge.getType());
 
 		boolean isDown = false;
-		double minDiffWeight = Double.MAX_VALUE;
-		double minCumulWeight = Double.MAX_VALUE;
+		
 
 		// DEFINE THE COMMON PARENT OF ALL EDGES
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
 		allEdges.add(consensusConEdge);
 		allEdges.add(refEdge);
-		
+
 		Set<String> posSourceCats = teo.getAllPosSourceCategories();
 		Set<String> negSourceCats = teo.getAllNegSourceCategories();
 
@@ -459,62 +452,62 @@ public class EdgeComparison
 		String VOID_CAT = teo.getVoidCategory(final_symm);
 
 		String conCat = teo.getSourceCategory(consensusConEdge.getType());
+		
 		double weightDifference = consensusConEdge.getWeight() - refEdge.getWeight();
 		double weightSum = consensusConEdge.getWeight() + refEdge.getWeight();
-		
-			// refcat is void, concat is not --> increase (unless concat is negative)
-			if (refCat.equals(VOID_CAT) && !conCat.equals(VOID_CAT))
-			{
-				isDown = negSourceCats.contains(conCat);
-				weightDifference  = consensusConEdge.getWeight();
-			}
+		double finalDiffWeight = 0;
 
-			// refcat is not void, concat is void --> decrease (unless refcat is negative)
-			else if (!refCat.equals(VOID_CAT) && conCat.equals(VOID_CAT))
-			{
-				isDown = ! negSourceCats.contains(refCat);	
-				weightDifference = refEdge.getWeight();
-			}
+		// refcat is void, concat is not --> increase (unless concat is negative)
+		if (refCat.equals(VOID_CAT) && !conCat.equals(VOID_CAT))
+		{
+			isDown = negSourceCats.contains(conCat);
+			finalDiffWeight = consensusConEdge.getWeight();
+		}
 
-			// refcat is positive, concat is negative --> decrease
-			else if (posSourceCats.contains(refCat) && negSourceCats.contains(conCat))
+		// refcat is not void, concat is void --> decrease (unless refcat is negative)
+		else if (!refCat.equals(VOID_CAT) && conCat.equals(VOID_CAT))
+		{
+			isDown = !negSourceCats.contains(refCat);
+			finalDiffWeight = refEdge.getWeight();
+		}
+
+		// refcat is positive, concat is negative --> decrease
+		else if (posSourceCats.contains(refCat) && negSourceCats.contains(conCat))
+		{
+			isDown = true;
+			finalDiffWeight = weightSum;
+		}
+
+		// refcat is negative, concat is positive --> increase
+		else if (negSourceCats.contains(refCat) && posSourceCats.contains(conCat))
+		{
+			isDown = false;
+			finalDiffWeight = weightSum;
+		}
+
+		else
+		{
+			finalDiffWeight = weightDifference;
+			if (finalDiffWeight < 0) // decrease
 			{
+				finalDiffWeight *= -1;
 				isDown = true;
-				weightDifference = weightSum;
 			}
-
-			// refcat is negative, concat is positive --> increase
-			else if (negSourceCats.contains(refCat) && posSourceCats.contains(conCat))
+			else if (finalDiffWeight > 0) // increase
 			{
 				isDown = false;
-				weightDifference = weightSum;
 			}
+			boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
+			boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
 
-			else
+			if ((refNeutral && !conNeutral) || (conNeutral && !refNeutral))
 			{
-				if (weightDifference  < 0) // decrease
-				{
-					weightDifference  *= -1;
-					isDown = true;
-				}
-				else if (weightDifference  > 0) // increase
-				{
-					isDown = false;
-				}
-				boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
-				boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
-
-				if ((refNeutral && !conNeutral) || (conNeutral && !refNeutral))
-				{
-					unspecified = true;
-				}
+				unspecified = true;
 			}
-
-			minDiffWeight = Math.min(minDiffWeight, weightDifference);
-			minCumulWeight = Math.min(minCumulWeight, weightSum);
+		}
+		
 
 		String type = "";
-		double diffWeight = 0.0;
 
 		if (isDown)
 		{
@@ -543,15 +536,14 @@ public class EdgeComparison
 			type += teo.getUnspecifiedPrefix();
 		}
 		type += baseType;
-		diffWeight = minDiffWeight;
 
 		diff_edge.setType(type);
 
-		if (diffWeight <= weight_cutoff)
+		if (finalDiffWeight <= weight_cutoff)
 		{
 			return eg.getVoidEdge(final_symm);
 		}
-		diff_edge.setWeight(diffWeight);
+		diff_edge.setWeight(finalDiffWeight);
 		return diff_edge;
 	}
 
@@ -652,7 +644,7 @@ public class EdgeComparison
 			}
 			if (neg)
 			{
-				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff,Double.POSITIVE_INFINITY, minOperator);
+				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff, Double.POSITIVE_INFINITY, minOperator);
 				if (map != null)
 				{
 					for (EdgeDefinition overlap_edge : map.keySet())

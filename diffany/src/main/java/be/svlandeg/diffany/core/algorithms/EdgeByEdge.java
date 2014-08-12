@@ -45,7 +45,7 @@ public class EdgeByEdge
 	{
 		this.log = log;
 	}
-
+	
 	/**
 	 * Calculate the differential network between the reference and condition-specific networks.
 	 * The overlapping network should be calculated independently!
@@ -63,192 +63,154 @@ public class EdgeByEdge
 	 * @param diffName the name to give to the differential network
 	 * @param ID the ID of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap between the condition-specific networks
-	 * @param weightCutoff the minimal weight a differential edge should have to be included
+	 * @param weight_cutoff the minimal weight a differential edge should have to be included
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weightCutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weight_cutoff)
 	{
-		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
-
+		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
+		
 		Set<Network> allOriginals = new HashSet<Network>();
 		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
+		
+		List<Set<Node>> allEqualSets = nm.getAllEquals(allOriginals);
 
-		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
-
-		Set<Node> allNodes = nm.getAllNodes(allOriginals);
-
-		// nodes in the differential network, by ID
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
+		NetworkCleaning cleaning = new NetworkCleaning(log);
 
-		for (Node sourceRef : allNodes) // source node in reference network
+		for (Set<Node> sources : allEqualSets) // source nodes (equals across networks) 
 		{
-			// get the equivalent source nodes in the condition networks
-			List<Node> allConSources = new ArrayList<Node>();
-			Set<Node> allSources = new HashSet<Node>();
-			allSources.add(sourceRef);
-			for (ConditionNetwork condition : listedConditions)
+			Node example_source = sources.iterator().next();
+			String sourceconsensusID = nm.getConsensusID(sources);
+			String sourceconsensusName = nm.getConsensusName(sources);
+
+			for (Set<Node> targets : allEqualSets) // target nodes (equals across networks)
 			{
-				Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
-				Node sourceCon;
-				if (nodeMapping.containsKey(sourceRef))
-				{
-					Set<Node> sourcesMapped = nodeMapping.get(sourceRef);
-					sourceCon = getSingleNode(sourcesMapped);
-				}
-				else
-				// sourceRef is not actually a part of the reference network
-				{
-					sourceCon = sourceRef;
-				}
-				if (sourceCon != null)
-				{
-					allSources.add(sourceCon);
-					allConSources.add(sourceCon);
-				}
-				else
-				{
-					allConSources.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
-				}
-			}
+				Node example_target = targets.iterator().next();
+				String targetconsensusID = nm.getConsensusID(targets);
+				String targetconsensusName = nm.getConsensusName(targets);
 
-			for (Node targetRef : allNodes) // target node in reference network
-			{
-				// get the equivalent target nodes in the condition networks
-				List<Node> allConTargets = new ArrayList<Node>();
-				Set<Node> allTargets = new HashSet<Node>();
-				allTargets.add(targetRef);
-				for (ConditionNetwork condition : listedConditions)
-				{
-					Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
-					Node targetCon;
-					if (nodeMapping.containsKey(targetRef))
-					{
-						Set<Node> targets2 = nodeMapping.get(targetRef);
-						targetCon = getSingleNode(targets2);
-					}
-					else
-					// targetRef is not actually a part of the reference network
-					{
-						targetCon = targetRef;
-					}
-					if (targetCon != null)
-					{
-						allConTargets.add(targetCon);
-						allTargets.add(targetCon);
-					}
-					else
-					{
-						allConTargets.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
-					}
-				}
-
-				// get the reference edges
-				Set<Edge> allRefs = reference.getAllEdges(sourceRef, targetRef);
-
-				// get all condition-specific edges
-				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
-
-				for (int i = 0; i < listedConditions.size(); i++)
-				{
-					Set<Edge> conditionEdges = new HashSet<Edge>();
-
-					ConditionNetwork condition = listedConditions.get(i);
-					Node s = allConSources.get(i);
-					Node t = allConTargets.get(i);
-					if (!s.getID().equals(EMPTY_ID) && !t.getID().equals(EMPTY_ID))
-					{
-						conditionEdges = condition.getAllEdges(s, t);
-					}
-					condlist.add(i, conditionEdges);
-				}
-
+				// get all edges from the input network
+				Map<String, Map<Integer, Set<EdgeDefinition>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<EdgeDefinition>>>();
 				for (String root : roots)
 				{
-					boolean aRef = true;
-					boolean symm = eo.isSymmetricalSourceCat(root);
-					Set<EdgeDefinition> rootRefs = new HashSet<EdgeDefinition>();
-					for (Edge e : allRefs)
+					edgesBySemanticRoot.put(root, new HashMap<Integer, Set<EdgeDefinition>>());
+				}
+				for (Network n : allOriginals)
+				{
+					Set<Edge> allEdges = n.getAllEdges(example_source, example_target);
+					for (String root : roots)
 					{
-						String type = e.getType();
-						if (eo.isSourceTypeChildOf(type, root) > -1)
-						{
-							rootRefs.add(e.getDefinition());
-						}
-					}
-					if (rootRefs.isEmpty())
-					{
-						aRef = false;
-						rootRefs.add(eg.getVoidEdge(symm));
-					}
-					if (rootRefs.size() > 1)
-					{
-						throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
-					}
-					Set<EdgeDefinition> rootCons = new HashSet<EdgeDefinition>();
-					boolean atLeastOneCon = false;
-					for (int i = 0; i < listedConditions.size(); i++)
-					{
-						Set<EdgeDefinition> thisRootCons = new HashSet<EdgeDefinition>();
-						for (Edge e : condlist.get(i))
+						Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
+						for (Edge e : allEdges)
 						{
 							String type = e.getType();
 							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								thisRootCons.add(e.getDefinition());
+								rootEdges.add(e.getDefinition());
 							}
 						}
-						if (thisRootCons.isEmpty())
+						if (!rootEdges.isEmpty())
 						{
-							thisRootCons.add(eg.getVoidEdge(symm));
+							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
 						}
-						else if (thisRootCons.size() > 1)
-						{
-							throw new IllegalArgumentException("Found more than 1 condition edge in " + listedConditions.get(i).getName() + " for semantic root " + root);
-
-						}
-						else
-						{
-							atLeastOneCon = true;
-						}
-						rootCons.add(thisRootCons.iterator().next());
 					}
-					if (atLeastOneCon || aRef)
+				}
+
+				for (String root : roots)
+				{
+					boolean symm = eo.isSymmetricalSourceCat(root);
+
+					List<EdgeDefinition> refEdges = new ArrayList<EdgeDefinition>();
+					List<EdgeDefinition> conEdges = new ArrayList<EdgeDefinition>();
+					List<Set<Integer>> conSupportingNetworks = new ArrayList<Set<Integer>>();
+					
+					Map<Integer, Set<EdgeDefinition>> edgesByNetwork = edgesBySemanticRoot.get(root);
+
+					for (int networkID : edgesByNetwork.keySet())
 					{
-						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, weightCutoff, overlapNo_cutoff);
-
-						String sourceconsensusName = nm.getConsensusName(allSources);
-						String sourceconsensusID = nm.getConsensusID(allSources);
-						String targetconsensusName = nm.getConsensusName(allTargets);
-						String targetconsensusID = nm.getConsensusID(allTargets);
-
-						// non-void differential edge
-						if (diff_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
+						for (EdgeDefinition e : edgesByNetwork.get(networkID))
 						{
-							if (!allDiffNodes.containsKey(sourceconsensusID))
+							if (networkID != reference.getID() && conEdges.contains(e))
 							{
-								allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
+								int position = conEdges.indexOf(e);
+								conSupportingNetworks.get(position).add(networkID);
 							}
-							Node sourceresult = allDiffNodes.get(sourceconsensusID);
-
-							if (!allDiffNodes.containsKey(targetconsensusID))
+							else if (networkID != reference.getID())
 							{
-								allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
+								conEdges.add(e);
+								Set<Integer> support = new HashSet<Integer>();
+								support.add(networkID);
+								conSupportingNetworks.add(support);
 							}
-							Node targetresult = allDiffNodes.get(targetconsensusID);
-
-							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
-							diff.addEdge(edgediff);
+							else if (networkID == reference.getID() && ! refEdges.contains(e))
+							{
+								refEdges.add(e);
+							}
 						}
+					}
+					if (conEdges.isEmpty())
+					{
+						conEdges.add(eg.getVoidEdge(symm));
+						conSupportingNetworks.add(new HashSet<Integer>());
+					}
+					if (refEdges.size() > 1)
+					{
+						throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
+					}
+					if (refEdges.isEmpty())
+					{
+						refEdges.add(eg.getVoidEdge(symm));
+					}
+					EdgeDefinition refEdge = refEdges.iterator().next();
+					
+					List<EdgeDefinition> mergedEdges = new ArrayList<EdgeDefinition>();
+					mergedEdges.add(refEdge);
+					mergedEdges.addAll(conEdges);
+
+					List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(mergedEdges);
+					
+					EdgeDefinition cleanedRefEdge = cleanedEdges.get(0);
+					
+					List<EdgeDefinition> cleanedConEdges = new ArrayList<EdgeDefinition>();
+					for (int i = 1; i < cleanedEdges.size(); i++)
+					{
+						cleanedConEdges.add(cleanedEdges.get(i));
+					}
+
+					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
+					System.out.println("calculating " + root + " for " + sourceconsensusName + " - " + targetconsensusName);
+					EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, overlapNo_cutoff, weight_cutoff);
+
+
+					// non-void differential edge
+					if (diff_edge_def.getWeight() > 0 && sourceconsensusID != null && targetconsensusID != null)
+					{
+						if (!allDiffNodes.containsKey(sourceconsensusID))
+						{
+							allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
+						}
+						Node sourceresult = allDiffNodes.get(sourceconsensusID);
+
+						if (!allDiffNodes.containsKey(targetconsensusID))
+						{
+							allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
+						}
+						Node targetresult = allDiffNodes.get(targetconsensusID);
+
+						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+						diff.addEdge(edgediff);
 					}
 				}
 			}
 		}
+
 		return diff;
 	}
 
@@ -355,7 +317,6 @@ public class EdgeByEdge
 							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
 						}
 					}
-
 				}
 
 				for (String root : roots)
@@ -457,27 +418,6 @@ public class EdgeByEdge
 		}
 
 		return overlap;
-	}
-
-	/**
-	 * Return one single node from a collection, assuming that there will only be 1
-	 * 
-	 * @param nodes the set of nodes
-	 * @return the one node in the set, or an UnsupportedOperationException if there are more than 1
-	 */
-	private Node getSingleNode(Set<Node> nodes)
-	{
-		if (nodes == null || nodes.isEmpty())
-		{
-			return null;
-		}
-		if (nodes.size() > 1)
-		{
-			String msg = "This algorithm currently only supports 1-1 node mappings.";
-			log.log("Fatal error: " + msg);
-			throw new UnsupportedOperationException(msg);
-		}
-		return nodes.iterator().next();
 	}
 
 }

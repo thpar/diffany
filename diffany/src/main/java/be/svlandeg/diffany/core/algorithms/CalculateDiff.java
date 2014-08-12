@@ -132,7 +132,7 @@ public class CalculateDiff
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			// TODO
-			int all = conditions.size() + 1;
+			int all = conditions.size();
 			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, all, weight_cutoff);
 			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn);
 			return dn;

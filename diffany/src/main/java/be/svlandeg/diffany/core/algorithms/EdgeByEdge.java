@@ -64,15 +64,16 @@ public class EdgeByEdge
 	 * @param ID the ID of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap between the condition-specific networks
 	 * @param weightCutoff the minimal weight a differential edge should have to be included
+	 * @param minOperator whether or not to take the minimum of the edge weights for the consensus condition network - if false, the maximum is taken
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weightCutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weightCutoff, boolean minOperator)
 	{
 		Set<Network> allConditionNetworks = new HashSet<Network>();
 		allConditionNetworks.addAll(conditionNetworks);
 		
-		OverlappingNetwork consensusConditionNetwork = calculateOverlappingNetwork(allConditionNetworks, eo, nm, "consensus_overlap", ID+1, overlapNo_cutoff, false, weightCutoff, false);
+		OverlappingNetwork consensusConditionNetwork = calculateOverlappingNetwork(allConditionNetworks, eo, nm, "consensus_overlap", ID+1, overlapNo_cutoff, false, weightCutoff, minOperator);
 		
 		return calculateDiffNetwork(reference, conditionNetworks, consensusConditionNetwork, eo, nm, diffName,  ID, weightCutoff);
 	}
@@ -303,10 +304,17 @@ public class EdgeByEdge
 				refNetworks.add(n.getID());
 			}
 		}
+		
 		if (refRequired && refNetworks.size() != 1)
 		{
 			String errormsg = "Please define exactly 1 reference network (" + refNetworks.size() + "found) or change the refRequired parameter to false!";
 			throw new IllegalArgumentException(errormsg);
+		}
+		
+		if (allNetworks.size() == 1)
+		{
+			Network onlyInput = allNetworks.values().iterator().next();
+			overlap.setNodesAndEdges(onlyInput.getNodes(), onlyInput.getEdges());
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();

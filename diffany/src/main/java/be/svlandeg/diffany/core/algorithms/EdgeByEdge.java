@@ -64,48 +64,18 @@ public class EdgeByEdge
 	 * @param ID the ID of the resulting network
 	 * @param overlapNo_cutoff the minimal number of edges that need to overlap between the condition-specific networks
 	 * @param weightCutoff the minimal weight a differential edge should have to be included
-	 * @param minOperator whether or not to take the minimum of the edge weights for the consensus condition network - if false, the maximum is taken
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weightCutoff, boolean minOperator)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weightCutoff)
 	{
-		Set<Network> allConditionNetworks = new HashSet<Network>();
-		allConditionNetworks.addAll(conditionNetworks);
-		
-		OverlappingNetwork consensusConditionNetwork = calculateOverlappingNetwork(allConditionNetworks, eo, nm, "consensus_overlap", ID+1, overlapNo_cutoff, false, weightCutoff, minOperator);
-		
-		return calculateDiffNetwork(reference, conditionNetworks, consensusConditionNetwork, eo, nm, diffName,  ID, weightCutoff);
-	}
+		ArrayList<ConditionNetwork> listedConditions = new ArrayList<ConditionNetwork>(conditionNetworks);
 
-	/**
-	 * Calculate the differential network between the reference and condition-specific networks.
-	 * The overlapping network should be calculated independently!
-	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
-	 * 
-	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the 'consensus' condition network. If it equals the number of condition networks, all networks need to agree on an edge.
-	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust differential networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
-	 * as a minimal number of supporting edges (networks).
-	 * 
-	 * @param reference the reference network
-	 * @param originalConditionNetworks the original condition-specific networks
-	 * @param consensusConditionNetwork a 'consensus' representation of the condition-specific network(s) 
-	 * @param eo the tree edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param diffName the name to give to the differential network
-	 * @param ID the ID of the resulting network
-	 * @param weightCutoff the minimal weight a differential edge should have to be included
-	 * 
-	 * @return the differential network between the two
-	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> originalConditionNetworks, OverlappingNetwork consensusConditionNetwork, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, double weightCutoff)
-	{
 		Set<Network> allOriginals = new HashSet<Network>();
-		allOriginals.add(consensusConditionNetwork);
+		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
 
-		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, originalConditionNetworks, nm);
+		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
 
 		Set<Node> allNodes = nm.getAllNodes(allOriginals);
 
@@ -116,67 +86,87 @@ public class EdgeByEdge
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 
-		for (Node source1 : allNodes) // source node in reference network
+		for (Node sourceRef : allNodes) // source node in reference network
 		{
-			// get the equivalent source nodes in the consensus condition network
-			List<Node> allsources2 = new ArrayList<Node>();
+			// get the equivalent source nodes in the condition networks
+			List<Node> allConSources = new ArrayList<Node>();
 			Set<Node> allSources = new HashSet<Node>();
-			allSources.add(source1);
-			Map<Node, Set<Node>> nodeMapping1 = nm.getAllEquals(reference, consensusConditionNetwork);
-			Node source2;
-			if (nodeMapping1.containsKey(source1))
+			allSources.add(sourceRef);
+			for (ConditionNetwork condition : listedConditions)
 			{
-				Set<Node> sources2 = nodeMapping1.get(source1);
-				source2 = getSingleNode(sources2);
-			}
-			else
-			// source1 is not actually a part of the reference network
-			{
-				source2 = source1;
-			}
-			if (source2 != null)
-			{
-				allsources2.add(source2);
-				allSources.add(source2);
-			}
-			else
-			{
-				allsources2.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
+				Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
+				Node sourceCon;
+				if (nodeMapping.containsKey(sourceRef))
+				{
+					Set<Node> sourcesMapped = nodeMapping.get(sourceRef);
+					sourceCon = getSingleNode(sourcesMapped);
+				}
+				else
+				// sourceRef is not actually a part of the reference network
+				{
+					sourceCon = sourceRef;
+				}
+				if (sourceCon != null)
+				{
+					allSources.add(sourceCon);
+					allConSources.add(sourceCon);
+				}
+				else
+				{
+					allConSources.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
+				}
 			}
 
-			for (Node target1 : allNodes) // target node in reference network
+			for (Node targetRef : allNodes) // target node in reference network
 			{
 				// get the equivalent target nodes in the condition networks
-				List<Node> alltargets2 = new ArrayList<Node>();
+				List<Node> allConTargets = new ArrayList<Node>();
 				Set<Node> allTargets = new HashSet<Node>();
-				allTargets.add(target1);
-				Map<Node, Set<Node>> nodeMapping2 = nm.getAllEquals(reference, consensusConditionNetwork);
-				Node target2;
-				if (nodeMapping2.containsKey(target1))
+				allTargets.add(targetRef);
+				for (ConditionNetwork condition : listedConditions)
 				{
-					Set<Node> targets2 = nodeMapping2.get(target1);
-					target2 = getSingleNode(targets2);
-				}
-				else
-				// target1 is not actually a part of the reference network
-				{
-					target2 = target1;
-				}
-				if (target2 != null)
-				{
-					alltargets2.add(target2);
-					allTargets.add(target2);
-				}
-				else
-				{
-					alltargets2.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
+					Map<Node, Set<Node>> nodeMapping = nm.getAllEquals(reference, condition);
+					Node targetCon;
+					if (nodeMapping.containsKey(targetRef))
+					{
+						Set<Node> targets2 = nodeMapping.get(targetRef);
+						targetCon = getSingleNode(targets2);
+					}
+					else
+					// targetRef is not actually a part of the reference network
+					{
+						targetCon = targetRef;
+					}
+					if (targetCon != null)
+					{
+						allConTargets.add(targetCon);
+						allTargets.add(targetCon);
+					}
+					else
+					{
+						allConTargets.add(new Node(EMPTY_ID, EMPTY_DISPLAY_NAME));
+					}
 				}
 
 				// get the reference edges
-				Set<Edge> allRefs = reference.getAllEdges(source1, target1);
+				Set<Edge> allRefs = reference.getAllEdges(sourceRef, targetRef);
 
 				// get all condition-specific edges
-				Set<Edge> allConds = consensusConditionNetwork.getAllEdges(source2, target2);
+				ArrayList<Set<Edge>> condlist = new ArrayList<Set<Edge>>();
+
+				for (int i = 0; i < listedConditions.size(); i++)
+				{
+					Set<Edge> conditionEdges = new HashSet<Edge>();
+
+					ConditionNetwork condition = listedConditions.get(i);
+					Node s = allConSources.get(i);
+					Node t = allConTargets.get(i);
+					if (!s.getID().equals(EMPTY_ID) && !t.getID().equals(EMPTY_ID))
+					{
+						conditionEdges = condition.getAllEdges(s, t);
+					}
+					condlist.add(i, conditionEdges);
+				}
 
 				for (String root : roots)
 				{
@@ -202,31 +192,35 @@ public class EdgeByEdge
 					}
 					Set<EdgeDefinition> rootCons = new HashSet<EdgeDefinition>();
 					boolean atLeastOneCon = false;
-					
-						for (Edge e : allConds)
+					for (int i = 0; i < listedConditions.size(); i++)
+					{
+						Set<EdgeDefinition> thisRootCons = new HashSet<EdgeDefinition>();
+						for (Edge e : condlist.get(i))
 						{
 							String type = e.getType();
 							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								rootCons.add(e.getDefinition());
+								thisRootCons.add(e.getDefinition());
 							}
 						}
-						if (rootCons.isEmpty())
+						if (thisRootCons.isEmpty())
 						{
-							rootCons.add(eg.getVoidEdge(symm));
+							thisRootCons.add(eg.getVoidEdge(symm));
 						}
-						else if (rootCons.size() > 1)
+						else if (thisRootCons.size() > 1)
 						{
-							throw new IllegalArgumentException("Found more than 1 condition edge in " + consensusConditionNetwork + " for semantic root " + root);
+							throw new IllegalArgumentException("Found more than 1 condition edge in " + listedConditions.get(i).getName() + " for semantic root " + root);
+
 						}
 						else
 						{
 							atLeastOneCon = true;
 						}
-					
+						rootCons.add(thisRootCons.iterator().next());
+					}
 					if (atLeastOneCon || aRef)
 					{
-						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons.iterator().next(), weightCutoff);
+						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(rootRefs.iterator().next(), rootCons, weightCutoff, overlapNo_cutoff);
 
 						String sourceconsensusName = nm.getConsensusName(allSources);
 						String sourceconsensusID = nm.getConsensusID(allSources);
@@ -304,13 +298,13 @@ public class EdgeByEdge
 				refNetworks.add(n.getID());
 			}
 		}
-		
+
 		if (refRequired && refNetworks.size() != 1)
 		{
 			String errormsg = "Please define exactly 1 reference network (" + refNetworks.size() + "found) or change the refRequired parameter to false!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		
+
 		if (allNetworks.size() == 1)
 		{
 			Network onlyInput = allNetworks.values().iterator().next();

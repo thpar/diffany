@@ -115,14 +115,13 @@ public class CalculateDiff
 	 * @param diff_name the name to give to the differential network
 	 * @param ID the unique identifier of the resulting network
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate consensus conditions, otherwise the maximum. If null, default settings will resort to min
 	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
-			NodeMapper nm, String diff_name, int ID, double weight_cutoff, Boolean minOperator, Logger log) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, int ID, double weight_cutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
 		{
@@ -134,7 +133,7 @@ public class CalculateDiff
 		{
 			// TODO
 			int all = conditions.size() + 1;
-			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, all, weight_cutoff, minOperator);
+			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, all, weight_cutoff);
 			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn);
 			return dn;
 		}
@@ -188,7 +187,7 @@ public class CalculateDiff
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
 			log.log("Calculating the differential and overlap network between " + r.getName() + " and "
 					+ cs.size() + " condition-dependent network(s)");
-			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, diff_ID, weight_cutoff, minOperator, log);
+			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, diff_ID, weight_cutoff, log);
 		}
 		
 		if (overlap_ID >= 0)
@@ -348,7 +347,7 @@ public class CalculateDiff
 				log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
-				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, weight_cutoff, minOperator, log);
+				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, weight_cutoff, log);
 				
 				OverlappingNetwork on = null;
 				

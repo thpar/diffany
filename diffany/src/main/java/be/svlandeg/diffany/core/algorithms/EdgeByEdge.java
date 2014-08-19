@@ -182,12 +182,10 @@ public class EdgeByEdge
 					List<EdgeDefinition> cleanedConEdges = new ArrayList<EdgeDefinition>();
 					for (int i = 1; i < cleanedEdges.size(); i++)
 					{
-						System.out.println(" clean con edge " + cleanedEdges.get(i));
 						cleanedConEdges.add(cleanedEdges.get(i));
 					}
 
 					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					System.out.println("calculating " + root + " for " + sourceconsensusName + " - " + targetconsensusName);
 					EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, overlapNo_cutoff, weight_cutoff);
 
 

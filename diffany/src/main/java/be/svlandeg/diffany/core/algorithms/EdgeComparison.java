@@ -119,6 +119,7 @@ public class EdgeComparison
 			}
 			if (symm_generic != null)
 			{
+				// TODO this should be limited to the relevant subtree!
 				Set<String> categories = teo.getAllSourceCategories(true);
 				for (String category : categories)
 				{
@@ -297,7 +298,12 @@ public class EdgeComparison
 			throw new IllegalArgumentException(errormsg);
 		}
 
+		if (refEdge.isNegated() || refEdge.getWeight() == 0)
+		{
+			refEdge = eg.getVoidEdge(refEdge.isSymmetrical());
+		}
 		double refWeight = refEdge.getWeight();
+		
 		boolean allEmpty = true;
 		if (refWeight != 0)
 		{
@@ -339,11 +345,7 @@ public class EdgeComparison
 			countSymmetrical++;
 		}
 
-		boolean refNeg = refEdge.isNegated();
-		if (refNeg)
-		{
-			refEdge = eg.getVoidEdge(refEdge.isSymmetrical());
-		}
+		
 
 		if (countSymmetrical != originalEdges && countSymmetrical != 0)
 		{
@@ -372,28 +374,28 @@ public class EdgeComparison
 			addEdgeToTree(e, support, con_results, null);
 		}
 
-		System.out.println(con_results);
-
 		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE CONSENSUS OVERLAP RESULTS  //
 
 		Set<EdgeDefinition> overlaps = new HashSet<EdgeDefinition>();
 
 		for (String cat : teo.getAllSourceCategories(true))
 		{
-			System.out.println("  cat " + cat);
 			IntermediateComparison con_result = con_results.get(cat);
 
 			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
 				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, Double.NEGATIVE_INFINITY, refWeight, false);
-				System.out.println("map_below " + map_below.keySet());
-				
+
 				// all edges with weight above the reference weight: take the minimum of the condition edges to determine the minimal consensus increase
 				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight, Double.POSITIVE_INFINITY, true);
-				System.out.println("map_above " + map_below.keySet());
-				
+
 				if (map_below.isEmpty() && map_above.isEmpty())
+				{
+					// there can be no differential edge because the evidence is spread between higher and lower weights
+					return eg.getVoidEdge(final_symm);
+				}
+				else if (!map_below.isEmpty() && !map_above.isEmpty())
 				{
 					// there can be no differential edge because there is evidence for both higher and lower weights
 					return eg.getVoidEdge(final_symm);
@@ -452,7 +454,6 @@ public class EdgeComparison
 		{
 			overlaps.add(eg.getVoidEdge(final_symm));
 		}
-		System.out.println("overlaps 1" + overlaps);
 		// take the most specific condition category
 		while (overlaps.size() > 1)
 		{
@@ -485,14 +486,8 @@ public class EdgeComparison
 			overlaps = newOverlaps;
 		}
 
-		System.out.println("overlaps 2" + overlaps);
 		EdgeDefinition consensusConEdge = overlaps.iterator().next();
 		double conWeight = consensusConEdge.getWeight();
-
-		if (conWeight != 0)
-		{
-			System.out.println("consensusConEdge " + consensusConEdge);
-		}
 
 		// 3. DETERMINE THE FINAL TYPE AND WEIGHT //
 
@@ -644,7 +639,6 @@ public class EdgeComparison
 		type += baseType;
 		diff_edge.setType(type);
 		diff_edge.setWeight(finalDiffWeight);
-
 		return diff_edge;
 	}
 

@@ -380,17 +380,20 @@ public class EdgeComparison
 
 		for (String cat : teo.getAllSourceCategories(true))
 		{
+			System.out.println("  cat " + cat);
 			IntermediateComparison con_result = con_results.get(cat);
 
 			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
 				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, Double.NEGATIVE_INFINITY, refWeight, false);
-
+				System.out.println("map_below " + map_below.keySet());
+				
 				// all edges with weight above the reference weight: take the minimum of the condition edges to determine the minimal consensus increase
 				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight, Double.POSITIVE_INFINITY, true);
-
-				if (!map_below.isEmpty() && !map_above.isEmpty())
+				System.out.println("map_above " + map_below.keySet());
+				
+				if (map_below.isEmpty() && map_above.isEmpty())
 				{
 					// there can be no differential edge because there is evidence for both higher and lower weights
 					return eg.getVoidEdge(final_symm);

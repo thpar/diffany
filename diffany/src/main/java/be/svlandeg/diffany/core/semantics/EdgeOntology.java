@@ -16,8 +16,8 @@ import be.svlandeg.diffany.core.visualstyle.EdgeDrawing;
 public abstract class EdgeOntology
 {
 
-	private final String VOID_SYMMETRICAL_CAT;
-	private final String VOID_DIRECTED_CAT;
+	protected final String GENERIC_SYMMETRICAL_CAT;
+	protected final String GENERIC_DIRECTED_CAT;
 
 	// edge types are stored in their canonical version (i.e. no punctuation, ascii-only)
 	// when querying this map, always run the key through getCanonicalForm(edgeType) !
@@ -34,50 +34,35 @@ public abstract class EdgeOntology
 	 */
 	public EdgeOntology()
 	{
-		VOID_SYMMETRICAL_CAT = new EdgeGenerator().getVoidEdge(true).getType();
-		VOID_DIRECTED_CAT = new EdgeGenerator().getVoidEdge(false).getType();
+		GENERIC_SYMMETRICAL_CAT = new EdgeGenerator().getVoidEdge(true).getType();
+		GENERIC_DIRECTED_CAT = new EdgeGenerator().getVoidEdge(false).getType();
 		
 		removeAllCategoriesAndMappings();
 		posSourceCats = new HashSet<String>();
 		negSourceCats = new HashSet<String>();
 	}
-	
-	/**
-	 * Retrieve a void edge type
-	 * 
-	 * @param symmetrical whether or not the edge type should be symmetrical 
-	 * @return the void edge type
-	 */
-	public String getVoidType(boolean symmetrical)
-	{
-		if (symmetrical)
-		{
-			return getCanonicalForm(VOID_SYMMETRICAL_CAT);
-		}
-		return getCanonicalForm(VOID_DIRECTED_CAT);
-	}
-	
-	/**
-	 * Retrieve a void edge category
-	 * 
-	 * @param symmetrical whether or not the edge category should be symmetrical 
-	 * @return the void edge category
-	 */
-	public String getVoidCategory(boolean symmetrical)
-	{
-		if (symmetrical)
-		{
-			return VOID_SYMMETRICAL_CAT;
-		}
-		return VOID_DIRECTED_CAT;
-	}
 
 	/**
+	 * Remove all categories and type-categoryMappings
+	 */
+	protected void removeAllCategoriesAndMappings()
+	{
+		allSourceCategories = new HashMap<String, Boolean>();
+		allSourceCategories.put(GENERIC_SYMMETRICAL_CAT, true);
+		allSourceCategories.put(GENERIC_DIRECTED_CAT, false);
+
+		mapCanSourceTypeToCategory = new HashMap<String, String>();
+		addSourceCategoryMapping(GENERIC_SYMMETRICAL_CAT, GENERIC_SYMMETRICAL_CAT, false);
+		addSourceCategoryMapping(GENERIC_DIRECTED_CAT, GENERIC_DIRECTED_CAT, false);
+	}
+	
+	/**
 	 * Retrieve all the elements in this ontology that are root (i.e. do not have a parent)
+	 * @param ignoreGenerics whether or not to remove the generic categories
 	 * 
 	 * @return all root elements in this ontology
 	 */
-	public abstract Set<String> retrieveAllSourceRootCats();
+	public abstract Set<String> retrieveAllSourceRootCats(boolean ignoreGenerics);
 
 	/**
 	 * Determine whether or not an edge type (child) is related to a category (partent).
@@ -260,12 +245,20 @@ public abstract class EdgeOntology
 
 	/**
 	 * Return all source (input) categories present in this ontology.
+	 * @param ignoreGenerics whether or not to remove the generic categories
 	 * 
 	 * @return the set of categories mapped in this ontology.
 	 */
-	public Set<String> getAllSourceCategories()
+	public Set<String> getAllSourceCategories(boolean ignoreGenerics)
 	{
-		return allSourceCategories.keySet();
+		Set<String> sources = new HashSet<String>();
+		sources.addAll(allSourceCategories.keySet());
+		if (ignoreGenerics)
+		{
+			sources.remove(GENERIC_DIRECTED_CAT);
+			sources.remove(GENERIC_SYMMETRICAL_CAT);
+		}
+		return sources;
 	}
 	
 	/**
@@ -379,24 +372,11 @@ public abstract class EdgeOntology
 		}
 		if (!overwrite && mapCanSourceTypeToCategory.containsKey(canType))
 		{
-			String errormsg = "The provided edge type " + edgeType + "is already mapped to a category!";
+			String errormsg = "The provided edge type ('" + edgeType + "') is already mapped to a category!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		mapCanSourceTypeToCategory.put(canType, category);
 	}
 
-	/**
-	 * Remove all categories and type-categoryMappings
-	 */
-	protected void removeAllCategoriesAndMappings()
-	{
-		allSourceCategories = new HashMap<String, Boolean>();
-		allSourceCategories.put(VOID_SYMMETRICAL_CAT, true);
-		allSourceCategories.put(VOID_DIRECTED_CAT, false);
-
-		mapCanSourceTypeToCategory = new HashMap<String, String>();
-		addSourceCategoryMapping(VOID_SYMMETRICAL_CAT, VOID_SYMMETRICAL_CAT, false);
-		addSourceCategoryMapping(VOID_DIRECTED_CAT, VOID_DIRECTED_CAT, false);
-	}
 
 }

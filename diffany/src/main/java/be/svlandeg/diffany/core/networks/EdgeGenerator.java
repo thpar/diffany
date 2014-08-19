@@ -9,8 +9,8 @@ package be.svlandeg.diffany.core.networks;
 public class EdgeGenerator
 {
 	
-	protected static String VOID_DIRECT_TYPE = "*nodirectedtype*";
-	protected static String VOID_SYMM_TYPE = "*nosymmetricaltype*";
+	protected static String GENERIC_DIRECT_TYPE = "*generic_directed_connection*";
+	protected static String GENERIC_SYMM_TYPE = "*generic_symmetrical_connection*";
 	
 	
 	/**
@@ -34,9 +34,9 @@ public class EdgeGenerator
 	{
 		if (symmetrical)
 		{
-			return new EdgeDefinition(VOID_SYMM_TYPE , true, 0, EdgeDefinition.DEFAULT_NEG);
+			return new EdgeDefinition(GENERIC_SYMM_TYPE , true, 0, EdgeDefinition.DEFAULT_NEG);
 		}
-		return new EdgeDefinition(VOID_DIRECT_TYPE , false, 0, EdgeDefinition.DEFAULT_NEG);
+		return new EdgeDefinition(GENERIC_DIRECT_TYPE , false, 0, EdgeDefinition.DEFAULT_NEG);
 	}
 	
 	

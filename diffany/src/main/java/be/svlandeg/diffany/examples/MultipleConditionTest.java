@@ -260,7 +260,5 @@ public class MultipleConditionTest extends GenericExample
 		ex.printAllOverlapNetworks(p, ID_diff);
 		*/
 		
-		
-		
 	}
 }

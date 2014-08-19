@@ -49,18 +49,29 @@ public abstract class TreeEdgeOntology extends EdgeOntology
 	////////////// TREE ALGORITHMS //////////////////////////////////
 
 	@Override
-	public Set<String> retrieveAllSourceRootCats()
+	public Set<String> retrieveAllSourceRootCats(boolean ignoreGenerics)
 	{
 		Set<String> allRoots = new HashSet<String>();
 		for (String cat : allSourceCategories.keySet())
 		{
-			if (!sourceCatHierarchy.keySet().contains(cat)) // does not have a parent
+			String parent = sourceCatHierarchy.get(cat);
+			if (parent == null) 
 			{
 				allRoots.add(cat);
 			}
+			else if (ignoreGenerics)
+			{
+				if (parent.equals(GENERIC_SYMMETRICAL_CAT) || parent.equals(GENERIC_DIRECTED_CAT))
+				{
+					allRoots.add(cat);
+				}
+			}
 		}
-		allRoots.remove(getVoidCategory(true));
-		allRoots.remove(getVoidCategory(false));
+		if (ignoreGenerics)
+		{
+			allRoots.remove(GENERIC_SYMMETRICAL_CAT);
+			allRoots.remove(GENERIC_DIRECTED_CAT);
+		}
 		return allRoots;
 	}
 

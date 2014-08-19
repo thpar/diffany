@@ -79,7 +79,7 @@ public class EdgeByEdge
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
-		Set<String> roots = eo.retrieveAllSourceRootCats();
+		Set<String> roots = eo.retrieveAllSourceRootCats(true);
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -116,10 +116,11 @@ public class EdgeByEdge
 								rootEdges.add(e.getDefinition());
 							}
 						}
-						if (!rootEdges.isEmpty())
+						if (rootEdges.isEmpty())
 						{
-							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
+							rootEdges.add(eg.getVoidEdge(eo.isSymmetricalSourceCat(root)));
 						}
+						edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
 					}
 				}
 
@@ -181,6 +182,7 @@ public class EdgeByEdge
 					List<EdgeDefinition> cleanedConEdges = new ArrayList<EdgeDefinition>();
 					for (int i = 1; i < cleanedEdges.size(); i++)
 					{
+						System.out.println(" clean con edge " + cleanedEdges.get(i));
 						cleanedConEdges.add(cleanedEdges.get(i));
 					}
 
@@ -275,7 +277,7 @@ public class EdgeByEdge
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
-		Set<String> roots = eo.retrieveAllSourceRootCats();
+		Set<String> roots = eo.retrieveAllSourceRootCats(true);
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);

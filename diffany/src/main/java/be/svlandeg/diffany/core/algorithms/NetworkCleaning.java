@@ -240,7 +240,7 @@ public class NetworkCleaning
 	{
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();
-		Set<String> roots = eo.retrieveAllSourceRootCats();
+		Set<String> roots = eo.retrieveAllSourceRootCats(true);
 
 		// first, determine all node pairs which are relevant in this network
 		Set<Edge> oldEdges = net.getEdges();

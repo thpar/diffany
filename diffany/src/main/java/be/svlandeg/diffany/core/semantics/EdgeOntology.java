@@ -93,7 +93,7 @@ public abstract class EdgeOntology
 	 * 
 	 * @param childCat the subclass category
 	 * @param parentCat the superclass category
-	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated, 0 if equal)
+	 * @return whether or not the parent relationship holds, expressed by depth (-1 if unrelated or anti-correlated, 0 if equal)
 	 */
 	public abstract int isSourceCatChildOf(String childCat, String parentCat);
 	

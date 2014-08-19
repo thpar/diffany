@@ -3,6 +3,7 @@ package be.svlandeg.diffany.core.algorithms;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -339,7 +340,7 @@ public class EdgeComparison
 					// there can be no differential edge because there is evidence for both higher and lower weights
 					return eg.getVoidEdge(final_symm);
 				}
-				// keep only the consensus condition edge with the highest weight
+				// keep only the consensus condition edge with the highest weight (below threshold)
 				else if (!map_below.isEmpty())
 				{
 					double max = Double.NEGATIVE_INFINITY;
@@ -355,7 +356,7 @@ public class EdgeComparison
 						}
 					}
 				}
-				// keep only the consensus condition edge with the highest weight
+				// keep only the consensus condition edge with the highest weight (above threshold)
 				else if (!map_above.isEmpty())
 				{
 					double max = Double.NEGATIVE_INFINITY;
@@ -378,15 +379,29 @@ public class EdgeComparison
 		{
 			overlaps.add(eg.getVoidEdge(final_symm));
 		}
+		// take the most specific condition category
 		while (overlaps.size() > 1)
 		{
+			Iterator<EdgeDefinition> it = overlaps.iterator();
+			EdgeDefinition consensusEdge0 = it.next();
+			EdgeDefinition consensusEdge1 = it.next();
+			
+			// we copy all edges, except for the possible "child" or "parent"
 			Set<EdgeDefinition> newOverlaps = new HashSet<EdgeDefinition>();
-			newOverlaps.addAll(overlaps);
-			EdgeDefinition consensusConEdgeChild = overlaps.iterator().next();
-			EdgeDefinition consensusConEdgeParent = overlaps.iterator().next();
-			if (teo.isSourceCatChildOf(consensusConEdgeChild.getType(), consensusConEdgeParent.getType()) > -1)
+			while (it.hasNext())
 			{
-				newOverlaps.remove(consensusConEdgeParent);
+				newOverlaps.add(it.next());
+			}
+			
+			if (teo.isSourceCatChildOf(consensusEdge0.getType(), consensusEdge1.getType()) > 0)
+			{
+				// we only add the child to the new list
+				newOverlaps.add(consensusEdge0);
+			}
+			else if (teo.isSourceCatChildOf(consensusEdge1.getType(), consensusEdge0.getType()) > 0)
+			{
+				// we only add the child to the new list
+				newOverlaps.add(consensusEdge1);
 			}
 			overlaps = newOverlaps;
 		}

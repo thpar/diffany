@@ -393,13 +393,11 @@ public class EdgeComparison
 
 		EdgeDefinition consensusConEdge = overlaps.iterator().next();
 		System.out.println("consensusConEdge " + consensusConEdge);
+		double conWeight = consensusConEdge.getWeight();
 
 		// 3. DETERMINE THE FINAL TYPE AND WEIGHT //
 
 		String refCat = teo.getSourceCategory(refEdge.getType());
-
-		boolean isDown = false;
-		
 
 		// DEFINE THE COMMON PARENT OF ALL EDGES
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
@@ -447,55 +445,61 @@ public class EdgeComparison
 		}
 
 		String baseType = firstNeutralParent;
+		
+		Boolean direction = null;	// null=unspecified, true=increase, false=decrease
 		boolean unspecified = false;
-
-		String VOID_CAT = teo.getVoidCategory(final_symm);
 
 		String conCat = teo.getSourceCategory(consensusConEdge.getType());
 		
-		double weightDifference = consensusConEdge.getWeight() - refEdge.getWeight();
-		double weightSum = consensusConEdge.getWeight() + refEdge.getWeight();
 		double finalDiffWeight = 0;
-
-		// refcat is void, concat is not --> increase (unless concat is negative)
-		if (refCat.equals(VOID_CAT) && !conCat.equals(VOID_CAT))
+		
+		// We assume that void edges are of weight 0 !
+		
+		// both edges are void: return an empty differential edge
+		if (refWeight == 0 && conWeight == 0)
 		{
-			isDown = negSourceCats.contains(conCat);
-			finalDiffWeight = consensusConEdge.getWeight();
+			return eg.getVoidEdge(final_symm);
+		}
+		
+		// ref edge is void, con edge is not --> differential increase (unless concat is negative)
+		else if (refWeight == 0)
+		{
+			direction = !negSourceCats.contains(conCat);	// if negative conditional cat, direction is decrease	
+			finalDiffWeight = conWeight;
 		}
 
-		// refcat is not void, concat is void --> decrease (unless refcat is negative)
-		else if (!refCat.equals(VOID_CAT) && conCat.equals(VOID_CAT))
+		// concat is void refcat is not   --> differential decrease (unless refcat is negative)
+		else if (conWeight == 0)
 		{
-			isDown = !negSourceCats.contains(refCat);
-			finalDiffWeight = refEdge.getWeight();
+			direction = negSourceCats.contains(refCat);		// if negative ref cat, direction is positive
+			finalDiffWeight = refWeight;
 		}
 
-		// refcat is positive, concat is negative --> decrease
+		// refcat is positive, concat is negative 	--> differential decrease by sum of weights
 		else if (posSourceCats.contains(refCat) && negSourceCats.contains(conCat))
 		{
-			isDown = true;
-			finalDiffWeight = weightSum;
+			direction = false;
+			finalDiffWeight = refWeight+conWeight;
 		}
 
-		// refcat is negative, concat is positive --> increase
+		// refcat is negative, concat is positive --> differential increase by sum of weights
 		else if (negSourceCats.contains(refCat) && posSourceCats.contains(conCat))
 		{
-			isDown = false;
-			finalDiffWeight = weightSum;
+			direction = true;
+			finalDiffWeight = refWeight+conWeight;
 		}
 
 		else
 		{
-			finalDiffWeight = weightDifference;
-			if (finalDiffWeight < 0) // decrease
+			finalDiffWeight = refWeight - conWeight;
+			if (finalDiffWeight < 0)	 // conWeight is higher than refWeight: differential increase
 			{
 				finalDiffWeight *= -1;
-				isDown = true;
+				direction = true;
 			}
-			else if (finalDiffWeight > 0) // increase
+			else if (finalDiffWeight > 0) // refWeight is higher than conWeight: differential decrease
 			{
-				isDown = false;
+				direction = false;
 			}
 			boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
 			boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
@@ -505,22 +509,14 @@ public class EdgeComparison
 				unspecified = true;
 			}
 		}
-		
-
-		String type = "";
-
-		if (isDown)
+		if (finalDiffWeight <= weight_cutoff)
 		{
-			if (final_symm)
-			{
-				type = teo.getNegPrefix_symm();
-			}
-			else
-			{
-				type = teo.getNegPrefix_dir();
-			}
+			return eg.getVoidEdge(final_symm);
 		}
-		else
+		
+		// determine final type by added prefixes such as 'unspecified' and 'increase'
+		String type = "";
+		if (direction)
 		{
 			if (final_symm)
 			{
@@ -531,19 +527,25 @@ public class EdgeComparison
 				type = teo.getPosPrefix_dir();
 			}
 		}
+		else
+		{
+			if (final_symm)
+			{
+				type = teo.getNegPrefix_symm();
+			}
+			else
+			{
+				type = teo.getNegPrefix_dir();
+			}
+		}
 		if (unspecified)
 		{
 			type += teo.getUnspecifiedPrefix();
 		}
 		type += baseType;
-
 		diff_edge.setType(type);
-
-		if (finalDiffWeight <= weight_cutoff)
-		{
-			return eg.getVoidEdge(final_symm);
-		}
 		diff_edge.setWeight(finalDiffWeight);
+		
 		return diff_edge;
 	}
 

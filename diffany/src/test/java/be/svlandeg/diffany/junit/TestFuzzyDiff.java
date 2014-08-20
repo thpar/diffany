@@ -24,8 +24,7 @@ public class TestFuzzyDiff
 {
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
-	 * This method defines one of the networks to be a reference network.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness overlap factor 3 out of 3.
 	 */
 	@Test
 	public void testFuzzyDiff_3()
@@ -33,7 +32,7 @@ public class TestFuzzyDiff
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
+		int overlap_cutoff = 4;
 		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, -1, true);
@@ -50,6 +49,35 @@ public class TestFuzzyDiff
 		assertEquals(1, sEdges.size());
 
 		assertAnEdge(dn, "X", "Y", false, "increases_unspecified_regulation", false, 0.1);
+	}
+	
+	/**
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness overlap factor 2 out of 3.
+	 */
+	@Test
+	public void testFuzzyDiff_2()
+	{
+		FuzzyNetworks ex = new FuzzyNetworks();
+		double weight_cutoff = 0.0;
+		Project p = ex.getProject();
+		int overlap_cutoff = 3;
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 75, -1, true);
+
+		// Testing that there is exactly one differential network created
+		RunOutput output = p.getOutput(ID);
+		assertNrOverlapNetworks(output, 0);
+		assertNrDifferentialNetworks(output, 1);
+
+		// Testing the edges in the overlap network
+		DifferentialNetwork dn = output.getDifferentialNetworks().iterator().next();
+
+		Set<Edge> sEdges = dn.getEdges();
+		assertEquals(2, sEdges.size());
+
+		assertAnEdge(dn, "B", "A", false, "increases_ppi", false, 0.4);
+		assertAnEdge(dn, "X", "Y", false, "increases_regulation", false, 1.2);
 	}
 	
 	/**

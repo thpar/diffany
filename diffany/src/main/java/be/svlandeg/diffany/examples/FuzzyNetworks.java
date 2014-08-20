@@ -257,7 +257,7 @@ public class FuzzyNetworks extends GenericExample
 		
 		System.out.println("Defining network for FuzzyNetworks configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
+		int overlap_cutoff = 2;
 		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
 		//int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
 		

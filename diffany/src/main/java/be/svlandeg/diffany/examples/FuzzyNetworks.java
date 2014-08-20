@@ -25,7 +25,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  * 
  * @author Sofie Van Landeghem
  */
-public class FuzzyOverlap extends GenericExample
+public class FuzzyNetworks extends GenericExample
 {
 
 	private NodeMapper nm;
@@ -33,7 +33,7 @@ public class FuzzyOverlap extends GenericExample
 	/**
 	 * Constructor: generates a default {@link NodeMapper} object
 	 */
-	public FuzzyOverlap()
+	public FuzzyNetworks()
 	{
 		nm = new DefaultNodeMapper();
 	}
@@ -44,7 +44,7 @@ public class FuzzyOverlap extends GenericExample
 	 */
 	public Project getProject()
 	{
-		String name = "FuzzyOverlap";
+		String name = "FuzzyNetworks";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		return p;
@@ -252,22 +252,24 @@ public class FuzzyOverlap extends GenericExample
 	 */
 	public static void main(String[] args)
 	{
-		FuzzyOverlap ex = new FuzzyOverlap();
+		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		
-		System.out.println("Defining network for FuzzyOverlap configuration");
+		System.out.println("Defining network for FuzzyNetworks configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		//int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int overlap_cutoff = 3;
+		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		//int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
 		
 		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
 		System.out.println(" and overlap cutoff " + overlap_cutoff);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);
+		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	// overlap, no diff
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true);	// diff, no overlap
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID, false, true);
+		//ex.printAllNetworks(p, ID, false, true, false);	// overlap, no diff
+		ex.printAllNetworks(p, ID, false, false, true);	// diff, no overlap
 		
 		System.out.println("Log:");
 		Logger logger = p.getLogger(ID);

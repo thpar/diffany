@@ -136,7 +136,7 @@ public class Ideker2011 extends GenericExample
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID, true, false);
+		ex.printAllNetworks(p, ID, true, false, false);
 		
 		Logger l = p.getLogger(ID);
 		for (LogEntry msg : l.getAllLogMessages())

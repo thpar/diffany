@@ -449,6 +449,9 @@ public class EdgeComparison
 				}
 			}
 		}
+		System.out.println(" ");
+		System.out.println("ref " + refEdge);
+		System.out.println("overlaps " + overlaps);
 
 		if (overlaps.size() == 0)
 		{
@@ -487,6 +490,8 @@ public class EdgeComparison
 		}
 
 		EdgeDefinition consensusConEdge = overlaps.iterator().next();
+		System.out.println("consensus " + consensusConEdge);
+		
 		double conWeight = consensusConEdge.getWeight();
 
 		// 3. DETERMINE THE FINAL TYPE AND WEIGHT //
@@ -525,6 +530,7 @@ public class EdgeComparison
 
 		if (firstParent == null)
 		{
+			System.out.println(" firstParent null");
 			return eg.getVoidEdge(final_symm);
 		}
 		String firstNeutralParent = firstParent;
@@ -535,6 +541,7 @@ public class EdgeComparison
 
 		if (firstNeutralParent == null)
 		{
+			System.out.println(" firstParent null 2");
 			return eg.getVoidEdge(final_symm);
 		}
 
@@ -552,6 +559,7 @@ public class EdgeComparison
 		// both edges are void: return an empty differential edge
 		if (refWeight == 0 && conWeight == 0)
 		{
+			System.out.println(" void");
 			return eg.getVoidEdge(final_symm);
 		}
 
@@ -605,6 +613,7 @@ public class EdgeComparison
 		}
 		if (finalDiffWeight <= weight_cutoff)
 		{
+			System.out.println(" finalDiffWeight");
 			return eg.getVoidEdge(final_symm);
 		}
 
@@ -639,6 +648,7 @@ public class EdgeComparison
 		type += baseType;
 		diff_edge.setType(type);
 		diff_edge.setWeight(finalDiffWeight);
+		System.out.println(" diff_edge " + diff_edge);
 		return diff_edge;
 	}
 

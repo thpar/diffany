@@ -381,7 +381,9 @@ public class EdgeComparison
 		for (String cat : teo.getAllSourceCategories(true))
 		{
 			IntermediateComparison con_result = con_results.get(cat);
-
+			System.out.println("cat " + cat);
+			System.out.println("ref " + refEdge);
+			System.out.println(con_result);
 			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
@@ -409,17 +411,16 @@ public class EdgeComparison
 					{
 						max = Math.max(max, overlap_edge.getWeight());
 					}
-					if (max == 0)
-					{
-						overlaps.add(eg.getVoidEdge(final_symm));
-					}
-					else
+					System.out.println(" max below " + max);
+					if (max > 0)
 					{
 						for (EdgeDefinition overlap_edge : map_below.keySet())
 						{
 							if (overlap_edge.getWeight() == max)
 							{
+								System.out.println(" - " + overlap_edge);
 								overlaps.add(overlap_edge);
+								System.out.println("  kept ");
 							}
 						}
 					}
@@ -432,17 +433,16 @@ public class EdgeComparison
 					{
 						max = Math.max(max, overlap_edge.getWeight());
 					}
-					if (max == 0)
-					{
-						overlaps.add(eg.getVoidEdge(final_symm));
-					}
-					else
+					System.out.println(" max above " + max);
+					if (max > 0)
 					{
 						for (EdgeDefinition overlap_edge : map_above.keySet())
 						{
 							if (overlap_edge.getWeight() == max)
 							{
+								System.out.println(" - " + overlap_edge);
 								overlaps.add(overlap_edge);
+								System.out.println("  kept ");
 							}
 						}
 					}
@@ -450,6 +450,7 @@ public class EdgeComparison
 			}
 		}
 
+		System.out.println("overlaps " + overlaps);
 		if (overlaps.size() == 0)
 		{
 			overlaps.add(eg.getVoidEdge(final_symm));
@@ -457,6 +458,8 @@ public class EdgeComparison
 		// take the most specific condition category
 		while (overlaps.size() > 1)
 		{
+			// TODO: this sometimes generates an infinite loop!!!
+			
 			Iterator<EdgeDefinition> it = overlaps.iterator();
 			EdgeDefinition consensusEdge0 = it.next();
 			EdgeDefinition consensusEdge1 = it.next();

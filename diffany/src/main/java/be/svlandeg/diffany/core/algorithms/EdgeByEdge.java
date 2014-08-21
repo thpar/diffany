@@ -15,7 +15,7 @@ import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.networks.meta.MetaEdge;
 import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
@@ -244,9 +244,9 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
+	protected ConsensusNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
 	{
-		OverlappingNetwork overlap = new OverlappingNetwork(overlap_name, ID, networks, nm);
+		ConsensusNetwork overlap = new ConsensusNetwork(overlap_name, ID, networks, nm);
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 

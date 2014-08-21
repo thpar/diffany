@@ -15,7 +15,7 @@ import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
@@ -73,7 +73,7 @@ public class TestIO
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				
 		// The overlapping network (there should be only 1)
-		OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
 		
 		NodeMapper nm = new DefaultNodeMapper();
 			
@@ -110,7 +110,7 @@ public class TestIO
 			assertEquals(3, dReadNetwork.getEdges().size());
 			assertEquals(4, dReadNetwork.getNodes().size());
 			
-			OverlappingNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks, writeHeader);
+			ConsensusNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks, writeHeader);
 			assertEquals(2, oReadNetwork.getEdges().size());
 			assertEquals(3, oReadNetwork.getNodes().size());
 		}

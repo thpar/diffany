@@ -23,7 +23,7 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
@@ -398,12 +398,12 @@ public class NetworkIO
 			d.setNodesAndEdges(nodes, edges);
 			return d;
 		}
-		else if (type.equals("OverlappingNetwork"))
+		else if (type.equals("ConsensusNetwork"))
 		{
 			Set<Network> allNetworks = new HashSet<Network>();
 			allNetworks.add(reference);
 			allNetworks.addAll(condNetworks);
-			OverlappingNetwork o = new OverlappingNetwork(name, ID, allNetworks, nm);
+			ConsensusNetwork o = new ConsensusNetwork(name, ID, allNetworks, nm);
 			o.setNodesAndEdges(nodes, edges);
 			return o;
 		}
@@ -445,20 +445,20 @@ public class NetworkIO
 	}
 
 	/**
-	 * Read a {@link OverlappingNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
+	 * Read a {@link ConsensusNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param reference the ReferenceNetwork linked to this overlapping network
 	 * @param condNetworks the set of condition-specific networks linked to this overlapping network
 	 * @param skipHeader whether or not the nodes and edges file contain a header
-	 * @return a OverlappingNetwork representation of the nodes and edges in the files.
+	 * @return a ConsensusNetwork representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static OverlappingNetwork readOverlappingNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks, boolean skipHeader) throws IOException
+	public static ConsensusNetwork readOverlappingNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks, boolean skipHeader) throws IOException
 	{
-		return (OverlappingNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks, skipHeader);
+		return (ConsensusNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks, skipHeader);
 	}
 
 	/**

@@ -15,7 +15,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
  * 
  * @author Sofie Van Landeghem
  */
-public class OverlappingNetwork extends Network
+public class ConsensusNetwork extends Network
 {
 	
 	protected Set<Network> originalNetworks;
@@ -30,7 +30,7 @@ public class OverlappingNetwork extends Network
 	 * 
 	 * @throws IllegalArgumentException when the list of original networks is null or contains less than 2 networks
 	 */
-	public OverlappingNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
+	public ConsensusNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
 	{
 		super(name, ID, nm);
 		if (originalNetworks == null || originalNetworks.size() < 1)

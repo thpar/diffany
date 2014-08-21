@@ -10,7 +10,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -80,7 +80,7 @@ public class CalculateDiff
 	 * @return the overlapping network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	private OverlappingNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
+	private ConsensusNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
 			NodeMapper nm, String overlapping_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
@@ -95,7 +95,7 @@ public class CalculateDiff
 		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			OverlappingNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, refRequired, weight_cutoff, minOperator);
+			ConsensusNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, refRequired, weight_cutoff, minOperator);
 			new NetworkCleaning(log).fullOverlapOutputCleaning(on, eo);
 			return on;
 		}
@@ -106,7 +106,7 @@ public class CalculateDiff
 
 	/**
 	 * Calculate the differential network between the reference and a set of condition-specific networks.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
+	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
 	 * 
 	 * @param reference the reference network
 	 * @param conditions a set of condition-specific networks (at least 1)
@@ -167,7 +167,7 @@ public class CalculateDiff
 		output.clean();
 		
 		DifferentialNetwork diff = null;
-		OverlappingNetwork on = null;
+		ConsensusNetwork on = null;
 		
 		if (minOperator == null)
 		{
@@ -215,7 +215,7 @@ public class CalculateDiff
 
 	/**
 	 * Calculate the differential network between the reference and a set of condition-specific networks, as well as the
-	 * the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
+	 * the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
 	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
@@ -240,7 +240,7 @@ public class CalculateDiff
 
 	/**
 	 * Calculate the differential network between the reference and a set of condition-specific networks.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object.
+	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
 	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
@@ -270,7 +270,7 @@ public class CalculateDiff
 	
 	/**
 	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related OverlappingNetwork object for each differential network.
+	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object for each differential network.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
 	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
@@ -347,7 +347,7 @@ public class CalculateDiff
 				oneCs.add(c);
 				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, 1, weight_cutoff, log);
 				
-				OverlappingNetwork on = null;
+				ConsensusNetwork on = null;
 				
 				if (overlapNetwork)
 				{
@@ -397,7 +397,7 @@ public class CalculateDiff
 					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
-					OverlappingNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, 2, false, weight_cutoff, log, minOperator);
+					ConsensusNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, 2, false, weight_cutoff, log, minOperator);
 					
 					output.addOverlap(on);
 				}

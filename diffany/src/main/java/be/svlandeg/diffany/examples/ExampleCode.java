@@ -8,7 +8,7 @@ import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.LogEntry;
@@ -54,7 +54,7 @@ public class ExampleCode
 		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		OverlappingNetwork overlapNet = pair.getOverlappingNetwork();
+		ConsensusNetwork overlapNet = pair.getOverlappingNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;

@@ -11,7 +11,7 @@ import org.junit.Test;
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.examples.MultipleConditionTest;
@@ -123,7 +123,7 @@ public class TestConfiguration extends TestGeneric
 			DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 			assertEquals(8, dNetwork.getEdges().size());
 
-			OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
+			ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
 			assertEquals(3, oNetwork.getEdges().size());
 		}
 		else
@@ -144,7 +144,7 @@ public class TestConfiguration extends TestGeneric
 		{
 			assertNrOverlapNetworks(output, 1);
 			assertEquals(1, output.getOverlappingNetworks().size());
-			OverlappingNetwork oNetwork = output.getOverlappingNetworks().iterator().next();
+			ConsensusNetwork oNetwork = output.getOverlappingNetworks().iterator().next();
 			assertEquals(3, oNetwork.getEdges().size());
 		}
 		else
@@ -176,7 +176,7 @@ public class TestConfiguration extends TestGeneric
 		assertNrDiffNetworks(dOutput, 0);
 		assertNrOverlapNetworks(dOutput, 1);
 
-		OverlappingNetwork oNetwork = dOutput.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork oNetwork = dOutput.getOverlappingNetworks().iterator().next();
 		assertEquals(3, oNetwork.getEdges().size());
 	}
 
@@ -239,7 +239,7 @@ public class TestConfiguration extends TestGeneric
 				int countD = diffcounts.get(dNetwork.getName());
 				assertEquals(countD, dNetwork.getEdges().size());
 
-				OverlappingNetwork oNetwork = pair.getOverlappingNetwork();
+				ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
 				int countO = overlapcounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}
@@ -254,7 +254,7 @@ public class TestConfiguration extends TestGeneric
 		}
 		if (overlap)
 		{
-			for (OverlappingNetwork oNetwork : output.getOverlappingNetworks())
+			for (ConsensusNetwork oNetwork : output.getOverlappingNetworks())
 			{
 				int countO = overlapcounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());

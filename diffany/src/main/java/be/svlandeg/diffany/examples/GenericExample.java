@@ -8,7 +8,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -100,7 +100,7 @@ public abstract class GenericExample
 		if (overlapOnly)
 		{
 			System.out.println("Overlap network(s) only : ");
-			for (OverlappingNetwork on : output.getOverlappingNetworks())
+			for (ConsensusNetwork on : output.getOverlappingNetworks())
 			{
 				printNetwork(on);
 			}

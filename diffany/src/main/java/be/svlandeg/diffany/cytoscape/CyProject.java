@@ -14,7 +14,7 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Logger;
@@ -500,13 +500,13 @@ public class CyProject{
 	 */
 	private void addDifferentialNetworks(RunOutput runOutput, Services services) {
 		Set<DifferentialNetwork> addedDiffNets = new HashSet<DifferentialNetwork>();
-		Set<OverlappingNetwork> addedOverlapNets = new HashSet<OverlappingNetwork>();
+		Set<ConsensusNetwork> addedOverlapNets = new HashSet<ConsensusNetwork>();
 		
 		for (OutputNetworkPair pair: runOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
-			OverlappingNetwork overlappingNetwork = pair.getOverlappingNetwork();
+			ConsensusNetwork consensusNetwork = pair.getOverlappingNetwork();
 			addedDiffNets.add(differentialNetwork);
-			addedOverlapNets.add(overlappingNetwork);
+			addedOverlapNets.add(consensusNetwork);
 			
 			//add the diffnet
 			CyNetwork cyDiffNet = null; 
@@ -516,8 +516,8 @@ public class CyProject{
 				
 			//add the overlap
 			CyNetwork cyOverlapNet = null;
-			if (overlappingNetwork != null){
-				cyOverlapNet = CyNetworkBridge.addCyNetwork(overlappingNetwork, this.collection, services);				
+			if (consensusNetwork != null){
+				cyOverlapNet = CyNetworkBridge.addCyNetwork(consensusNetwork, this.collection, services);				
 			}
 				
 			this.addResultPair(cyDiffNet, cyOverlapNet);
@@ -532,7 +532,7 @@ public class CyProject{
 		}
 		
 		//add overlapping networks that were not added as a pair
-		for (OverlappingNetwork overlapNet : runOutput.getOverlappingNetworks()){
+		for (ConsensusNetwork overlapNet : runOutput.getOverlappingNetworks()){
 			if (!addedOverlapNets.contains(overlapNet)){
 				CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlapNet, this.collection, services);
 				this.addResultPair(null, cyOverlapNet);

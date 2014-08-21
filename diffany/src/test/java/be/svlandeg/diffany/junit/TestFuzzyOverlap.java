@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.Edge;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.examples.FuzzyNetworks;
@@ -43,7 +43,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -85,7 +85,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -118,7 +118,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -150,7 +150,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(4, sEdges.size());
@@ -256,7 +256,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -287,7 +287,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -317,7 +317,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(4, sEdges.size());
@@ -353,7 +353,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -383,7 +383,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -416,7 +416,7 @@ public class TestFuzzyOverlap extends TestGeneric
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());

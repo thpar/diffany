@@ -10,7 +10,7 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.examples.FuzzyNetworks2;
@@ -50,7 +50,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(1, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 0.4); 
@@ -83,7 +83,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(1, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
@@ -117,7 +117,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 0.6); 
@@ -152,7 +152,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
@@ -186,7 +186,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 0.8); 
@@ -220,7 +220,7 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
-		OverlappingNetwork on = pair.getOverlappingNetwork();
+		ConsensusNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
 		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 

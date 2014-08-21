@@ -9,7 +9,7 @@ import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
@@ -134,7 +134,7 @@ public class MetaConvertor
 	 * @return the meta overlapping network
 	 */
     @SuppressWarnings("unused")
-	public static MetaOverlappingNetwork convertOverlapping(Set<OverlappingNetwork> overlapSet)
+	public static MetaOverlappingNetwork convertOverlapping(Set<ConsensusNetwork> overlapSet)
 	{
 		// TODO
 		return null;

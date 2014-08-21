@@ -5,7 +5,7 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.OverlappingNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.meta.MetaConvertor;
 import be.svlandeg.diffany.core.networks.meta.MetaDifferentialNetwork;
 import be.svlandeg.diffany.core.networks.meta.MetaOverlappingNetwork;
@@ -23,7 +23,7 @@ public class RunOutput
 	protected int runID;
 
 	private Set<DifferentialNetwork> dns;
-	private Set<OverlappingNetwork> ons;
+	private Set<ConsensusNetwork> ons;
 	private Set<OutputNetworkPair> pairs;
 
 	/**
@@ -46,7 +46,7 @@ public class RunOutput
 	public void clean()
 	{
 		dns = new HashSet<DifferentialNetwork>();
-		ons = new HashSet<OverlappingNetwork>();
+		ons = new HashSet<ConsensusNetwork>();
 		pairs = new HashSet<OutputNetworkPair>();
 	}
 
@@ -96,7 +96,7 @@ public class RunOutput
 	 * Add an overlap output network. When adding this network, its IDs will be checked for uniquenesss.
 	 * @param on the overlap output network
 	 */
-	public void addOverlap(OverlappingNetwork on)
+	public void addOverlap(ConsensusNetwork on)
 	{
 		if (on == null)
 		{
@@ -135,7 +135,7 @@ public class RunOutput
 	 * Retrieve all overlapping networks
 	 * @return the overlapping network in this output
 	 */
-	public Set<OverlappingNetwork> getOverlappingNetworks()
+	public Set<ConsensusNetwork> getOverlappingNetworks()
 	{
 		return ons;
 	}

@@ -10,7 +10,7 @@ public class OutputNetworkPair
 {
 	
 	private DifferentialNetwork dn;
-	private OverlappingNetwork on;
+	private ConsensusNetwork on;
 	
 	/**
 	 * Create a new pair from one specific differential network and its corresponding overlap network. Neither of the two networks may be null!
@@ -19,7 +19,7 @@ public class OutputNetworkPair
 	 * @param on the overlap network
 	 * @throws IllegalArgumentException when either of the provided networks is null
 	 */
-	public OutputNetworkPair(DifferentialNetwork dn, OverlappingNetwork on)
+	public OutputNetworkPair(DifferentialNetwork dn, ConsensusNetwork on)
 	{
 		if (dn == null || on == null)
 		{
@@ -43,7 +43,7 @@ public class OutputNetworkPair
 	 * Retrieve the overlapping network
 	 * @return the overlapping network
 	 */
-	public OverlappingNetwork getOverlappingNetwork()
+	public ConsensusNetwork getOverlappingNetwork()
 	{
 		return on;
 	}

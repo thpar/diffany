@@ -106,6 +106,9 @@ public class RunConfiguration
 	
 	/**
 	 * Return the required number of overlapping edges needed before the edge will be present in the overlap network.
+	 * When a differential network is being calculated, this threshold is reduced by one (reference network) to get 
+	 * the required representation of the condition-dependent networks
+	 * 
 	 * @return the minimal number of required overlapping edges, which is the size of the input set unless specifically stated otherwise
 	 */
 	public int getOverlapCutoff()

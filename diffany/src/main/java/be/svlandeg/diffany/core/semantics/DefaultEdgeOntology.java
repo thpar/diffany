@@ -95,21 +95,30 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 
 	/**
 	 * Provide some default child-parent mapping between source categories.
+	 * All default root categories should be children of either GENERIC_DIRECTED_CAT or GENERIC_SYMMETRICAL_CAT
 	 */
 	protected void insertDefaultParents()
 	{
+		putSourceCatParent("regulation", GENERIC_DIRECTED_CAT);
 		putSourceCatParent("positive_regulation", "regulation");
 		putSourceCatParent("negative_regulation", "regulation");
 		putSourceCatParent("catalysis", "positive_regulation");
 		putSourceCatParent("inhibition", "negative_regulation");
 
+		putSourceCatParent("genetic_interaction", GENERIC_SYMMETRICAL_CAT);
 		putSourceCatParent("positive_genetic_interaction", "genetic_interaction");
 		putSourceCatParent("negative_genetic_interaction", "genetic_interaction");
 		putSourceCatParent("synthetic_lethality", "negative_genetic_interaction");
+		
+		putSourceCatParent("coexpression", GENERIC_SYMMETRICAL_CAT);
 
+		putSourceCatParent("colocalization", GENERIC_SYMMETRICAL_CAT);
 		putSourceCatParent("ppi", "colocalization");
+		
+		putSourceCatParent("protein-dna_binding", GENERIC_DIRECTED_CAT);
 		putSourceCatParent("transcription", "protein-dna_binding");
 
+		putSourceCatParent("ptm", GENERIC_DIRECTED_CAT);
 		putSourceCatParent("phosphorylation", "ptm");
 		putSourceCatParent("dephosphorylation", "ptm");
 		putSourceCatParent("ubiquitination", "ptm");

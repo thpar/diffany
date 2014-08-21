@@ -148,7 +148,7 @@ public class ConflictingEdgesTest extends GenericExample
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID, true, false);
+		ex.printAllNetworks(p, ID, true, false, false);
 		
 		System.out.println("Logs:");
 		for (LogEntry l : p.getLogger(ID).getAllLogMessages())

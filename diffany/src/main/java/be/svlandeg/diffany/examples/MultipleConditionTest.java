@@ -228,7 +228,7 @@ public class MultipleConditionTest extends GenericExample
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, 10, 11, true);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID_diff, true, false);
+		ex.printAllNetworks(p, ID_diff, true, false, false);
 		
 		System.out.println(" **************************************************************** ");
 		
@@ -259,8 +259,6 @@ public class MultipleConditionTest extends GenericExample
 		System.out.println("");
 		ex.printAllOverlapNetworks(p, ID_diff);
 		*/
-		
-		
 		
 	}
 }

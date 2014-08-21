@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
@@ -70,10 +71,11 @@ public abstract class GenericExample
 	 * 
 	 * @param p the project to be printed
 	 * @param runID the ID of the Run
-	 * @param pair whether the output contains output pairs
-	 * @param overlapOnly whether only overlap networks are generated
+	 * @param pair whether output pairs should be printed
+	 * @param overlapOnly whether only overlap networks should be printed
+	 * @param diffOnly whether only differential networks should be printed
 	 */
-	protected void printAllNetworks(Project p, int runID, boolean pair, boolean overlapOnly)
+	protected void printAllNetworks(Project p, int runID, boolean pair, boolean overlapOnly, boolean diffOnly)
 	{
 		RunConfiguration rc = p.getRunConfiguration(runID);
 		if (rc.getClass().equals("RunDiffConfiguration"))
@@ -101,6 +103,14 @@ public abstract class GenericExample
 			for (OverlappingNetwork on : output.getOverlappingNetworks())
 			{
 				printNetwork(on);
+			}
+		}
+		if (diffOnly)
+		{
+			System.out.println("Differential network(s) only : ");
+			for (DifferentialNetwork dn : output.getDifferentialNetworks())
+			{
+				printNetwork(dn);
 			}
 		}
 	}

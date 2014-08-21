@@ -252,7 +252,7 @@ public class EdgeComparison
 			Set<Integer> currentSupport = inter.allWeights.get(w);
 			supports.addAll(currentSupport);
 			accumulatedSupport += currentSupport.size();
-			
+
 			if ((accumulatedSupport >= overlapNo_cutoff) && w >= weight_min && w < weight_max)
 			{
 				EdgeDefinition overlap_edge = eg.getDefaultEdge();
@@ -303,7 +303,7 @@ public class EdgeComparison
 			refEdge = eg.getVoidEdge(refEdge.isSymmetrical());
 		}
 		double refWeight = refEdge.getWeight();
-		
+
 		boolean allEmpty = true;
 		if (refWeight != 0)
 		{
@@ -345,8 +345,6 @@ public class EdgeComparison
 			countSymmetrical++;
 		}
 
-		
-
 		if (countSymmetrical != originalEdges && countSymmetrical != 0)
 		{
 			String errormsg = "The set of reference and condition edges should either be all symmetrical, or all asymmetrical - clean the input first with NetworkCleaning.unifyDirection !";
@@ -376,14 +374,12 @@ public class EdgeComparison
 
 		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE CONSENSUS OVERLAP RESULTS  //
 
-		Set<EdgeDefinition> overlaps = new HashSet<EdgeDefinition>();
+		Set<EdgeDefinition> overlaps_all = new HashSet<EdgeDefinition>();
+		Set<EdgeDefinition> overlaps_clean = new HashSet<EdgeDefinition>();
 
 		for (String cat : teo.getAllSourceCategories(true))
 		{
 			IntermediateComparison con_result = con_results.get(cat);
-			System.out.println("cat " + cat);
-			System.out.println("ref " + refEdge);
-			System.out.println(con_result);
 			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
@@ -405,62 +401,48 @@ public class EdgeComparison
 				// keep only the consensus condition edge with the highest weight (below threshold)
 				else if (!map_below.isEmpty())
 				{
-					double max = Double.NEGATIVE_INFINITY;
-
 					for (EdgeDefinition overlap_edge : map_below.keySet())
 					{
-						max = Math.max(max, overlap_edge.getWeight());
-					}
-					System.out.println(" max below " + max);
-					if (max > 0)
-					{
-						for (EdgeDefinition overlap_edge : map_below.keySet())
-						{
-							if (overlap_edge.getWeight() == max)
-							{
-								System.out.println(" - " + overlap_edge);
-								overlaps.add(overlap_edge);
-								System.out.println("  kept ");
-							}
-						}
+						overlaps_all.add(overlap_edge);
 					}
 				}
 				// keep only the consensus condition edge with the highest weight (above threshold)
 				else if (!map_above.isEmpty())
 				{
-					double max = Double.NEGATIVE_INFINITY;
 					for (EdgeDefinition overlap_edge : map_above.keySet())
 					{
-						max = Math.max(max, overlap_edge.getWeight());
-					}
-					System.out.println(" max above " + max);
-					if (max > 0)
-					{
-						for (EdgeDefinition overlap_edge : map_above.keySet())
-						{
-							if (overlap_edge.getWeight() == max)
-							{
-								System.out.println(" - " + overlap_edge);
-								overlaps.add(overlap_edge);
-								System.out.println("  kept ");
-							}
-						}
+						overlaps_all.add(overlap_edge);
 					}
 				}
 			}
 		}
-
-		System.out.println("overlaps " + overlaps);
-		if (overlaps.size() == 0)
+		
+		double max = Double.NEGATIVE_INFINITY;
+		for (EdgeDefinition overlap_edge : overlaps_all)
 		{
-			overlaps.add(eg.getVoidEdge(final_symm));
+			max = Math.max(max, overlap_edge.getWeight());
+		}
+		if (max > 0)
+		{
+			for (EdgeDefinition overlap_edge : overlaps_all)
+			{
+				if (overlap_edge.getWeight() == max)
+				{
+					overlaps_clean.add(overlap_edge);
+				}
+			}
+		}
+
+		if (overlaps_clean.size() == 0)
+		{
+			overlaps_clean.add(eg.getVoidEdge(final_symm));
 		}
 		// take the most specific condition category
-		while (overlaps.size() > 1)
+		while (overlaps_clean.size() > 1)
 		{
 			// TODO: this sometimes generates an infinite loop!!!
-			
-			Iterator<EdgeDefinition> it = overlaps.iterator();
+
+			Iterator<EdgeDefinition> it = overlaps_clean.iterator();
 			EdgeDefinition consensusEdge0 = it.next();
 			EdgeDefinition consensusEdge1 = it.next();
 
@@ -486,11 +468,11 @@ public class EdgeComparison
 				newOverlaps.add(consensusEdge0);
 				newOverlaps.add(consensusEdge1);
 			}
-			overlaps = newOverlaps;
+			overlaps_clean = newOverlaps;
 		}
 
-		EdgeDefinition consensusConEdge = overlaps.iterator().next();
-		
+		EdgeDefinition consensusConEdge = overlaps_clean.iterator().next();
+
 		double conWeight = consensusConEdge.getWeight();
 
 		// 3. DETERMINE THE FINAL TYPE AND WEIGHT //

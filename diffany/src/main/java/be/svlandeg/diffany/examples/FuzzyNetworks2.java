@@ -84,6 +84,7 @@ public class FuzzyNetworks2 extends GenericExample
 		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8, false));
+		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 11, false));
 		
 		return network;
 	}
@@ -134,6 +135,7 @@ public class FuzzyNetworks2 extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.6, false));
+		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 6, false));
 
 		return network;
 	}
@@ -159,6 +161,7 @@ public class FuzzyNetworks2 extends GenericExample
 		nodes.put("Y", new Node("Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), true, 0.4, false));
+		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 4, false));
 
 		return network;
 	}
@@ -175,7 +178,7 @@ public class FuzzyNetworks2 extends GenericExample
 		
 		System.out.println("Defining network for FuzzyNetworks2 configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
+		int overlap_cutoff = 4;
 		int ID = ex.getTestConfiguration(p, overlap_cutoff);
 		
 		System.out.print("Calculating 1-all differential networks at weight cutoff " + weight_cutoff);

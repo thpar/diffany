@@ -73,8 +73,9 @@ public class TestFuzzyDiff extends TestGeneric
 		DifferentialNetwork dn = output.getDifferentialNetworks().iterator().next();
 
 		Set<Edge> sEdges = dn.getEdges();
-		assertEquals(2, sEdges.size());
+		assertEquals(3, sEdges.size());
 
+		assertAnEdge(dn, "A", "B", false, "decreases_colocalization", false, 0.3);
 		assertAnEdge(dn, "B", "A", false, "increases_ppi", false, 0.4);
 		assertAnEdge(dn, "X", "Y", false, "increases_regulation", false, 1.2);
 	}
@@ -102,13 +103,10 @@ public class TestFuzzyDiff extends TestGeneric
 		DifferentialNetwork dn = output.getDifferentialNetworks().iterator().next();
 
 		Set<Edge> sEdges = dn.getEdges();
-		assertEquals(4, sEdges.size());
+		assertEquals(3, sEdges.size());
 
 		assertAnEdge(dn, "B", "A", false, "increases_ppi", false, 0.8);
-		assertAnEdge(dn, "A", "B", false, "increases_colocalization", false, 0.2); 
-		
 		assertAnEdge(dn, "X", "Y", false, "increases_regulation", false, 1.3);
-		
 		assertAnEdge(dn, "M", "N", false, "increases_phosphorylation", false, 0.7);
 	}
 	

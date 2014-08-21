@@ -46,7 +46,8 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(0, dEdges.size());
+		assertEquals(1, dEdges.size());
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
@@ -78,7 +79,8 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(0, dEdges.size());
+		assertEquals(1, dEdges.size());
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
@@ -110,14 +112,16 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(1, dEdges.size());
+		assertEquals(2, dEdges.size());
 		assertAnEdge(dn, "A", "B", true, "decrease_ppi", false, 0.2); 
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
+		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 0.6); 
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 4); 
 	}
 	
 	/**
@@ -143,14 +147,16 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(1, dEdges.size());
+		assertEquals(2, dEdges.size());
 		assertAnEdge(dn, "A", "B", true, "decrease_ppi", false, 0.2);
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
+		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 11); 
 	}
 	
 	/**
@@ -176,13 +182,15 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(0, dEdges.size());
+		assertEquals(1, dEdges.size());
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
+		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 0.8); 
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 6); 
 	}
 	
 	/**
@@ -208,12 +216,14 @@ public class TestFuzzyBoth extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(0, dEdges.size());
+		assertEquals(1, dEdges.size());
+		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = pair.getOverlappingNetwork();
 		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
+		assertEquals(2, oEdges.size());
 		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
+		assertAnEdge(on, "X", "Y", false, "regulation", false, 11); 
 	}
 }

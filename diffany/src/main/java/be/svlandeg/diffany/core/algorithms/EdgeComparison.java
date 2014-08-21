@@ -208,9 +208,10 @@ public class EdgeComparison
 
 	/**
 	 * Create all possible edges from an intermediate comparison, by determining the weights which are still supported. 
+	 * The minimum and maximum weights are *exclusive*.
 	 * 
 	 * Further define the type, symmetry and negation status of the new edge.
-	 * If the weight cutoff is not reached, an empty will be returned
+	 * If the weight cutoff is not reached, an empty map will be returned
 	 */
 	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_min, double weight_max, boolean minOperator)
 	{
@@ -228,7 +229,7 @@ public class EdgeComparison
 			double highestW = Double.NEGATIVE_INFINITY;
 			for (double w : allWs.descendingSet())
 			{
-				if (w >= weight_min && w <= weight_max)
+				if (w > weight_min && w < weight_max)
 				{
 					highestW = Math.max(highestW, w);
 					Set<Integer> currentSupport = inter.allWeights.get(w);
@@ -253,7 +254,7 @@ public class EdgeComparison
 		
 		for (double w : allWs.descendingSet())
 		{
-			if (w >= weight_min && w <= weight_max)
+			if (w > weight_min && w < weight_max)
 			{
 				Set<Integer> currentSupport = inter.allWeights.get(w);
 				supports.addAll(currentSupport);
@@ -271,6 +272,34 @@ public class EdgeComparison
 			}
 		}
 
+		return map;
+	}
+	
+	/**
+	 * Create all possible edges from an intermediate comparison, by determining the exact weight we want the supporting edge for.
+	 * 
+	 * Further define the type, symmetry and negation status of the new edge
+	 */
+	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight)
+	{
+		Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
+				
+		Set<Integer> currentSupport = inter.allWeights.get(weight);
+		int size = 0;
+		if (currentSupport != null)
+		{
+			size = currentSupport.size();
+		}
+
+		if (size >= overlapNo_cutoff)
+		{
+			EdgeDefinition overlap_edge = eg.getDefaultEdge();
+			overlap_edge.makeSymmetrical(final_symm);
+			overlap_edge.makeNegated(negation);
+			overlap_edge.setType(inter.type);
+			overlap_edge.setWeight(weight);
+			map.put(overlap_edge, new HashSet<Integer>(currentSupport));
+		}
 		return map;
 	}
 
@@ -391,14 +420,25 @@ public class EdgeComparison
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
 				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, Double.NEGATIVE_INFINITY, refWeight, false);
-
+				
 				// all edges with weight above the reference weight: take the minimum of the condition edges to determine the minimal consensus increase
 				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight, Double.POSITIVE_INFINITY, true);
-
+				
+				Map<EdgeDefinition, Set<Integer>> map_same = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight);
+				
 				if (map_below.isEmpty() && map_above.isEmpty())
 				{
+					if (map_same.isEmpty())
+					{
 					// there can be no differential edge because the evidence is spread between higher and lower weights
-					return eg.getVoidEdge(final_symm);
+						return eg.getVoidEdge(final_symm);
+					}
+					if (! map_same.isEmpty() && refWeight != 0)
+					{
+						// there can be no differential edge because the conditional weights are equal to the ref Edge
+						// in case the edge weight was 0, we first continue the search in other categories
+						return eg.getVoidEdge(final_symm);
+					}
 				}
 				else if (!map_below.isEmpty() && !map_above.isEmpty())
 				{

@@ -22,6 +22,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
  * This class provides examples to benchmark the fuzzy overlap functionality.  
+ * Specifically, different interaction types, weights and negation states are mixed.
  * 
  * @author Sofie Van Landeghem
  */

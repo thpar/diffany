@@ -208,59 +208,66 @@ public class EdgeComparison
 
 	/**
 	 * Create all possible edges from an intermediate comparison, by determining the weights which are still supported. 
+	 * 
 	 * Further define the type, symmetry and negation status of the new edge.
 	 * If the weight cutoff is not reached, an empty will be returned
 	 */
 	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_min, double weight_max, boolean minOperator)
 	{
 		Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
-
-		// we can take the maximum value, if there is enough total support -> return only one edge with the maximal weight value
+		
+		int accumulatedSupport = 0;
 		Set<Integer> supports = new HashSet<Integer>();
+		TreeSet<Double> allWs = new TreeSet<Double>(inter.allWeights.keySet());
+		
+		// We start from the highest possible weights and keep going down until enough accumulated support is found
+		// For the maximum operator, the highest weight is chosen that fits into the provided weight interval
+		
 		if (!minOperator)
 		{
-			double maxWeight = inter.allWeights.lastKey();
-			if (inter.getTotalSupport() >= overlapNo_cutoff && maxWeight >= weight_min && maxWeight < weight_max)
+			double highestW = Double.NEGATIVE_INFINITY;
+			for (double w : allWs.descendingSet())
 			{
-				for (double w : inter.allWeights.keySet())
+				if (w >= weight_min && w <= weight_max)
 				{
-					supports.addAll(inter.allWeights.get(w));
-				}
+					highestW = Math.max(highestW, w);
+					Set<Integer> currentSupport = inter.allWeights.get(w);
+					supports.addAll(currentSupport);
+					accumulatedSupport += currentSupport.size();
 
-				EdgeDefinition overlap_edge = eg.getDefaultEdge();
-				overlap_edge.makeSymmetrical(final_symm);
-				overlap_edge.makeNegated(negation);
-				overlap_edge.setType(inter.type);
-				overlap_edge.setWeight(maxWeight);
-				map.put(overlap_edge, supports);
+					if ((accumulatedSupport >= overlapNo_cutoff))
+					{
+						EdgeDefinition overlap_edge = eg.getDefaultEdge();
+						overlap_edge.makeSymmetrical(final_symm);
+						overlap_edge.makeNegated(negation);
+						overlap_edge.setType(inter.type);
+						overlap_edge.setWeight(highestW);
+						map.put(overlap_edge, new HashSet<Integer>(supports));
+					}
+				}
 			}
 			return map;
 		}
 
-		// When we reach to this point, we need to apply the minimum operator of the edge weights!
-
-		// we need to find all weight values that have enough support (these will be pruned later)
-		// starting with the highest weights, their support is passed on to the lower weights. 
-		// When the cutoff is reached, corresponding edges will be created
-
-		int accumulatedSupport = 0;
-
-		supports = new HashSet<Integer>();
-		TreeSet<Double> allWs = new TreeSet<Double>(inter.allWeights.keySet());
+		// For the minimum operator, the first lower weight is chosen that has enough accumulated support
+		
 		for (double w : allWs.descendingSet())
 		{
-			Set<Integer> currentSupport = inter.allWeights.get(w);
-			supports.addAll(currentSupport);
-			accumulatedSupport += currentSupport.size();
-
-			if ((accumulatedSupport >= overlapNo_cutoff) && w >= weight_min && w < weight_max)
+			if (w >= weight_min && w <= weight_max)
 			{
-				EdgeDefinition overlap_edge = eg.getDefaultEdge();
-				overlap_edge.makeSymmetrical(final_symm);
-				overlap_edge.makeNegated(negation);
-				overlap_edge.setType(inter.type);
-				overlap_edge.setWeight(w);
-				map.put(overlap_edge, new HashSet<Integer>(supports));
+				Set<Integer> currentSupport = inter.allWeights.get(w);
+				supports.addAll(currentSupport);
+				accumulatedSupport += currentSupport.size();
+
+				if ((accumulatedSupport >= overlapNo_cutoff))
+				{
+					EdgeDefinition overlap_edge = eg.getDefaultEdge();
+					overlap_edge.makeSymmetrical(final_symm);
+					overlap_edge.makeNegated(negation);
+					overlap_edge.setType(inter.type);
+					overlap_edge.setWeight(w);
+					map.put(overlap_edge, new HashSet<Integer>(supports));
+				}
 			}
 		}
 
@@ -416,7 +423,7 @@ public class EdgeComparison
 				}
 			}
 		}
-		
+
 		double max = Double.NEGATIVE_INFINITY;
 		for (EdgeDefinition overlap_edge : overlaps_all)
 		{

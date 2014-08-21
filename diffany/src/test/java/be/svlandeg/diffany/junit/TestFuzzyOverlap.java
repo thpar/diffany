@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.networks.Edge;
-import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OverlappingNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
@@ -19,7 +18,7 @@ import be.svlandeg.diffany.examples.FuzzyNetworks;
  * 
  * @author Sofie Van Landeghem
  */
-public class TestFuzzyOverlap
+public class TestFuzzyOverlap extends TestGeneric
 {
 	
 	/**
@@ -40,6 +39,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one overlap network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -80,6 +81,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -111,6 +114,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -141,6 +146,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -245,6 +252,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -274,6 +283,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -302,6 +313,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -336,6 +349,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -364,6 +379,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one overlap network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -395,6 +412,8 @@ public class TestFuzzyOverlap
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrOverlapNetworks(output, 1);
+		assertNrDiffNetworks(output, 0);
+		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the overlap network
 		OverlappingNetwork on = output.getOverlappingNetworks().iterator().next();
@@ -428,49 +447,5 @@ public class TestFuzzyOverlap
 			exception = true;
 		}
 		assertTrue(exception);
-	}
-
-
-	/**
-	 * Private method that asserts whether a certain edge is present in a network.
-	 * This method will fail during JUnit testing when there is no edge or more than one edge between the specified node names.
-	 * This method will also fail if the found edge has the wrong symmetry, weight, negation, or interaction type.
-	 * 
-	 * @param n the network to test
-	 * @param sourceName the name of the source node in the network
-	 * @param targetName the name of the target node in the network
-	 * @param symm whether or not the relationship is symmetrical
-	 * @param normalized whether or not the node names are in normalized form
-	 * @param type the type the edge should have
-	 * @param negated whether or not the edge should be negated
-	 * @param weight the weight the edge should have
-	 */
-	private void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, String type, boolean negated, double weight)
-	{
-		Set<Edge> edges = n.getAllEdgesByName(sourceName.toLowerCase(), targetName.toLowerCase(), symm);
-		boolean found = false;
-		for (Edge edge : edges)
-		{
-			if (edge.isSymmetrical() == symm && edge.isNegated() == negated)
-			{
-				if (edge.getType().equals(type))
-				{
-					if ((edge.getWeight() < weight + 0.00000005) && (edge.getWeight() > weight - 0.00000005))
-					{
-						found = true;
-					}
-				}
-			}
-		}
-		assertEquals(found, true);
-	}
-
-	/**
-	 * Private method that asserts the number of overlap networks in the output result (may be 0).
-	 */
-	private void assertNrOverlapNetworks(RunOutput output, int number)
-	{
-		int overlaps = output.getOverlappingNetworks().size();
-		assertEquals(number, overlaps);
 	}
 }

@@ -22,7 +22,7 @@ import be.svlandeg.diffany.examples.MultipleConditionTest;
  * 
  * @author Sofie Van Landeghem
  */
-public class TestConfiguration
+public class TestConfiguration extends TestGeneric
 {
 
 	private static double cutoff = 0.0;
@@ -278,32 +278,4 @@ public class TestConfiguration
 		}
 		assertTrue(exceptionThrown);
 	}
-
-	/**
-	 * Private method that asserts the number of differential output pairs in the output result (may be 0).
-	 */
-	private void assertNrPairs(RunOutput output, int number)
-	{
-		int pairs = output.getOutputAsPairs().size();
-		assertEquals(number, pairs);
-	}
-
-	/**
-	 * Private method that asserts the number of differential networks in the output result (may be 0).
-	 */
-	private void assertNrDiffNetworks(RunOutput output, int number)
-	{
-		int diffs = output.getDifferentialNetworks().size();
-		assertEquals(number, diffs);
-	}
-
-	/**
-	 * Private method that asserts the number of overlap networks in the output result (may be 0).
-	 */
-	private void assertNrOverlapNetworks(RunOutput output, int number)
-	{
-		int overlaps = output.getOverlappingNetworks().size();
-		assertEquals(number, overlaps);
-	}
-
 }

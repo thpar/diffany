@@ -8,7 +8,8 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.core.visualstyle.EdgeStyle.ArrowHead;
 
 /**
- * This class provides a default definition of drawing edges in a GUI for the source networks. Specifically, this covers the input networks (reference and condition-dependent) as wel as the overlapping networks.
+ * This class provides a default definition of drawing edges in a GUI for the source networks. 
+ * Specifically, this covers the input networks (reference and condition-dependent) as wel as the consensus networks.
  * 
  * @author Sofie Van Landeghem
  */

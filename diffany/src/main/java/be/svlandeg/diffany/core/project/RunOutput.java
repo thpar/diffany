@@ -8,10 +8,10 @@ import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.meta.MetaConvertor;
 import be.svlandeg.diffany.core.networks.meta.MetaDifferentialNetwork;
-import be.svlandeg.diffany.core.networks.meta.MetaOverlappingNetwork;
+import be.svlandeg.diffany.core.networks.meta.MetaConsensusNetwork;
 
 /**
- * This class keeps the output of differential network algorithms, both differential networks as well overlapping networks.
+ * This class keeps the output of differential network algorithms, both differential networks as well consensus networks.
  * Either of the two can be null when it was not calculated.
  * 
  * @author Sofie Van Landeghem
@@ -23,7 +23,7 @@ public class RunOutput
 	protected int runID;
 
 	private Set<DifferentialNetwork> dns;
-	private Set<ConsensusNetwork> ons;
+	private Set<ConsensusNetwork> cns;
 	private Set<OutputNetworkPair> pairs;
 
 	/**
@@ -46,16 +46,16 @@ public class RunOutput
 	public void clean()
 	{
 		dns = new HashSet<DifferentialNetwork>();
-		ons = new HashSet<ConsensusNetwork>();
+		cns = new HashSet<ConsensusNetwork>();
 		pairs = new HashSet<OutputNetworkPair>();
 	}
 
 	/**
-	 * Add a pair of differential+overlap networks to this output. 
-	 * This will automatically also register the output networks to the list of differential and overlap networks, correspondingly.
+	 * Add a pair of differential+consensus networks to this output. 
+	 * This will automatically also register the output networks to the list of differential and consensus networks, correspondingly.
 	 * When adding these networks, the IDs of the output networks will be checked for uniquenesss.
 	 * 
-	 * @param pair the pair of differential and overlap output networks
+	 * @param pair the pair of differential and consensus output networks
 	 */
 	public void addPair(OutputNetworkPair pair)
 	{
@@ -66,7 +66,7 @@ public class RunOutput
 		}
 		
 		addDifferential(pair.getDifferentialNetwork());
-		addOverlap(pair.getConsensusNetwork());
+		addConsensus(pair.getConsensusNetwork());
 		
 		pairs.add(pair);
 	}
@@ -93,29 +93,29 @@ public class RunOutput
 	}
 
 	/**
-	 * Add an overlap output network. When adding this network, its IDs will be checked for uniquenesss.
-	 * @param on the overlap output network
+	 * Add a consensus output network. When adding this network, its IDs will be checked for uniquenesss.
+	 * @param on the consensus output network
 	 */
-	public void addOverlap(ConsensusNetwork on)
+	public void addConsensus(ConsensusNetwork cn)
 	{
-		if (on == null)
+		if (cn == null)
 		{
-			String errormsg = "The specified output overlap network(s) can not be null!";
+			String errormsg = "The specified output consensus network(s) can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		
-		if (! p.runs.get(runID).checkoutputID(on.getID()))
+		if (! p.runs.get(runID).checkoutputID(cn.getID()))
 		{
-			String errormsg = "The provided ID of the overlap network (" + on.getID() + ") should be unique in this run!";
+			String errormsg = "The provided ID of the consensus network (" + cn.getID() + ") should be unique in this run!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		
-		ons.add(on);
+		cns.add(cn);
 	}
 
 	/**
-	 * Retrieve the differential and overlap networks as result pairs.
-	 * @return the result pairs, each containing both a differential and an overlap network
+	 * Retrieve the differential and consensus networks as result pairs.
+	 * @return the result pairs, each containing both a differential and a consensus network
 	 */
 	public Set<OutputNetworkPair> getOutputAsPairs()
 	{
@@ -132,12 +132,12 @@ public class RunOutput
 	}
 
 	/**
-	 * Retrieve all overlapping networks
-	 * @return the overlapping network in this output
+	 * Retrieve all consensus networks
+	 * @return the consensus network in this output
 	 */
-	public Set<ConsensusNetwork> getOverlappingNetworks()
+	public Set<ConsensusNetwork> getConsensusNetworks()
 	{
-		return ons;
+		return cns;
 	}
 
 	/**
@@ -154,16 +154,16 @@ public class RunOutput
 	}
 
 	/**
-	 * Retrieve all overlapping networks as one large merged network
-	 * @return the overlapping networks in this output, all merged together
+	 * Retrieve all consensus networks as one large merged network
+	 * @return the consensus networks in this output, all merged together
 	 */
-	public MetaOverlappingNetwork getMergedOverlapping()
+	public MetaConsensusNetwork getMergedConsensusNetworks()
 	{
-		if (ons == null || ons.isEmpty())
+		if (cns == null || cns.isEmpty())
 		{
 			return null;
 		}
-		return MetaConvertor.convertOverlapping(ons);
+		return MetaConvertor.convertConsensus(cns);
 	}
 
 }

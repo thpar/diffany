@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.InputNetwork;
@@ -71,14 +72,13 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Clean an output network: Remove redundant/duplicate edges in the network. This network is supposed to be a MetaNetwork!
-	 * 
+	 * Clean an output consensus network: Remove redundant/duplicate edges in the network. 
 	 * Be aware: this function changes the network object!
 	 * 
-	 * @param net the network that needs cleaning
+	 * @param net the consensus network that needs cleaning
 	 * @param eo the edge ontology
 	 */
-	public void fullOverlapOutputCleaning(Network net, EdgeOntology eo)
+	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo)
 	{
 		fullCleaning(net, eo, true);
 	}
@@ -97,9 +97,8 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Remove edges in the network that are symmetrical and are represented
-	 * twice (source-target and target-source). One of the two is removed only
-	 * then when the type, weight and negation are all equal.
+	 * Remove edges in the network that are symmetrical and are represented twice (source-target and target-source). 
+	 * One of the two is removed only then when the type, weight and negation are all equal.
 	 * 
 	 * @param net the network that needs cleaning
 	 */

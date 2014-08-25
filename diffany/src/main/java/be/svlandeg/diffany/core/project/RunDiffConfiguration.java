@@ -49,14 +49,14 @@ public class RunDiffConfiguration extends RunConfiguration
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
-	 * @param overlapNo_cutoff the number of input networks that need to overlap to be included in the overlapping network. 
+	 * @param supportCutoff the number of input networks that need to support an edge for it to be included in the consensus network. 
 	 * It will be enforced that the reference network is always one of the supporting networks.
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public RunDiffConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
+	public RunDiffConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportCutoff)
 	{
-		super(defineInputNetworks(reference, conditions), overlapNo_cutoff, true);
+		super(defineInputNetworks(reference, conditions), supportCutoff, true);
 		setReference(reference);
 		setConditions(conditions);
 	}

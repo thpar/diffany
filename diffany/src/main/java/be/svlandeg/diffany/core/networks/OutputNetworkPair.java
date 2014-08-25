@@ -2,7 +2,7 @@ package be.svlandeg.diffany.core.networks;
 
 
 /**
- * This class simply contains one differential network and its corresponding overlapping network.
+ * This class simply contains one differential network and its corresponding consensus network.
  * 
  * @author Sofie Van Landeghem
  */

@@ -24,7 +24,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
- * This class calculates overlap/differential networks on an edge-by-edge basis.
+ * This class calculates consensus/differential networks on an edge-by-edge basis.
  * 
  * @author Sofie Van Landeghem
  */
@@ -48,12 +48,12 @@ public class EdgeByEdge
 	
 	/**
 	 * Calculate the differential network between the reference and condition-specific networks.
-	 * The overlapping network should be calculated independently!
+	 * The consensus network should be calculated independently!
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
-	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the 'consensus' condition network. If it equals the number of condition networks, all networks need to agree on an edge.
+	 * An important parameter is the supportingCutoff, which determines the amount of support needed for an edge to be included in the 'consensus' condition network. If it equals the number of condition networks, all networks need to agree on an edge.
 	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust differential networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
+	 * The supportingCutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param reference the reference network
@@ -62,12 +62,12 @@ public class EdgeByEdge
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diffName the name to give to the differential network
 	 * @param ID the ID of the resulting network
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap between the condition-specific networks
-	 * @param weight_cutoff the minimal weight a differential edge should have to be included
+	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
+	 * @param weightCutoff the minimal weight a differential edge should have to be included
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int overlapNo_cutoff, double weight_cutoff)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int supportingCutoff, double weightCutoff)
 	{
 		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
 		
@@ -185,8 +185,8 @@ public class EdgeByEdge
 						cleanedConEdges.add(cleanedEdges.get(i));
 					}
 
-					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, overlapNo_cutoff, weight_cutoff);
+					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these differential edges ?!
+					EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, supportingCutoff, weightCutoff);
 
 
 					// non-void differential edge
@@ -215,38 +215,38 @@ public class EdgeByEdge
 	}
 
 	/**
-	 * Calculate the overlapping network between a set of networks.
+	 * Calculate the consensus network between a set of networks.
 	 * This method can only be called from within the package (CalculateDiff) and can thus assume proper input.
 	 * 
-	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
-	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
+	 * An important parameter is supportingCutoff, which determines the amount of support needed for an edge to be included in the consensus network. If it equals the number of input networks, all networks need to agree on an edge.
+	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust consensus networks.
+	 * The supportingCutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
-	 * The additional parameter refRequired determines whether the reference network should always provide support for the overlap edge, or not.
-	 * If not, all networks are treated equal. If true, an overlap edge can never be produced if it does not have support in the reference network.
+	 * The additional parameter refRequired determines whether the reference network should always provide support for the consensus edge, or not.
+	 * If not, all networks are treated equal. If true, a consensus edge can never be produced if it does not have support in the reference network.
 	 * The reference network is determined by trying to cast the input networks to ReferenceNetwork and selecting the one and only unique result.
 	 * 
 	 * @param networks a set of networks (at least 2).
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param overlap_name the name to give to the overlapping network
+	 * @param consensusName the name to give to the consensus network
 	 * @param ID the ID of the resulting network
-	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network.
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
 	 * When set to true, this method will raise an IllegalArgumentException when no or more than 1 reference network is found.
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
-	 * @param weight_cutoff the minimal weight that the resulting overlap edges should have to be included
+	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
+	 * @param weightCutoff the minimal weight that the resulting consensus edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
-	 * @return the overlapping network between the input networks. 
+	 * @return the consensus network between the input networks. 
 	 * The network will contain Meta edges that store which input networks provide support, given by the original conditions when the input contains ConditionNetworks, or by artificial Conditions
 	 * displaying the name of the Networks.
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
+	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator)
 	{
-		ConsensusNetwork overlap = new ConsensusNetwork(overlap_name, ID, networks, nm);
+		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks, nm);
 
 		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
 
@@ -270,7 +270,7 @@ public class EdgeByEdge
 		if (allNetworks.size() == 1)
 		{
 			Network onlyInput = allNetworks.values().iterator().next();
-			overlap.setNodesAndEdges(onlyInput.getNodes(), onlyInput.getEdges());
+			consensus.setNodesAndEdges(onlyInput.getNodes(), onlyInput.getEdges());
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
@@ -355,10 +355,10 @@ public class EdgeByEdge
 
 					List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(edges);
 
-					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these overlap edges ?!
-					Map<EdgeDefinition, Set<Integer>> defs = ec.getOverlapEdge(cleanedEdges, supportingNetworks, overlapNo_cutoff, weight_cutoff, minOperator);
+					// TODO shouldn't we check the consensus != null etc (below) BEFORE calculating all these consensus edges ?!
+					Map<EdgeDefinition, Set<Integer>> defs = ec.getConsensusEdge(cleanedEdges, supportingNetworks, supportingCutoff, weightCutoff, minOperator);
 
-					// non-void overlapping edge
+					// non-void consensus edge
 					for (EdgeDefinition def : defs.keySet())
 					{
 						Set<Integer> supports = defs.get(def);
@@ -408,8 +408,8 @@ public class EdgeByEdge
 							{
 								MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
 
-								MetaEdge overlapdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
-								overlap.addEdge(overlapdiff);
+								MetaEdge consensusdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
+								consensus.addEdge(consensusdiff);
 							}
 						}
 					}
@@ -417,7 +417,7 @@ public class EdgeByEdge
 			}
 		}
 
-		return overlap;
+		return consensus;
 	}
 
 }

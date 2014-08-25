@@ -449,14 +449,14 @@ public class NetworkIO
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
-	 * @param reference the ReferenceNetwork linked to this overlapping network
-	 * @param condNetworks the set of condition-specific networks linked to this overlapping network
+	 * @param reference the ReferenceNetwork linked to this consensus network
+	 * @param condNetworks the set of condition-specific networks linked to this consensus network
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a ConsensusNetwork representation of the nodes and edges in the files.
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	public static ConsensusNetwork readOverlappingNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks, boolean skipHeader) throws IOException
+	public static ConsensusNetwork readConsensusNetworkFromDir(File dir, NodeMapper nm, ReferenceNetwork reference, Set<ConditionNetwork> condNetworks, boolean skipHeader) throws IOException
 	{
 		return (ConsensusNetwork) readOutputNetworkFromDir(dir, nm, reference, condNetworks, skipHeader);
 	}

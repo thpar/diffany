@@ -23,7 +23,7 @@ public class TestFuzzyDiff extends TestGeneric
 {
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness overlap factor 3 out of 3.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness supporting networks factor 3 out of 3.
 	 */
 	@Test
 	public void testFuzzyDiff_4()
@@ -31,17 +31,17 @@ public class TestFuzzyDiff extends TestGeneric
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, -1, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 0);
+		assertNrConsensusNetworks(output, 0);
 		assertNrDiffNetworks(output, 1);
 
-		// Testing the edges in the overlap network
+		// Testing the edges in the differential network
 		DifferentialNetwork dn = output.getDifferentialNetworks().iterator().next();
 
 		Set<Edge> sEdges = dn.getEdges();
@@ -51,7 +51,7 @@ public class TestFuzzyDiff extends TestGeneric
 	}
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness overlap factor 2 out of 3.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness supporting networks factor 2 out of 3.
 	 */
 	@Test
 	public void testFuzzyDiff_3()
@@ -59,17 +59,17 @@ public class TestFuzzyDiff extends TestGeneric
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 75, -1, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 0);
+		assertNrConsensusNetworks(output, 0);
 		assertNrDiffNetworks(output, 1);
 
-		// Testing the edges in the overlap network
+		// Testing the edges in the differential network
 		DifferentialNetwork dn = output.getDifferentialNetworks().iterator().next();
 
 		Set<Edge> sEdges = dn.getEdges();
@@ -81,7 +81,7 @@ public class TestFuzzyDiff extends TestGeneric
 	}
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness overlap factor 2 out of 3.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct differential results with fuzziness supporting networks factor 2 out of 3.
 	 */
 	@Test
 	public void testFuzzyDiff_2()
@@ -89,14 +89,14 @@ public class TestFuzzyDiff extends TestGeneric
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 75, -1, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 0);
+		assertNrConsensusNetworks(output, 0);
 		assertNrDiffNetworks(output, 1);
 
 		// Testing the edges in the differential network

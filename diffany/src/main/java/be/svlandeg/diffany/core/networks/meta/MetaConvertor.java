@@ -129,12 +129,12 @@ public class MetaConvertor
 	}
 	
 	/**
-	 * Convert a set of overlapping networks to one large merged (meta) network
-	 * @param overlapSet the original set of separate overlapping networks (assumed not-null and not empty!)
-	 * @return the meta overlapping network
+	 * Convert a set of consensus networks to one large merged (meta) network
+	 * @param consensusSet the original set of separate consensus networks (assumed not-null and not empty!)
+	 * @return the meta consensus network
 	 */
     @SuppressWarnings("unused")
-	public static MetaOverlappingNetwork convertOverlapping(Set<ConsensusNetwork> overlapSet)
+	public static MetaConsensusNetwork convertConsensus(Set<ConsensusNetwork> consensusSet)
 	{
 		// TODO
 		return null;

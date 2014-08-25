@@ -27,7 +27,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class ExampleCode
 {
 	
-	public void example(String refLocation, String condLocation, String diffLocation, String overlapLocation) throws IOException
+	public void example(String refLocation, String condLocation, String diffLocation, String consensusLocation) throws IOException
 	{
 		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
@@ -54,7 +54,7 @@ public class ExampleCode
 		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		ConsensusNetwork overlapNet = pair.getConsensusNetwork();
+		ConsensusNetwork consensusNet = pair.getConsensusNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;
@@ -63,8 +63,8 @@ public class ExampleCode
 		File diffDir = new File(diffLocation);
 		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
 
-		File overlapDir = new File(overlapLocation);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, writeHeaders, allowVirtualEdges);
+		File consensusDir = new File(consensusLocation);
+		NetworkIO.writeNetworkToDir(consensusNet, nm, consensusDir, writeHeaders, allowVirtualEdges);
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(runID);

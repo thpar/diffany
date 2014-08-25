@@ -44,11 +44,11 @@ public class TestConfiguration extends TestGeneric
 		testIni(p, ex, calls);
 		calls++;
 
-		// 1-all differential configuration : differential+overlap calculation
+		// 1-all differential configuration : differential+consensus calculation
 		testDifferentialOneMulti(p, calc, ex, calls, 10, 11);
 		calls++;
 
-		// (the exact same) 1-all differential+overlap calculation
+		// (the exact same) 1-all differential+consensus calculation
 		testDifferentialOneMulti(p, calc, ex, calls, 12, 13);
 		calls++;
 
@@ -56,19 +56,19 @@ public class TestConfiguration extends TestGeneric
 		testDifferentialOneMulti(p, calc, ex, calls, 14, -1);
 		calls++;
 
-		// 1-all overlap (only) calculation - with differential configuration
+		// 1-all consensus (only) calculation - with differential configuration
 		testDifferentialOneMulti(p, calc, ex, calls, -1, 15);
 		calls++;
 
-		// 1-all calculation which doesn't actually do anything (no diff, no overlap)
+		// 1-all calculation which doesn't actually do anything (no diff, no consensus)
 		testDifferentialOneMulti(p, calc, ex, calls, -1, -1);
 		calls++;
 
-		// 1-all overlap configuration - assess correct failure of differential calculation
-		testOverlapOneMulti(p, calc, ex, calls, 20);
+		// 1-all consensus configuration - assess correct failure of differential calculation
+		testConsensusOneMulti(p, calc, ex, calls, 20);
 		calls++;
 
-		// pairwise differential configuration : differential+overlap calculation
+		// pairwise differential configuration : differential+consensus calculation
 		testDifferentialPairwise(p, calc, ex, calls, true, true, 30);
 		calls++;
 
@@ -76,11 +76,11 @@ public class TestConfiguration extends TestGeneric
 		testDifferentialPairwise(p, calc, ex, calls, true, false, 40);
 		calls++;
 
-		// pairwise overlap (only) calculation - with differential configuration
+		// pairwise consensus (only) calculation - with differential configuration
 		testDifferentialPairwise(p, calc, ex, calls, false, false, 50);
 		calls++;
 
-		// pairwise calculation which doesn't actually do anything (no diff, no overlap)
+		// pairwise calculation which doesn't actually do anything (no diff, no consensus)
 		testDifferentialPairwise(p, calc, ex, calls, false, false, 60);
 		calls++;
 	}
@@ -100,22 +100,22 @@ public class TestConfiguration extends TestGeneric
 	}
 
 	/**
-	 * Test a 1-multi differential configuration, with differential and/or overlap calculation.
+	 * Test a 1-multi differential configuration, with differential and/or consensus calculation.
 	 */
-	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int diffID, int overlapID)
+	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int diffID, int consensusID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		// it should not make a difference how many times this method is called!
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
 		RunOutput output = p.getOutput(ID);
 		
 		boolean diff = diffID >= 0;
-		boolean overlap = overlapID >= 0;
+		boolean consensus = consensusID >= 0;
 		
-		if (diff && overlap)
+		if (diff && consensus)
 		{
 			assertNrPairs(output, 1);
 			OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
@@ -140,55 +140,55 @@ public class TestConfiguration extends TestGeneric
 		{
 			assertNrDiffNetworks(output, 0);
 		}
-		if (overlap)
+		if (consensus)
 		{
-			assertNrOverlapNetworks(output, 1);
-			assertEquals(1, output.getOverlappingNetworks().size());
-			ConsensusNetwork oNetwork = output.getOverlappingNetworks().iterator().next();
+			assertNrConsensusNetworks(output, 1);
+			assertEquals(1, output.getConsensusNetworks().size());
+			ConsensusNetwork oNetwork = output.getConsensusNetworks().iterator().next();
 			assertEquals(3, oNetwork.getEdges().size());
 		}
 		else
 		{
-			assertNrOverlapNetworks(output, 0);
+			assertNrConsensusNetworks(output, 0);
 		}
 	}
 
 	/**
-	 * Test a 1-multi overlap configuration, should not contain differential networks.
+	 * Test a 1-multi consensus configuration, should not contain differential networks.
 	 */
-	private void testOverlapOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int overlapID)
+	private void testConsensusOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int consensusID)
 	{
-		int ID = ex.getTestOverlapConfiguration(p);
+		int ID = ex.getTestConsensusConfiguration(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
-		assertException(p, calc, ID, overlapID++, overlapID++);
-		assertException(p, calc, ID, overlapID++, -1);
+		assertException(p, calc, ID, consensusID++, consensusID++);
+		assertException(p, calc, ID, consensusID++, -1);
 
 		RunOutput dOutput = p.getOutput(ID);
 		assertNrPairs(dOutput, 0);
 		assertNrDiffNetworks(dOutput, 0);
-		assertNrOverlapNetworks(dOutput, 0);
+		assertNrConsensusNetworks(dOutput, 0);
 
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, -1, overlapID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, -1, consensusID, true);
 		dOutput = p.getOutput(ID);
 
 		assertNrPairs(dOutput, 0);
 		assertNrDiffNetworks(dOutput, 0);
-		assertNrOverlapNetworks(dOutput, 1);
+		assertNrConsensusNetworks(dOutput, 1);
 
-		ConsensusNetwork oNetwork = dOutput.getOverlappingNetworks().iterator().next();
+		ConsensusNetwork oNetwork = dOutput.getConsensusNetworks().iterator().next();
 		assertEquals(3, oNetwork.getEdges().size());
 	}
 
 	/**
-	 * Test a pairwise differential configuration, with differential and/or overlap calculation.
+	 * Test a pairwise differential configuration, with differential and/or consensus calculation.
 	 */
-	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean overlap, int firstID)
+	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean consensus, int firstID)
 	{
 		int ID = ex.getTestDiffConfiguration(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
-		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, overlap, firstID, true);
+		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, consensus, firstID, true);
 		RunOutput output = p.getOutput(ID);
 
 		// First, test the number of result networks, depending on the settings.
@@ -196,29 +196,29 @@ public class TestConfiguration extends TestGeneric
 		{
 			// ref vs. 2 conditions
 			assertNrDiffNetworks(output, 2);
-			if (overlap)
+			if (consensus)
 			{
-				assertNrOverlapNetworks(output, 2);
+				assertNrConsensusNetworks(output, 2);
 			}
 			else
 			{
-				assertNrOverlapNetworks(output, 0);
+				assertNrConsensusNetworks(output, 0);
 			}
 		}
 		
-		else if (overlap)
+		else if (consensus)
 		{
 			// 3 pairwise comparisons
 			assertNrPairs(output, 0);
 			assertNrDiffNetworks(output, 0);
-			assertNrOverlapNetworks(output, 3);
+			assertNrConsensusNetworks(output, 3);
 		}
 		else
 		{
 			// no comparisons
 			assertNrPairs(output, 0);
 			assertNrDiffNetworks(output, 0);
-			assertNrOverlapNetworks(output, 0);
+			assertNrConsensusNetworks(output, 0);
 		}
 
 		// Now, test the number of edges per result network, depending on the settings.
@@ -226,12 +226,12 @@ public class TestConfiguration extends TestGeneric
 		diffcounts.put("diff_Draughty", 12);
 		diffcounts.put("diff_Salty", 11);
 
-		Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
-		overlapcounts.put("consensus_Draughty_Reference", 3);
-		overlapcounts.put("consensus_Reference_Salty", 5);
-		overlapcounts.put("consensus_Draughty_Salty", 5);	
+		Map<String, Integer> consensuscounts = new HashMap<String, Integer>();
+		consensuscounts.put("consensus_Draughty_Reference", 3);
+		consensuscounts.put("consensus_Reference_Salty", 5);
+		consensuscounts.put("consensus_Draughty_Salty", 5);	
 
-		if (diff && overlap)
+		if (diff && consensus)
 		{
 			for (OutputNetworkPair pair : output.getOutputAsPairs())
 			{
@@ -240,7 +240,7 @@ public class TestConfiguration extends TestGeneric
 				assertEquals(countD, dNetwork.getEdges().size());
 
 				ConsensusNetwork oNetwork = pair.getConsensusNetwork();
-				int countO = overlapcounts.get(oNetwork.getName());
+				int countO = consensuscounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}
 		}
@@ -252,11 +252,11 @@ public class TestConfiguration extends TestGeneric
 				assertEquals(countD, dNetwork.getEdges().size());
 			}
 		}
-		if (overlap)
+		if (consensus)
 		{
-			for (ConsensusNetwork oNetwork : output.getOverlappingNetworks())
+			for (ConsensusNetwork oNetwork : output.getConsensusNetworks())
 			{
-				int countO = overlapcounts.get(oNetwork.getName());
+				int countO = consensuscounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}
 		}
@@ -265,12 +265,12 @@ public class TestConfiguration extends TestGeneric
 	/**
 	 * Private method that asserts an error will result from calling the oneMulti calculation with a specific runconfiguration ID.
 	 */
-	private void assertException(Project p, CalculateDiff calc, int ID, int diffID, int overlapID)
+	private void assertException(Project p, CalculateDiff calc, int ID, int diffID, int consensusID)
 	{
 		boolean exceptionThrown = false;
 		try
 		{
-			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, overlapID, true);
+			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
 		}
 		catch (IllegalArgumentException e)
 		{

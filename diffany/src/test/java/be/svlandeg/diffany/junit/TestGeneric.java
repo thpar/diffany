@@ -51,6 +51,8 @@ public class TestGeneric
 	
 	/**
 	 * Protected method that asserts the number of differential output pairs in the output result (may be 0).
+	 * @param output the output of the run
+	 * @param number the expected number of output pairs
 	 */
 	protected void assertNrPairs(RunOutput output, int number)
 	{
@@ -60,6 +62,8 @@ public class TestGeneric
 	
 	/**
 	 * Protected method that asserts the number of differential networks in the output result (may be 0).
+	 * @param output the output of the run
+	 * @param number the expected number of differential networks
 	 */
 	protected void assertNrDiffNetworks(RunOutput output, int number)
 	{
@@ -69,12 +73,14 @@ public class TestGeneric
 	
 	
 	/**
-	 * Protected method that asserts the number of overlap networks in the output result (may be 0).
+	 * Protected method that asserts the number of consensus networks in the output result (may be 0).
+	 * @param output the output of the run
+	 * @param number the expected number of consensus networks
 	 */
-	protected void assertNrOverlapNetworks(RunOutput output, int number)
+	protected void assertNrConsensusNetworks(RunOutput output, int number)
 	{
-		int overlaps = output.getOverlappingNetworks().size();
-		assertEquals(number, overlaps);
+		int consensusNr = output.getConsensusNetworks().size();
+		assertEquals(number, consensusNr);
 	}
 
 }

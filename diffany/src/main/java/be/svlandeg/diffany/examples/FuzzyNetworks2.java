@@ -20,7 +20,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
- * This class provides examples to benchmark the fuzzy overlap & differential functionality.  
+ * This class provides examples to benchmark the fuzzy consensus & differential functionality.  
  * Specifically, we use the same interaction type for all edges, but with different weights and complex differences between various cutoffs.
  * 
  * @author Sofie Van Landeghem
@@ -53,17 +53,17 @@ public class FuzzyNetworks2 extends GenericExample
 	/**
 	 * Add some custom-defined networks to the project: 1 reference network and 3 condition-specific.
 	 * @param p the fuzzy project
-	 * @param overlapCutoff the cutoff for overlap %
+	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfiguration(Project p, int overlapCutoff)
+	public int getTestConfiguration(Project p, int supportingCutoff)
 	{
 		ReferenceNetwork r = getReference();
 		Set<ConditionNetwork> c = new HashSet<ConditionNetwork>();
 		c.add(getCondition1());
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(r, c, overlapCutoff);
+		int ID = p.addRunConfiguration(r, c, supportingCutoff);
 		return ID;
 	}
 
@@ -168,24 +168,24 @@ public class FuzzyNetworks2 extends GenericExample
 	
 	
 	/**
-	 * Testing the example using console output (use TestFuzzyOverlap for the JUnit version!)
+	 * Testing the example using console output (use TestFuzzyConsensus for the JUnit version!)
 	 * @param args (ignored) argument list
 	 */
 	public static void main(String[] args)
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
-		double weight_cutoff = 0.0;
+		double weightCutoff = 0.0;
 		
 		System.out.println("Defining network for FuzzyNetworks2 configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 		
-		System.out.print("Calculating 1-all differential networks at weight cutoff " + weight_cutoff);
-		System.out.println(" and overlap cutoff " + overlap_cutoff);
+		System.out.print("Calculating 1-all differential networks at weight cutoff " + weightCutoff);
+		System.out.println(" and supporting cutoff " + supportingCutoff);
 		
 		boolean minOperator = true;
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, minOperator);	
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weightCutoff, 70, 80, minOperator);	
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false, false);	

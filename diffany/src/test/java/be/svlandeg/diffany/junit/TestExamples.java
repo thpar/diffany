@@ -58,7 +58,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "A", "C", true, "decrease_genetic_interaction", false, 0.7);
 		assertAnEdge(dNetwork, "C", "E", true, "decrease_genetic_interaction", false, 0.8);
 
-		// Testing the edges in the corresponding overlapping network
+		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
@@ -96,7 +96,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "A", "C", true, "decrease_genetic_interaction", false, 1.2);
 		assertAnEdge(dNetwork, "A", "E", true, "decrease_genetic_interaction", false, 0.8);
 
-		// Testing the edges in the corresponding overlapping network
+		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
@@ -137,7 +137,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "M", "N", false, "increases_regulation", false, 12);
 		assertAnEdge(dNetwork, "N", "M", false, "increases_regulation", false, 7);
 
-		// Testing the edges in the corresponding overlapping network
+		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());
@@ -183,7 +183,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "S", "T", false, "increases_phosphorylation", false, 2);
 		assertAnEdge(dNetwork, "T", "S", false, "increases_phosphorylation", false, 2);
 
-		// Testing the edges in the corresponding overlapping network
+		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());
@@ -231,14 +231,14 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "P", "M", false, "increases_ptm", false, 2);
 		assertAnEdge(dNetwork, "N", "P", false, "decreases_phosphorylation", false, 3);
 
-		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
-		Set<Edge> sEdges = sNetwork.getEdges();
-		assertEquals(3, sEdges.size());
+		// Testing the edges in the corresponding consensus network
+		ConsensusNetwork cNetwork = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cNetwork.getEdges();
+		assertEquals(3, cEdges.size());
 
-		assertAnEdge(sNetwork, "A", "B", true, "ppi", false, 0.3);
-		assertAnEdge(sNetwork, "A", "C", true, "ppi", false, 0.6);
-		assertAnEdge(sNetwork, "M", "N", false, "phosphorylation", false, 2);
+		assertAnEdge(cNetwork, "A", "B", true, "ppi", false, 0.3);
+		assertAnEdge(cNetwork, "A", "C", true, "ppi", false, 0.6);
+		assertAnEdge(cNetwork, "M", "N", false, "phosphorylation", false, 2);
 	}
 
 	/**
@@ -288,17 +288,17 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(saltDiff, "N", "P", false, "decreases_phosphorylation", false, 3);
 		assertAnEdge(saltDiff, "O", "P", false, "increases_phosphorylation", false, 4);
 
-		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork saltOverlap = saltPair.getConsensusNetwork();
-		Set<Edge> sEdgesS = saltOverlap.getEdges();
-		assertEquals(5, sEdgesS.size());
+		// Testing the edges in the corresponding consensus network
+		ConsensusNetwork saltConsensus = saltPair.getConsensusNetwork();
+		Set<Edge> cEdgesS = saltConsensus.getEdges();
+		assertEquals(5, cEdgesS.size());
 
-		assertAnEdge(saltOverlap, "A", "Z", true, "ppi", false, 0.1);
-		assertAnEdge(saltOverlap, "A", "B", true, "ppi", false, 0.4);
-		assertAnEdge(saltOverlap, "A", "C", true, "ppi", false, 0.6);
+		assertAnEdge(saltConsensus, "A", "Z", true, "ppi", false, 0.1);
+		assertAnEdge(saltConsensus, "A", "B", true, "ppi", false, 0.4);
+		assertAnEdge(saltConsensus, "A", "C", true, "ppi", false, 0.6);
 
-		assertAnEdge(saltOverlap, "M", "N", false, "phosphorylation", false, 2);
-		assertAnEdge(saltOverlap, "M", "O", false, "phosphorylation", true, 1);
+		assertAnEdge(saltConsensus, "M", "N", false, "phosphorylation", false, 2);
+		assertAnEdge(saltConsensus, "M", "O", false, "phosphorylation", true, 1);
 
 		// Draught vs. reference
 		OutputNetworkPair draughtPair = outputs.get("diff_Draughty");
@@ -323,23 +323,23 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(draughtDiff, "N", "P", false, "decreases_phosphorylation", false, 3);
 		assertAnEdge(draughtDiff, "P", "N", false, "increases_phosphorylation", false, 8);
 
-		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork draughtOverlap = draughtPair.getConsensusNetwork();
-		Set<Edge> sEdges = draughtOverlap.getEdges();
-		assertEquals(3, sEdges.size());
+		// Testing the edges in the corresponding consensus network
+		ConsensusNetwork draughtConsensus = draughtPair.getConsensusNetwork();
+		Set<Edge> cEdges = draughtConsensus.getEdges();
+		assertEquals(3, cEdges.size());
 
-		assertAnEdge(draughtOverlap, "A", "B", true, "ppi", false, 0.3);
-		assertAnEdge(draughtOverlap, "A", "C", true, "ppi", false, 0.8);
+		assertAnEdge(draughtConsensus, "A", "B", true, "ppi", false, 0.3);
+		assertAnEdge(draughtConsensus, "A", "C", true, "ppi", false, 0.8);
 
-		assertAnEdge(draughtOverlap, "M", "N", false, "phosphorylation", false, 2);
+		assertAnEdge(draughtConsensus, "M", "N", false, "phosphorylation", false, 2);
 	}
 
 	/**
 	 * JUNIT Test: check whether the example network with multiple conditions produces correct results.
-	 * This method specifically checks the pairwise overlap algorithms of a generic set of input networks (i.e. reference undefined).
+	 * This method specifically checks the pairwise consensus algorithms of a generic set of input networks (i.e. reference undefined).
 	 */
 	@Test
-	public void testMultipleConditionsPairwiseOverlap()
+	public void testMultipleConditionsPairwiseConsensus()
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double weight_cutoff = 0.0;
@@ -347,50 +347,50 @@ public class TestExamples extends TestGeneric
 		int ID = ex.getTestDiffConfiguration(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true, 10, true);
 
-		// Testing that there are exactly three overlap networks created (3 pairs)
+		// Testing that there are exactly three consensus networks created (3 pairs)
 		RunOutput output = p.getOutput(ID);
 		assertNrPairs(output, 0);
-		assertNrOverlapNetworks(output, 3);
+		assertNrConsensusNetworks(output, 3);
 
 		Map<String, ConsensusNetwork> networks = new HashMap<String, ConsensusNetwork>();
-		for (ConsensusNetwork on : output.getOverlappingNetworks())
+		for (ConsensusNetwork on : output.getConsensusNetworks())
 		{
 			networks.put(on.getName(), on);
 		}
 
 		// Salt vs. reference
-		ConsensusNetwork saltOverlap = networks.get("consensus_Reference_Salty");
-		Set<Edge> sEdgesS = saltOverlap.getEdges();
+		ConsensusNetwork saltConsensus = networks.get("consensus_Reference_Salty");
+		Set<Edge> sEdgesS = saltConsensus.getEdges();
 		assertEquals(5, sEdgesS.size());
 
-		assertAnEdge(saltOverlap, "A", "Z", true, "ppi", false, 0.1);
-		assertAnEdge(saltOverlap, "A", "B", true, "ppi", false, 0.4);
-		assertAnEdge(saltOverlap, "A", "C", true, "ppi", false, 0.6);
+		assertAnEdge(saltConsensus, "A", "Z", true, "ppi", false, 0.1);
+		assertAnEdge(saltConsensus, "A", "B", true, "ppi", false, 0.4);
+		assertAnEdge(saltConsensus, "A", "C", true, "ppi", false, 0.6);
 
-		assertAnEdge(saltOverlap, "M", "N", false, "phosphorylation", false, 2);
-		assertAnEdge(saltOverlap, "M", "O", false, "phosphorylation", true, 1);
+		assertAnEdge(saltConsensus, "M", "N", false, "phosphorylation", false, 2);
+		assertAnEdge(saltConsensus, "M", "O", false, "phosphorylation", true, 1);
 
 		// Draught vs. reference
-		ConsensusNetwork draughtOverlap = networks.get("consensus_Draughty_Reference");
-		Set<Edge> sEdges = draughtOverlap.getEdges();
+		ConsensusNetwork draughtConsensus = networks.get("consensus_Draughty_Reference");
+		Set<Edge> sEdges = draughtConsensus.getEdges();
 		assertEquals(3, sEdges.size());
 
-		assertAnEdge(draughtOverlap, "A", "B", true, "ppi", false, 0.3);
-		assertAnEdge(draughtOverlap, "A", "C", true, "ppi", false, 0.8);
+		assertAnEdge(draughtConsensus, "A", "B", true, "ppi", false, 0.3);
+		assertAnEdge(draughtConsensus, "A", "C", true, "ppi", false, 0.8);
 
-		assertAnEdge(draughtOverlap, "M", "N", false, "phosphorylation", false, 2);
+		assertAnEdge(draughtConsensus, "M", "N", false, "phosphorylation", false, 2);
 		
 		// Draught vs. reference
-		ConsensusNetwork draughtStressOverlap = networks.get("consensus_Draughty_Salty");
-		Set<Edge> sEdgesDS = draughtStressOverlap.getEdges();
+		ConsensusNetwork draughtStressConsensus = networks.get("consensus_Draughty_Salty");
+		Set<Edge> sEdgesDS = draughtStressConsensus.getEdges();
 		assertEquals(5, sEdgesDS.size());	
 
-		assertAnEdge(draughtStressOverlap, "A", "B", true, "ppi", false, 0.3);
-		assertAnEdge(draughtStressOverlap, "A", "C", true, "ppi", false, 0.6);
-		assertAnEdge(draughtStressOverlap, "A", "D", true, "ppi", false, 0.75);
+		assertAnEdge(draughtStressConsensus, "A", "B", true, "ppi", false, 0.3);
+		assertAnEdge(draughtStressConsensus, "A", "C", true, "ppi", false, 0.6);
+		assertAnEdge(draughtStressConsensus, "A", "D", true, "ppi", false, 0.75);
 
-		assertAnEdge(draughtStressOverlap, "M", "N", false, "phosphorylation", false, 6);
-		assertAnEdge(draughtStressOverlap, "P", "M", false, "ptm", false, 2);
+		assertAnEdge(draughtStressConsensus, "M", "N", false, "phosphorylation", false, 6);
+		assertAnEdge(draughtStressConsensus, "P", "M", false, "ptm", false, 2);
 	}
 	
 
@@ -428,7 +428,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "J", "K", false, "increases_ptm", false, 6);
 		assertAnEdge(dNetwork, "K", "J", false, "increases_ptm", false, 1);
 
-		// Testing the edges in the corresponding overlapping network
+		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());

@@ -21,7 +21,7 @@ import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 
 /**
- * {@link VisualStyle} to be applied on source and overlap networks.
+ * {@link VisualStyle} to be applied on source and consensus networks.
  * 
  * @author Thomas Van Parys
  *
@@ -30,7 +30,7 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 	
 	
 	/**
-	 * Construct and register new visual style for source and overlap networks.
+	 * Construct and register new visual style for source and consensus networks.
 	 * 
 	 * @param services app services
 	 */

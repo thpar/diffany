@@ -66,7 +66,7 @@ public class RunOutput
 		}
 		
 		addDifferential(pair.getDifferentialNetwork());
-		addOverlap(pair.getOverlappingNetwork());
+		addOverlap(pair.getConsensusNetwork());
 		
 		pairs.add(pair);
 	}

@@ -94,7 +94,7 @@ public abstract class GenericExample
 			for (OutputNetworkPair op : output.getOutputAsPairs())
 			{
 				printNetwork(op.getDifferentialNetwork());
-				printNetwork(op.getOverlappingNetwork());
+				printNetwork(op.getConsensusNetwork());
 			}
 		}
 		if (overlapOnly)

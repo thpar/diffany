@@ -504,7 +504,7 @@ public class CyProject{
 		
 		for (OutputNetworkPair pair: runOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
-			ConsensusNetwork consensusNetwork = pair.getOverlappingNetwork();
+			ConsensusNetwork consensusNetwork = pair.getConsensusNetwork();
 			addedDiffNets.add(differentialNetwork);
 			addedOverlapNets.add(consensusNetwork);
 			

@@ -54,7 +54,7 @@ public class ExampleCode
 		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		ConsensusNetwork overlapNet = pair.getOverlappingNetwork();
+		ConsensusNetwork overlapNet = pair.getConsensusNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;

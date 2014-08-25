@@ -59,7 +59,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "C", "E", true, "decrease_genetic_interaction", false, 0.8);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(2, sEdges.size());
 
@@ -97,7 +97,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "A", "E", true, "decrease_genetic_interaction", false, 0.8);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 
@@ -138,7 +138,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "N", "M", false, "increases_regulation", false, 7);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());
 
@@ -184,7 +184,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "T", "S", false, "increases_phosphorylation", false, 2);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());
 
@@ -232,7 +232,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "N", "P", false, "decreases_phosphorylation", false, 3);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(3, sEdges.size());
 
@@ -289,7 +289,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(saltDiff, "O", "P", false, "increases_phosphorylation", false, 4);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork saltOverlap = saltPair.getOverlappingNetwork();
+		ConsensusNetwork saltOverlap = saltPair.getConsensusNetwork();
 		Set<Edge> sEdgesS = saltOverlap.getEdges();
 		assertEquals(5, sEdgesS.size());
 
@@ -324,7 +324,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(draughtDiff, "P", "N", false, "increases_phosphorylation", false, 8);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork draughtOverlap = draughtPair.getOverlappingNetwork();
+		ConsensusNetwork draughtOverlap = draughtPair.getConsensusNetwork();
 		Set<Edge> sEdges = draughtOverlap.getEdges();
 		assertEquals(3, sEdges.size());
 
@@ -359,7 +359,7 @@ public class TestExamples extends TestGeneric
 		}
 
 		// Salt vs. reference
-		ConsensusNetwork saltOverlap = networks.get("overlap_Reference_Salty");
+		ConsensusNetwork saltOverlap = networks.get("consensus_Reference_Salty");
 		Set<Edge> sEdgesS = saltOverlap.getEdges();
 		assertEquals(5, sEdgesS.size());
 
@@ -371,7 +371,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(saltOverlap, "M", "O", false, "phosphorylation", true, 1);
 
 		// Draught vs. reference
-		ConsensusNetwork draughtOverlap = networks.get("overlap_Draughty_Reference");
+		ConsensusNetwork draughtOverlap = networks.get("consensus_Draughty_Reference");
 		Set<Edge> sEdges = draughtOverlap.getEdges();
 		assertEquals(3, sEdges.size());
 
@@ -381,7 +381,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(draughtOverlap, "M", "N", false, "phosphorylation", false, 2);
 		
 		// Draught vs. reference
-		ConsensusNetwork draughtStressOverlap = networks.get("overlap_Draughty_Salty");
+		ConsensusNetwork draughtStressOverlap = networks.get("consensus_Draughty_Salty");
 		Set<Edge> sEdgesDS = draughtStressOverlap.getEdges();
 		assertEquals(5, sEdgesDS.size());	
 
@@ -429,7 +429,7 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "K", "J", false, "increases_ptm", false, 1);
 
 		// Testing the edges in the corresponding overlapping network
-		ConsensusNetwork sNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
 		assertEquals(5, sEdges.size());
 

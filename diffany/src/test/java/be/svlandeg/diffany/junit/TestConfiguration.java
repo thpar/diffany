@@ -123,7 +123,7 @@ public class TestConfiguration extends TestGeneric
 			DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 			assertEquals(8, dNetwork.getEdges().size());
 
-			ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
+			ConsensusNetwork oNetwork = pair.getConsensusNetwork();
 			assertEquals(3, oNetwork.getEdges().size());
 		}
 		else
@@ -227,9 +227,9 @@ public class TestConfiguration extends TestGeneric
 		diffcounts.put("diff_Salty", 11);
 
 		Map<String, Integer> overlapcounts = new HashMap<String, Integer>();
-		overlapcounts.put("overlap_Draughty_Reference", 3);
-		overlapcounts.put("overlap_Reference_Salty", 5);
-		overlapcounts.put("overlap_Draughty_Salty", 5);	
+		overlapcounts.put("consensus_Draughty_Reference", 3);
+		overlapcounts.put("consensus_Reference_Salty", 5);
+		overlapcounts.put("consensus_Draughty_Salty", 5);	
 
 		if (diff && overlap)
 		{
@@ -239,7 +239,7 @@ public class TestConfiguration extends TestGeneric
 				int countD = diffcounts.get(dNetwork.getName());
 				assertEquals(countD, dNetwork.getEdges().size());
 
-				ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
+				ConsensusNetwork oNetwork = pair.getConsensusNetwork();
 				int countO = overlapcounts.get(oNetwork.getName());
 				assertEquals(countO, oNetwork.getEdges().size());
 			}

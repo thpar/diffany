@@ -73,7 +73,7 @@ public class TestIO
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				
 		// The overlapping network (there should be only 1)
-		ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
+		ConsensusNetwork oNetwork = pair.getConsensusNetwork();
 		
 		NodeMapper nm = new DefaultNodeMapper();
 			

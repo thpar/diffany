@@ -244,7 +244,7 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected ConsensusNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
+	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String overlap_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, boolean minOperator)
 	{
 		ConsensusNetwork overlap = new ConsensusNetwork(overlap_name, ID, networks, nm);
 

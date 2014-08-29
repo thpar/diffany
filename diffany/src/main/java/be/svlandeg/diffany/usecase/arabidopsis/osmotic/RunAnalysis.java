@@ -70,7 +70,7 @@ public class RunAnalysis
 		
 		boolean selfInteractions = false;
 		boolean neighbours = true;
-		int min_neighbourcount = 1;
+		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
 		boolean addPPI = true;
 		boolean addReg = true;
 		boolean includeUnknownReg = false;
@@ -102,12 +102,12 @@ public class RunAnalysis
 		if (performStep2ToNetwork)
 		{
 			System.out.println("2. Transforming overexpression values into networks");
-			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount + " / addPPI " + addPPI 
+			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / addPPI " + addPPI 
 					+ " / addReg " + addReg + " / includeUnknownReg " + includeUnknownReg);
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, min_neighbourcount, addPPI, addReg, includeUnknownReg);
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, addPPI, addReg, includeUnknownReg);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -200,7 +200,7 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, int min_neighbourcount, boolean addPPI, boolean addReg, boolean includeUnknownReg) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, boolean addPPI, boolean addReg, boolean includeUnknownReg) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 
@@ -227,14 +227,16 @@ public class RunAnalysis
 
 			if (addPPI)
 			{
-				Set<Edge> PPIedges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount);
+				Set<Edge> PPIedges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours);
 				System.out.println("  Found " + PPIedges.size() + " PPIs");
 				edges.addAll(PPIedges);
 			}
 
 			if (addReg)
 			{
-				Set<Edge> regEdges = constr.readRegsByLocustags(nodes.keySet(), selfInteractions, neighbours, min_neighbourcount, includeUnknownReg);
+				// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
+				// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
+				Set<Edge> regEdges = constr.readRegsByLocustags(nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
 				System.out.println("  Found " + regEdges.size() + " regulations");
 				edges.addAll(regEdges);
 			}

@@ -118,22 +118,21 @@ public class NetworkConstruction
 	/**
 	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from 'cornetPPIDataFile'. 
 	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
-	 * to avoid including outliers in the networks
+	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
 	 * 
 	 * @param nodes the set of input nodes
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
-	 * @param includeNeighbours whether or not to include PPI neighbours of the original set
-	 * @param min_neighbourcount the minimal number of neighbours ('connectedness') which is required for a node to be include (put to 0 if this is not important)
+	 * @param includeNeighbours whether or not to include PPI neighbours of the original source set
 	 * 
 	 * @return the corresponding set of PPI edges
 	 * @throws URISyntaxException when the PPI datafile from CORNET can not be read properly
 	 * @throws IOException when the PPI datafile from CORNET can not be read properly
 	 */
-	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> origNodes = getNodesByID(nodes);
-		Map<String, Node> mappedNodes = new HashMap<String, Node>();
+		Map<String, Node> mappedNodes = getNodesByID(nodes);
+		Set<String> origLoci = getNodeIDs(nodes);
 
 		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetPPIDataFile);
 		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
@@ -141,15 +140,11 @@ public class NetworkConstruction
 		boolean symmetrical = true;
 		Set<String> ppisRead = new HashSet<String>();
 
-		// for each new neighbour, store its interaction partners from the original set of nodes, to check whether there are more than min_neighbourcount
-		Map<String, Set<String>> neighbourCounts = new HashMap<String, Set<String>>();
-
 		String line = reader.readLine();
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			@SuppressWarnings("unused")
-			String id = stok.nextToken();
+			stok.nextToken();  // String id = 
 			String locus1 = stok.nextToken().toLowerCase();
 			String locus2 = stok.nextToken().toLowerCase();
 			String type = stok.nextToken();
@@ -163,90 +158,11 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 
-				boolean foundL1 = origNodes.keySet().contains(locus1);
-				boolean foundL2 = origNodes.keySet().contains(locus2);
+				boolean foundL1 = origLoci.contains(locus1);
+				boolean foundL2 = origLoci.contains(locus2);
 
-				// include the interaction when both are in the nodeset
-				if (foundL1 && foundL2)
-				{
-					// include when the loci are different, or when self interactions are allowed
-					if (includeSelfInteractions || !locus1.equals(locus2))
-					{
-						Node source = origNodes.get(locus1);
-						Node target = origNodes.get(locus2);
-						mappedNodes.put(locus1, source);
-						mappedNodes.put(locus2, target);
-						Edge ppi = new Edge(type, source, target, symmetrical);
-						edges.add(ppi);
-					}
-				}
-				if (foundL1 && !foundL2)
-				{
-					if (!neighbourCounts.containsKey(locus2))
-					{
-						neighbourCounts.put(locus2, new HashSet<String>());
-					}
-					neighbourCounts.get(locus2).add(locus1);
-				}
-
-				if (foundL2 && !foundL1)
-				{
-					if (!neighbourCounts.containsKey(locus1))
-					{
-						neighbourCounts.put(locus1, new HashSet<String>());
-					}
-					neighbourCounts.get(locus1).add(locus2);
-				}
-			}
-			line = reader.readLine();
-		}
-		reader.close();
-
-		// Check which neighbours can be added to the network (when they are sufficiently connected)
-		Set<String> allowedNeighbours = new HashSet<String>();
-		if (includeNeighbours)
-		{
-			for (String neighbour : neighbourCounts.keySet())
-			{
-				if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
-				{
-					allowedNeighbours.add(neighbour);
-				}
-			}
-		}
-
-		// read a second time to include the proper neighbours
-		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
-
-		ppisRead = new HashSet<String>();
-
-		line = reader.readLine();
-		while (line != null)
-		{
-			StringTokenizer stok = new StringTokenizer(line, "\t");
-			@SuppressWarnings("unused")
-			String id = stok.nextToken();
-			String locus1 = stok.nextToken().toLowerCase();
-			String locus2 = stok.nextToken().toLowerCase();
-			String type = stok.nextToken();
-
-			String ppiRead = locus1 + locus2 + type;
-			String ppiReverseRead = locus2 + locus1 + type;
-
-			// avoid reading the same PPI twice
-			if (!ppisRead.contains(ppiRead) && !ppisRead.contains(ppiReverseRead))
-			{
-				ppisRead.add(ppiRead);
-				ppisRead.add(ppiReverseRead);
-
-				boolean foundL1 = origNodes.keySet().contains(locus1);
-				boolean foundL2 = origNodes.keySet().contains(locus2);
-
-				boolean neighbourL1 = allowedNeighbours.contains(locus1);
-				boolean neighbourL2 = allowedNeighbours.contains(locus2);
-
-				// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
-				if ((foundL1 && !foundL2 && neighbourL2) || (foundL2 && !foundL1 && neighbourL1))
+				// include the interaction when both are in the nodeset, or when one of the two is in the node set and neighbours can be included
+				if ((foundL1 && foundL2) || (foundL1 && includeNeighbours) || (foundL2 && includeNeighbours))
 				{
 					// include when the loci are different, or when self interactions are allowed
 					if (includeSelfInteractions || !locus1.equals(locus2))
@@ -274,7 +190,6 @@ public class NetworkConstruction
 							target = new Node(locus2, symbol, false);
 							mappedNodes.put(locus2, target);
 						}
-
 						Edge ppi = new Edge(type, source, target, symmetrical);
 						edges.add(ppi);
 					}
@@ -293,22 +208,25 @@ public class NetworkConstruction
 	 * to avoid including outliers in the networks.
 	 * This method can further remove unspecified regulations, which are not known to be repressors or activators.
 	 * 
-	 * @param nodes the set of input nodes
+	 * @param source_nodes the set of input source nodes
+	 * @param target_nodes the set of input source nodes
 	 * @param includeSelfInteractions whether or not to include self interactions
-	 * @param includeNeighbours whether or not to include neighbours (regulators/targets) of the original set
-	 * @param min_neighbourcount the minimal number of neighbours ('connectedness') which is required for a node to be include (put to 0 if this is not important)
+	 * @param includeNeighbourSources whether or not to include neighbour regulators of the original set
+	 * @param includeNeighbourTargets whether or not to include neighbour targets of the original set
 	 * @param includeUnknownPolarities whether or not to include regulatory associations for which we can not determine the polarity (up/down regulation)
 	 * 
 	 * @return the corresponding set of regulation edges
 	 * @throws URISyntaxException when the regulation datafile from CORNET can not be read properly
 	 * @throws IOException when the regulation datafile from CORNET can not be read properly
 	 */
-	@SuppressWarnings("unused")
-	public Set<Edge> readRegsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount, boolean includeUnknownPolarities) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> origNodes = getNodesByID(nodes);
-		Map<String, Node> mappedNodes = new HashMap<String, Node>();
+		Map<String, Node> mappedNodes = getNodesByID(source_nodes);
+		mappedNodes.putAll(getNodesByID(target_nodes));
+		
+		Set<String> origSourceLoci = getNodeIDs(source_nodes);	
+		Set<String> origTargetLoci = getNodeIDs(target_nodes);
 
 		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetRegDataFile);
 		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
@@ -316,22 +234,19 @@ public class NetworkConstruction
 		boolean symmetrical = false;
 		Set<String> regsRead = new HashSet<String>();
 
-		// for each new neighbour, store its interaction partners from the original set of nodes, to check whether there are more than min_neighbourcount
-		Map<String, Set<String>> neighbourCounts = new HashMap<String, Set<String>>();
-
 		String line = reader.readLine();
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String cause_symbol = stok.nextToken();
-			String cause_locus = stok.nextToken().toLowerCase();
-			String cause_family = stok.nextToken();
-			String target_symbol = stok.nextToken();
+			stok.nextToken();	// String source_symbol = 
+			String source_locus = stok.nextToken().toLowerCase();
+			stok.nextToken();	// String source_family = 
+			stok.nextToken();	// String target_symbol = 
 			String target_locus = stok.nextToken().toLowerCase();
-			String yesno = stok.nextToken();
-			String direct = stok.nextToken();
-			String confirmed = stok.nextToken();
-			String description = stok.nextToken();
+			stok.nextToken();	// String yesno = 
+			stok.nextToken();	// String direct = 
+			stok.nextToken();	// String confirmed = 
+			stok.nextToken();	// String description = 
 			String type = stok.nextToken().toLowerCase();
 
 			boolean include = true;
@@ -343,136 +258,33 @@ public class NetworkConstruction
 
 			if (include)
 			{
-				String regRead = cause_locus + target_locus + type;
+				String regRead = source_locus + target_locus + type;
 	
 				// avoid reading the same regulation twice
 				if (!regsRead.contains(regRead))
 				{
 					regsRead.add(regRead);
 	
-					boolean foundCause = origNodes.keySet().contains(cause_locus);
-					boolean foundTarget = origNodes.keySet().contains(target_locus);
+					boolean foundSource = origSourceLoci.contains(source_locus);
+					boolean foundTarget = origTargetLoci.contains(target_locus);
 	
 					// include the interaction when both are in the nodeset
-					if (foundCause && foundTarget)
+					if ((foundSource && foundTarget) || (foundSource && includeNeighbourTargets) || (foundTarget && includeNeighbourSources))
 					{
 						// include when the loci are different, or when self interactions are allowed
-						if (includeSelfInteractions || !cause_locus.equals(target_locus))
+						if (includeSelfInteractions || !source_locus.equals(target_locus))
 						{
-							Node source = origNodes.get(cause_locus);
-							Node target = origNodes.get(target_locus);
-							mappedNodes.put(cause_locus, source);
-							mappedNodes.put(target_locus, target);
-							Edge regulation = new Edge(type, source, target, symmetrical);
-							edges.add(regulation);
-						}
-					}
-					if (foundCause && !foundTarget)
-					{
-						if (!neighbourCounts.containsKey(target_locus))
-						{
-							neighbourCounts.put(target_locus, new HashSet<String>());
-						}
-						neighbourCounts.get(target_locus).add(cause_locus);
-					}
-	
-					if (foundTarget && !foundCause)
-					{
-						if (!neighbourCounts.containsKey(cause_locus))
-						{
-							neighbourCounts.put(cause_locus, new HashSet<String>());
-						}
-						neighbourCounts.get(cause_locus).add(target_locus);
-					}
-				}
-			}
-			line = reader.readLine();
-		}
-		reader.close();
-
-		// Check which neighbours can be added to the network (when they are sufficiently connected)
-		Set<String> allowedNeighbours = new HashSet<String>();
-		if (includeNeighbours)
-		{
-			for (String neighbour : neighbourCounts.keySet())
-			{
-				if (neighbourCounts.get(neighbour).size() >= min_neighbourcount)
-				{
-					allowedNeighbours.add(neighbour);
-				}
-			}
-		}
-
-		// read a second time to include the proper neighbours
-		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
-
-		regsRead = new HashSet<String>();
-		
-		line = reader.readLine();
-		while (line != null)
-		{
-			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String cause_symbol = stok.nextToken();
-			String cause_locus = stok.nextToken().toLowerCase();
-			String cause_family = stok.nextToken();
-			String target_symbol = stok.nextToken();
-			String target_locus = stok.nextToken().toLowerCase();
-			String yesno = stok.nextToken();
-			String direct = stok.nextToken();
-			String confirmed = stok.nextToken();
-			String description = stok.nextToken();
-			String type = stok.nextToken().toLowerCase();
-			String publication = stok.nextToken();
-			String experiment = "NA";
-			if (stok.hasMoreTokens())
-			{
-				experiment = stok.nextToken();
-			}
-			String pmid = "NA";
-			if (stok.hasMoreTokens())
-			{
-				pmid = stok.nextToken();
-			}
-			boolean include = true;
-			if (type.equals("unknown"))
-			{
-				type = "unknown_regulation";
-				include = includeUnknownPolarities;
-			}
-
-			if (include)
-			{
-				String regRead = cause_locus + target_locus + type;
-	
-				// avoid reading the same PPI twice
-				if (!regsRead.contains(regRead))
-				{
-					regsRead.add(regRead);
-	
-					boolean foundCause = origNodes.keySet().contains(cause_locus);
-					boolean foundTarget = origNodes.keySet().contains(target_locus);
-	
-					boolean neighbourCause = allowedNeighbours.contains(cause_locus);
-					boolean neighbourTarget = allowedNeighbours.contains(target_locus);
-	
-					// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
-					if ((foundCause && !foundTarget && neighbourTarget) || (foundTarget && !foundCause && neighbourCause))
-					{
-						// include when the loci are different, or when self interactions are allowed
-						if (includeSelfInteractions || !cause_locus.equals(target_locus))
-						{
-							Node source = mappedNodes.get(cause_locus);
+							Node source = mappedNodes.get(source_locus);
 							if (source == null)
 							{
-								String symbol = gp.getSymbolByLocusID(cause_locus);
+								String symbol = gp.getSymbolByLocusID(source_locus);
 								if (symbol == null)
 								{
-									symbol = cause_locus;
+									symbol = source_locus;
 								}
-								source = new Node(cause_locus, symbol, false);
-								mappedNodes.put(cause_locus, source);
+								source = new Node(source_locus, symbol, false);
+								mappedNodes.put(source_locus, source);
 							}
-	
 							Node target = mappedNodes.get(target_locus);
 							if (target == null)
 							{
@@ -484,25 +296,23 @@ public class NetworkConstruction
 								target = new Node(target_locus, symbol, false);
 								mappedNodes.put(target_locus, target);
 							}
-	
-							Edge reg = new Edge(type, source, target, symmetrical);
-							edges.add(reg);
+							mappedNodes.put(source_locus, source);
+							mappedNodes.put(target_locus, target);
+							Edge regulation = new Edge(type, source, target, symmetrical);
+							edges.add(regulation);
 						}
 					}
 				}
 			}
 			line = reader.readLine();
 		}
-		
 		reader.close();
 
 		return edges;
 	}
 
 	/**
-	 * TODO
-	 * @param nodes
-	 * @return
+	 * Retrieve a mapping of the given nodes by their IDs
 	 */
 	private Map<String, Node> getNodesByID(Set<Node> nodes)
 	{
@@ -512,6 +322,19 @@ public class NetworkConstruction
 			mappedNodes.put(n.getID(), n);
 		}
 		return mappedNodes;
+	}
+	
+	/**
+	 * Retrieve a mapping of the given nodes by their IDs
+	 */
+	private Set<String> getNodeIDs(Set<Node> nodes)
+	{
+		Set<String> IDs = new HashSet<String>();
+		for (Node n : nodes)
+		{
+			IDs.add(n.getID());
+		}
+		return IDs;
 	}
 
 }

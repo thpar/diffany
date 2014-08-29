@@ -23,13 +23,13 @@ public class DiffanyOptions
 	protected static String refShort = "ref";
 	protected static String conShort = "cond";
 	protected static String diffShort = "diff";
-	protected static String overlapShort = "overlap";
+	protected static String consensusShort = "consensus";
 
 	protected static String diffnameShort = "name";
 	protected static String cutoffShort = "conf";
 	
 	protected static String diffID = "diffID";
-	protected static String overlapID = "overlapID";
+	protected static String consensusID = "consensusID";
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -109,11 +109,11 @@ public class DiffanyOptions
 		allParameters.add(OptionBuilder.create(diffShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("overlappingDirectory");
+		OptionBuilder.withLongOpt("consensusDirectory");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
-		OptionBuilder.withDescription("the output directory which will contain the generated overlap network");
-		allParameters.add(OptionBuilder.create(overlapShort));
+		OptionBuilder.withDescription("the output directory which will contain the generated consensus network");
+		allParameters.add(OptionBuilder.create(consensusShort));
 
 		OptionBuilder.withLongOpt("networkOutputName");
 		OptionBuilder.hasArgs(1);
@@ -125,14 +125,14 @@ public class DiffanyOptions
 		OptionBuilder.withDescription("the ID of the generated differential network");
 		allParameters.add(OptionBuilder.create(diffID));
 		
-		OptionBuilder.withLongOpt("overlapID");
+		OptionBuilder.withLongOpt("consensusID");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the generated overlapping network");
-		allParameters.add(OptionBuilder.create(overlapID));
+		OptionBuilder.withDescription("the ID of the generated consensus network");
+		allParameters.add(OptionBuilder.create(consensusID));
 		
 		OptionBuilder.withLongOpt("confidenceMin");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the minimum confidence threshold for differential and overlap edges");
+		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges");
 		allParameters.add(OptionBuilder.create(cutoffShort));
 		
 		return allParameters;

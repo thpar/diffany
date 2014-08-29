@@ -14,36 +14,36 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.examples.FuzzyNetworks;
 
 /**
- * Class that automatically tests the outputs of some examples of 'fuzzy' overlap networks.
+ * Class that automatically tests the outputs of some examples of 'fuzzy' consensus networks.
  * 
  * @author Sofie Van Landeghem
  */
-public class TestFuzzyOverlap extends TestGeneric
+public class TestFuzzyConsensus extends TestGeneric
 {
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 4 out of 4 100%.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 4 out of 4 100%.
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_4()
+	public void testFuzzyConsensusWithReferenceAsCondition_4()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true);
 
-		// Testing that there is exactly one overlap network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -52,17 +52,17 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 4 (75%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 3 out of 4 (75%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_3()
+	public void testFuzzyConsensusWithReferenceAsCondition_3()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
 		
 		boolean exception = false;
@@ -78,14 +78,14 @@ public class TestFuzzyOverlap extends TestGeneric
 		
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	
 
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -96,29 +96,29 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 4 (75%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 3 out of 4 (75%).
 	 * Instead of the minimum operator, the maximum is used.
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_3_maxOperator()
+	public void testFuzzyConsensusWithReferenceAsCondition_3_maxOperator()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false);
 
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -129,28 +129,28 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 2 out of 4 (50%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 2 out of 4 (50%).
 	 * This method defines all input networks to be generic, i.e. there is not one specific reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_2()
+	public void testFuzzyConsensusWithReferenceAsCondition_2()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true);
 		
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(4, sEdges.size());
@@ -164,20 +164,20 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 1 out of 4 (25%).
-	 * This should throw an error, as the overlap factor should always be above 1 (i.e. at least 2).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 1 out of 4 (25%).
+	 * This should throw an error, as te support factor should always be above 1 (i.e. at least 2).
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_1()
+	public void testFuzzyConsensusWithReferenceAsCondition_1()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		Project p = ex.getProject();
-		int overlap_cutoff = 1;
+		int supportingCutoff = 1;
 		
 		boolean exception = false;
 		try 
 		{
-			ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+			ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -187,20 +187,20 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 0 out of 4 (0%). 
-	 * This should throw an error, as the overlap factor should always be above 1 (i.e. at least 2).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 0 out of 4 (0%). 
+	 * This should throw an error, as the supporting networks factor should always be above 1 (i.e. at least 2).
 	 */
 	@Test
-	public void testFuzzyOverlapWithReferenceAsCondition_0()
+	public void testFuzzyConsensusWithReferenceAsCondition_0()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		Project p = ex.getProject();
-		int overlap_cutoff = 0;
+		int supportingCutoff = 0;
 
 		boolean exception = false;
 		try
 		{
-			ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+			ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -210,17 +210,17 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 4.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 4.
 	 * This should throw an error, as there are only 3 input networks.
 	 */
 	@Test
-	public void testFuzzyOverlapWithoutReference_4()
+	public void testFuzzyConsensusWithoutReference_4()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, false);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
 		boolean exception = false;
 		try
@@ -235,28 +235,28 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 3 (100%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 3 out of 3 (100%).
 	 * This method uses only the condition-specific networks, all cast as generic input networks.
 	 */
 	@Test
-	public void testFuzzyOverlapWithoutReference_3()
+	public void testFuzzyConsensusWithoutReference_3()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, false);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	
 
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -265,29 +265,29 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 3 out of 3 (100%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 3 out of 3 (100%).
 	 * Instead of the minimum operator, the maximum is used.
 	 * This method uses only the condition-specific networks, all cast as generic input networks.
 	 */
 	@Test
-	public void testFuzzyOverlapWithoutReference_3_maxOperator()
+	public void testFuzzyConsensusWithoutReference_3_maxOperator()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, false);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false);
 
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -296,28 +296,28 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness overlap factor 2 out of 3 (67%).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results with fuzziness supporting networks factor 2 out of 3 (67%).
 	 * This method uses only the condition-specific networks, all cast as generic input networks.
 	 */
 	@Test
-	public void testFuzzyOverlapWithoutReference_2()
+	public void testFuzzyConsensusWithoutReference_2()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, false);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true);
 		
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(4, sEdges.size());
@@ -332,28 +332,28 @@ public class TestFuzzyOverlap extends TestGeneric
 
 
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness supporting networks factor.
 	 * This method defines one of the networks to be a reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReference_4()
+	public void testFuzzyConsensusWithReference_4()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
 
-		// Testing that there is exactly one differential network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(1, sEdges.size());
@@ -362,28 +362,28 @@ public class TestFuzzyOverlap extends TestGeneric
 	}
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness supporting networks factor.
 	 * This method defines one of the networks to be a reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReference_3()
+	public void testFuzzyConsensusWithReference_3()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
 
-		// Testing that there is exactly one overlap network created
+		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -395,28 +395,28 @@ public class TestFuzzyOverlap extends TestGeneric
 
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness supporting networks factor.
 	 * This method defines one of the networks to be a reference network.
 	 */
 	@Test
-	public void testFuzzyOverlapWithReference_2()
+	public void testFuzzyConsensusWithReference_2()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
-		assertNrOverlapNetworks(output, 1);
+		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = output.getOverlappingNetworks().iterator().next();
+		// Testing the edges in the consensus network
+		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
 		assertEquals(3, sEdges.size());
@@ -428,19 +428,19 @@ public class TestFuzzyOverlap extends TestGeneric
 
 	
 	/**
-	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness overlap factor.
-	 * This should throw an error, as the overlap factor should always be above 1 (i.e. at least 2).
+	 * JUNIT Test: check whether the example network with multiple conditions produces correct results when varying the fuzziness supporting networks factor.
+	 * This should throw an error, as the consensus factor should always be above 1 (i.e. at least 2).
 	 */
 	@Test
-	public void testFuzzyOverlapWithReference_1()
+	public void testFuzzyConsensusWithReference_1()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		Project p = ex.getProject();
-		int overlap_cutoff = 1;
+		int supportingCutoff = 1;
 		boolean exception = false;
 		try
 		{
-			ex.getTestConfigurationWithReference(p, overlap_cutoff);
+			ex.getTestConfigurationWithReference(p, supportingCutoff);
 		}
 		catch (IllegalArgumentException e)
 		{

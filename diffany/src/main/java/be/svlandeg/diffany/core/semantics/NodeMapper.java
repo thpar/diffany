@@ -94,7 +94,7 @@ public abstract class NodeMapper
 	}
 
 	/**
-	 * Define all equal nodes in a set of networks, creating non-overlapping sets of nodes.
+	 * Define all equal nodes in a set of networks, creating disjoint sets of nodes.
 	 * 
 	 * @param networks all input networks
 	 * @return all equal nodes grouped in sets

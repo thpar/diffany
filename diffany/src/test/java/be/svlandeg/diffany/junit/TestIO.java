@@ -46,12 +46,12 @@ public class TestIO
 		File rDir = new File(testLocation + "reference/");
 		File cDir = new File(testLocation + "condition/");
 		File dDir = new File(testLocation + "differential/");
-		File oDir = new File(testLocation + "overlap/");
+		File consDir = new File(testLocation + "consensus/");
 		
 		rDir.mkdirs();
 		cDir.mkdirs();
 		dDir.mkdirs();
-		oDir.mkdirs();
+		consDir.mkdirs();
 		
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
 		Project p = ex.getProjectFigure1C();
@@ -72,8 +72,8 @@ public class TestIO
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 				
-		// The overlapping network (there should be only 1)
-		ConsensusNetwork oNetwork = pair.getOverlappingNetwork();
+		// The consensus network (there should be only 1)
+		ConsensusNetwork cNetwork = pair.getConsensusNetwork();
 		
 		NodeMapper nm = new DefaultNodeMapper();
 			
@@ -85,7 +85,7 @@ public class TestIO
 			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir, allowVirtualEdges, writeHeader);
 			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir, allowVirtualEdges, writeHeader);
 			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir, allowVirtualEdges, writeHeader);
-			NetworkIO.writeNetworkToDir(oNetwork, nm, oDir, allowVirtualEdges, writeHeader);
+			NetworkIO.writeNetworkToDir(cNetwork, nm, consDir, allowVirtualEdges, writeHeader);
 		}
 		catch(IOException io)
 		{
@@ -110,9 +110,9 @@ public class TestIO
 			assertEquals(3, dReadNetwork.getEdges().size());
 			assertEquals(4, dReadNetwork.getNodes().size());
 			
-			ConsensusNetwork oReadNetwork = NetworkIO.readOverlappingNetworkFromDir(oDir, nm, rReadNetwork, cReadNetworks, writeHeader);
-			assertEquals(2, oReadNetwork.getEdges().size());
-			assertEquals(3, oReadNetwork.getNodes().size());
+			ConsensusNetwork consReadNetwork = NetworkIO.readConsensusNetworkFromDir(consDir, nm, rReadNetwork, cReadNetworks, writeHeader);
+			assertEquals(2, consReadNetwork.getEdges().size());
+			assertEquals(3, consReadNetwork.getNodes().size());
 		}
 		catch(IOException io)
 		{

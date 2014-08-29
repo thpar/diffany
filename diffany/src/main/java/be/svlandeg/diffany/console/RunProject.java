@@ -55,7 +55,7 @@ public class RunProject
 
 		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
 		int diffID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.diffID));
-		int overlapID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.overlapID));
+		int consensusID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.consensusID));
 
 		double cutoff = diffAlgo.default_weight_cutoff;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
@@ -76,13 +76,13 @@ public class RunProject
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
 		// TODO v2.0: allow to change mode
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, overlapID, cutoff, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true);
 		
 		// TODO v2.0: check number of differential networks generated
 		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		ConsensusNetwork overlapNet = pair.getOverlappingNetwork();
+		ConsensusNetwork consensusNet = pair.getConsensusNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;
@@ -92,9 +92,9 @@ public class RunProject
 		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
 		l.log("Writing the differential network to " + diffDir);
 
-		File overlapDir = getRequiredDir(cmd, DiffanyOptions.overlapShort);
-		NetworkIO.writeNetworkToDir(overlapNet, nm, overlapDir, writeHeaders, allowVirtualEdges);
-		l.log("Writing the overlap network to " + overlapDir);
+		File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
+		NetworkIO.writeNetworkToDir(consensusNet, nm, consensusDir, writeHeaders, allowVirtualEdges);
+		l.log("Writing the consensus network to " + consensusDir);
 		
 		l.log("Done !");
 

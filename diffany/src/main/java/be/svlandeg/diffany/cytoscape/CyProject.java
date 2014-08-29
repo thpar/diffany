@@ -35,19 +35,19 @@ import be.svlandeg.diffany.cytoscape.internal.Services;
 public class CyProject{
 	
 	/**
-	 * Internal class to link a differential network to its overlap counterpart.
+	 * Internal class to link a differential network to its consensus counterpart.
 	 * A pair is not necessary complete. If only one of both has been generated, the counterpart will be null.
 	 * 
 	 * @author Thomas Van Parys
 	 *
 	 */
 	public class CyNetworkPair{
-		public CyNetworkPair(CyNetwork diffNet, CyNetwork overlapNet) {
+		public CyNetworkPair(CyNetwork diffNet, CyNetwork consensusNet) {
 			this.diffNet = diffNet;
-			this.overlapNet = overlapNet;
+			this.consensusNet = consensusNet;
 		}
 		public CyNetwork diffNet;
-		public CyNetwork overlapNet;
+		public CyNetwork consensusNet;
 	}
 	
 	//currently selected networks. These are used to update the VisualStyles and
@@ -128,15 +128,15 @@ public class CyProject{
 	}
 
 	/**
-	 * Add a resulting differential network, paired with an overlap network to this project.
+	 * Add a resulting differential network, paired with an consensus network to this project.
 	 * Registration with the {@link Project} is not needed as this should already be aware of the structure
 	 * of output networks.
 	 * 
 	 * @param cyDiffNet
-	 * @param cyOverlapNet
+	 * @param cyConsensusNet
 	 */
-	private void addResultPair(CyNetwork cyDiffNet, CyNetwork cyOverlapNet) {
-		this.resultNetworks.add(new CyNetworkPair(cyDiffNet, cyOverlapNet));
+	private void addResultPair(CyNetwork cyDiffNet, CyNetwork cyConsensusNet) {
+		this.resultNetworks.add(new CyNetworkPair(cyDiffNet, cyConsensusNet));
 	}
 	
 	/**
@@ -164,7 +164,7 @@ public class CyProject{
 			}
 			runConfigID = project.addRunConfiguration(refNet, condNets);
 			
-		} else if (model.isGenerateOverlapNets()) {
+		} else if (model.isGenerateConsensusNets()) {
 			Set<InputNetwork> inputNetworks = new HashSet<InputNetwork>();
 			
 			//model might still mark one network as reference, if one was selected already. Treat it as input network in this configuration
@@ -180,7 +180,7 @@ public class CyProject{
 			runConfigID = project.addRunConfiguration(inputNetworks);
 			
 		} else {
-			//if we're not generating diffs or overlaps, then what are we doing here?
+			//if we're not generating diff or consensus networks, then what are we doing here?
 			throw new InvalidRunConfigurationException();
 		}
 
@@ -202,7 +202,7 @@ public class CyProject{
 	public boolean canExecute(Model model){
 		if (model.isGenerateDiffNets()){
 			return this.referenceNetwork!=null && !this.conditionalNetworks.isEmpty();			
-		} else if (model.isGenerateOverlapNets()){
+		} else if (model.isGenerateConsensusNets()){
 			int numberOfNetworks = this.conditionalNetworks.size();
 			if (this.referenceNetwork!=null){
 				numberOfNetworks+=1;
@@ -283,7 +283,7 @@ public class CyProject{
 	/**
 	 * Returns all {@link CyNetwork}s in this project. This includes the reference network, 
 	 * the list of conditional networks and the generated (or loaded) differential networks and their
-	 * overlap counterparts.
+	 * consensus counterparts.
 	 * 
 	 * @return all {@link CyNetwork}s in this project, regardless of type.
 	 */
@@ -299,8 +299,8 @@ public class CyProject{
 			if (netPair.diffNet != null){
 				networks.add(netPair.diffNet);				
 			}
-			if (netPair.overlapNet!=null){
-				networks.add(netPair.overlapNet);				
+			if (netPair.consensusNet!=null){
+				networks.add(netPair.consensusNet);				
 			}
 		}
 		return networks;
@@ -308,7 +308,7 @@ public class CyProject{
 	
 	/**
 	 * Returns all {@link CyNetwork}s in this project currently used as source. 
-	 * This includes the reference network, the list of conditional networks and the generated (or loaded) overlap networks
+	 * This includes the reference network, the list of conditional networks and the generated (or loaded) consensus networks
 	 *  
 	 * @return all {@link CyNetwork}s in this project, used as source.
 	 */
@@ -321,8 +321,8 @@ public class CyProject{
 			networks.add(conNet);
 		}
 		for (CyNetworkPair netPair : this.resultNetworks){
-			if (netPair.overlapNet !=null){
-				networks.add(netPair.overlapNet);				
+			if (netPair.consensusNet !=null){
+				networks.add(netPair.consensusNet);				
 			}
 		}
 		return networks;
@@ -343,7 +343,7 @@ public class CyProject{
 		return networks;
 	}
 	/**
-	 * Returns all {@link CyNetworkView}s that correspond to the source networks (reference, conditional and overlap) in this project.
+	 * Returns all {@link CyNetworkView}s that correspond to the source networks (reference, conditional and consensus) in this project.
 	 * @param services the collection of Cytoscape services.
 	 * @return all {@link CyNetworkView}s that correspond to the networks in this project.
 	 */
@@ -482,7 +482,7 @@ public class CyProject{
 
 	/**
 	 * Updates this {@link CyProject} after a run.
-	 * After running a {@link RunConfiguration}, the newly generated differential and overlap networks
+	 * After running a {@link RunConfiguration}, the newly generated differential and consensus networks
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProject}
 	 */
 	public void update(Services services) {
@@ -500,13 +500,13 @@ public class CyProject{
 	 */
 	private void addDifferentialNetworks(RunOutput runOutput, Services services) {
 		Set<DifferentialNetwork> addedDiffNets = new HashSet<DifferentialNetwork>();
-		Set<ConsensusNetwork> addedOverlapNets = new HashSet<ConsensusNetwork>();
+		Set<ConsensusNetwork> addedConsensusNets = new HashSet<ConsensusNetwork>();
 		
 		for (OutputNetworkPair pair: runOutput.getOutputAsPairs()){
 			DifferentialNetwork differentialNetwork = pair.getDifferentialNetwork();
-			ConsensusNetwork consensusNetwork = pair.getOverlappingNetwork();
+			ConsensusNetwork consensusNetwork = pair.getConsensusNetwork();
 			addedDiffNets.add(differentialNetwork);
-			addedOverlapNets.add(consensusNetwork);
+			addedConsensusNets.add(consensusNetwork);
 			
 			//add the diffnet
 			CyNetwork cyDiffNet = null; 
@@ -514,13 +514,13 @@ public class CyProject{
 				cyDiffNet = CyNetworkBridge.addCyNetwork(differentialNetwork, this.collection, services);				
 			}
 				
-			//add the overlap
-			CyNetwork cyOverlapNet = null;
+			//add the consensus net
+			CyNetwork cyConsensusNet = null;
 			if (consensusNetwork != null){
-				cyOverlapNet = CyNetworkBridge.addCyNetwork(consensusNetwork, this.collection, services);				
+				cyConsensusNet = CyNetworkBridge.addCyNetwork(consensusNetwork, this.collection, services);				
 			}
 				
-			this.addResultPair(cyDiffNet, cyOverlapNet);
+			this.addResultPair(cyDiffNet, cyConsensusNet);
 		}
 		
 		//add differential networks that were not added as a pair
@@ -531,11 +531,11 @@ public class CyProject{
 			}
 		}
 		
-		//add overlapping networks that were not added as a pair
-		for (ConsensusNetwork overlapNet : runOutput.getOverlappingNetworks()){
-			if (!addedOverlapNets.contains(overlapNet)){
-				CyNetwork cyOverlapNet = CyNetworkBridge.addCyNetwork(overlapNet, this.collection, services);
-				this.addResultPair(null, cyOverlapNet);
+		//add consensus networks that were not added as a pair
+		for (ConsensusNetwork consensusNet : runOutput.getConsensusNetworks()){
+			if (!addedConsensusNets.contains(consensusNet)){
+				CyNetwork cyConsensusNet = CyNetworkBridge.addCyNetwork(consensusNet, this.collection, services);
+				this.addResultPair(null, cyConsensusNet);
 			}
 		}
 	}

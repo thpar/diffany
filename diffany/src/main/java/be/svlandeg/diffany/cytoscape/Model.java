@@ -91,7 +91,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
 	
 	private boolean generateDiffNets = true;
-	private boolean generateOverlapNets = true;
+	private boolean generateConsensusNets = true;
 
 	private double cutoff = 0;
 
@@ -292,14 +292,14 @@ public class Model extends Observable implements NetworkAddedListener,
 
 
 
-	public boolean isGenerateOverlapNets() {
-		return generateOverlapNets;
+	public boolean isGenerateConsensusNets() {
+		return generateConsensusNets;
 	}
 
 
 
-	public void setGenerateOverlapNets(boolean generateOverlapNets) {
-		this.generateOverlapNets = generateOverlapNets;
+	public void setGenerateConsensusNets(boolean generateConsensusNets) {
+		this.generateConsensusNets = generateConsensusNets;
 		setChanged();
 		notifyObservers();
 	}

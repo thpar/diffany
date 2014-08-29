@@ -6,11 +6,11 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 
 /**
- * An overlapping network is the counterpart of a differential network: containing everything but the differential edges 
- * between 2 (or more) networks, an overlapping network stores the overlap or common edges between them.
+ * A consensus network is the counterpart of a differential network: containing everything but the differential edges 
+ * between 2 (or more) networks, a consensus network stores the consensus or common edges between them.
  * Such a network may be useful to study 'house-keeping' interactions.
  * 
- * In contrast to a differential network, an overlappingnetwork can also be between two condition-specific networks 
+ * In contrast to a differential network, a consensus network can also be between two condition-specific networks 
  * and doesn't necessarily need a reference network.
  * 
  * @author Sofie Van Landeghem
@@ -21,7 +21,7 @@ public class ConsensusNetwork extends Network
 	protected Set<Network> originalNetworks;
 
 	/**
-	 * Create a new overlapping network, referring to the original networks it was created from.
+	 * Create a new consensus network, referring to the original networks it was created from.
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
@@ -44,7 +44,7 @@ public class ConsensusNetwork extends Network
 	@Override
 	public String getStringRepresentation()
 	{
-		String result = name + ": overlapping network between ";
+		String result = name + ": consensus network between ";
 		for (Network n : originalNetworks)
 		{
 			result += n.getName() + " / ";

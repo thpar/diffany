@@ -69,7 +69,7 @@ public class MultipleConditionTest extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestOverlapConfiguration(Project p)
+	public int getTestConsensusConfiguration(Project p)
 	{
 		Set<InputNetwork> i = new HashSet<InputNetwork>();
 		i.addAll(getTestConditions());
@@ -253,11 +253,11 @@ public class MultipleConditionTest extends GenericExample
 		System.out.println(" **************************************************************** ");
 		System.out.println(" ");
 		
-		System.out.println("Calculating pairwise overlap networks at cutoff " + cutoff);
+		System.out.println("Calculating pairwise consensus networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, false, true);
 		
 		System.out.println("");
-		ex.printAllOverlapNetworks(p, ID_diff);
+		ex.printAllConsensusNetworks(p, ID_diff);
 		*/
 		
 	}

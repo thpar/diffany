@@ -2,7 +2,7 @@ package be.svlandeg.diffany.core.networks;
 
 
 /**
- * This class simply contains one differential network and its corresponding overlapping network.
+ * This class simply contains one differential network and its corresponding consensus network.
  * 
  * @author Sofie Van Landeghem
  */
@@ -10,24 +10,24 @@ public class OutputNetworkPair
 {
 	
 	private DifferentialNetwork dn;
-	private ConsensusNetwork on;
+	private ConsensusNetwork cn;
 	
 	/**
-	 * Create a new pair from one specific differential network and its corresponding overlap network. Neither of the two networks may be null!
+	 * Create a new pair from one specific differential network and its counterpart consensus network. Neither of the two networks may be null!
      *
 	 * @param dn the differential network
-	 * @param on the overlap network
+	 * @param cn the consensus network
 	 * @throws IllegalArgumentException when either of the provided networks is null
 	 */
-	public OutputNetworkPair(DifferentialNetwork dn, ConsensusNetwork on)
+	public OutputNetworkPair(DifferentialNetwork dn, ConsensusNetwork cn)
 	{
-		if (dn == null || on == null)
+		if (dn == null || cn == null)
 		{
 			String errormsg = "The networks in the output network pair can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.dn = dn;
-		this.on = on;
+		this.cn = cn;
 	}
 	
 	/**
@@ -40,12 +40,12 @@ public class OutputNetworkPair
 	}
 	
 	/**
-	 * Retrieve the overlapping network
-	 * @return the overlapping network
+	 * Retrieve the consensus network
+	 * @return the consensus network
 	 */
-	public ConsensusNetwork getOverlappingNetwork()
+	public ConsensusNetwork getConsensusNetwork()
 	{
-		return on;
+		return cn;
 	}
 
 }

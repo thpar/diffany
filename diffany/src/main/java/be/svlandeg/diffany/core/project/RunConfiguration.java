@@ -10,7 +10,7 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
  * A RunConfiguration defines the necessary networks needed as input for the Diffany algorithms,
  * and should always be used in the context of a bigger {@link Project}.
  * 
- * This configuration can be used to calculate overlap networks, but differential networks can only be calculated with a RunDiffConfiguration object.
+ * This configuration can be used to calculate consensus networks, but differential networks can only be calculated with a RunDiffConfiguration object.
  * 
  * A runconfiguration object should not change after construction!
  * 
@@ -20,28 +20,28 @@ public class RunConfiguration
 {
 	
 	protected Set<InputNetwork> inputNetworks;
-	protected int overlapNo_cutoff;
+	protected int supportCutoff;
 	protected boolean refRequired;
 	
 	
 	/**
-	 * Create a new configuration with a set of input networks. The required overlap cutoff is by default set to the size of this set.
+	 * Create a new configuration with a set of input networks and a required supportCutoff (between 2 and the size of the network set).
 	 * The output result set is initialized to be empty.
 	 * 
 	 * @param inputNetworks the input networks (not null or empty!)
-	 * @param overlapNo_cutoff the number of input networks that need to overlap to be included in the overlapping network
-	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network
+	 * @param supportCutoff the number of input networks that need to support an edge for it to be included in the consensus network
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public RunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff, boolean refRequired)
+	public RunConfiguration(Set<InputNetwork> inputNetworks, int supportCutoff, boolean refRequired)
 	{
 		setInputs(inputNetworks);
-		setOverlapCutoff(overlapNo_cutoff);
+		setSupportCutoff(supportCutoff);
 		setRefRequired(refRequired);
 	}
 	
 	/**
-	 * Create a new configuration with a set of input networks and a required overlap cutoff (between 2 and the size of the network set).
+	 * Create a new configuration with a set of input networks. The required support cutoff is by default set to the size of this set. 
 	 * The output result set is initialized to be empty.
 	 * 
 	 * @param inputNetworks the input networks (not null or empty!)
@@ -69,7 +69,7 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Alter the fact whether or not the reference network needs to have an edge for it to be allowed inclusion in the overlap network.
+	 * Alter the fact whether or not the reference network needs to have an edge for it to be allowed inclusion in the consensus network.
 	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
 	 * @param refRequired the new boolean state
@@ -80,7 +80,7 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Retrieve whether or not the reference network needs to have an edge for it to be allowed inclusion in the overlap network
+	 * Retrieve whether or not the reference network needs to have an edge for it to be allowed inclusion in the consensus network
 	 * @return the value of the refRequired
 	 */
 	public boolean getRefRequired()
@@ -89,31 +89,31 @@ public class RunConfiguration
 	}
 	
 	/**
-	 * Alter the required number of overlapping edges needed before the edge will be present in the overlap network.
+	 * Alter the required number of supporting networks needed before an edge will be present in the consensus network.
 	 * By design, this is not meant to be a public method because the configuration should not change after construction.
 	 * 
-	 * @param overlapNo_cutoff the new cutoff
+	 * @param supportCutoff the new cutoff
 	 */
-	protected void setOverlapCutoff(int overlapNo_cutoff)
+	protected void setSupportCutoff(int supportCutoff)
 	{
-		if (overlapNo_cutoff < 2)
+		if (supportCutoff < 2)
 		{
-			String errormsg = "The overlap cutoff should at least be 2!";
+			String errormsg = "The support cutoff should at least be 2!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		this.overlapNo_cutoff = overlapNo_cutoff;
+		this.supportCutoff = supportCutoff;
 	}
 	
 	/**
-	 * Return the required number of overlapping edges needed before the edge will be present in the overlap network.
+	 * Return the required number of supporting networks needed before the edge will be present in the consensus network.
 	 * When a differential network is being calculated, this threshold is reduced by one (reference network) to get 
 	 * the required representation of the condition-dependent networks
 	 * 
-	 * @return the minimal number of required overlapping edges, which is the size of the input set unless specifically stated otherwise
+	 * @return the minimal number of required networks for consensus edges, which is the size of the input set unless specifically defined otherwise.
 	 */
-	public int getOverlapCutoff()
+	public int getSupportCutoff()
 	{
-		return overlapNo_cutoff;
+		return supportCutoff;
 	}
 	
 	/**

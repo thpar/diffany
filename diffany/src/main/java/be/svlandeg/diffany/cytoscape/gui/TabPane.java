@@ -62,7 +62,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private final String COLLECTION_ACTION = "collection";
 	private final String MODE_ACTION = "mode";
 	private final String GENERATE_DIFF_ACTION = "generate differential networks";
-	private final String GENERATE_OVERLAP_ACTION = "generate overlap networks";
+	private final String GENERATE_CONSENSUS_ACTION = "generate consensus networks";
 	
 	private JButton runButton;
 	private JButton updateVizButton;
@@ -223,11 +223,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		generateDiffNetCheckBox.setSelected(model.isGenerateDiffNets());
 		outputSelectionPanel.add(generateDiffNetCheckBox);
 		
-		JCheckBox generateOverlapNetCheckBox = new JCheckBox("Overlap networks");
-		generateOverlapNetCheckBox.setActionCommand(GENERATE_OVERLAP_ACTION);
-		generateOverlapNetCheckBox.addActionListener(this);
-		generateOverlapNetCheckBox.setSelected(model.isGenerateOverlapNets());
-		outputSelectionPanel.add(generateOverlapNetCheckBox);
+		JCheckBox generateConsensusNetCheckBox = new JCheckBox("Consensus networks");
+		generateConsensusNetCheckBox.setActionCommand(GENERATE_CONSENSUS_ACTION);
+		generateConsensusNetCheckBox.addActionListener(this);
+		generateConsensusNetCheckBox.setSelected(model.isGenerateConsensusNets());
+		outputSelectionPanel.add(generateConsensusNetCheckBox);
 		
 		optionPanel.add(outputSelectionPanel);
 		
@@ -301,9 +301,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		} else if (action.equals(GENERATE_DIFF_ACTION)){
 			JCheckBox cb = (JCheckBox)e.getSource();
 			model.setGenerateDiffNets(cb.isSelected());
-		} else if (action.equals(GENERATE_OVERLAP_ACTION)){
+		} else if (action.equals(GENERATE_CONSENSUS_ACTION)){
 			JCheckBox cb = (JCheckBox)e.getSource();
-			model.setGenerateOverlapNets(cb.isSelected());
+			model.setGenerateConsensusNets(cb.isSelected());
 		}
 	}
 

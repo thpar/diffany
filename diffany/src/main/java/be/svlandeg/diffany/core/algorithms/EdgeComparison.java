@@ -213,7 +213,7 @@ public class EdgeComparison
 	 * Further define the type, symmetry and negation status of the new edge.
 	 * If the weight cutoff is not reached, an empty map will be returned
 	 */
-	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight_min, double weight_max, boolean minOperator)
+	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int supportingCutoff, double weight_min, double weight_max, boolean minOperator)
 	{
 		Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
 		
@@ -236,14 +236,14 @@ public class EdgeComparison
 					supports.addAll(currentSupport);
 					accumulatedSupport += currentSupport.size();
 
-					if ((accumulatedSupport >= overlapNo_cutoff))
+					if ((accumulatedSupport >= supportingCutoff))
 					{
-						EdgeDefinition overlap_edge = eg.getDefaultEdge();
-						overlap_edge.makeSymmetrical(final_symm);
-						overlap_edge.makeNegated(negation);
-						overlap_edge.setType(inter.type);
-						overlap_edge.setWeight(highestW);
-						map.put(overlap_edge, new HashSet<Integer>(supports));
+						EdgeDefinition consensusEdge = eg.getDefaultEdge();
+						consensusEdge.makeSymmetrical(final_symm);
+						consensusEdge.makeNegated(negation);
+						consensusEdge.setType(inter.type);
+						consensusEdge.setWeight(highestW);
+						map.put(consensusEdge, new HashSet<Integer>(supports));
 					}
 				}
 			}
@@ -260,14 +260,14 @@ public class EdgeComparison
 				supports.addAll(currentSupport);
 				accumulatedSupport += currentSupport.size();
 
-				if ((accumulatedSupport >= overlapNo_cutoff))
+				if ((accumulatedSupport >= supportingCutoff))
 				{
-					EdgeDefinition overlap_edge = eg.getDefaultEdge();
-					overlap_edge.makeSymmetrical(final_symm);
-					overlap_edge.makeNegated(negation);
-					overlap_edge.setType(inter.type);
-					overlap_edge.setWeight(w);
-					map.put(overlap_edge, new HashSet<Integer>(supports));
+					EdgeDefinition consensusEdge = eg.getDefaultEdge();
+					consensusEdge.makeSymmetrical(final_symm);
+					consensusEdge.makeNegated(negation);
+					consensusEdge.setType(inter.type);
+					consensusEdge.setWeight(w);
+					map.put(consensusEdge, new HashSet<Integer>(supports));
 				}
 			}
 		}
@@ -280,7 +280,7 @@ public class EdgeComparison
 	 * 
 	 * Further define the type, symmetry and negation status of the new edge
 	 */
-	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int overlapNo_cutoff, double weight)
+	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int supportingCutoff, double weight)
 	{
 		Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
 				
@@ -291,14 +291,14 @@ public class EdgeComparison
 			size = currentSupport.size();
 		}
 
-		if (size >= overlapNo_cutoff)
+		if (size >= supportingCutoff)
 		{
-			EdgeDefinition overlap_edge = eg.getDefaultEdge();
-			overlap_edge.makeSymmetrical(final_symm);
-			overlap_edge.makeNegated(negation);
-			overlap_edge.setType(inter.type);
-			overlap_edge.setWeight(weight);
-			map.put(overlap_edge, new HashSet<Integer>(currentSupport));
+			EdgeDefinition consensusEdge = eg.getDefaultEdge();
+			consensusEdge.makeSymmetrical(final_symm);
+			consensusEdge.makeNegated(negation);
+			consensusEdge.setType(inter.type);
+			consensusEdge.setWeight(weight);
+			map.put(consensusEdge, new HashSet<Integer>(currentSupport));
 		}
 		return map;
 	}
@@ -307,21 +307,21 @@ public class EdgeComparison
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.
 	 * Returns EdgeDefinition.getVoidEdge() when the edge should be deleted (i.e. not present in differential network).
 	 * 
-	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the consensus condition network. If it equals the number of input networks, all networks need to agree on an edge.
+	 * An important parameter is supportingCutoff, which determines the amount of support needed for an edge to be included in the consensus condition network. If it equals the number of input networks, all networks need to agree on an edge.
 	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' condition network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust differential networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
+	 * The supportingCutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param refEdge the edge definition in the reference network (can be a EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param conEdges the edge definitions in the condition-specific networks (can be EdgeDefinition.getVoidEdge() when non-existing)
 	 * @param supports the network IDs which support the corresponding conEdges
-	 * @param weight_cutoff the minimal weight of a resulting edge for it to be included in the differential network
-	 * @param overlapNo_cutoff the minimal number of condition networks (inclusive) that need to have the overlap for it to result to a differential edge
+	 * @param weightCutoff the minimal weight of a resulting edge for it to be included in the differential network
+	 * @param supportingCutoff the minimal number of condition networks (inclusive) that need to have the consensus for it to result to a differential edge
 	 * 
 	 * @return the edge definition in the differential network, or EdgeDefinition.getVoidEdge() when there should be no such edge (never null).
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, List<EdgeDefinition> conEdges, List<Set<Integer>> supports, int overlapNo_cutoff, double weight_cutoff) throws IllegalArgumentException
+	public EdgeDefinition getDifferentialEdge(EdgeDefinition refEdge, List<EdgeDefinition> conEdges, List<Set<Integer>> supports, int supportingCutoff, double weightCutoff) throws IllegalArgumentException
 	{
 		if (conEdges == null || conEdges.isEmpty())
 		{
@@ -408,23 +408,23 @@ public class EdgeComparison
 			addEdgeToTree(e, support, con_results, null);
 		}
 
-		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE CONSENSUS OVERLAP RESULTS  //
+		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE CONSENSUS RESULTS  //
 
-		Set<EdgeDefinition> overlaps_all = new HashSet<EdgeDefinition>();
-		Set<EdgeDefinition> overlaps_clean = new HashSet<EdgeDefinition>();
+		Set<EdgeDefinition> consensusAll = new HashSet<EdgeDefinition>();
+		Set<EdgeDefinition> consensusClean = new HashSet<EdgeDefinition>();
 
 		for (String cat : teo.getAllSourceCategories(true))
 		{
 			IntermediateComparison con_result = con_results.get(cat);
-			if (con_result != null && con_result.getTotalSupport() >= overlapNo_cutoff)
+			if (con_result != null && con_result.getTotalSupport() >= supportingCutoff)
 			{
 				// all edges with weight below the reference weight: take the maximum of the condition edges to determine the minimal consensus decrease
-				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, Double.NEGATIVE_INFINITY, refWeight, false);
+				Map<EdgeDefinition, Set<Integer>> map_below = createAllEdges(con_result, final_symm, false, supportingCutoff, Double.NEGATIVE_INFINITY, refWeight, false);
 				
 				// all edges with weight above the reference weight: take the minimum of the condition edges to determine the minimal consensus increase
-				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight, Double.POSITIVE_INFINITY, true);
+				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, supportingCutoff, refWeight, Double.POSITIVE_INFINITY, true);
 				
-				Map<EdgeDefinition, Set<Integer>> map_same = createAllEdges(con_result, final_symm, false, overlapNo_cutoff, refWeight);
+				Map<EdgeDefinition, Set<Integer>> map_same = createAllEdges(con_result, final_symm, false, supportingCutoff, refWeight);
 				
 				if (map_below.isEmpty() && map_above.isEmpty())
 				{
@@ -448,77 +448,77 @@ public class EdgeComparison
 				// keep only the consensus condition edge with the highest weight (below threshold)
 				else if (!map_below.isEmpty())
 				{
-					for (EdgeDefinition overlap_edge : map_below.keySet())
+					for (EdgeDefinition consensusEedge : map_below.keySet())
 					{
-						overlaps_all.add(overlap_edge);
+						consensusAll.add(consensusEedge);
 					}
 				}
 				// keep only the consensus condition edge with the highest weight (above threshold)
 				else if (!map_above.isEmpty())
 				{
-					for (EdgeDefinition overlap_edge : map_above.keySet())
+					for (EdgeDefinition consensusEedge : map_above.keySet())
 					{
-						overlaps_all.add(overlap_edge);
+						consensusAll.add(consensusEedge);
 					}
 				}
 			}
 		}
 
 		double max = Double.NEGATIVE_INFINITY;
-		for (EdgeDefinition overlap_edge : overlaps_all)
+		for (EdgeDefinition consensusEedge : consensusAll)
 		{
-			max = Math.max(max, overlap_edge.getWeight());
+			max = Math.max(max, consensusEedge.getWeight());
 		}
 		if (max > 0)
 		{
-			for (EdgeDefinition overlap_edge : overlaps_all)
+			for (EdgeDefinition consensusEedge : consensusAll)
 			{
-				if (overlap_edge.getWeight() == max)
+				if (consensusEedge.getWeight() == max)
 				{
-					overlaps_clean.add(overlap_edge);
+					consensusClean.add(consensusEedge);
 				}
 			}
 		}
 
-		if (overlaps_clean.size() == 0)
+		if (consensusClean.size() == 0)
 		{
-			overlaps_clean.add(eg.getVoidEdge(final_symm));
+			consensusClean.add(eg.getVoidEdge(final_symm));
 		}
 		// take the most specific condition category
-		while (overlaps_clean.size() > 1)
+		while (consensusClean.size() > 1)
 		{
 			// TODO: this sometimes generates an infinite loop!!!
 
-			Iterator<EdgeDefinition> it = overlaps_clean.iterator();
+			Iterator<EdgeDefinition> it = consensusClean.iterator();
 			EdgeDefinition consensusEdge0 = it.next();
 			EdgeDefinition consensusEdge1 = it.next();
 
 			// we copy all edges, except for the possible "child" or "parent"
-			Set<EdgeDefinition> newOverlaps = new HashSet<EdgeDefinition>();
+			Set<EdgeDefinition> newEdges = new HashSet<EdgeDefinition>();
 			while (it.hasNext())
 			{
-				newOverlaps.add(it.next());
+				newEdges.add(it.next());
 			}
 
 			if (teo.isSourceCatChildOf(consensusEdge0.getType(), consensusEdge1.getType()) >= 0)
 			{
 				// we only add the child (or equal) to the new list
-				newOverlaps.add(consensusEdge0);
+				newEdges.add(consensusEdge0);
 			}
 			else if (teo.isSourceCatChildOf(consensusEdge1.getType(), consensusEdge0.getType()) > 0)
 			{
 				// we only add the child to the new list
-				newOverlaps.add(consensusEdge1);
+				newEdges.add(consensusEdge1);
 			}
 			else
 			{
-				newOverlaps.add(consensusEdge0);
-				newOverlaps.add(consensusEdge1);
+				newEdges.add(consensusEdge0);
+				newEdges.add(consensusEdge1);
 			}
-			overlaps_clean = newOverlaps;
+			consensusClean = newEdges;
 		}
 
-		EdgeDefinition consensusConEdge = overlaps_clean.iterator().next();
+		EdgeDefinition consensusConEdge = consensusClean.iterator().next();
 
 		double conWeight = consensusConEdge.getWeight();
 
@@ -636,7 +636,7 @@ public class EdgeComparison
 				unspecified = true;
 			}
 		}
-		if (finalDiffWeight <= weight_cutoff)
+		if (finalDiffWeight <= weightCutoff)
 		{
 			return eg.getVoidEdge(final_symm);
 		}
@@ -676,26 +676,26 @@ public class EdgeComparison
 	}
 
 	/**
-	 * Method that defines the overlapping edge from the corresponding edge categories in the reference and condition-specific networks.
-	 * Returns an empty set when the edge should be deleted (i.e. not present in the overlapping network).
+	 * Method that defines the consensus edge from the corresponding edge categories in the reference and condition-specific networks.
+	 * Returns an empty set when the edge should be deleted (i.e. not present in the consensus network).
 	 * 
-	 * An important parameter is overlapNo_cutoff, which determines the amount of support needed for an edge to be included in the overlap network. If it equals the number of input networks, all networks need to agree on an edge.
-	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust overlap networks.
-	 * The overlapNo_cutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
+	 * An important parameter is supportingCutoff, which determines the amount of support needed for an edge to be included in the consensus network. If it equals the number of input networks, all networks need to agree on an edge.
+	 * However, if it is smaller, e.g. 3 out of 4, there can be one 'outlier' network (potentially a different one for each calculated edge), allowing some noise in the input and creating more robust consensus networks.
+	 * The supportingCutoff should ideally be somewhere between 50% and 100%, but this choice is determined by the specific use-case / application. Instead of being a percentage, this method requires the support to be expressed
 	 * as a minimal number of supporting edges (networks).
 	 * 
 	 * @param edges the original edge definitions (should not be null or empty!)
 	 * @param supports the network IDs which support the corresponding edges in the other list 
-	 * @param overlapNo_cutoff the minimal number of networks (inclusive) that need to have the overlap for it to be included
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
 	 * 
-	 * @return the edge definitions in the overlapping network, or an empty set, but never null
+	 * @return the edge definitions in the consensus network, or an empty set, but never null
 	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
 	 */
-	public Map<EdgeDefinition, Set<Integer>> getOverlapEdge(List<EdgeDefinition> edges, List<Set<Integer>> supports, int overlapNo_cutoff, double weight_cutoff, boolean minOperator) throws IllegalArgumentException
+	public Map<EdgeDefinition, Set<Integer>> getConsensusEdge(List<EdgeDefinition> edges, List<Set<Integer>> supports, int supportingCutoff, double weightCutoff, boolean minOperator) throws IllegalArgumentException
 	{
-		Map<EdgeDefinition, Set<Integer>> overlaps = new HashMap<EdgeDefinition, Set<Integer>>();
+		Map<EdgeDefinition, Set<Integer>> consensusEdges = new HashMap<EdgeDefinition, Set<Integer>>();
 
 		if (edges == null || edges.isEmpty())
 		{
@@ -740,46 +740,46 @@ public class EdgeComparison
 			addEdgeToTree(e, support, affirmative_results, negated_results);
 		}
 
-		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE RESULTS, USING THE OVERLAP NO CUTOFF PARAMETER //
+		// 2. GO THROUGH THE WHOLE ONTOLOGY TREE AND COLLECT THE RESULTS, USING THE SUPPORT CUTOFF PARAMETER //
 
 		for (String cat : teo.getAllSourceCategories(true))
 		{
 			IntermediateComparison aff_result = affirmative_results.get(cat);
 			boolean aff = false;
-			if (aff_result != null && aff_result.getTotalSupport() >= overlapNo_cutoff)
+			if (aff_result != null && aff_result.getTotalSupport() >= supportingCutoff)
 			{
 				aff = true;
 			}
 
 			IntermediateComparison neg_result = negated_results.get(cat);
 			boolean neg = false;
-			if (neg_result != null && neg_result.getTotalSupport() >= overlapNo_cutoff)
+			if (neg_result != null && neg_result.getTotalSupport() >= supportingCutoff)
 			{
 				neg = true;
 			}
 
 			if (aff)
 			{
-				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(aff_result, final_symm, false, overlapNo_cutoff, weight_cutoff, Double.POSITIVE_INFINITY, minOperator);
+				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(aff_result, final_symm, false, supportingCutoff, weightCutoff, Double.POSITIVE_INFINITY, minOperator);
 
-				for (EdgeDefinition overlap_edge : map.keySet())
+				for (EdgeDefinition consensusEdge : map.keySet())
 				{
-					Set<Integer> theseSupports = map.get(overlap_edge);
-					overlaps.put(overlap_edge, theseSupports);
+					Set<Integer> theseSupports = map.get(consensusEdge);
+					consensusEdges.put(consensusEdge, theseSupports);
 				}
 			}
 			if (neg)
 			{
-				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(neg_result, final_symm, true, overlapNo_cutoff, weight_cutoff, Double.POSITIVE_INFINITY, minOperator);
-				for (EdgeDefinition overlap_edge : map.keySet())
+				Map<EdgeDefinition, Set<Integer>> map = createAllEdges(neg_result, final_symm, true, supportingCutoff, weightCutoff, Double.POSITIVE_INFINITY, minOperator);
+				for (EdgeDefinition consensusEdge : map.keySet())
 				{
-					Set<Integer> theseSupports = map.get(overlap_edge);
-					overlaps.put(overlap_edge, theseSupports);
+					Set<Integer> theseSupports = map.get(consensusEdge);
+					consensusEdges.put(consensusEdge, theseSupports);
 				}
 			}
 		}
 
-		return overlaps;
+		return consensusEdges;
 	}
 
 }

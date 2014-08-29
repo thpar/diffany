@@ -16,7 +16,7 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.examples.FuzzyNetworks2;
 
 /** 
- * This class provides examples to benchmark the fuzzy overlap & differential functionality, varying overlap cutoffs and min/max operators.  
+ * This class provides examples to benchmark the fuzzy consensus & differential functionality, varying consensus cutoffs and min/max operators.  
  * 
  * @author Sofie Van Landeghem
  */
@@ -32,8 +32,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true);
 
@@ -49,11 +49,11 @@ public class TestFuzzyBoth extends TestGeneric
 		assertEquals(1, dEdges.size());
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 0.4); 
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cn.getEdges();
+		assertEquals(1, cEdges.size());
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 0.4); 
 	}
 	
 	/**
@@ -65,8 +65,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 4;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 4;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false);
 
@@ -82,11 +82,11 @@ public class TestFuzzyBoth extends TestGeneric
 		assertEquals(1, dEdges.size());
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
-		assertEquals(1, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cn.getEdges();
+		assertEquals(1, cEdges.size());
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 1.2); 
 	}
 	
 	/**
@@ -98,8 +98,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true);
 
@@ -116,12 +116,12 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "A", "B", true, "decrease_ppi", false, 0.2); 
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
-		assertEquals(2, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 0.6); 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 4); 
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cn.getEdges();
+		assertEquals(2, cEdges.size());
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 0.6); 
+		assertAnEdge(cn, "X", "Y", false, "regulation", false, 4); 
 	}
 	
 	/**
@@ -133,8 +133,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 3;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 3;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false);
 
@@ -151,12 +151,12 @@ public class TestFuzzyBoth extends TestGeneric
 		assertAnEdge(dn, "A", "B", true, "decrease_ppi", false, 0.2);
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
-		assertEquals(2, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 11); 
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cn.getEdges();
+		assertEquals(2, cEdges.size());
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 1.2); 
+		assertAnEdge(cn, "X", "Y", false, "regulation", false, 11); 
 	}
 	
 	/**
@@ -168,8 +168,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true);
 
@@ -185,12 +185,12 @@ public class TestFuzzyBoth extends TestGeneric
 		assertEquals(1, dEdges.size());
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
-		assertEquals(2, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 0.8); 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 6); 
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> cEdges = cn.getEdges();
+		assertEquals(2, cEdges.size());
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 0.8); 
+		assertAnEdge(cn, "X", "Y", false, "regulation", false, 6); 
 	}
 	
 	/**
@@ -202,8 +202,8 @@ public class TestFuzzyBoth extends TestGeneric
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfiguration(p, overlap_cutoff);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfiguration(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false);
 
@@ -219,11 +219,11 @@ public class TestFuzzyBoth extends TestGeneric
 		assertEquals(1, dEdges.size());
 		assertAnEdge(dn, "X", "Y", false, "decreases_regulation", false, 5); 
 		
-		// Testing the edges in the overlap network
-		ConsensusNetwork on = pair.getOverlappingNetwork();
-		Set<Edge> oEdges = on.getEdges();
+		// Testing the edges in the consensus network
+		ConsensusNetwork cn = pair.getConsensusNetwork();
+		Set<Edge> oEdges = cn.getEdges();
 		assertEquals(2, oEdges.size());
-		assertAnEdge(on, "A", "B", true, "ppi", false, 1.2); 
-		assertAnEdge(on, "X", "Y", false, "regulation", false, 11); 
+		assertAnEdge(cn, "A", "B", true, "ppi", false, 1.2); 
+		assertAnEdge(cn, "X", "Y", false, "regulation", false, 11); 
 	}
 }

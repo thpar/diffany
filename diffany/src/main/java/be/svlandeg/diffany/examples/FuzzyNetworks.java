@@ -21,7 +21,7 @@ import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
- * This class provides examples to benchmark the fuzzy overlap functionality.  
+ * This class provides examples to benchmark the fuzzy consensus functionality.  
  * Specifically, different interaction types, weights and negation states are mixed.
  * 
  * @author Sofie Van Landeghem
@@ -54,17 +54,17 @@ public class FuzzyNetworks extends GenericExample
 	/**
 	 * Add some custom-defined networks to the project: 1 reference network and 3 condition-specific.
 	 * @param p the fuzzy project
-	 * @param overlapCutoff the cutoff for overlap %
+	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfigurationWithReference(Project p, int overlapCutoff)
+	public int getTestConfigurationWithReference(Project p, int supportingCutoff)
 	{
 		ReferenceNetwork r = getReference();
 		Set<ConditionNetwork> c = new HashSet<ConditionNetwork>();
 		c.add(getCondition1());
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(r, c, overlapCutoff);
+		int ID = p.addRunConfiguration(r, c, supportingCutoff);
 		return ID;
 	}
 	
@@ -72,11 +72,11 @@ public class FuzzyNetworks extends GenericExample
 	 * Add some custom-defined networks to the project: 4 condition-specific networks, no reference.
 	 * 
 	 * @param p the fuzzy project
-	 * @param overlapCutoff the cutoff for overlap %
+	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @param refAsCond whether or not to include the reference network as "condition 0". If not, only 3 input networks are used.
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfigurationWithoutReference(Project p, int overlapCutoff, boolean refAsCond)
+	public int getTestConfigurationWithoutReference(Project p, int supportingCutoff, boolean refAsCond)
 	{
 		Set<InputNetwork> c = new HashSet<InputNetwork>();
 		if (refAsCond)
@@ -86,7 +86,7 @@ public class FuzzyNetworks extends GenericExample
 		c.add(getCondition1());	
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(c, overlapCutoff, false);
+		int ID = p.addRunConfiguration(c, supportingCutoff, false);
 		return ID;
 	}
 
@@ -248,7 +248,7 @@ public class FuzzyNetworks extends GenericExample
 	
 
 	/**
-	 * Testing the example using console output (use TestFuzzyOverlap for the JUnit version!)
+	 * Testing the example using console output (use TestFuzzyConsensus for the JUnit version!)
 	 * @param args (ignored) argument list
 	 */
 	public static void main(String[] args)
@@ -258,19 +258,19 @@ public class FuzzyNetworks extends GenericExample
 		
 		System.out.println("Defining network for FuzzyNetworks configuration");
 		Project p = ex.getProject();
-		int overlap_cutoff = 2;
-		int ID = ex.getTestConfigurationWithReference(p, overlap_cutoff);
-		//int ID = ex.getTestConfigurationWithoutReference(p, overlap_cutoff, true);
+		int supportingCutoff = 2;
+		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
+		//int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 		
-		System.out.print("Calculating 1-all overlap network at weight cutoff " + weight_cutoff);
-		System.out.println(" and overlap cutoff " + overlap_cutoff);
+		System.out.print("Calculating 1-all consensus network at weight cutoff " + weight_cutoff);
+		System.out.println(" and supporting networks cutoff " + supportingCutoff);
 		
-		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	// overlap, no diff
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true);	// diff, no overlap
+		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	// consensus, no diff
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true);	// diff, no consensus
 		
 		System.out.println("");
-		//ex.printAllNetworks(p, ID, false, true, false);	// overlap, no diff
-		ex.printAllNetworks(p, ID, false, false, true);	// diff, no overlap
+		//ex.printAllNetworks(p, ID, false, true, false);	// consensus, no diff
+		ex.printAllNetworks(p, ID, false, false, true);	// diff, no consensus
 		
 		System.out.println("Log:");
 		Logger logger = p.getLogger(ID);

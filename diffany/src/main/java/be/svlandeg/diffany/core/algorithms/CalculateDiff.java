@@ -34,7 +34,7 @@ public class CalculateDiff
 
 	public double default_weight_cutoff = 0.0;
 	protected static String diffnameprefix = "diff_";
-	protected static String overlapnameprefix = "overlap_";
+	protected static String consensusnameprefix = "consensus_";
 
 	public enum RunMode
 	{
@@ -54,7 +54,7 @@ public class CalculateDiff
 	/**
 	 * Initialize the algorithm, depending on the mode parameter.
 	 * 
-	 * @param mode the mode with which overlap/differential algorithms will be calculated.
+	 * @param mode the mode with which consensus/differential algorithms will be calculated.
 	 */
 	public CalculateDiff(RunMode mode)
 	{
@@ -64,39 +64,39 @@ public class CalculateDiff
 	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND MULTIPLE CONDITION-SPECIFIC NETWORKS  //////////////
 
 	/**
-	 * Calculate the overlapping network for a set of input networks (at least 2).
+	 * Calculate the consensus network for a set of input networks (at least 2).
 	 * 
 	 * @param networks a set of networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param overlapping_name the name to give to the overlapping network
+	 * @param consensus_name the name to give to the consensus network
 	 * @param ID the unique identifier of the resulting network
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
-	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network.
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param log the logger that records logging messages
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum
 	 * 
-	 * @return the overlapping network between all input networks
+	 * @return the consensus network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	private ConsensusNetwork calculateOverlappingNetwork(Set<Network> networks, TreeEdgeOntology eo,
-			NodeMapper nm, String overlapping_name, int ID, int overlapNo_cutoff, boolean refRequired, double weight_cutoff, Logger log, boolean minOperator) throws IllegalArgumentException
+	private ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo,
+			NodeMapper nm, String consensus_name, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, Logger log, boolean minOperator) throws IllegalArgumentException
 	{
-		if (networks == null || networks.isEmpty() || eo == null || nm == null || overlapping_name == null)
+		if (networks == null || networks.isEmpty() || eo == null || nm == null || consensus_name == null)
 		{
-			String errormsg = "Found null parameter in calculateOverlappingNetwork!";
+			String errormsg = "Found null parameter in calculateConsensusNetwork!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (overlapNo_cutoff <= 0 || overlapNo_cutoff > networks.size())
+		if (supportingCutoff <= 0 || supportingCutoff > networks.size())
 		{
-			String errormsg = "The overlapNo_cutoff (" + overlapNo_cutoff + ") should be between 0 (excl) and the number of input networks (incl, " + networks.size() + ")";
+			String errormsg = "The number of supportingCutoff (" + supportingCutoff + ") should be between 0 (excl) and the number of input networks (incl, " + networks.size() + ")";
 			throw new IllegalArgumentException(errormsg);
 		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			ConsensusNetwork on = new EdgeByEdge(log).calculateOverlappingNetwork(networks, eo, nm, overlapping_name, ID, overlapNo_cutoff, refRequired, weight_cutoff, minOperator);
-			new NetworkCleaning(log).fullOverlapOutputCleaning(on, eo);
+			ConsensusNetwork on = new EdgeByEdge(log).calculateConsensusNetwork(networks, eo, nm, consensus_name, ID, supportingCutoff, refRequired, weightCutoff, minOperator);
+			new NetworkCleaning(log).fullConsensusOutputCleaning(on, eo);
 			return on;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -106,7 +106,6 @@ public class CalculateDiff
 
 	/**
 	 * Calculate the differential network between the reference and a set of condition-specific networks.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
 	 * 
 	 * @param reference the reference network
 	 * @param conditions a set of condition-specific networks (at least 1)
@@ -114,15 +113,15 @@ public class CalculateDiff
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diff_name the name to give to the differential network
 	 * @param ID the unique identifier of the resulting network
-	 * @param overlapNo_cutoff the minimal number of edges that need to overlap
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param log the logger that records logging messages
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
-			NodeMapper nm, String diff_name, int ID, int overlapNo_cutoff, double weight_cutoff, Logger log) throws IllegalArgumentException
+			NodeMapper nm, String diff_name, int ID, int supportingCutoff, double weightCutoff, Logger log) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || nm == null || diff_name == null)
 		{
@@ -132,7 +131,7 @@ public class CalculateDiff
 
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, overlapNo_cutoff, weight_cutoff);
+			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, supportingCutoff, weightCutoff);
 			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn);
 			return dn;
 		}
@@ -142,21 +141,21 @@ public class CalculateDiff
 	
 
 	/**
-	 * Calculate the differential network and/or the 'overlapping' or 'house-keeping' interactions, starting from a predefined runconfiguration in a project.
+	 * Calculate the differential network and/or the consensus interactions, starting from a predefined runconfiguration in a project.
 	 * 
 	 * The calculated differential networks are added to the project directly, after cleaning previous output first.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diff_name the name to give to the differential network. The overlapping network will get this name + the prefix 'overlap_'
+	 * @param diff_name the name to give to the differential network. The consensus network will get this name + the prefix 'consensus_'
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
-	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the consensus network
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int overlap_ID, double weight_cutoff, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int consensus_ID, double weight_cutoff, Boolean minOperator) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
@@ -167,7 +166,7 @@ public class CalculateDiff
 		output.clean();
 		
 		DifferentialNetwork diff = null;
-		ConsensusNetwork on = null;
+		ConsensusNetwork cn = null;
 		
 		if (minOperator == null)
 		{
@@ -184,41 +183,41 @@ public class CalculateDiff
 			RunDiffConfiguration drc = (RunDiffConfiguration) rc;
 			ReferenceNetwork r = drc.getReferenceNetwork();
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
-			log.log("Calculating the differential and overlap network between " + r.getName() + " and "
+			log.log("Calculating the differential and consensus network between " + r.getName() + " and "
 					+ cs.size() + " condition-dependent network(s)");
-			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, diff_ID, rc.getOverlapCutoff()-1, weight_cutoff, log);
+			diff = calculateDiffNetwork(r, cs, eo, nm, diff_name, diff_ID, rc.getSupportCutoff()-1, weight_cutoff, log);
 		}
 		
-		if (overlap_ID >= 0)
+		if (consensus_ID >= 0)
 		{
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
-			String overlapping_name = overlapnameprefix + diff_name;
-			log.log("Calculating the overlap network between " + inputs.size() + " input network(s)");
-			on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, overlap_ID, rc.getOverlapCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator);
+			String consensus_name = consensusnameprefix + diff_name;
+			log.log("Calculating the consensus network between " + inputs.size() + " input network(s)");
+			cn = calculateConsensusNetwork(inputs, eo, nm, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator);
 		}
 		
-		if (diff != null && on != null)
+		if (diff != null && cn != null)
 		{
-			output.addPair(new OutputNetworkPair(diff, on));
+			output.addPair(new OutputNetworkPair(diff, cn));
 		}
 		else if (diff != null)
 		{
 			output.addDifferential(diff);
 		}
-		else if (on != null)
+		else if (cn != null)
 		{
-			output.addOverlap(on);
+			output.addConsensus(cn);
 		}
 		log.log("Done!");
 	}
 
 	/**
-	 * Calculate the differential network between the reference and a set of condition-specific networks, as well as the
-	 * the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
+	 * Calculate the differential network between the reference and a set of condition-specific networks, 
+	 * as well as the counterpart consensus interactions as a related ConsensusNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
+	 * The name of the corresponding consensus network will get an additional prefix 'consensus_' at the end.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * The calculated differential networks and the logger object are added are added to the project directly.
@@ -227,23 +226,23 @@ public class CalculateDiff
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
-	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int overlap_ID, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int consensus_ID, Boolean minOperator) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, overlap_ID, default_weight_cutoff, minOperator);
+		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, default_weight_cutoff, minOperator);
 	}
 
 	/**
 	 * Calculate the differential network between the reference and a set of condition-specific networks.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object.
+	 * Adds the consensus interactions as a related ConsensusNetwork object.
 	 * 
 	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_' at the end.
+	 * The name of the corresponding consensus network will get an additional prefix 'consensus_' at the end.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * The calculated differential networks and the logger object are added are added to the project directly.
@@ -251,17 +250,17 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
-	 * @param overlap_ID the unique identifier of the resulting overlapping network (or negative when it should not be calculated)
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, double weight_cutoff, int diff_ID, int overlap_ID, Boolean minOperator) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, double weightCutoff, int diff_ID, int consensus_ID, Boolean minOperator) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, overlap_ID, weight_cutoff, minOperator);
+		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, weightCutoff, minOperator);
 	}
 
 	
@@ -270,10 +269,10 @@ public class CalculateDiff
 	
 	/**
 	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
-	 * Adds the 'overlapping' or 'house-keeping' interactions as a related ConsensusNetwork object for each differential network.
+	 * Adds the consensus interactions as a related ConsensusNetwork object for each differential network.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
-	 * The name of the corresponding overlapping network will get an additional prefix 'overlap_'.
+	 * The name of the corresponding consensus network will get an additional prefix 'consensus_'.
 	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
 	 * 
 	 * All calculated differential networks and the logger object are added to the project directly.
@@ -282,38 +281,38 @@ public class CalculateDiff
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
 	 * @param diffNetwork whether or not to calculate differential networks
-	 * @param overlapNetwork whether or not to calculate overlapping networks
+	 * @param consensusNetwork whether or not to calculate consensus networks
 	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean overlapNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
 	{
-		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, overlapNetwork, firstID, minOperator);
+		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, consensusNetwork, firstID, minOperator);
 	}
 
 	/**
-	 * Calculate all pairwise differential networks and/or overlapping networks between the reference and each condition-specific network in the project.
-	 * The overlap cutoff will always be 2, and will thus not be queried from the corresponding RunConfiguration object.
+	 * Calculate all pairwise differential networks and/or consensus networks between the reference and each condition-specific network in the project.
+	 * The required number of supporting networks will always be 2, and will thus not be queried from the corresponding RunConfiguration object.
 	 * 
 	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
-	 * The name of the overlapping networks will be prefix 'overlap_' + the two names of the networks.
+	 * The name of the consensus networks will be prefix 'consensus_' + the two names of the networks.
 	 * 
 	 * All calculated differential networks and the logger object are added to the project directly.
 	 * The logger object and the output result will first be cleaned.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the overlapping network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param diffNetwork whether or not to calculate a differential network
-	 * @param overlapNetwork whether or not to calculate an overlapping network
+	 * @param consensusNetwork whether or not to calculate a consensus network
 	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate overlap, otherwise the maximum. If null, default settings will resort to min
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weight_cutoff, boolean diffNetwork, boolean overlapNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weightCutoff, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		NodeMapper nm = p.getNodeMapper();
@@ -342,27 +341,27 @@ public class CalculateDiff
 			for (ConditionNetwork c : cs)
 			{
 				String diff_name = diffnameprefix + c.getName();
-				log.log("Calculating the differential and overlap network between " + r.getName() + " and " + c.getName());
+				log.log("Calculating the differential and consensus network between " + r.getName() + " and " + c.getName());
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
-				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, 1, weight_cutoff, log);
+				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, nm, diff_name, firstID++, 1, weightCutoff, log);
 				
 				ConsensusNetwork on = null;
 				
-				if (overlapNetwork)
+				if (consensusNetwork)
 				{
-					// create an overlapping name with consistent alphabetical ordering of the network names
-					String overlapping_name = overlapnameprefix + r.getName() + "_" + c.getName();
+					// create a consensus name with consistent alphabetical ordering of the network names
+					String consensus_name = consensusnameprefix + r.getName() + "_" + c.getName();
 					
 					if (c.getName().compareTo(r.getName()) < 0)
 					{
-						overlapping_name = overlapnameprefix + c.getName() + "_" + r.getName();
+						consensus_name = consensusnameprefix + c.getName() + "_" + r.getName();
 					}
 					
 					Set<Network> inputs = new HashSet<Network>();
 					inputs.add(r);
 					inputs.add(c);
-					on = calculateOverlappingNetwork(inputs, eo, nm, overlapping_name, firstID++, 2, true, weight_cutoff, log, minOperator);
+					on = calculateConsensusNetwork(inputs, eo, nm, consensus_name, firstID++, 2, true, weightCutoff, log, minOperator);
 				}
 				
 				if (on != null)
@@ -375,7 +374,7 @@ public class CalculateDiff
 				}
 			}
 		}
-		else if (overlapNetwork)
+		else if (consensusNetwork)
 		{
 			List<InputNetwork> inputs = new ArrayList<InputNetwork>(rc.getInputNetworks());
 			for (int i = 0; i < inputs.size(); i++)
@@ -385,21 +384,21 @@ public class CalculateDiff
 				{
 					InputNetwork n2 = inputs.get(j);
 					
-					log.log("Calculating the overlap network between " + n1.getName() + " and " + n2.getName());
+					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName());
 					
-					// create an overlapping name with consistent alphabetical ordering of the network names
-					String overlapping_name = overlapnameprefix + n1.getName() + "_" + n2.getName();
+					// create a consensus name with consistent alphabetical ordering of the network names
+					String consensus_name = consensusnameprefix + n1.getName() + "_" + n2.getName();
 					if (n2.getName().compareTo(n1.getName()) < 0)
 					{
-						overlapping_name = overlapnameprefix + n2.getName() + "_" + n1.getName();
+						consensus_name = consensusnameprefix + n2.getName() + "_" + n1.getName();
 					}
 					
 					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
-					ConsensusNetwork on = calculateOverlappingNetwork(twoInputs, eo, nm, overlapping_name, firstID++, 2, false, weight_cutoff, log, minOperator);
+					ConsensusNetwork cn = calculateConsensusNetwork(twoInputs, eo, nm, consensus_name, firstID++, 2, false, weightCutoff, log, minOperator);
 					
-					output.addOverlap(on);
+					output.addConsensus(cn);
 				}
 			}
 		}

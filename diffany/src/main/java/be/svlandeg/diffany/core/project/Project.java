@@ -121,9 +121,9 @@ public class Project
 	
 	/**
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
-	 * This configuration will allow the calculation of both differential and overlapping networks.
+	 * This configuration will allow the calculation of both differential and consensus networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
-	 * This option will use the default requirement of all networks having an overlapping edge before it can be include in the OverlapNetwork.
+	 * This option will use the default requirement of all networks having a consensus edge before it can be include in the ConsensusNetwork.
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
@@ -137,17 +137,17 @@ public class Project
 	
 	/**
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
-	 * This configuration will allow the calculation of both differential and overlapping networks.
+	 * This configuration will allow the calculation of both differential and consensus networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
-	 * @param overlapNo_cutoff the number of networks that should at least match for overlap to be defined: min. 2, max conditions.size + 1.
+	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 * @throws IllegalArgumentException when the IDs of the provided networks are not unique
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int overlapNo_cutoff)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the reference and condition-specific network(s) ");
@@ -163,7 +163,7 @@ public class Project
 			cleanConditions.add(cleanCon);
 		}
 		
-		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions, overlapNo_cutoff);
+		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
 		
 		int nextID = runs.size();
 		Run run = new Run(this, nextID, rc, true, logger);
@@ -182,9 +182,9 @@ public class Project
 	
 	/**
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
-	 * This configuration will NOT be able to calculate differential networks; only overlapping networks.
+	 * This configuration will NOT be able to calculate differential networks; only consensus networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
-	 * This option will use the default requirement of all networks having an overlapping edge before it can be include in the OverlapNetwork.
+	 * This option will use the default requirement of all networks having a consensus edge before it can be include in the ConsensusNetwork.
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * 
@@ -197,16 +197,16 @@ public class Project
 	
 	/**
 	 * Add a new RunConfiguration to this project, automatically registering the networks to this project.
-	 * This configuration will NOT be able to calculate differential networks; only overlapping networks.
+	 * This configuration will NOT be able to calculate differential networks; only consensus networks.
 	 * There is NO check whether or not this configuration was added previously, it will simply be duplicated with a new ID!
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
-	 * @param overlapNo_cutoff the required number of input networks that need to match for an overlap edge to be present
-	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the overlap network
+	 * @param supportingCutoff the required number of input networks that need to match for a consensus edge to be present
+	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int overlapNo_cutoff, boolean refRequired)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int supportingCutoff, boolean refRequired)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
@@ -219,7 +219,7 @@ public class Project
 			cleanNetworks.add(cleanNet);
 		}
 		
-		RunConfiguration rc = new RunConfiguration(cleanNetworks, overlapNo_cutoff, refRequired);
+		RunConfiguration rc = new RunConfiguration(cleanNetworks, supportingCutoff, refRequired);
 		
 		int nextID = runs.size();
 		Run run = new Run(this, nextID, rc, false, logger);
@@ -257,7 +257,7 @@ public class Project
 	}
 	
 	/**
-	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only overlapping).
+	 * Get the type of the run configuration by ID: true if it can calculate differential networks, false otherwise (only consensus).
 	 * @param runID the run ID
 	 * @return the type of a specific run configuration.
 	 */
@@ -269,7 +269,7 @@ public class Project
 	
 	/**
 	 * Register a new source network to this project, updating the EdgeOntology and NodeMapper instances.
-	 * A source network is a reference, condition-specific, or an overlapping network.
+	 * A source network is a reference, condition-specific, or a consensus network.
 	 * There is NO check whether or not this network was added previously.
 	 * 
 	 * @param source the new Network that will be used within this project

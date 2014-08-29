@@ -72,10 +72,10 @@ public abstract class GenericExample
 	 * @param p the project to be printed
 	 * @param runID the ID of the Run
 	 * @param pair whether output pairs should be printed
-	 * @param overlapOnly whether only overlap networks should be printed
+	 * @param consensusOnly whether only consensus networks should be printed
 	 * @param diffOnly whether only differential networks should be printed
 	 */
-	protected void printAllNetworks(Project p, int runID, boolean pair, boolean overlapOnly, boolean diffOnly)
+	protected void printAllNetworks(Project p, int runID, boolean pair, boolean consensusOnly, boolean diffOnly)
 	{
 		RunConfiguration rc = p.getRunConfiguration(runID);
 		if (rc.getClass().equals("RunDiffConfiguration"))
@@ -94,13 +94,13 @@ public abstract class GenericExample
 			for (OutputNetworkPair op : output.getOutputAsPairs())
 			{
 				printNetwork(op.getDifferentialNetwork());
-				printNetwork(op.getOverlappingNetwork());
+				printNetwork(op.getConsensusNetwork());
 			}
 		}
-		if (overlapOnly)
+		if (consensusOnly)
 		{
-			System.out.println("Overlap network(s) only : ");
-			for (ConsensusNetwork on : output.getOverlappingNetworks())
+			System.out.println("Consensus network(s) only : ");
+			for (ConsensusNetwork on : output.getConsensusNetworks())
 			{
 				printNetwork(on);
 			}

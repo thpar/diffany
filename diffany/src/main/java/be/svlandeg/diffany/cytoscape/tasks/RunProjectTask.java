@@ -78,21 +78,21 @@ public class RunProjectTask implements Task {
 			generateDiff = nextID;
 			nextID++;
 		}
-		int generateOverlap = -1;
-		if (model.isGenerateOverlapNets())
+		int generateConsensus = -1;
+		if (model.isGenerateConsensusNets())
 		{
-			generateOverlap = nextID;
+			generateConsensus = nextID;
 			nextID++;
 		}
 		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateOverlapNets(), nextID, minOperator);
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator);
 			break;
 		case REF_TO_ALL:	
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), generateDiff, generateOverlap, minOperator);
+					model.getCutoff(), generateDiff, generateConsensus, minOperator);
 			break;
 		}
 		

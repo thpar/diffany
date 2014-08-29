@@ -290,19 +290,21 @@ public class NetworkConstruction
 	/**
 	 * Construct a set of regulation edges from a certain input set of nodes, and reading input from 'cornetRegDataFile'. 
 	 * This method can either only include regulations between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
-	 * to avoid including outliers in the networks
+	 * to avoid including outliers in the networks.
+	 * This method can further remove unspecified regulations, which are not known to be repressors or activators.
 	 * 
 	 * @param nodes the set of input nodes
 	 * @param includeSelfInteractions whether or not to include self interactions
 	 * @param includeNeighbours whether or not to include neighbours (regulators/targets) of the original set
 	 * @param min_neighbourcount the minimal number of neighbours ('connectedness') which is required for a node to be include (put to 0 if this is not important)
+	 * @param includeUnknownPolarities whether or not to include regulatory associations for which we can not determine the polarity (up/down regulation)
 	 * 
 	 * @return the corresponding set of regulation edges
 	 * @throws URISyntaxException when the regulation datafile from CORNET can not be read properly
 	 * @throws IOException when the regulation datafile from CORNET can not be read properly
 	 */
 	@SuppressWarnings("unused")
-	public Set<Edge> readRegsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, int min_neighbourcount, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> origNodes = getNodesByID(nodes);
@@ -332,51 +334,56 @@ public class NetworkConstruction
 			String description = stok.nextToken();
 			String type = stok.nextToken().toLowerCase();
 
+			boolean include = true;
 			if (type.equals("unknown"))
 			{
 				type = "unknown_regulation";
+				include = includeUnknownPolarities;
 			}
 
-			String regRead = cause_locus + target_locus + type;
-
-			// avoid reading the same regulation twice
-			if (!regsRead.contains(regRead))
+			if (include)
 			{
-				regsRead.add(regRead);
-
-				boolean foundCause = origNodes.keySet().contains(cause_locus);
-				boolean foundTarget = origNodes.keySet().contains(target_locus);
-
-				// include the interaction when both are in the nodeset
-				if (foundCause && foundTarget)
+				String regRead = cause_locus + target_locus + type;
+	
+				// avoid reading the same regulation twice
+				if (!regsRead.contains(regRead))
 				{
-					// include when the loci are different, or when self interactions are allowed
-					if (includeSelfInteractions || !cause_locus.equals(target_locus))
+					regsRead.add(regRead);
+	
+					boolean foundCause = origNodes.keySet().contains(cause_locus);
+					boolean foundTarget = origNodes.keySet().contains(target_locus);
+	
+					// include the interaction when both are in the nodeset
+					if (foundCause && foundTarget)
 					{
-						Node source = origNodes.get(cause_locus);
-						Node target = origNodes.get(target_locus);
-						mappedNodes.put(cause_locus, source);
-						mappedNodes.put(target_locus, target);
-						Edge regulation = new Edge(type, source, target, symmetrical);
-						edges.add(regulation);
+						// include when the loci are different, or when self interactions are allowed
+						if (includeSelfInteractions || !cause_locus.equals(target_locus))
+						{
+							Node source = origNodes.get(cause_locus);
+							Node target = origNodes.get(target_locus);
+							mappedNodes.put(cause_locus, source);
+							mappedNodes.put(target_locus, target);
+							Edge regulation = new Edge(type, source, target, symmetrical);
+							edges.add(regulation);
+						}
 					}
-				}
-				if (foundCause && !foundTarget)
-				{
-					if (!neighbourCounts.containsKey(target_locus))
+					if (foundCause && !foundTarget)
 					{
-						neighbourCounts.put(target_locus, new HashSet<String>());
+						if (!neighbourCounts.containsKey(target_locus))
+						{
+							neighbourCounts.put(target_locus, new HashSet<String>());
+						}
+						neighbourCounts.get(target_locus).add(cause_locus);
 					}
-					neighbourCounts.get(target_locus).add(cause_locus);
-				}
-
-				if (foundTarget && !foundCause)
-				{
-					if (!neighbourCounts.containsKey(cause_locus))
+	
+					if (foundTarget && !foundCause)
 					{
-						neighbourCounts.put(cause_locus, new HashSet<String>());
+						if (!neighbourCounts.containsKey(cause_locus))
+						{
+							neighbourCounts.put(cause_locus, new HashSet<String>());
+						}
+						neighbourCounts.get(cause_locus).add(target_locus);
 					}
-					neighbourCounts.get(cause_locus).add(target_locus);
 				}
 			}
 			line = reader.readLine();
@@ -400,7 +407,7 @@ public class NetworkConstruction
 		reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
 
 		regsRead = new HashSet<String>();
-
+		
 		line = reader.readLine();
 		while (line != null)
 		{
@@ -415,62 +422,78 @@ public class NetworkConstruction
 			String confirmed = stok.nextToken();
 			String description = stok.nextToken();
 			String type = stok.nextToken().toLowerCase();
-
+			String publication = stok.nextToken();
+			String experiment = "NA";
+			if (stok.hasMoreTokens())
+			{
+				experiment = stok.nextToken();
+			}
+			String pmid = "NA";
+			if (stok.hasMoreTokens())
+			{
+				pmid = stok.nextToken();
+			}
+			boolean include = true;
 			if (type.equals("unknown"))
 			{
 				type = "unknown_regulation";
+				include = includeUnknownPolarities;
 			}
 
-			String regRead = cause_locus + target_locus + type;
-
-			// avoid reading the same PPI twice
-			if (!regsRead.contains(regRead))
+			if (include)
 			{
-				regsRead.add(regRead);
-
-				boolean foundCause = origNodes.keySet().contains(cause_locus);
-				boolean foundTarget = origNodes.keySet().contains(target_locus);
-
-				boolean neighbourCause = allowedNeighbours.contains(cause_locus);
-				boolean neighbourTarget = allowedNeighbours.contains(target_locus);
-
-				// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
-				if ((foundCause && !foundTarget && neighbourTarget) || (foundTarget && !foundCause && neighbourCause))
+				String regRead = cause_locus + target_locus + type;
+	
+				// avoid reading the same PPI twice
+				if (!regsRead.contains(regRead))
 				{
-					// include when the loci are different, or when self interactions are allowed
-					if (includeSelfInteractions || !cause_locus.equals(target_locus))
+					regsRead.add(regRead);
+	
+					boolean foundCause = origNodes.keySet().contains(cause_locus);
+					boolean foundTarget = origNodes.keySet().contains(target_locus);
+	
+					boolean neighbourCause = allowedNeighbours.contains(cause_locus);
+					boolean neighbourTarget = allowedNeighbours.contains(target_locus);
+	
+					// include the interaction when both are in the nodeset, or when neighbours can be included and either one is in the node set
+					if ((foundCause && !foundTarget && neighbourTarget) || (foundTarget && !foundCause && neighbourCause))
 					{
-						Node source = mappedNodes.get(cause_locus);
-						if (source == null)
+						// include when the loci are different, or when self interactions are allowed
+						if (includeSelfInteractions || !cause_locus.equals(target_locus))
 						{
-							String symbol = gp.getSymbolByLocusID(cause_locus);
-							if (symbol == null)
+							Node source = mappedNodes.get(cause_locus);
+							if (source == null)
 							{
-								symbol = cause_locus;
+								String symbol = gp.getSymbolByLocusID(cause_locus);
+								if (symbol == null)
+								{
+									symbol = cause_locus;
+								}
+								source = new Node(cause_locus, symbol, false);
+								mappedNodes.put(cause_locus, source);
 							}
-							source = new Node(cause_locus, symbol, false);
-							mappedNodes.put(cause_locus, source);
-						}
-
-						Node target = mappedNodes.get(target_locus);
-						if (target == null)
-						{
-							String symbol = gp.getSymbolByLocusID(target_locus);
-							if (symbol == null)
+	
+							Node target = mappedNodes.get(target_locus);
+							if (target == null)
 							{
-								symbol = target_locus;
+								String symbol = gp.getSymbolByLocusID(target_locus);
+								if (symbol == null)
+								{
+									symbol = target_locus;
+								}
+								target = new Node(target_locus, symbol, false);
+								mappedNodes.put(target_locus, target);
 							}
-							target = new Node(target_locus, symbol, false);
-							mappedNodes.put(target_locus, target);
+	
+							Edge reg = new Edge(type, source, target, symmetrical);
+							edges.add(reg);
 						}
-
-						Edge reg = new Edge(type, source, target, symmetrical);
-						edges.add(reg);
 					}
 				}
 			}
 			line = reader.readLine();
 		}
+		
 		reader.close();
 
 		return edges;

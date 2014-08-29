@@ -46,8 +46,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -69,11 +69,11 @@ public class RunAnalysis
 		boolean allowVirtualEdges = false;
 		
 		boolean selfInteractions = false;
-		boolean neighbours = false;
+		boolean neighbours = true;
 		int min_neighbourcount = 1;
 		boolean addPPI = true;
 		boolean addReg = true;
-		boolean includeUnknownReg = true;
+		boolean includeUnknownReg = false;
 		
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;
@@ -102,9 +102,23 @@ public class RunAnalysis
 		if (performStep2ToNetwork)
 		{
 			System.out.println("2. Transforming overexpression values into networks");
-			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount + " / addPPI " + addPPI + " / addReg " + addReg);
+			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / min_neighbourcount " + min_neighbourcount + " / addPPI " + addPPI 
+					+ " / addReg " + addReg + " / includeUnknownReg " + includeUnknownReg);
 			System.out.println("");
-			networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, min_neighbourcount, addPPI, addReg, includeUnknownReg);
+			try
+			{
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, min_neighbourcount, addPPI, addReg, includeUnknownReg);
+			}
+			catch (IllegalArgumentException e)
+			{
+				System.out.println("Trouble parsing from " + overexpressionFile + ": " + e.getMessage());
+				return;
+			}
+			catch (IOException e)
+			{
+				System.out.println("IO trouble reading from " + overexpressionFile + ": " + e.getMessage());
+				return;
+			}
 		}
 
 		/* STEP 3: WRITE NETWORKS TO FILE */

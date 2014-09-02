@@ -216,6 +216,8 @@ public class RunAnalysis
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
 	{
+		boolean breakAfterNodeExpansion = true;
+		
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
 
@@ -237,26 +239,32 @@ public class RunAnalysis
 
 			Map<Node, Double> nodes = dataAn.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
-
-			Set<Edge> edges = constr.createAllEdgesFromDiffData(nodes, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
-			System.out.println("  Found " + edges.size() + " total edges");
-
-			// The set of nodes is not updated at this point, but the Network constructor automatically adds the new ones from the edge information
-			InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes.keySet()), edges, nm);
-
-			System.out.println("  Cleaning network:");
-
-			InputNetwork cleannet = cleaning.fullInputCleaning(net, nm, eo);
-			networks.add(cleannet);
-
-			for (LogEntry msg : logger.getAllLogMessages())
+			
+			Set<Node> expandedNetwork = constr.expandNetwork(nodes, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+			System.out.println("  Found " + expandedNetwork.size() + " total nodes");
+			
+			if (! breakAfterNodeExpansion)
 			{
-				System.out.println(msg);
+				Set<Edge> edges = constr.createAllEdgesFromDiffData_old(nodes, true, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+				System.out.println("  Found " + edges.size() + " total edges");
+	
+				// The set of nodes is not updated at this point, but the Network constructor automatically adds the new ones from the edge information
+				InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes.keySet()), edges, nm);
+	
+				System.out.println("  Cleaning network:");
+	
+				InputNetwork cleannet = cleaning.fullInputCleaning(net, nm, eo);
+				networks.add(cleannet);
+	
+				for (LogEntry msg : logger.getAllLogMessages())
+				{
+					System.out.println(msg);
+				}
+	
+				Set<Node> deNodes = nodes.keySet();
+				deNodes.retainAll(cleannet.getNodes());
+				System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges between " + cleannet.getNodes().size() + " nodes of which " + deNodes.size() + " DE nodes");
 			}
-
-			Set<Node> deNodes = nodes.keySet();
-			deNodes.retainAll(cleannet.getNodes());
-			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges between " + cleannet.getNodes().size() + " nodes of which " + deNodes.size() + " DE nodes");
 		}
 
 		return networks;

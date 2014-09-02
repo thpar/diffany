@@ -42,8 +42,9 @@ public class NetworkConstruction
 	
 	/**
 	 * @param nodes the overexpressed nodes
-	 * @param ppi_file the location of the PPI data
-	 * @param reg_file the location of the regulatory data
+	 * @param virtual whether or not to create virtual edges
+	 * @param ppi_file the location of the PPI data - or null if you don't want any PPI data
+	 * @param reg_file the location of the regulatory data - or null if you don't want any regulatory data
 	 * @param selfInteractions whether or not to include self interactions
 	 * @param neighbours  whether or not to include direct neighbours
 	 * @param includeUnknownReg  whether or not to include unknown regulations
@@ -53,13 +54,18 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when an input file could not be read
 	 * 
 	 */
-	public Set<Edge> createAllEdgesFromDiffData(Map<Node, Double> nodes, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	public Set<Edge> createAllEdgesFromDiffData_old(Map<Node, Double> nodes, boolean virtual, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
 		Set<String> origNodes = getNodeIDs(nodes.keySet());
-		Set<Edge> edges = constructVirtualRegulations(nodes);
+		Set<Edge> edges = new HashSet<Edge>();
 		
-		System.out.println("  Found " + edges.size() + " virtual regulations between " + origNodes.size() + " DE genes");
+		if (virtual)
+		{
+			Set<Edge> virtualEdges = constructVirtualRegulations(nodes);
+			System.out.println("  Found " + virtualEdges.size() + " virtual regulations between " + origNodes.size() + " DE genes");
+			edges.addAll(virtualEdges);
+		}
 		
 		if (ppi_file != null)
 		{
@@ -85,6 +91,58 @@ public class NetworkConstruction
 			edges.addAll(regEdges);
 		}
 		return edges;
+	}
+	
+	/**
+	 * @param nodes the overexpressed nodes
+	 * @param ppi_file the location of the PPI data
+	 * @param reg_file the location of the regulatory data
+	 * @param selfInteractions whether or not to include self interactions
+	 * @param neighbours  whether or not to include direct neighbours
+	 * @param includeUnknownReg  whether or not to include unknown regulations
+	 * 
+	 * @return the set of found edges
+	 * @throws IOException when an IO error occurs
+	 * @throws URISyntaxException when an input file could not be read
+	 * 
+	 */
+	public Set<Node> expandNetwork(Map<Node, Double> nodes, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	{
+		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
+		Set<String> origNodes = getNodeIDs(nodes.keySet());
+		
+		Set<Node> allNodes = new HashSet<Node>();
+		allNodes.addAll(nodes.keySet());
+		
+		Set<Edge> edges = new HashSet<Edge>();
+		
+		// first expand the node set with PPI neighbours
+		if (ppi_file != null)
+		{
+			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes.keySet(), selfInteractions, neighbours);
+			
+			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
+			PPInetwork.setNodesAndEdges(PPIedges);
+			Set<String> expandedNodes = getNodeIDs(PPInetwork.getNodes());
+			int expanded = expandedNodes.size();
+			allNodes.addAll(PPInetwork.getNodes());
+			
+			expandedNodes.retainAll(origNodes);
+			int orig = expandedNodes.size();
+			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expanded + " genes, of which " + orig + " DE");
+			
+			edges.addAll(PPIedges);
+		}
+
+		if (reg_file != null)
+		{
+			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
+			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
+			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
+			System.out.println("  Found " + regEdges.size() + " regulations");
+			edges.addAll(regEdges);
+		}
+		return allNodes;
 	}
 
 	/**

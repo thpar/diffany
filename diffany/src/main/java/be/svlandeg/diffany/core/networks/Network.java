@@ -249,10 +249,27 @@ public abstract class Network
 		}
 		return resultEdges;
 	}
+	
+	/**
+	 * Define a (new) set of edges for this network, overwriting previous data.
+	 * The node set will be (only) those appearing as source or target in the given edges.
+	 * 
+	 * @param edges the edges of this network (implicitly also defining the nodes)
+	 */
+	public void setNodesAndEdges(Set<Edge> edges)
+	{
+		nodes = new HashSet<Node>();
+		this.edges = new HashSet<Edge>();
+		for (Edge e : edges)
+		{
+			addEdge(e);
+		}
+	}
 
 	/**
 	 * Define a (new) set of nodes for this network, overwriting previous data.
 	 * All source and target nodes of each edge will be automatically added to the internal set of nodes.
+	 * 
 	 * @param edges the edges of this network
 	 * @param nodes the nodes of this network
 	 */

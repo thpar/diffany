@@ -2,6 +2,7 @@ package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,9 @@ import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
+import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
+import be.svlandeg.diffany.usecase.arabidopsis.CornetData;
+import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
@@ -33,6 +37,19 @@ import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
  */
 public class RunAnalysis
 {
+	
+	private URI ppi_file;
+	private URI reg_file;
+	
+	/**
+	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
+	 */
+	public RunAnalysis()
+	{
+		// put to null when you don't want to consult these resources
+		ppi_file = new CornetData().getCornetPPI();
+		reg_file = null; //new CornetData().getCornetReg();
+	}
 
 	/**
 	 * Run the full analysis pipeline.
@@ -46,8 +63,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -71,8 +88,6 @@ public class RunAnalysis
 		boolean selfInteractions = false;
 		boolean neighbours = true;
 		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
-		boolean addPPI = true;
-		boolean addReg = true;
 		boolean includeUnknownReg = false;
 		
 		String overexpressionFile = null;
@@ -102,12 +117,11 @@ public class RunAnalysis
 		if (performStep2ToNetwork)
 		{
 			System.out.println("2. Transforming overexpression values into networks");
-			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / addPPI " + addPPI 
-					+ " / addReg " + addReg + " / includeUnknownReg " + includeUnknownReg);
+			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / includeUnknownReg " + includeUnknownReg);
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, addPPI, addReg, includeUnknownReg);
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, includeUnknownReg);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -200,12 +214,14 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, boolean addPPI, boolean addReg, boolean includeUnknownReg) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
+		GenePrinter gp = new GenePrinter();
 
 		OverexpressionIO io = new OverexpressionIO();
-		NetworkConstruction constr = new NetworkConstruction();
+		ExpressionDataAnalysis dataAn= new ExpressionDataAnalysis(gp);
+		NetworkConstruction constr = new NetworkConstruction(gp);
 
 		NodeMapper nm = new DefaultNodeMapper();
 		EdgeOntology eo = new DefaultEdgeOntology();
@@ -219,30 +235,13 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Map<Node, Double> nodes = constr.getSignificantGenes(data, threshold);
+			Map<Node, Double> nodes = dataAn.getSignificantGenes(data, threshold);
 			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
 
-			Set<Edge> edges = constr.constructVirtualRegulations(nodes);
-			System.out.println("  Found " + edges.size() + " virtual regulations");
-
-			if (addPPI)
-			{
-				Set<Edge> PPIedges = constr.readPPIsByLocustags(nodes.keySet(), selfInteractions, neighbours);
-				System.out.println("  Found " + PPIedges.size() + " PPIs");
-				edges.addAll(PPIedges);
-			}
-
-			if (addReg)
-			{
-				// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
-				// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-				Set<Edge> regEdges = constr.readRegsByLocustags(nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
-				System.out.println("  Found " + regEdges.size() + " regulations");
-				edges.addAll(regEdges);
-			}
-
+			Set<Edge> edges = constr.createAllEdgesFromDiffData(nodes, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 			System.out.println("  Found " + edges.size() + " total edges");
 
+			// The set of nodes is not updated at this point, but the Network constructor automatically adds the new ones from the edge information
 			InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes.keySet()), edges, nm);
 
 			System.out.println("  Cleaning network:");
@@ -255,7 +254,9 @@ public class RunAnalysis
 				System.out.println(msg);
 			}
 
-			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges of which " + cleannet.getEdgesByVirtualState(true).size() + " virtual edges");
+			Set<Node> deNodes = nodes.keySet();
+			deNodes.retainAll(cleannet.getNodes());
+			System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges between " + cleannet.getNodes().size() + " nodes of which " + deNodes.size() + " DE nodes");
 		}
 
 		return networks;

@@ -4,18 +4,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.InputNetwork;
+import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * This class allows to construct networks out of overexpression/coexpression values.
@@ -25,57 +27,64 @@ import be.svlandeg.diffany.core.networks.Node;
 public class NetworkConstruction
 {
 
-	// TODO make this class more generic / generalizable
-
-	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
-	private static String cornetRegDataFile = "reg_net_20100205.tab";
+	// TODO v2.1 make this class more generic / generalizable
 
 	private GenePrinter gp;
 
-	public NetworkConstruction()
-	{
-		try
-		{
-			gp = new GenePrinter();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
 	/**
-	 * Retrieve all the significant genes in an overexpression dataset, by using the threshold as a minimal cutoff of the FDR values.
-	 * @param data the input datasets
-	 * @param threshold the FDR cutoff
-	 * @return all nodes above the threshold, mapped to their corresponding fold change
+	 * Constructor: defines the gene printer that can deal with gene synonymy etc.
+	 * @param gp the gene printer object
 	 */
-	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold)
+	public NetworkConstruction(GenePrinter gp)
 	{
-		boolean arrayID = data.indexedByRawArrayIDs();
-
-		Map<Node, Double> nodes = new HashMap<Node, Double>();
-
-		SortedSet<String> ids = data.getArrayIDs();
-		for (String id : ids)
+		this.gp = gp;
+	}
+	
+	/**
+	 * @param nodes the overexpressed nodes
+	 * @param ppi_file the location of the PPI data
+	 * @param reg_file the location of the regulatory data
+	 * @param selfInteractions whether or not to include self interactions
+	 * @param neighbours  whether or not to include direct neighbours
+	 * @param includeUnknownReg  whether or not to include unknown regulations
+	 * 
+	 * @return the set of found edges
+	 * @throws IOException when an IO error occurs
+	 * @throws URISyntaxException when an input file could not be read
+	 * 
+	 */
+	public Set<Edge> createAllEdgesFromDiffData(Map<Node, Double> nodes, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	{
+		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
+		Set<String> origNodes = getNodeIDs(nodes.keySet());
+		Set<Edge> edges = constructVirtualRegulations(nodes);
+		
+		System.out.println("  Found " + edges.size() + " virtual regulations between " + origNodes.size() + " DE genes");
+		
+		if (ppi_file != null)
 		{
-			double FDR = data.getFDR(id);
-			if (FDR <= threshold)
-			{
-				String symbol = gp.getSymbolByLocusID(id);
-				if (arrayID)
-				{
-					symbol = Arrays.toString(gp.getSymbolByArrayID(id).toArray());
-				}
-				if (symbol == null)
-				{
-					symbol = id;
-				}
-				double FC = data.getFoldchange(id);
-				nodes.put(new Node(id.toLowerCase(), symbol, false), FC);
-			}
+			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes.keySet(), selfInteractions, neighbours);
+			
+			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
+			PPInetwork.setNodesAndEdges(PPIedges);
+			Set<String> expandedNodes = getNodeIDs(PPInetwork.getNodes());
+			int expanded = expandedNodes.size();
+			expandedNodes.retainAll(origNodes);
+			int orig = expandedNodes.size();
+			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expanded + " genes, of which " + orig + " DE");
+			
+			edges.addAll(PPIedges);
 		}
-		return nodes;
+
+		if (reg_file != null)
+		{
+			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
+			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
+			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
+			System.out.println("  Found " + regEdges.size() + " regulations");
+			edges.addAll(regEdges);
+		}
+		return edges;
 	}
 
 	/**
@@ -114,28 +123,62 @@ public class NetworkConstruction
 
 		return edges;
 	}
+	
+	/**
+	 * Construct a set of PPI edges, reading input from a specified URI. This method imposes symmetry of the read edges.
+	 * 
+	 * @param ppi_file the location where to find the tab-delimited PPI data
+	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
+	 * 
+	 * @return the set of PPI edges read from the input file
+	 * @throws URISyntaxException when the PPI datafile can not be read properly
+	 * @throws IOException when the PPI datafile can not be read properly
+	 */
+	public Set<Edge> readAllPPIs(URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	{
+		return readPPIsByLocustags(ppi_file, null, includeSelfInteractions, false, true);
+	}
 
 	/**
-	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from 'cornetPPIDataFile'. 
+	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from a specified URI.
 	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
 	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
 	 * 
+	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param nodes the set of input nodes
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
 	 * @param includeNeighbours whether or not to include PPI neighbours of the original source set
 	 * 
 	 * @return the corresponding set of PPI edges
-	 * @throws URISyntaxException when the PPI datafile from CORNET can not be read properly
-	 * @throws IOException when the PPI datafile from CORNET can not be read properly
+	 * @throws URISyntaxException when the PPI datafile can not be read properly
+	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readPPIsByLocustags(Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
+	{
+		return readPPIsByLocustags(ppi_file, nodes, includeSelfInteractions, includeNeighbours, false);
+	}
+	
+	/**
+	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from a specified URI.
+	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
+	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
+	 * 
+	 * @param ppi_file the location where to find the tab-delimited PPI data
+	 * @param nodes the set of input nodes
+	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
+	 * @param includeNeighbours whether or not to include PPI neighbours of the original source set
+	 * 
+	 * @return the corresponding set of PPI edges
+	 * @throws URISyntaxException when the PPI datafile can not be read properly
+	 * @throws IOException when the PPI datafile can not be read properly
+	 */
+	private Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, boolean includeAll) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = getNodesByID(nodes);
 		Set<String> origLoci = getNodeIDs(nodes);
 
-		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetPPIDataFile);
-		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(ppi_file)));
 
 		boolean symmetrical = true;
 		Set<String> ppisRead = new HashSet<String>();
@@ -162,7 +205,7 @@ public class NetworkConstruction
 				boolean foundL2 = origLoci.contains(locus2);
 
 				// include the interaction when both are in the nodeset, or when one of the two is in the node set and neighbours can be included
-				if ((foundL1 && foundL2) || (foundL1 && includeNeighbours) || (foundL2 && includeNeighbours))
+				if (includeAll || (foundL1 && foundL2) || (foundL1 && includeNeighbours) || (foundL2 && includeNeighbours))
 				{
 					// include when the loci are different, or when self interactions are allowed
 					if (includeSelfInteractions || !locus1.equals(locus2))
@@ -203,11 +246,12 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * Construct a set of regulation edges from a certain input set of nodes, and reading input from 'cornetRegDataFile'. 
+	 * Construct a set of regulation edges from a certain input set of nodes, and reading input from a specified URI.
 	 * This method can either only include regulations between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
 	 * to avoid including outliers in the networks.
 	 * This method can further remove unspecified regulations, which are not known to be repressors or activators.
 	 * 
+	 * @param reg_file the location where to find the tab-delimited regulatory data
 	 * @param source_nodes the set of input source nodes
 	 * @param target_nodes the set of input source nodes
 	 * @param includeSelfInteractions whether or not to include self interactions
@@ -216,10 +260,10 @@ public class NetworkConstruction
 	 * @param includeUnknownPolarities whether or not to include regulatory associations for which we can not determine the polarity (up/down regulation)
 	 * 
 	 * @return the corresponding set of regulation edges
-	 * @throws URISyntaxException when the regulation datafile from CORNET can not be read properly
-	 * @throws IOException when the regulation datafile from CORNET can not be read properly
+	 * @throws URISyntaxException when the regulation datafile can not be read properly
+	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readRegsByLocustags(Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = getNodesByID(source_nodes);
@@ -228,8 +272,7 @@ public class NetworkConstruction
 		Set<String> origSourceLoci = getNodeIDs(source_nodes);	
 		Set<String> origTargetLoci = getNodeIDs(target_nodes);
 
-		URL inputURL = Thread.currentThread().getContextClassLoader().getResource("data/" + cornetRegDataFile);
-		BufferedReader reader = new BufferedReader(new FileReader(new File(inputURL.toURI())));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(reg_file)));
 
 		boolean symmetrical = false;
 		Set<String> regsRead = new HashSet<String>();
@@ -317,22 +360,28 @@ public class NetworkConstruction
 	private Map<String, Node> getNodesByID(Set<Node> nodes)
 	{
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
-		for (Node n : nodes)
+		if (nodes != null)
 		{
-			mappedNodes.put(n.getID(), n);
+			for (Node n : nodes)
+			{
+				mappedNodes.put(n.getID(), n);
+			}
 		}
 		return mappedNodes;
 	}
 	
 	/**
-	 * Retrieve a mapping of the given nodes by their IDs
+	 * Retrieve a unique set of node IDs
 	 */
 	private Set<String> getNodeIDs(Set<Node> nodes)
 	{
 		Set<String> IDs = new HashSet<String>();
-		for (Node n : nodes)
+		if (nodes != null)
 		{
-			IDs.add(n.getID());
+			for (Node n : nodes)
+			{
+				IDs.add(n.getID());
+			}
 		}
 		return IDs;
 	}

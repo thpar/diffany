@@ -225,6 +225,7 @@ public class RunAnalysis
 		NetworkConstruction constr = new NetworkConstruction(gp);
 
 		NodeMapper nm = new DefaultNodeMapper();
+		EdgeOntology eo = new DefaultEdgeOntology();
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
 		Set<String> all_nodeIDs_strict = new HashSet<String>();
@@ -249,37 +250,28 @@ public class RunAnalysis
 		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
 		System.out.println("");
 		System.out.println("Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
-		
-		Set<Node> all_nodes_strict = new HashSet<Node>();
-		for (String locusID : all_nodeIDs_strict)
-		{
-			String symbol = gp.getSymbolByLocusID(locusID);
-			if (symbol == null)
-			{
-				symbol = locusID;
-			}
-			all_nodes_strict.add(new Node(locusID, symbol, false));
-		}
-		
-		Set<Node> all_nodes_fuzzy = new HashSet<Node>();
-		for (String locusID : all_nodeIDs_fuzzy)
-		{
-			String symbol = gp.getSymbolByLocusID(locusID);
-			if (symbol == null)
-			{
-				symbol = locusID;
-			}
-			all_nodes_fuzzy.add(new Node(locusID, symbol, false));
-		}
-		
-		Set<Node> expandedNetwork = constr.expandNetwork(nm, all_nodes_strict, all_nodes_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+	
+		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 		System.out.println("  Found " + expandedNetwork.size() + " total nodes");
+		
+		Set<Node> all_nodes = new HashSet<Node>();
+		for (String locusID : expandedNetwork)
+		{
+			String symbol = gp.getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			all_nodes.add(new Node(locusID, symbol, false));
+		}
+		
+		
 			
 			/* TODO - refactor
 			{
 				Logger logger = new Logger();
 				NetworkCleaning cleaning = new NetworkCleaning(logger);
-				EdgeOntology eo = new DefaultEdgeOntology();
+				
 				
 				Set<Edge> edges = constr.createAllEdgesFromDiffData_old(nodes_strict, true, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 				System.out.println("  Found " + edges.size() + " total edges");

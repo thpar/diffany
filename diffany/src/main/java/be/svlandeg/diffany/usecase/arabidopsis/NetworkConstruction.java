@@ -12,11 +12,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
+import be.svlandeg.diffany.core.project.Logger;
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
@@ -41,67 +43,12 @@ public class NetworkConstruction
 	}
 	
 	/**
-	 * This method will become obsolete once 'expandNetwork' is implemented - delete when not used anymore!
-	 * 
-	 * @param nodes the overexpressed nodes
-	 * @param virtual whether or not to create virtual edges
-	 * @param ppi_file the location of the PPI data - or null if you don't want any PPI data
-	 * @param reg_file the location of the regulatory data - or null if you don't want any regulatory data
-	 * @param selfInteractions whether or not to include self interactions
-	 * @param neighbours  whether or not to include direct neighbours
-	 * @param includeUnknownReg  whether or not to include unknown regulations
-	 * 
-	 * @return the set of found edges
-	 * @throws IOException when an IO error occurs
-	 * @throws URISyntaxException when an input file could not be read
-	 * 
-	 */
-	public Set<Edge> createAllEdgesFromDiffData_old(Map<Node, Double> nodes, boolean virtual, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
-	{
-		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
-		Set<String> origNodes = nm.getNodeIDs(nodes.keySet());
-		Set<Edge> edges = new HashSet<Edge>();
-		
-		if (virtual)
-		{
-			Set<Edge> virtualEdges = constructVirtualRegulations(nodes);
-			System.out.println("  Found " + virtualEdges.size() + " virtual regulations between " + origNodes.size() + " DE genes");
-			edges.addAll(virtualEdges);
-		}
-		
-		if (ppi_file != null)
-		{
-			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, nodes.keySet(), selfInteractions, neighbours);
-			
-			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
-			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedNodes = nm.getNodeIDs(PPInetwork.getNodes());
-			int expanded = expandedNodes.size();
-			expandedNodes.retainAll(origNodes);
-			int orig = expandedNodes.size();
-			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expanded + " genes, of which " + orig + " DE");
-			
-			edges.addAll(PPIedges);
-		}
-
-		if (reg_file != null)
-		{
-			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
-			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
-			System.out.println("  Found " + regEdges.size() + " regulations");
-			edges.addAll(regEdges);
-		}
-		return edges;
-	}
-	
-	/**
 	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
 	 * The set of strict and 'fuzzy' DE genes thus contain all genes that are DE in at least one of the conditions in the experiment.
 	 * 
 	 * @param nm the object that defines equality between nodes
-	 * @param nodes_strict_DE the overexpressed nodes, with stringent criteria (e.g. FDR 0.05)
-	 * @param nodes_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
+	 * @param nodeIDs_strict_DE the overexpressed nodes, with stringent criteria (e.g. FDR 0.05)
+	 * @param nodeIDs_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
 	 * @param ppi_file the location of the PPI data
 	 * @param reg_file the location of the regulatory data
 	 * @param selfInteractions whether or not to include self interactions
@@ -113,56 +60,79 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when an input file could not be read
 	 * 
 	 */
-	public Set<Node> expandNetwork(NodeMapper nm, Set<Node> nodes_strict_DE, Set<Node> nodes_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		System.out.println(" Expanding the network of DE genes to also include important neighbours ... ");
-		Set<String> origStrictNodesIDs = nm.getNodeIDs(nodes_strict_DE);
-		Set<String> origFuzzyNodesIDs = nm.getNodeIDs(nodes_fuzzy_DE);
 		
-		Set<Node> allNodes = new HashSet<Node>();
-		allNodes.addAll(nodes_strict_DE);
+		Set<String> allNodeIDs = new HashSet<String>();
+		allNodeIDs.addAll(nodeIDs_strict_DE);
+		
+		Set<Node> nodes_strict_DE = new HashSet<Node>();
+		for (String locusID : nodeIDs_strict_DE)
+		{
+			String symbol = gp.getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			nodes_strict_DE.add(new Node(locusID, symbol, false));
+		}
+		
+		
 		
 		// first expand the node set with PPI neighbours
 		if (ppi_file != null)
 		{
-			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, selfInteractions, neighbours);
+			Set<Edge> PPIedges = null;
+			if (neighbours)
+			{
+				PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, null, selfInteractions);
+			}
+			else
+			{
+				PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, nodes_strict_DE, selfInteractions);
+			}
 			
-			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
-			allNodes.addAll(PPInetwork.getNodes());
+			allNodeIDs.addAll(expandedNodeIDs);
 			
 			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
-			tmp1.retainAll(origStrictNodesIDs);
+			tmp1.retainAll(nodeIDs_strict_DE);
 			int subsetStrict = tmp1.size();
 			
 			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
-			tmp2.retainAll(origFuzzyNodesIDs);
+			tmp2.retainAll(nodeIDs_fuzzy_DE);
 			int subsetFuzzy = tmp2.size();
 			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 		}
 
 		if (reg_file != null)
 		{
-			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
-			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes_strict_DE, nodes_strict_DE, selfInteractions, neighbours, neighbours, includeUnknownReg);
 			
-			Network regNetwork = new InputNetwork("Regulatory network", 666, nm);
+			Set<Edge> regEdges = null;
+			if (neighbours)
+			{
+				regEdges = readRegsByLocustags(nm, reg_file, nodes_strict_DE, null, selfInteractions, includeUnknownReg);		// from our input to their targets
+				regEdges.addAll(readRegsByLocustags(nm, reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg));	// from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+			}
+			
+			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, nm);
 			regNetwork.setNodesAndEdges(regEdges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
-			allNodes.addAll(regNetwork.getNodes());
+			allNodeIDs.addAll(expandedNodeIDs);
 			
 			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
-			tmp1.retainAll(origStrictNodesIDs);
+			tmp1.retainAll(nodeIDs_strict_DE);
 			int subsetStrict = tmp1.size();
 			
 			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
-			tmp2.retainAll(origFuzzyNodesIDs);
+			tmp2.retainAll(nodeIDs_fuzzy_DE);
 			int subsetFuzzy = tmp2.size();
 			System.out.println("  Found " + regEdges.size() + " regulations between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 		}
-		return allNodes;
+		return allNodeIDs;
 	}
 
 	/**
@@ -215,49 +185,32 @@ public class NetworkConstruction
 	 */
 	public Set<Edge> readAllPPIs(NodeMapper nm, URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
-		return readPPIsByLocustags(nm, ppi_file, null, includeSelfInteractions, false, true);
+		return readPPIsByLocustags(nm, ppi_file, null, null, includeSelfInteractions);
 	}
 
-	/**
-	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from a specified URI.
-	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
-	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
-	 * 
-	 * @param nm the object that defines equality between nodes
-	 * @param ppi_file the location where to find the tab-delimited PPI data
-	 * @param nodes the set of input nodes
-	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
-	 * @param includeNeighbours whether or not to include PPI neighbours of the original source set
-	 * 
-	 * @return the corresponding set of PPI edges
-	 * @throws URISyntaxException when the PPI datafile can not be read properly
-	 * @throws IOException when the PPI datafile can not be read properly
-	 */
-	public Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
-	{
-		return readPPIsByLocustags(nm, ppi_file, nodes, includeSelfInteractions, includeNeighbours, false);
-	}
 	
 	/**
-	 * Construct a set of PPI edges from a certain input set of nodes, and reading input from a specified URI.
-	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
-	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
+	 * Construct a set of PPI edges from two input set of nodes, and reading input from a specified URI.
+	 * This method can either only include PPIs between the nodes themselves, or also include neighbours (if the second set is null).
+	 * This method imposes symmetry of the read edges.
 	 * 
 	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
-	 * @param nodes the set of input nodes
+	 * @param nodes1 the first set of input nodes (can be null, in which case any node will qualify)
+	 * @param nodes2 the second set of input nodes (can be null, in which case any node will qualify)
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
-	 * @param includeNeighbours whether or not to include PPI neighbours of the original source set
 	 * 
 	 * @return the corresponding set of PPI edges
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	private Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, boolean includeAll) throws URISyntaxException, IOException
+	private Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = nm.getNodesByID(nodes);
-		Set<String> origLoci = nm.getNodeIDs(nodes);
+		Map<String, Node> mappedNodes = nm.getNodesByID(nodes1);
+		mappedNodes.putAll(nm.getNodesByID(nodes2));
+		Set<String> origLoci1 = nm.getNodeIDs(nodes1);
+		Set<String> origLoci2 = nm.getNodeIDs(nodes2);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(ppi_file)));
 
@@ -282,11 +235,14 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 
-				boolean foundL1 = origLoci.contains(locus1);
-				boolean foundL2 = origLoci.contains(locus2);
+				boolean foundFirstIn1 = (nodes1 == null || origLoci1.contains(locus1));
+				boolean foundFirstIn2 = (nodes2 == null || origLoci2.contains(locus1));
+				boolean foundSecondIn1 = (nodes1 == null || origLoci1.contains(locus2));
+				boolean foundSecondIn2 = (nodes2 == null || origLoci2.contains(locus2));
+				
 
 				// include the interaction when both are in the nodeset, or when one of the two is in the node set and neighbours can be included
-				if (includeAll || (foundL1 && foundL2) || (foundL1 && includeNeighbours) || (foundL2 && includeNeighbours))
+				if ((foundFirstIn1 && foundSecondIn2) || (foundSecondIn1 && foundFirstIn2))
 				{
 					// include when the loci are different, or when self interactions are allowed
 					if (includeSelfInteractions || !locus1.equals(locus2))
@@ -332,19 +288,18 @@ public class NetworkConstruction
 	 * to avoid including outliers in the networks.
 	 * This method can further remove unspecified regulations, which are not known to be repressors or activators.
 	 * 
+	 * @param nm the object that defines equality between nodes
 	 * @param reg_file the location where to find the tab-delimited regulatory data
-	 * @param source_nodes the set of input source nodes
-	 * @param target_nodes the set of input source nodes
+	 * @param source_nodes the set of input source nodes (or null when any are allowed)
+	 * @param target_nodes the set of input target nodes (or null when any are allowed)
 	 * @param includeSelfInteractions whether or not to include self interactions
-	 * @param includeNeighbourSources whether or not to include neighbour regulators of the original set
-	 * @param includeNeighbourTargets whether or not to include neighbour targets of the original set
 	 * @param includeUnknownPolarities whether or not to include regulatory associations for which we can not determine the polarity (up/down regulation)
 	 * 
 	 * @return the corresponding set of regulation edges
 	 * @throws URISyntaxException when the regulation datafile can not be read properly
 	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readRegsByLocustags(NodeMapper nm, URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(NodeMapper nm, URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = nm.getNodesByID(source_nodes);
@@ -389,11 +344,11 @@ public class NetworkConstruction
 				{
 					regsRead.add(regRead);
 	
-					boolean foundSource = origSourceLoci.contains(source_locus);
-					boolean foundTarget = origTargetLoci.contains(target_locus);
+					boolean foundSource = (source_nodes == null || origSourceLoci.contains(source_locus));
+					boolean foundTarget = (target_nodes == null || origTargetLoci.contains(target_locus));
 	
 					// include the interaction when both are in the nodeset
-					if ((foundSource && foundTarget) || (foundSource && includeNeighbourTargets) || (foundTarget && includeNeighbourSources))
+					if (foundSource && foundTarget)
 					{
 						// include when the loci are different, or when self interactions are allowed
 						if (includeSelfInteractions || !source_locus.equals(target_locus))

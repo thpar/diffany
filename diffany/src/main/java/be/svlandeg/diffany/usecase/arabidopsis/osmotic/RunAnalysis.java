@@ -48,7 +48,7 @@ public class RunAnalysis
 	{
 		// put to null when you don't want to consult these resources
 		ppi_file = new CornetData().getCornetPPI();
-		reg_file = null; //new CornetData().getCornetReg();
+		reg_file = new CornetData().getCornetReg();		
 	}
 
 	/**
@@ -227,28 +227,50 @@ public class RunAnalysis
 		NodeMapper nm = new DefaultNodeMapper();
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
-		Set<Node> all_nodes_strict = new HashSet<Node>();
-		Set<Node> all_nodes_fuzzy = new HashSet<Node>();
+		Set<String> all_nodeIDs_strict = new HashSet<String>();
+		Set<String> all_nodeIDs_fuzzy = new HashSet<String>();
 		
 		for (OverexpressionData data : datasets)
 		{
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Map<Node, Double> nodes_strict = dataAn.getSignificantGenes(data, threshold_strict);
-			all_nodes_strict.addAll(nodes_strict.keySet());
+			Set<String> nodes_strict = nm.getNodeIDs(dataAn.getSignificantGenes(data, threshold_strict).keySet());
+			all_nodeIDs_strict.addAll(nodes_strict);
 			
-			Map<Node, Double> nodes_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy);
-			all_nodes_fuzzy.addAll(nodes_fuzzy.keySet());
+			Set<String> nodes_fuzzy = nm.getNodeIDs(dataAn.getSignificantGenes(data, threshold_fuzzy).keySet());
+			nodes_fuzzy.removeAll(nodes_strict);
+			all_nodeIDs_fuzzy.addAll(nodes_fuzzy);
 			
-			System.out.println("  Found " + nodes_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + nodes_fuzzy.size() + " at threshold " + threshold_fuzzy);
+			System.out.println("  Found " + nodes_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + nodes_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 		}
 		
 		// if they are strict DE once, they do not need to be in the fuzzy set also
-		all_nodes_fuzzy.removeAll(all_nodes_strict);
+		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
 		System.out.println("");
-		System.out.println("Total: " + all_nodes_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodes_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
+		System.out.println("Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 		
+		Set<Node> all_nodes_strict = new HashSet<Node>();
+		for (String locusID : all_nodeIDs_strict)
+		{
+			String symbol = gp.getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			all_nodes_strict.add(new Node(locusID, symbol, false));
+		}
+		
+		Set<Node> all_nodes_fuzzy = new HashSet<Node>();
+		for (String locusID : all_nodeIDs_fuzzy)
+		{
+			String symbol = gp.getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			all_nodes_fuzzy.add(new Node(locusID, symbol, false));
+		}
 		
 		Set<Node> expandedNetwork = constr.expandNetwork(nm, all_nodes_strict, all_nodes_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 		System.out.println("  Found " + expandedNetwork.size() + " total nodes");

@@ -1,5 +1,10 @@
 package be.svlandeg.diffany.core.networks;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Class that represents a node in a network. A node can be virtual, i.e. non-existing, for the purpose of modeling
  * unknown interaction partners which may still convey important information.

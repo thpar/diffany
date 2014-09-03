@@ -162,5 +162,41 @@ public abstract class NodeMapper
 		}
 		return allNodes;
 	}
+	
+	/**
+	 * Retrieve a mapping of the given nodes by their IDs
+	 * @param nodes the original set of nodes
+	 * @return a mapping of these nodes, by their IDs, for easy querying and comparison
+	 */
+	public Map<String, Node> getNodesByID(Set<Node> nodes)
+	{
+		Map<String, Node> mappedNodes = new HashMap<String, Node>();
+		if (nodes != null)
+		{
+			for (Node n : nodes)
+			{
+				mappedNodes.put(n.getID(), n);
+			}
+		}
+		return mappedNodes;
+	}
+	
+	/**
+	 * Retrieve a unique set of node IDs
+	 * @param nodes the original set of nodes
+	 * @return a set of the unique node IDs
+	 */
+	public Set<String> getNodeIDs(Set<Node> nodes)
+	{
+		Set<String> IDs = new HashSet<String>();
+		if (nodes != null)
+		{
+			for (Node n : nodes)
+			{
+				IDs.add(n.getID());
+			}
+		}
+		return IDs;
+	}
 
 }

@@ -59,7 +59,7 @@ public class NetworkConstruction
 	public Set<Edge> createAllEdgesFromDiffData_old(Map<Node, Double> nodes, boolean virtual, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
-		Set<String> origNodes = getNodeIDs(nodes.keySet());
+		Set<String> origNodes = nm.getNodeIDs(nodes.keySet());
 		Set<Edge> edges = new HashSet<Edge>();
 		
 		if (virtual)
@@ -71,11 +71,11 @@ public class NetworkConstruction
 		
 		if (ppi_file != null)
 		{
-			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes.keySet(), selfInteractions, neighbours);
+			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, nodes.keySet(), selfInteractions, neighbours);
 			
 			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedNodes = getNodeIDs(PPInetwork.getNodes());
+			Set<String> expandedNodes = nm.getNodeIDs(PPInetwork.getNodes());
 			int expanded = expandedNodes.size();
 			expandedNodes.retainAll(origNodes);
 			int orig = expandedNodes.size();
@@ -88,7 +88,7 @@ public class NetworkConstruction
 		{
 			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
 			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
+			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
 			System.out.println("  Found " + regEdges.size() + " regulations");
 			edges.addAll(regEdges);
 		}
@@ -101,7 +101,7 @@ public class NetworkConstruction
 	 * 
 	 * @param nm the object that defines equality between nodes
 	 * @param nodes_strict_DE the overexpressed nodes, with stringent criteria (e.g. FDR 0.05)
-	 * @param nodes_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1)
+	 * @param nodes_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
 	 * @param ppi_file the location of the PPI data
 	 * @param reg_file the location of the regulatory data
 	 * @param selfInteractions whether or not to include self interactions
@@ -115,22 +115,21 @@ public class NetworkConstruction
 	 */
 	public Set<Node> expandNetwork(NodeMapper nm, Set<Node> nodes_strict_DE, Set<Node> nodes_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
-		Set<String> origStrictNodesIDs = getNodeIDs(nodes_strict_DE);
-		Set<String> origFuzzyNodesIDs = getNodeIDs(nodes_fuzzy_DE);
+		System.out.println(" Expanding the network of DE genes to also include important neighbours ... ");
+		Set<String> origStrictNodesIDs = nm.getNodeIDs(nodes_strict_DE);
+		Set<String> origFuzzyNodesIDs = nm.getNodeIDs(nodes_fuzzy_DE);
 		
 		Set<Node> allNodes = new HashSet<Node>();
 		allNodes.addAll(nodes_strict_DE);
 		
-		Set<Edge> edges = new HashSet<Edge>();
-		
 		// first expand the node set with PPI neighbours
 		if (ppi_file != null)
 		{
-			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, selfInteractions, neighbours);
+			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, selfInteractions, neighbours);
 			
 			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedNodeIDs = getNodeIDs(PPInetwork.getNodes());
+			Set<String> expandedNodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
 			allNodes.addAll(PPInetwork.getNodes());
 			
 			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
@@ -141,17 +140,27 @@ public class NetworkConstruction
 			tmp2.retainAll(origFuzzyNodesIDs);
 			int subsetFuzzy = tmp2.size();
 			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
-			
-			edges.addAll(PPIedges);
 		}
 
 		if (reg_file != null)
 		{
 			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
 			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes_strict_DE, nodes_strict_DE, selfInteractions, neighbours, neighbours, includeUnknownReg);
-			System.out.println("  Found " + regEdges.size() + " regulations");
-			edges.addAll(regEdges);
+			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes_strict_DE, nodes_strict_DE, selfInteractions, neighbours, neighbours, includeUnknownReg);
+			
+			Network regNetwork = new InputNetwork("Regulatory network", 666, nm);
+			regNetwork.setNodesAndEdges(regEdges);
+			Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
+			allNodes.addAll(regNetwork.getNodes());
+			
+			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
+			tmp1.retainAll(origStrictNodesIDs);
+			int subsetStrict = tmp1.size();
+			
+			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
+			tmp2.retainAll(origFuzzyNodesIDs);
+			int subsetFuzzy = tmp2.size();
+			System.out.println("  Found " + regEdges.size() + " regulations between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 		}
 		return allNodes;
 	}
@@ -196,6 +205,7 @@ public class NetworkConstruction
 	/**
 	 * Construct a set of PPI edges, reading input from a specified URI. This method imposes symmetry of the read edges.
 	 * 
+	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
 	 * 
@@ -203,9 +213,9 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readAllPPIs(URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readAllPPIs(NodeMapper nm, URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
-		return readPPIsByLocustags(ppi_file, null, includeSelfInteractions, false, true);
+		return readPPIsByLocustags(nm, ppi_file, null, includeSelfInteractions, false, true);
 	}
 
 	/**
@@ -213,6 +223,7 @@ public class NetworkConstruction
 	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
 	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
 	 * 
+	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param nodes the set of input nodes
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
@@ -222,9 +233,9 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours) throws URISyntaxException, IOException
 	{
-		return readPPIsByLocustags(ppi_file, nodes, includeSelfInteractions, includeNeighbours, false);
+		return readPPIsByLocustags(nm, ppi_file, nodes, includeSelfInteractions, includeNeighbours, false);
 	}
 	
 	/**
@@ -232,6 +243,7 @@ public class NetworkConstruction
 	 * This method can either only include PPIs between the nodes themselves, or also include neighbours, or put a cutoff on minimal number of neighbours
 	 * to avoid including outliers in the networks. This method imposes symmetry of the read edges.
 	 * 
+	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param nodes the set of input nodes
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
@@ -241,11 +253,11 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	private Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, boolean includeAll) throws URISyntaxException, IOException
+	private Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes, boolean includeSelfInteractions, boolean includeNeighbours, boolean includeAll) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = getNodesByID(nodes);
-		Set<String> origLoci = getNodeIDs(nodes);
+		Map<String, Node> mappedNodes = nm.getNodesByID(nodes);
+		Set<String> origLoci = nm.getNodeIDs(nodes);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(ppi_file)));
 
@@ -332,14 +344,14 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the regulation datafile can not be read properly
 	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readRegsByLocustags(URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(NodeMapper nm, URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeNeighbourSources, boolean includeNeighbourTargets, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = getNodesByID(source_nodes);
-		mappedNodes.putAll(getNodesByID(target_nodes));
+		Map<String, Node> mappedNodes = nm.getNodesByID(source_nodes);
+		mappedNodes.putAll(nm.getNodesByID(target_nodes));
 		
-		Set<String> origSourceLoci = getNodeIDs(source_nodes);	
-		Set<String> origTargetLoci = getNodeIDs(target_nodes);
+		Set<String> origSourceLoci = nm.getNodeIDs(source_nodes);	
+		Set<String> origTargetLoci = nm.getNodeIDs(target_nodes);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(reg_file)));
 
@@ -423,36 +435,6 @@ public class NetworkConstruction
 		return edges;
 	}
 
-	/**
-	 * Retrieve a mapping of the given nodes by their IDs
-	 */
-	private Map<String, Node> getNodesByID(Set<Node> nodes)
-	{
-		Map<String, Node> mappedNodes = new HashMap<String, Node>();
-		if (nodes != null)
-		{
-			for (Node n : nodes)
-			{
-				mappedNodes.put(n.getID(), n);
-			}
-		}
-		return mappedNodes;
-	}
 	
-	/**
-	 * Retrieve a unique set of node IDs
-	 */
-	private Set<String> getNodeIDs(Set<Node> nodes)
-	{
-		Set<String> IDs = new HashSet<String>();
-		if (nodes != null)
-		{
-			for (Node n : nodes)
-			{
-				IDs.add(n.getID());
-			}
-		}
-		return IDs;
-	}
 
 }

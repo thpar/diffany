@@ -41,6 +41,8 @@ public class NetworkConstruction
 	}
 	
 	/**
+	 * This method will become obsolete once 'expandNetwork' is implemented - delete when not used anymore!
+	 * 
 	 * @param nodes the overexpressed nodes
 	 * @param virtual whether or not to create virtual edges
 	 * @param ppi_file the location of the PPI data - or null if you don't want any PPI data
@@ -94,7 +96,12 @@ public class NetworkConstruction
 	}
 	
 	/**
-	 * @param nodes the overexpressed nodes
+	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
+	 * The set of strict and 'fuzzy' DE genes thus contain all genes that are DE in at least one of the conditions in the experiment.
+	 * 
+	 * @param nm the object that defines equality between nodes
+	 * @param nodes_strict_DE the overexpressed nodes, with stringent criteria (e.g. FDR 0.05)
+	 * @param nodes_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1)
 	 * @param ppi_file the location of the PPI data
 	 * @param reg_file the location of the regulatory data
 	 * @param selfInteractions whether or not to include self interactions
@@ -106,30 +113,34 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when an input file could not be read
 	 * 
 	 */
-	public Set<Node> expandNetwork(Map<Node, Double> nodes, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	public Set<Node> expandNetwork(NodeMapper nm, Set<Node> nodes_strict_DE, Set<Node> nodes_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
-		NodeMapper nm = new DefaultNodeMapper();	// TODO: define elsewhere?
-		Set<String> origNodes = getNodeIDs(nodes.keySet());
+		Set<String> origStrictNodesIDs = getNodeIDs(nodes_strict_DE);
+		Set<String> origFuzzyNodesIDs = getNodeIDs(nodes_fuzzy_DE);
 		
 		Set<Node> allNodes = new HashSet<Node>();
-		allNodes.addAll(nodes.keySet());
+		allNodes.addAll(nodes_strict_DE);
 		
 		Set<Edge> edges = new HashSet<Edge>();
 		
 		// first expand the node set with PPI neighbours
 		if (ppi_file != null)
 		{
-			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes.keySet(), selfInteractions, neighbours);
+			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, selfInteractions, neighbours);
 			
 			Network PPInetwork = new InputNetwork("PPI network", 342, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedNodes = getNodeIDs(PPInetwork.getNodes());
-			int expanded = expandedNodes.size();
+			Set<String> expandedNodeIDs = getNodeIDs(PPInetwork.getNodes());
 			allNodes.addAll(PPInetwork.getNodes());
 			
-			expandedNodes.retainAll(origNodes);
-			int orig = expandedNodes.size();
-			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expanded + " genes, of which " + orig + " DE");
+			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
+			tmp1.retainAll(origStrictNodesIDs);
+			int subsetStrict = tmp1.size();
+			
+			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
+			tmp2.retainAll(origFuzzyNodesIDs);
+			int subsetFuzzy = tmp2.size();
+			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 			
 			edges.addAll(PPIedges);
 		}
@@ -138,7 +149,7 @@ public class NetworkConstruction
 		{
 			// currently, this call does not distinguish between adding neighbours which are targets, and neighbours which are regulators.
 			// If this would be important, you could also call the same method a few times to fetch exactly those edges you want.
-			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes.keySet(), nodes.keySet(), selfInteractions, neighbours, neighbours, includeUnknownReg);
+			Set<Edge> regEdges = readRegsByLocustags(reg_file, nodes_strict_DE, nodes_strict_DE, selfInteractions, neighbours, neighbours, includeUnknownReg);
 			System.out.println("  Found " + regEdges.size() + " regulations");
 			edges.addAll(regEdges);
 		}

@@ -63,8 +63,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -81,7 +81,8 @@ public class RunAnalysis
 			return;
 		}
 
-		double threshold = 0.05;
+		double threshold_strict = 0.05;
+		double threshold_fuzzy = 0.1;
 		boolean writeHeaders = true;
 		boolean allowVirtualEdges = false;
 		
@@ -121,7 +122,7 @@ public class RunAnalysis
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold, selfInteractions, neighbours, includeUnknownReg);
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, includeUnknownReg);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -214,10 +215,8 @@ public class RunAnalysis
 	 * 
 	 * @throws URISyntaxException
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
 	{
-		boolean breakAfterNodeExpansion = true;
-		
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
 
@@ -226,30 +225,45 @@ public class RunAnalysis
 		NetworkConstruction constr = new NetworkConstruction(gp);
 
 		NodeMapper nm = new DefaultNodeMapper();
-		EdgeOntology eo = new DefaultEdgeOntology();
-
+		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
+		Set<Node> all_nodes_strict = new HashSet<Node>();
+		Set<Node> all_nodes_fuzzy = new HashSet<Node>();
+		
 		for (OverexpressionData data : datasets)
 		{
-			Logger logger = new Logger();
-			NetworkCleaning cleaning = new NetworkCleaning(logger);
-
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Map<Node, Double> nodes = dataAn.getSignificantGenes(data, threshold);
-			System.out.println("  Found " + nodes.size() + " differentially expressed genes");
+			Map<Node, Double> nodes_strict = dataAn.getSignificantGenes(data, threshold_strict);
+			all_nodes_strict.addAll(nodes_strict.keySet());
 			
-			Set<Node> expandedNetwork = constr.expandNetwork(nodes, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
-			System.out.println("  Found " + expandedNetwork.size() + " total nodes");
+			Map<Node, Double> nodes_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy);
+			all_nodes_fuzzy.addAll(nodes_fuzzy.keySet());
 			
-			if (! breakAfterNodeExpansion)
+			System.out.println("  Found " + nodes_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + nodes_fuzzy.size() + " at threshold " + threshold_fuzzy);
+		}
+		
+		// if they are strict DE once, they do not need to be in the fuzzy set also
+		all_nodes_fuzzy.removeAll(all_nodes_strict);
+		System.out.println("");
+		System.out.println("Total: " + all_nodes_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodes_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
+		
+		
+		Set<Node> expandedNetwork = constr.expandNetwork(nm, all_nodes_strict, all_nodes_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+		System.out.println("  Found " + expandedNetwork.size() + " total nodes");
+			
+			/* TODO - refactor
 			{
-				Set<Edge> edges = constr.createAllEdgesFromDiffData_old(nodes, true, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+				Logger logger = new Logger();
+				NetworkCleaning cleaning = new NetworkCleaning(logger);
+				EdgeOntology eo = new DefaultEdgeOntology();
+				
+				Set<Edge> edges = constr.createAllEdgesFromDiffData_old(nodes_strict, true, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 				System.out.println("  Found " + edges.size() + " total edges");
 	
 				// The set of nodes is not updated at this point, but the Network constructor automatically adds the new ones from the edge information
-				InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes.keySet()), edges, nm);
+				InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes_strict.keySet()), edges, nm);
 	
 				System.out.println("  Cleaning network:");
 	
@@ -261,11 +275,10 @@ public class RunAnalysis
 					System.out.println(msg);
 				}
 	
-				Set<Node> deNodes = nodes.keySet();
+				Set<Node> deNodes = nodes_strict.keySet();
 				deNodes.retainAll(cleannet.getNodes());
 				System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges between " + cleannet.getNodes().size() + " nodes of which " + deNodes.size() + " DE nodes");
-			}
-		}
+			}*/
 
 		return networks;
 	}

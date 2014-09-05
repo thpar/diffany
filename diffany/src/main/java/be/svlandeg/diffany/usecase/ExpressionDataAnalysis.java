@@ -17,29 +17,23 @@ import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
  */
 public class ExpressionDataAnalysis
 {
-	
-	private GenePrinter gp;
+
 	
 	/**
-	 * Constructor: defines the gene printer that can deal with gene synonymy etc.
-	 * @param gp the gene printer object
+	 * Constructor: currently empty
 	 */
-	public ExpressionDataAnalysis(GenePrinter gp)
-	{
-		this.gp = gp;
-	}
+	public ExpressionDataAnalysis()
+	{}
 	
 	/**
-	 * Retrieve all the significant genes in an overexpression dataset, by using the threshold as a minimal cutoff of the FDR values.
+	 * Retrieve all the significant gene IDs in an overexpression dataset, by using the threshold as a minimal cutoff of the FDR values.
 	 * @param data the input datasets
 	 * @param threshold the FDR cutoff
-	 * @return all nodes above the threshold, mapped to their corresponding fold change
+	 * @return all node IDs above the threshold, mapped to their corresponding fold change
 	 */
-	public Map<Node, Double> getSignificantGenes(OverexpressionData data, double threshold)
+	public Map<String, Double> getSignificantGenes(OverexpressionData data, double threshold)
 	{
-		boolean arrayID = data.indexedByRawArrayIDs();
-
-		Map<Node, Double> nodes = new HashMap<Node, Double>();
+		Map<String, Double> nodes = new HashMap<String, Double>();
 
 		SortedSet<String> ids = data.getArrayIDs();
 		for (String id : ids)
@@ -47,17 +41,8 @@ public class ExpressionDataAnalysis
 			double FDR = data.getFDR(id);
 			if (FDR <= threshold)
 			{
-				String symbol = gp.getSymbolByLocusID(id);
-				if (arrayID)
-				{
-					symbol = Arrays.toString(gp.getSymbolByArrayID(id).toArray());
-				}
-				if (symbol == null)
-				{
-					symbol = id;
-				}
 				double FC = data.getFoldchange(id);
-				nodes.put(new Node(id.toLowerCase(), symbol, false), FC);
+				nodes.put(id.toLowerCase(),  FC);
 			}
 		}
 		return nodes;

@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
@@ -70,7 +71,7 @@ public class RunAnalysis
 		boolean performStep1FromRaw = false;
 		boolean performStep1FromSupplemental = true;
 		boolean performStep2ToNetwork = true;
-		boolean performStep3ToFile = false;
+		boolean performStep3ToFile = true;
 		boolean performStep4FromFile = false;
 		
 		if (performStep1FromRaw ==  performStep1FromSupplemental)
@@ -209,9 +210,8 @@ public class RunAnalysis
 	}
 
 	/**
-	 * Second step in the pipeline: use the overexpression values to generate networks
-	 * 
-	 * @throws URISyntaxException
+	 * Second step in the pipeline: use the overexpression values to generate networks: 
+	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
 	{
@@ -219,7 +219,7 @@ public class RunAnalysis
 		GenePrinter gp = new GenePrinter();
 
 		OverexpressionIO io = new OverexpressionIO();
-		ExpressionDataAnalysis dataAn= new ExpressionDataAnalysis(gp);
+		ExpressionDataAnalysis dataAn= new ExpressionDataAnalysis();
 		NetworkConstruction constr = new NetworkConstruction(gp);
 
 		NodeMapper nm = new DefaultNodeMapper();
@@ -228,71 +228,109 @@ public class RunAnalysis
 		NetworkCleaning cleaning = new NetworkCleaning(logger);
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
+		
 		Set<String> all_nodeIDs_strict = new HashSet<String>();
 		Set<String> all_nodeIDs_fuzzy = new HashSet<String>();
 		
+		// Read all different experiments and determine their overexpressed genes
 		for (OverexpressionData data : datasets)
 		{
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Set<String> nodes_strict = nm.getNodeIDs(dataAn.getSignificantGenes(data, threshold_strict).keySet());
+			Set<String> nodes_strict = dataAn.getSignificantGenes(data, threshold_strict).keySet();
 			all_nodeIDs_strict.addAll(nodes_strict);
 			
-			Set<String> nodes_fuzzy = nm.getNodeIDs(dataAn.getSignificantGenes(data, threshold_fuzzy).keySet());
+			Set<String> nodes_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy).keySet();
 			nodes_fuzzy.removeAll(nodes_strict);
 			all_nodeIDs_fuzzy.addAll(nodes_fuzzy);
 			
 			System.out.println("  Found " + nodes_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + nodes_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 		}
-		
-		// if they are strict DE once, they do not need to be in the fuzzy set also
-		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
 		System.out.println("");
-		System.out.println("Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
+		System.out.println("Defining the set of important nodes");
+		
+		// Clean out the set of DE genes: if they are strict DE once, they do not need to be in the fuzzy set also
+		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
+		System.out.println(" Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 	
+		System.out.println("Expanding the network of DE genes to also include important neighbours");
+		
+		// Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes
 		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
-		Set<String> tmpExpandedStrict = new HashSet<String>(expandedNetwork);
-		tmpExpandedStrict.retainAll(all_nodeIDs_strict);
-		Set<String> tmpExpandedFuzzy = new HashSet<String>(expandedNetwork);
-		tmpExpandedFuzzy.retainAll(all_nodeIDs_fuzzy);
-		
-		System.out.println("  Found " + expandedNetwork.size() + " total nodes, of which " + tmpExpandedStrict.size() + " strict DE and " + tmpExpandedFuzzy.size() + " fuzzy DE");
-		
-		// These are now all strict DE nodes, all their regulatory and PPI partners, and all the connecting fuzzy DE nodes
+
+		// Read all the PPI and regulatory interactions between all the nodes in our expanded network
+		// Without modifying edge strenghts, this becomes our reference network
 		Set<Node> all_nodes = gp.getNodesByLocusID(expandedNetwork);
 		
+		System.out.println("Constructing the reference network");
 		Set<Edge> ppiEdges = constr.readPPIsByLocustags(nm, ppi_file, all_nodes, all_nodes, selfInteractions);
-		System.out.println("  Found " + ppiEdges.size() + " PPI edges between them");
+		System.out.println(" Found " + ppiEdges.size() + " PPI edges between them");
 		
 		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
-		System.out.println("  Found " + regEdges.size() + " PPI regulatory between them");
+		System.out.println(" Found " + regEdges.size() + " PPI regulatory between them");
 		
 		ppiEdges.addAll(regEdges);
 		
 		InputNetwork refNet = new InputNetwork("Reference network", firstID++, new HashSet<Node>(all_nodes), ppiEdges, nm);
 		refNet.removeUnconnectedNodes();
 		InputNetwork cleanRefNet = cleaning.fullInputCleaning(refNet, nm, eo);
+		networks.add(cleanRefNet);
 		
-		int strictDEnodes = 0;
-		int fuzzyDEnodes = 0;
+		int strictDEnodes1 = 0;
+		int fuzzyDEnodes1 = 0;
 		
 		for (Node n : cleanRefNet.getNodes())
 		{
 			String id = n.getID();
 			if (all_nodeIDs_strict.contains(id))
 			{
-				strictDEnodes++;
+				strictDEnodes1++;
 			}
 			if (all_nodeIDs_fuzzy.contains(id))
 			{
-				fuzzyDEnodes++;
+				fuzzyDEnodes1++;
 			}
 		}
-		
-		System.out.println("Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + 
-				" nodes of which " + strictDEnodes + " strict DE nodes and " + fuzzyDEnodes + " fuzzy DE nodes");
+		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + 
+				" nodes of which " + strictDEnodes1 + " strict DE nodes and " + fuzzyDEnodes1 + " fuzzy DE nodes");
 
+		// Now we create condition-specific networks by altering the edge weights of the original reference network
+		for (OverexpressionData data : datasets)
+		{
+			String name = data.getName();
+			System.out.println("");
+			System.out.println("Constructing the condition-specific network for " + name);
+
+			Map<String, Double> all_de_nodes = dataAn.getSignificantGenes(data, threshold_strict);
+			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
+			
+			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
+			InputNetwork condNet = new InputNetwork(name, firstID++, new HashSet<Node>(all_nodes), conditionEdges, nm);
+			condNet.removeUnconnectedNodes();
+			InputNetwork cleanCondNet = cleaning.fullInputCleaning(condNet, nm, eo);
+			networks.add(cleanCondNet);
+			
+			int strictDEnodes2 = 0;
+			int fuzzyDEnodes2 = 0;
+			
+			for (Node n : cleanCondNet.getNodes())
+			{
+				String id = n.getID();
+				if (all_nodeIDs_strict.contains(id))
+				{
+					strictDEnodes2++;
+				}
+				if (all_nodeIDs_fuzzy.contains(id))
+				{
+					fuzzyDEnodes2++;
+				}
+			}
+			
+			System.out.println(" Condition network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + 
+					" nodes of which " + strictDEnodes2 + " strict DE nodes and " + fuzzyDEnodes2 + " fuzzy DE nodes");
+		}
+		
 		return networks;
 	}
 }

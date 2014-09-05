@@ -13,8 +13,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.core.networks.Edge;
+import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
@@ -54,12 +56,9 @@ public class NetworkConstruction
 	 * @return the set of found edges
 	 * @throws IOException when an IO error occurs
 	 * @throws URISyntaxException when an input file could not be read
-	 * 
 	 */
 	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
-		System.out.println(" Expanding the network of DE genes to also include important neighbours ... ");
-		
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 		
@@ -126,6 +125,104 @@ public class NetworkConstruction
 		
 		return allNodeIDs;
 	}
+	
+	/**
+	 * Take a copy of the given set of edges and produce new ones that are weighted according to the fold changes of the DE genes.
+	 * 
+	 * @param eo the edge ontology which can tell which edge types are anti-correlated (e.g. inhibition)
+	 * @param origEdges the original set of edges (will not be changed!)
+	 * @param all_de_nodes all overexpressed nodes (both stringent and less-stringent criteria)
+	 * @return a new set of edges, whose weights are changed according to the fold changes of the DE genes
+	 */
+	public Set<Edge> adjustEdgesByFoldChanges(EdgeOntology eo, Set<Edge> origEdges, Map<String, Double> all_de_nodes)
+	{
+		Set<Edge> resultEdges = new HashSet<Edge>();
+		for (Edge e : origEdges)
+		{
+			
+			Edge newEdge = new Edge(e.getSource(), e.getTarget(), new EdgeDefinition(e.getDefinition()));
+			
+			String sourceID = newEdge.getSource().getID();
+			double sourceFC = 0;
+			if (all_de_nodes.containsKey(sourceID))
+			{
+				sourceFC = all_de_nodes.get(sourceID);
+			}
+			
+			String targetID = newEdge.getTarget().getID();
+			double targetFC = 0;
+			if (all_de_nodes.containsKey(targetID))
+			{
+				targetFC = all_de_nodes.get(targetID);
+			}
+			
+			boolean correlation = true;
+			if (! e.isSymmetrical())
+			{
+				String edgeType = e.getType();
+				String edgeCat = eo.getSourceCategory(edgeType);
+				if (eo.getAllNegSourceCategories().contains(edgeCat))
+				{
+					correlation = false;		// this means they are anti-correlated, e.g. by negative regulation
+				}
+			}
+			
+			double weight = 1;
+			
+			// both are non-DE (we need to keep this if-statement for the following else statements to work properly)
+			if (targetFC == 0 && sourceFC == 0)
+			{
+				weight = 1;
+			}
+			
+			// both are up-regulated: the positive edge weight is (1 + their FC average), or 0 in case they are anti-correlated
+			else if (targetFC >= 0 && sourceFC >= 0)
+			{
+				weight = 1 + ((sourceFC + targetFC ) / 2);
+				if (!correlation)
+				{
+					weight = 0;
+				}
+			}
+			
+			// both are down-regulated: the positive edge weight is their FC average through an exponential function for normalization, 
+			// or 0 if they are anti-correlated
+			else if (targetFC <= 0 && sourceFC <= 0)
+			{
+				weight = 0;
+				if (correlation)
+				{
+					double neg_avg = (sourceFC + targetFC ) / 2;
+					
+					// this 0.5 factor determines the steepness of the normalization curve
+					weight = Math.exp(0.5 * neg_avg);		
+				}
+			}
+			
+			// one of the two is downregulated (below 0), the other up (above 0) -> break the connection unless they are anti-correlated
+			else if ((targetFC < 0 && sourceFC > 0) || (targetFC > 0 && sourceFC < 0))
+			{
+				weight = 0;
+				if (! correlation)
+				{
+					weight = 1 + ((Math.abs(sourceFC) + Math.abs(targetFC) ) / 2);
+				}
+			}
+			
+			newEdge.getDefinition().setWeight(weight);
+			if (weight != 1)
+			{
+				System.out.println(" orig " + e);
+				System.out.println(" sourceFC " + sourceFC);
+				System.out.println(" targetFC " + targetFC);
+				System.out.println(" transformed edge : " + newEdge);
+			}
+			resultEdges.add(newEdge);
+		}
+		
+		return resultEdges;
+	}
+
 
 	/**
 	 * Create virtual regulation edges for a collection of targets, which are down-regulated (negative weight) or up-regulated.

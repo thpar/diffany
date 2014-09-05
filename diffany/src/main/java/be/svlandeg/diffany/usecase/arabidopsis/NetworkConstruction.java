@@ -43,12 +43,30 @@ public class NetworkConstruction
 	}
 	
 	/**
+	 * Retrieve a set of nodes from their node IDs, by using the GenePrinter to search for their symbol
+	 */
+	private Set<Node> getNodesByLocusID(Set<String> nodeIDs)
+	{
+		Set<Node> nodes = new HashSet<Node>();
+		for (String locusID : nodeIDs)
+		{
+			String symbol = gp.getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			nodes.add(new Node(locusID, symbol, false));
+		}
+		return nodes;
+	}
+	
+	/**
 	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
 	 * The set of strict and 'fuzzy' DE genes thus contain all genes that are DE in at least one of the conditions in the experiment.
 	 * 
 	 * @param nm the object that defines equality between nodes
-	 * @param nodeIDs_strict_DE the overexpressed nodes, with stringent criteria (e.g. FDR 0.05)
-	 * @param nodeIDs_fuzzy_DE the overexpressed nodes, with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
+	 * @param nodeIDs_strict_DE the overexpressed nodes (not null), with stringent criteria (e.g. FDR 0.05)
+	 * @param nodeIDs_fuzzy_DE the overexpressed nodes (may be null), with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
 	 * @param ppi_file the location of the PPI data
 	 * @param reg_file the location of the regulatory data
 	 * @param selfInteractions whether or not to include self interactions
@@ -67,20 +85,9 @@ public class NetworkConstruction
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 		
-		Set<Node> nodes_strict_DE = new HashSet<Node>();
-		for (String locusID : nodeIDs_strict_DE)
-		{
-			String symbol = gp.getSymbolByLocusID(locusID);
-			if (symbol == null)
-			{
-				symbol = locusID;
-			}
-			nodes_strict_DE.add(new Node(locusID, symbol, false));
-		}
+		Set<Node> nodes_strict_DE = getNodesByLocusID(nodeIDs_strict_DE);
 		
-		
-		
-		// first expand the node set with PPI neighbours
+		// first expand the (strict) DE node set with PPI neighbours
 		if (ppi_file != null)
 		{
 			Set<Edge> PPIedges = null;
@@ -97,17 +104,9 @@ public class NetworkConstruction
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
 			allNodeIDs.addAll(expandedNodeIDs);
-			
-			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
-			tmp1.retainAll(nodeIDs_strict_DE);
-			int subsetStrict = tmp1.size();
-			
-			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
-			tmp2.retainAll(nodeIDs_fuzzy_DE);
-			int subsetFuzzy = tmp2.size();
-			System.out.println("  Found " + PPIedges.size() + " PPIs between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 		}
 
+		// then expand the original (strict) DE node set with regulatory neighbours
 		if (reg_file != null)
 		{
 			
@@ -122,16 +121,31 @@ public class NetworkConstruction
 			regNetwork.setNodesAndEdges(regEdges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
 			allNodeIDs.addAll(expandedNodeIDs);
-			
-			Set<String> tmp1 = new HashSet<String>(expandedNodeIDs);
-			tmp1.retainAll(nodeIDs_strict_DE);
-			int subsetStrict = tmp1.size();
-			
-			Set<String> tmp2 = new HashSet<String>(expandedNodeIDs);
-			tmp2.retainAll(nodeIDs_fuzzy_DE);
-			int subsetFuzzy = tmp2.size();
-			System.out.println("  Found " + regEdges.size() + " regulations between " + expandedNodeIDs.size() + " genes, of which " + subsetStrict + " strict DE and " + subsetFuzzy + " fuzzy DE");
 		}
+		
+		
+		// finally, add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners
+		if (nodeIDs_fuzzy_DE != null && ! nodeIDs_fuzzy_DE.isEmpty())
+		{
+			Set<Node> allNodes = getNodesByLocusID(allNodeIDs);
+			Set<Node> nodes_fuzzy_DE = getNodesByLocusID(nodeIDs_fuzzy_DE);
+			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, nm);
+			PPInetwork.setNodesAndEdges(PPIedges);
+			Set<String> expandedPPINodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
+			
+			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg);		// from fuzzy DE to our combined set
+			regEdges.addAll(readRegsByLocustags(nm, reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg));	// from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			
+			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, nm);
+			regNetwork.setNodesAndEdges(regEdges);
+			Set<String> expandedRegNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
+			allNodeIDs.addAll(expandedRegNodeIDs);
+			
+			allNodeIDs.addAll(expandedPPINodeIDs);
+			allNodeIDs.addAll(expandedRegNodeIDs);
+		}
+		
 		return allNodeIDs;
 	}
 
@@ -241,7 +255,7 @@ public class NetworkConstruction
 				boolean foundSecondIn2 = (nodes2 == null || origLoci2.contains(locus2));
 				
 
-				// include the interaction when both are in the nodeset, or when one of the two is in the node set and neighbours can be included
+				// include the interaction when both are in one of the nodesets (this is automatically true for a nodeset which is null)
 				if ((foundFirstIn1 && foundSecondIn2) || (foundSecondIn1 && foundFirstIn2))
 				{
 					// include when the loci are different, or when self interactions are allowed

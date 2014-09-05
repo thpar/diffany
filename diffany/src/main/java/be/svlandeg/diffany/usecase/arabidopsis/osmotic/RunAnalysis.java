@@ -63,8 +63,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis");
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -252,7 +252,12 @@ public class RunAnalysis
 		System.out.println("Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 	
 		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
-		System.out.println("  Found " + expandedNetwork.size() + " total nodes");
+		Set<String> tmpExpandedStrict = new HashSet<String>(expandedNetwork);
+		tmpExpandedStrict.retainAll(all_nodeIDs_strict);
+		Set<String> tmpExpandedFuzzy = new HashSet<String>(expandedNetwork);
+		tmpExpandedFuzzy.retainAll(all_nodeIDs_fuzzy);
+		
+		System.out.println("  Found " + expandedNetwork.size() + " total nodes, of which " + tmpExpandedStrict.size() + " strict DE and " + tmpExpandedFuzzy.size() + " fuzzy DE");
 		
 		Set<Node> all_nodes = new HashSet<Node>();
 		for (String locusID : expandedNetwork)

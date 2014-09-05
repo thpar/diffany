@@ -251,6 +251,14 @@ public abstract class Network
 	}
 	
 	/**
+	 * This method removes all unconnected nodes from the network - can not be reverted!
+	 */
+	public void removeUnconnectedNodes()
+	{
+		setNodesAndEdges(edges);
+	}
+	
+	/**
 	 * Define a (new) set of edges for this network, overwriting previous data.
 	 * The node set will be (only) those appearing as source or target in the given edges.
 	 * 

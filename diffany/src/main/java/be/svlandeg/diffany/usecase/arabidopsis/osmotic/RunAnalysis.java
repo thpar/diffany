@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
@@ -14,7 +13,6 @@ import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -226,6 +224,8 @@ public class RunAnalysis
 
 		NodeMapper nm = new DefaultNodeMapper();
 		EdgeOntology eo = new DefaultEdgeOntology();
+		Logger logger = new Logger();
+		NetworkCleaning cleaning = new NetworkCleaning(logger);
 		
 		List<OverexpressionData> datasets = io.readDatasets(overExpressionFile, false);
 		Set<String> all_nodeIDs_strict = new HashSet<String>();
@@ -259,45 +259,39 @@ public class RunAnalysis
 		
 		System.out.println("  Found " + expandedNetwork.size() + " total nodes, of which " + tmpExpandedStrict.size() + " strict DE and " + tmpExpandedFuzzy.size() + " fuzzy DE");
 		
-		Set<Node> all_nodes = new HashSet<Node>();
-		for (String locusID : expandedNetwork)
+		// These are now all strict DE nodes, all their regulatory and PPI partners, and all the connecting fuzzy DE nodes
+		Set<Node> all_nodes = gp.getNodesByLocusID(expandedNetwork);
+		
+		Set<Edge> ppiEdges = constr.readPPIsByLocustags(nm, ppi_file, all_nodes, all_nodes, selfInteractions);
+		System.out.println("  Found " + ppiEdges.size() + " PPI edges between them");
+		
+		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
+		System.out.println("  Found " + regEdges.size() + " PPI regulatory between them");
+		
+		ppiEdges.addAll(regEdges);
+		
+		InputNetwork refNet = new InputNetwork("Reference network", firstID++, new HashSet<Node>(all_nodes), ppiEdges, nm);
+		refNet.removeUnconnectedNodes();
+		InputNetwork cleanRefNet = cleaning.fullInputCleaning(refNet, nm, eo);
+		
+		int strictDEnodes = 0;
+		int fuzzyDEnodes = 0;
+		
+		for (Node n : cleanRefNet.getNodes())
 		{
-			String symbol = gp.getSymbolByLocusID(locusID);
-			if (symbol == null)
+			String id = n.getID();
+			if (all_nodeIDs_strict.contains(id))
 			{
-				symbol = locusID;
+				strictDEnodes++;
 			}
-			all_nodes.add(new Node(locusID, symbol, false));
+			if (all_nodeIDs_fuzzy.contains(id))
+			{
+				fuzzyDEnodes++;
+			}
 		}
 		
-		
-			
-			/* TODO - refactor
-			{
-				Logger logger = new Logger();
-				NetworkCleaning cleaning = new NetworkCleaning(logger);
-				
-				
-				Set<Edge> edges = constr.createAllEdgesFromDiffData_old(nodes_strict, true, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
-				System.out.println("  Found " + edges.size() + " total edges");
-	
-				// The set of nodes is not updated at this point, but the Network constructor automatically adds the new ones from the edge information
-				InputNetwork net = new InputNetwork(data.getName(), firstID++, new HashSet<Node>(nodes_strict.keySet()), edges, nm);
-	
-				System.out.println("  Cleaning network:");
-	
-				InputNetwork cleannet = cleaning.fullInputCleaning(net, nm, eo);
-				networks.add(cleannet);
-	
-				for (LogEntry msg : logger.getAllLogMessages())
-				{
-					System.out.println(msg);
-				}
-	
-				Set<Node> deNodes = nodes_strict.keySet();
-				deNodes.retainAll(cleannet.getNodes());
-				System.out.println("  Final network: " + cleannet.getEdges().size() + " non-redundant edges between " + cleannet.getNodes().size() + " nodes of which " + deNodes.size() + " DE nodes");
-			}*/
+		System.out.println("Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + 
+				" nodes of which " + strictDEnodes + " strict DE nodes and " + fuzzyDEnodes + " fuzzy DE nodes");
 
 		return networks;
 	}

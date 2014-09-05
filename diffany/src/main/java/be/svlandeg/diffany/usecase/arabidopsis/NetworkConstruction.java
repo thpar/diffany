@@ -12,13 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
-import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.project.Logger;
-import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
@@ -40,24 +36,6 @@ public class NetworkConstruction
 	public NetworkConstruction(GenePrinter gp)
 	{
 		this.gp = gp;
-	}
-	
-	/**
-	 * Retrieve a set of nodes from their node IDs, by using the GenePrinter to search for their symbol
-	 */
-	private Set<Node> getNodesByLocusID(Set<String> nodeIDs)
-	{
-		Set<Node> nodes = new HashSet<Node>();
-		for (String locusID : nodeIDs)
-		{
-			String symbol = gp.getSymbolByLocusID(locusID);
-			if (symbol == null)
-			{
-				symbol = locusID;
-			}
-			nodes.add(new Node(locusID, symbol, false));
-		}
-		return nodes;
 	}
 	
 	/**
@@ -85,7 +63,7 @@ public class NetworkConstruction
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 		
-		Set<Node> nodes_strict_DE = getNodesByLocusID(nodeIDs_strict_DE);
+		Set<Node> nodes_strict_DE = gp.getNodesByLocusID(nodeIDs_strict_DE);
 		
 		// first expand the (strict) DE node set with PPI neighbours
 		if (ppi_file != null)
@@ -127,8 +105,8 @@ public class NetworkConstruction
 		// finally, add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners
 		if (nodeIDs_fuzzy_DE != null && ! nodeIDs_fuzzy_DE.isEmpty())
 		{
-			Set<Node> allNodes = getNodesByLocusID(allNodeIDs);
-			Set<Node> nodes_fuzzy_DE = getNodesByLocusID(nodeIDs_fuzzy_DE);
+			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
+			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
 			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
 			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
@@ -151,6 +129,8 @@ public class NetworkConstruction
 
 	/**
 	 * Create virtual regulation edges for a collection of targets, which are down-regulated (negative weight) or up-regulated.
+	 * This method is currently not used anymore, as fold changes are encoded into the PPI and regulatory edges.
+	 * 
 	 * @param targets the map of target nodes with their corresponding regulation weights (negative weights refer to down-regulation)
 	 * @return the set of corresponding virtual edges 
 	 */
@@ -218,7 +198,7 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	private Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> mappedNodes = nm.getNodesByID(nodes1);
@@ -239,12 +219,15 @@ public class NetworkConstruction
 			String locus1 = stok.nextToken().toLowerCase();
 			String locus2 = stok.nextToken().toLowerCase();
 			String type = stok.nextToken();
+			String dataSource = stok.nextToken();
+			
+			boolean unconfirmed = dataSource.contains("non-confirmed");
 
 			String ppiRead = locus1 + locus2 + type;
 			String ppiReverseRead = locus2 + locus1 + type;
 
 			// avoid reading the same PPI twice
-			if (!ppisRead.contains(ppiRead) && !ppisRead.contains(ppiReverseRead))
+			if (!ppisRead.contains(ppiRead) && !ppisRead.contains(ppiReverseRead) && !unconfirmed)
 			{
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);

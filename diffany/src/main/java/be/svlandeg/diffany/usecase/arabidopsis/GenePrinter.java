@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.networks.Node;
+
 /**
  * This class allows printing gene information in a human-readable format, by taking the original array ID,
  * fetching its corresponding locus tags and Entrez Gene IDs, and gene symbols.
@@ -154,6 +156,26 @@ public class GenePrinter
 			return symbolmapping.get(egid);
 		}
 		return null;
+	}
+	
+	/**
+	 * Retrieve a set of nodes from their node IDs, by using the GenePrinter to search for their symbol
+	 * @param nodeIDs the locus IDs of the nodes we want to generate
+	 * @return the set of nodes, one for each unique locus ID, with their symbol determined by this gene printer
+	 */
+	public Set<Node> getNodesByLocusID(Set<String> nodeIDs)
+	{
+		Set<Node> nodes = new HashSet<Node>();
+		for (String locusID : nodeIDs)
+		{
+			String symbol = getSymbolByLocusID(locusID);
+			if (symbol == null)
+			{
+				symbol = locusID;
+			}
+			nodes.add(new Node(locusID, symbol, false));
+		}
+		return nodes;
 	}
 
 }

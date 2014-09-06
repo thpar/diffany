@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,12 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.networks.Condition;
+import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
@@ -59,11 +63,11 @@ public class RunAnalysis
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println("Performing osmotic data analysis");
+		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -72,11 +76,16 @@ public class RunAnalysis
 		boolean performStep1FromSupplemental = true;
 		boolean performStep2ToNetwork = true;
 		boolean performStep3ToFile = true;
-		boolean performStep4FromFile = false;
+		boolean performStep4FromFile = true;
 		
-		if (performStep1FromRaw ==  performStep1FromSupplemental)
+		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
 			System.out.println("Select exactly one option to perform the first step of the analysis!");
+			return;
+		}
+		if (performStep3ToFile && ! performStep2ToNetwork)
+		{
+			System.out.println("Can not perform the third step without the second!");
 			return;
 		}
 
@@ -164,7 +173,7 @@ public class RunAnalysis
 		}
 
 		System.out.println("");
-		System.out.println("Done!");
+		System.out.println("Done! - " + new Date());
 	}
 
 	/**
@@ -272,9 +281,13 @@ public class RunAnalysis
 		
 		ppiEdges.addAll(regEdges);
 		
-		InputNetwork refNet = new InputNetwork("Reference network", firstID++, new HashSet<Node>(all_nodes), ppiEdges, nm);
-		refNet.removeUnconnectedNodes();
-		InputNetwork cleanRefNet = cleaning.fullInputCleaning(refNet, nm, eo);
+		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nm);
+		
+		// By only defining the edges, unconnected nodes are automatically removed
+		refNet.setNodesAndEdges(ppiEdges);
+		// refNet.removeUnconnectedNodes();
+		
+		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo);
 		networks.add(cleanRefNet);
 		
 		int strictDEnodes1 = 0;
@@ -298,7 +311,8 @@ public class RunAnalysis
 		// Now we create condition-specific networks by altering the edge weights of the original reference network
 		for (OverexpressionData data : datasets)
 		{
-			String name = data.getName();
+			String suffix = data.getName();
+			String name = "Network" + suffix;
 			System.out.println("");
 			System.out.println("Constructing the condition-specific network for " + name);
 
@@ -306,9 +320,14 @@ public class RunAnalysis
 			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
 			
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
-			InputNetwork condNet = new InputNetwork(name, firstID++, new HashSet<Node>(all_nodes), conditionEdges, nm);
-			condNet.removeUnconnectedNodes();
-			InputNetwork cleanCondNet = cleaning.fullInputCleaning(condNet, nm, eo);
+			Condition c = new Condition("time measurement " + suffix);
+			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, c, nm);
+			
+			// By only defining the edges, unconnected nodes are automatically removed
+			condNet.setNodesAndEdges(conditionEdges);
+			// condNet.removeUnconnectedNodes();
+			
+			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo);
 			networks.add(cleanCondNet);
 			
 			int strictDEnodes2 = 0;

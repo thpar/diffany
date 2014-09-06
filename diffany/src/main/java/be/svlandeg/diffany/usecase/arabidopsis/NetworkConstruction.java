@@ -210,13 +210,6 @@ public class NetworkConstruction
 			}
 			
 			newEdge.getDefinition().setWeight(weight);
-			if (weight != 1)
-			{
-				System.out.println(" orig " + e);
-				System.out.println(" sourceFC " + sourceFC);
-				System.out.println(" targetFC " + targetFC);
-				System.out.println(" transformed edge : " + newEdge);
-			}
 			resultEdges.add(newEdge);
 		}
 		

@@ -10,19 +10,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
+import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
@@ -73,10 +80,11 @@ public class RunAnalysis
 		String outputDir = osmoticStressDir + File.separator + "output";
 		
 		boolean performStep1FromRaw = false;
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
-		boolean performStep3ToFile = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
+		boolean performStep3ToFile = false;
 		boolean performStep4FromFile = true;
+		boolean performStep5OneagainstAll = true;
 		
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
@@ -86,6 +94,11 @@ public class RunAnalysis
 		if (performStep3ToFile && ! performStep2ToNetwork)
 		{
 			System.out.println("Can not perform the third step without the second!");
+			return;
+		}
+		if (performStep5OneagainstAll && ! performStep4FromFile)
+		{
+			System.out.println("Can not perform the fourth step without the third!");
 			return;
 		}
 
@@ -98,6 +111,8 @@ public class RunAnalysis
 		boolean neighbours = true;
 		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
 		boolean includeUnknownReg = false;
+		
+		double weight_cutoff = 0;
 		
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;
@@ -156,20 +171,60 @@ public class RunAnalysis
 			}
 		}
 
+		Set<ConditionNetwork> conditionNets = new HashSet<ConditionNetwork>();
+		ReferenceNetwork refNet = null;
+		
 		/* STEP 4: READ NETWORKS BACK IN FROM FILE */
 		if (performStep4FromFile)
 		{
 			System.out.println("");
 			System.out.println("4. Reading networks from " + outputDir);
+			System.out.println("");
 	
 			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper(), writeHeaders);
-			for (InputNetwork rn : readNetworks)
+			for (InputNetwork net : readNetworks)
 			{
-				System.out.println("");
-				System.out.println(" " + rn.getStringRepresentation() + ": ");
-				System.out.print(" " + rn.getNodes().size() + " nodes and " + rn.getEdges().size() + " edges");
-				System.out.println(" (" + rn.getNodesByVirtualState(true).size() + " virtual nodes)");
+				if (net instanceof ReferenceNetwork)
+				{
+					if (refNet != null)
+					{
+						System.out.println(" Found more than 1 reference network ?! ");
+						return;
+					}
+					refNet = (ReferenceNetwork) net;
+				}
+				else if (net instanceof ConditionNetwork)
+				{
+					conditionNets.add((ConditionNetwork) net);
+				}
+				else
+				{
+					System.out.println(" Found a strange input network: " + net);
+				}
 			}
+			System.out.println(" Found a reference network: ");
+			System.out.print(" " + refNet.getStringRepresentation() + ": ");
+			System.out.println(" " + refNet.getNodes().size() + " nodes and " + refNet.getEdges().size() + " edges");
+			System.out.println("");
+			
+			System.out.println(" Found " + conditionNets.size() + " condition-specific networks:");
+			for (ConditionNetwork cn : conditionNets)
+			{
+				System.out.print(" " + cn.getStringRepresentation() + ": ");
+				System.out.println(" " + cn.getNodes().size() + " nodes and " + cn.getEdges().size() + " edges");
+			}
+		}
+		if (performStep5OneagainstAll)
+		{
+			System.out.println("");
+			System.out.println("5. Performing one against all analysis at cutoff " + weight_cutoff);
+			System.out.println("");
+			if (refNet == null || conditionNets == null || conditionNets.isEmpty())
+			{
+				System.out.println(" Did not find the correct reference and condition-specific networks! ");
+				return;
+			}
+			ra.runDiffany(refNet, conditionNets, weight_cutoff);
 		}
 
 		System.out.println("");
@@ -351,5 +406,40 @@ public class RunAnalysis
 		}
 		
 		return networks;
+	}
+	
+	/**
+	 * Perform the actual 1 against all analysis
+	 */
+	private void runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
+	{
+		String name = "Osmotic_usecase";
+		NodeMapper nm = new DefaultNodeMapper();
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
+		Project p = new Project(name, eo, nm);
+		int runID = p.addRunConfiguration(refNet, conditionNets);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true);
+		
+		// Testing that there is exactly one differential network created
+		RunOutput output = p.getOutput(runID);
+
+		// Testing the edges in the differential network
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
+		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
+		
+		System.out.println("");
+		System.out.println("DifferentialNetwork " + dNetwork + " :");
+		for (Edge e : dNetwork.getEdges())
+		{
+			System.out.println(e);
+		}
+		
+		ConsensusNetwork consNetwork = pair.getConsensusNetwork();
+		System.out.println("");
+		System.out.println("ConsensusNetwork " + consNetwork + " :");
+		for (Edge e : consNetwork.getEdges())
+		{
+			System.out.println(e);
+		}
 	}
 }

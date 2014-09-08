@@ -80,27 +80,34 @@ public class RunAnalysis
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
+		String resultDir = outputDir + File.separator + "result";
 		
 		boolean performStep1FromRaw = false;
 		boolean performStep1FromSupplemental = false;
 		boolean performStep2ToNetwork = false;
-		boolean performStep3ToFile = false;
-		boolean performStep4FromFile = true;
+		boolean performStep3InputNetworksToFile = false;
+		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = true;
+		boolean performStep6OutputNetworksToFile = true;
 		
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
 			System.out.println("Select exactly one option to perform the first step of the analysis!");
 			return;
 		}
-		if (performStep3ToFile && ! performStep2ToNetwork)
+		if (performStep3InputNetworksToFile && ! performStep2ToNetwork)
 		{
 			System.out.println("Can not perform the third step without the second!");
 			return;
 		}
-		if (performStep5OneagainstAll && ! performStep4FromFile)
+		if (performStep5OneagainstAll && ! performStep4InputNetworksFromFile)
 		{
 			System.out.println("Can not perform the fifth step without the fourth!");
+			return;
+		}
+		if (performStep6OutputNetworksToFile && ! performStep5OneagainstAll)
+		{
+			System.out.println("Can not perform the sixth step without the fifth!");
 			return;
 		}
 
@@ -124,7 +131,7 @@ public class RunAnalysis
 		/* STEP 1 - OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY */
 		if (performStep1FromRaw)
 		{
-			System.out.println("1. Transforming CELL data into overexpression values");
+			System.out.println("1. Transforming CELL data into overexpression values - " + new Date());
 			System.out.println("");
 			String fileName = "differential_values.txt";
 			overexpressionFile = ra.fromRawToOverexpression(osmoticStressDir, fileName);
@@ -134,7 +141,7 @@ public class RunAnalysis
 		/* STEP 1 - OPTION 2: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER */
 		if (performStep1FromSupplemental)
 		{
-			System.out.println("1. Reading published overexpression values");
+			System.out.println("1. Reading published overexpression values - " + new Date());
 			System.out.println("");
 			overexpressionFile = osmoticStressDir + File.separator + "clean_Inze_Supplemental_Dataset_1.tab";
 		}
@@ -142,7 +149,7 @@ public class RunAnalysis
 		/* STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS */
 		if (performStep2ToNetwork)
 		{
-			System.out.println("2. Transforming overexpression values into networks");
+			System.out.println("2. Transforming overexpression values into networks - " + new Date());
 			System.out.println("   selfinteractions " + selfInteractions + " / neighbours " + neighbours + " / includeUnknownReg " + includeUnknownReg);
 			System.out.println("");
 			try
@@ -162,10 +169,10 @@ public class RunAnalysis
 		}
 
 		/* STEP 3: WRITE NETWORKS TO FILE */
-		if (performStep2ToNetwork && performStep3ToFile)
+		if (performStep2ToNetwork && performStep3InputNetworksToFile)
 		{
 			System.out.println("");
-			System.out.println("3. Writing output networks to " + outputDir);
+			System.out.println("3. Writing output networks to " + outputDir + " - " + new Date());
 			System.out.println("   allowVirtualEdges " + allowVirtualEdges);
 			for (InputNetwork net : networks)
 			{
@@ -176,11 +183,11 @@ public class RunAnalysis
 		Set<ConditionNetwork> conditionNets = new HashSet<ConditionNetwork>();
 		ReferenceNetwork refNet = null;
 		
-		/* STEP 4: READ NETWORKS BACK IN FROM FILE */
-		if (performStep4FromFile)
+		/* STEP 4: READ INPUT NETWORKS BACK IN FROM FILE */
+		if (performStep4InputNetworksFromFile)
 		{
 			System.out.println("");
-			System.out.println("4. Reading networks from " + outputDir);
+			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
 	
 			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper(), writeHeaders);
@@ -216,17 +223,34 @@ public class RunAnalysis
 				System.out.println(" " + cn.getNodes().size() + " nodes and " + cn.getEdges().size() + " edges");
 			}
 		}
+		
+		/* STEP 5: GENERATE THE DIFFERENTIAL AND CONSENSUS NETWORKS */
+		OutputNetworkPair pair = null;
 		if (performStep5OneagainstAll)
 		{
 			System.out.println("");
-			System.out.println("5. Performing one against all analysis at cutoff " + weight_cutoff);
+			System.out.println("5. Performing one against all analysis at cutoff " + weight_cutoff + " - " + new Date());
 			System.out.println("");
 			if (refNet == null || conditionNets.isEmpty())
 			{
 				System.out.println(" Did not find the correct reference and condition-specific networks! ");
 				return;
 			}
-			ra.runDiffany(refNet, conditionNets, weight_cutoff);
+			pair = ra.runDiffany(refNet, conditionNets, weight_cutoff);
+		}
+		
+		/* STEP 6: WRITE THE DIFFERENTIAL AND CONSENSUS NETWORKS TO FILE */
+		if (performStep6OutputNetworksToFile)
+		{
+			System.out.println("");
+			System.out.println("6. Writing the generated networks to " + resultDir + " - " + new Date());
+			System.out.println("");
+
+			DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
+			NetworkIO.writeNetworkToDir(dNetwork, dNetwork.getNodeMapper(), new File(resultDir, dNetwork.getName()), writeHeaders, allowVirtualEdges);
+			
+			ConsensusNetwork consNetwork = pair.getConsensusNetwork();
+			NetworkIO.writeNetworkToDir(consNetwork, consNetwork.getNodeMapper(), new File(resultDir, consNetwork.getName()), writeHeaders, allowVirtualEdges);
 		}
 
 		System.out.println("");
@@ -413,7 +437,7 @@ public class RunAnalysis
 	/**
 	 * Perform the actual 1 against all analysis
 	 */
-	private void runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
+	private OutputNetworkPair runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
 	{
 		String name = "Osmotic_usecase";
 		NodeMapper nm = new DefaultNodeMapper();
@@ -431,21 +455,6 @@ public class RunAnalysis
 
 		// Testing the edges in the differential network
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
-		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
-		
-		System.out.println("");
-		System.out.println("DifferentialNetwork " + dNetwork + " :");
-		for (Edge e : dNetwork.getEdges())
-		{
-			System.out.println(e);
-		}
-		
-		ConsensusNetwork consNetwork = pair.getConsensusNetwork();
-		System.out.println("");
-		System.out.println("ConsensusNetwork " + consNetwork + " :");
-		for (Edge e : consNetwork.getEdges())
-		{
-			System.out.println(e);
-		}
+		return pair;
 	}
 }

@@ -144,14 +144,14 @@ public class EdgeByEdge
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Set<Node> targets = nodesByID.get(targetID);
+				String targetconsensusName = nm.getConsensusName(targets);
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
 				{
 					progressListener.setProgress(progressMessage, progressed, totalPairs);
 				}
-				String targetconsensusName = nm.getConsensusName(targets);
-
+				
 				// get all edges from the input network
 				Map<String, Map<Integer, Set<EdgeDefinition>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<EdgeDefinition>>>();
 				for (String root : roots)
@@ -161,16 +161,7 @@ public class EdgeByEdge
 				for (Network n : allOriginals)
 				{
 					Set<Edge> allEdges = n.getAllEdges(sourceID, targetID);
-					
-					/*
-					System.out.println("n " + n.getName());
-					System.out.println("sourceID " + sourceID + " " + sourceconsensusName);
-					System.out.println("targetID " + targetID + " " + targetconsensusName);
-					for (Edge e : allEdges)
-					{
-						System.out.println("edge " + e);
-					}*/
-					
+
 					for (String root : roots)
 					{
 						Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
@@ -232,10 +223,6 @@ public class EdgeByEdge
 						}
 						if (refEdges.size() > 1)
 						{
-							for (EdgeDefinition re : refEdges)
-							{
-								System.out.println("re " + re);
-							}
 							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 						}
 						if (refEdges.isEmpty())
@@ -277,7 +264,6 @@ public class EdgeByEdge
 
 							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 							diff.addEdge(edgediff);
-							//System.out.println("found diff edge: " + edgediff);
 						}
 					}
 				}
@@ -323,8 +309,6 @@ public class EdgeByEdge
 	{
 		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks, nm);
 
-		List<Set<Node>> allEqualSets = nm.getAllEquals(networks);
-
 		Set<Integer> refNetworks = new HashSet<Integer>();
 		Map<Integer, Network> allNetworks = new HashMap<Integer, Network>();
 		for (Network n : networks)
@@ -348,6 +332,41 @@ public class EdgeByEdge
 			consensus.setNodesAndEdges(onlyInput.getNodes(), onlyInput.getEdges());
 		}
 
+		Map<String, Set<String>> source2targetIDs = new HashMap<String, Set<String>>();
+		Map<String, Set<Node>> nodesByID = new HashMap<String, Set<Node>>();
+
+		for (Network n : networks)
+		{
+			for (Edge e : n.getEdges())
+			{
+				Node source = e.getSource();
+				String sourceID = source.getID();
+				Node target = e.getTarget();
+				String targetID = target.getID();
+
+				// add the source-target mapping
+				if (!source2targetIDs.containsKey(sourceID))
+				{
+					source2targetIDs.put(sourceID, new HashSet<String>());
+				}
+				source2targetIDs.get(sourceID).add(targetID);
+
+				// add the source node by ID
+				if (!nodesByID.containsKey(sourceID))
+				{
+					nodesByID.put(sourceID, new HashSet<Node>());
+				}
+				nodesByID.get(sourceID).add(source);
+
+				// add the target node by ID
+				if (!nodesByID.containsKey(targetID))
+				{
+					nodesByID.put(targetID, new HashSet<Node>());
+				}
+				nodesByID.get(targetID).add(target);
+			}
+		}
+
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
@@ -363,147 +382,147 @@ public class EdgeByEdge
 		networkNames = networkNames.substring(0, networkNames.length() - 1); // cutoff the last "/"
 
 		String progressMessage = "Calculating consensus network between " + networkNames;
-		int totalPairs = allEqualSets.size() * allEqualSets.size();
+		int totalPairs = 0;
+		for (String sourceID : source2targetIDs.keySet())
+		{
+			totalPairs += source2targetIDs.get(sourceID).size();
+		}
+		
 		int progressed = 0;
 
-		for (Set<Node> sources : allEqualSets) // source nodes (equals across networks) 
+		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
-			Node example_source = sources.iterator().next();
-			String sourceconsensusID = nm.getConsensusID(sources);
+			Set<Node> sources = nodesByID.get(sourceID);
 			String sourceconsensusName = nm.getConsensusName(sources);
 
-			for (Set<Node> targets : allEqualSets) // target nodes (equals across networks)
+			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
+				Set<Node> targets = nodesByID.get(targetID);
+				String targetconsensusName = nm.getConsensusName(targets);
+
 				// notify the progress listener of our progress
-				if (progressListener != null && progressed % 100 == 0)
+				if (progressListener != null && progressed % 1000 == 0)
 				{
 					progressListener.setProgress(progressMessage, progressed, totalPairs);
 				}
-
-				Node example_target = targets.iterator().next();
-				String targetconsensusID = nm.getConsensusID(targets);
-				String targetconsensusName = nm.getConsensusName(targets);
-
-				if (sourceconsensusID != null && targetconsensusID != null)
+				
+				// get all edges from the input network
+				Map<String, Map<Integer, Set<EdgeDefinition>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<EdgeDefinition>>>();
+				for (String root : roots)
 				{
-					// get all edges from the input network
-					Map<String, Map<Integer, Set<EdgeDefinition>>> edgesBySemanticRoot = new HashMap<String, Map<Integer, Set<EdgeDefinition>>>();
+					edgesBySemanticRoot.put(root, new HashMap<Integer, Set<EdgeDefinition>>());
+				}
+				for (Network n : networks)
+				{
+					Set<Edge> allEdges = n.getAllEdges(sourceID, targetID);
 					for (String root : roots)
 					{
-						edgesBySemanticRoot.put(root, new HashMap<Integer, Set<EdgeDefinition>>());
-					}
-					for (Network n : networks)
-					{
-						Set<Edge> allEdges = n.getAllEdges(example_source, example_target);
-						for (String root : roots)
+						Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
+						for (Edge e : allEdges)
 						{
-							Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
-							for (Edge e : allEdges)
+							String type = e.getType();
+							if (eo.isSourceTypeChildOf(type, root) > -1)
 							{
-								String type = e.getType();
-								if (eo.isSourceTypeChildOf(type, root) > -1)
-								{
-									rootEdges.add(e.getDefinition());
-								}
+								rootEdges.add(e.getDefinition());
 							}
-							if (!rootEdges.isEmpty())
+						}
+						if (!rootEdges.isEmpty())
+						{
+							edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
+						}
+					}
+				}
+
+				for (String root : roots)
+				{
+					boolean symm = eo.isSymmetricalSourceCat(root);
+
+					List<EdgeDefinition> edges = new ArrayList<EdgeDefinition>();
+					List<Set<Integer>> supportingNetworks = new ArrayList<Set<Integer>>();
+
+					Map<Integer, Set<EdgeDefinition>> edgesByNetwork = edgesBySemanticRoot.get(root);
+
+					for (int networkID : edgesByNetwork.keySet())
+					{
+						for (EdgeDefinition e : edgesByNetwork.get(networkID))
+						{
+							if (edges.contains(e))
 							{
-								edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
+								int position = edges.indexOf(e);
+								supportingNetworks.get(position).add(networkID);
+							}
+							else
+							{
+								edges.add(e);
+								Set<Integer> support = new HashSet<Integer>();
+								support.add(networkID);
+								supportingNetworks.add(support);
 							}
 						}
 					}
 
-					for (String root : roots)
+					if (edges.isEmpty())
 					{
-						boolean symm = eo.isSymmetricalSourceCat(root);
+						edges.add(eg.getVoidEdge(symm));
+						supportingNetworks.add(new HashSet<Integer>());
+					}
 
-						List<EdgeDefinition> edges = new ArrayList<EdgeDefinition>();
-						List<Set<Integer>> supportingNetworks = new ArrayList<Set<Integer>>();
+					List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(edges);
 
-						Map<Integer, Set<EdgeDefinition>> edgesByNetwork = edgesBySemanticRoot.get(root);
+					Map<EdgeDefinition, Set<Integer>> defs = ec.getConsensusEdge(cleanedEdges, supportingNetworks, supportingCutoff, weightCutoff, minOperator);
 
-						for (int networkID : edgesByNetwork.keySet())
+					// non-void consensus edge
+					for (EdgeDefinition def : defs.keySet())
+					{
+						Set<Integer> supports = defs.get(def);
+						if (def.getWeight() > 0)
 						{
-							for (EdgeDefinition e : edgesByNetwork.get(networkID))
+							if (!allDiffNodes.containsKey(sourceID))
 							{
-								if (edges.contains(e))
+								allDiffNodes.put(sourceID, new Node(sourceID, sourceconsensusName));
+							}
+							Node sourceresult = allDiffNodes.get(sourceID);
+
+							if (!allDiffNodes.containsKey(targetID))
+							{
+								allDiffNodes.put(targetID, new Node(targetID, targetconsensusName));
+							}
+							Node targetresult = allDiffNodes.get(targetID);
+
+							Set<Condition> conditions = new HashSet<Condition>();
+							boolean inReference = false;
+							int support = 0;
+
+							if (supports.isEmpty())
+							{
+								System.out.println("Found no support for " + sourceresult + " - " + targetresult + " - " + def);
+							}
+
+							for (int i : supports)
+							{
+								support++;
+								Network input = allNetworks.get(i);
+								if (input instanceof ReferenceNetwork)
 								{
-									int position = edges.indexOf(e);
-									supportingNetworks.get(position).add(networkID);
+									inReference = true;
+									conditions.add(new Condition(input.getName()));
+								}
+								else if (input instanceof ConditionNetwork)
+								{
+									conditions.addAll(((ConditionNetwork) input).getConditions());
 								}
 								else
 								{
-									edges.add(e);
-									Set<Integer> support = new HashSet<Integer>();
-									support.add(networkID);
-									supportingNetworks.add(support);
+									conditions.add(new Condition(input.getName()));
 								}
 							}
-						}
-
-						if (edges.isEmpty())
-						{
-							edges.add(eg.getVoidEdge(symm));
-							supportingNetworks.add(new HashSet<Integer>());
-						}
-
-						List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(edges);
-
-						Map<EdgeDefinition, Set<Integer>> defs = ec.getConsensusEdge(cleanedEdges, supportingNetworks, supportingCutoff, weightCutoff, minOperator);
-
-						// non-void consensus edge
-						for (EdgeDefinition def : defs.keySet())
-						{
-							Set<Integer> supports = defs.get(def);
-							if (def.getWeight() > 0)
+							// only add this edge when the reference network does not matter, or was actually present
+							if (!refRequired || inReference)
 							{
-								if (!allDiffNodes.containsKey(sourceconsensusID))
-								{
-									allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
-								}
-								Node sourceresult = allDiffNodes.get(sourceconsensusID);
+								MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
 
-								if (!allDiffNodes.containsKey(targetconsensusID))
-								{
-									allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
-								}
-								Node targetresult = allDiffNodes.get(targetconsensusID);
-
-								Set<Condition> conditions = new HashSet<Condition>();
-								boolean inReference = false;
-								int support = 0;
-
-								if (supports.isEmpty())
-								{
-									System.out.println("Found no support for " + sourceresult + " - " + targetresult + " - " + def);
-								}
-
-								for (int i : supports)
-								{
-									support++;
-									Network input = allNetworks.get(i);
-									if (input instanceof ReferenceNetwork)
-									{
-										inReference = true;
-										conditions.add(new Condition(input.getName()));
-									}
-									else if (input instanceof ConditionNetwork)
-									{
-										conditions.addAll(((ConditionNetwork) input).getConditions());
-									}
-									else
-									{
-										conditions.add(new Condition(input.getName()));
-									}
-								}
-								// only add this edge when the reference network does not matter, or was actually present
-								if (!refRequired || inReference)
-								{
-									MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
-
-									MetaEdge consensusdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
-									consensus.addEdge(consensusdiff);
-								}
+								MetaEdge consensusdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
+								consensus.addEdge(consensusdiff);
 							}
 						}
 					}

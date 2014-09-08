@@ -197,6 +197,34 @@ public abstract class Network
 		}
 		return resultEdges;
 	}
+	
+	/**
+	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
+	 * In case there are symmetrical edges in this network between target-source, these will be added too.
+	 * 
+	 * @param sourceID the required source node, defined by ID
+	 * @param targetID the required target node, defined by ID
+	 * @return the set of edges between these two nodes (can be empty, but not null)
+	 */
+	public Set<Edge> getAllEdges(String sourceID, String targetID)
+	{
+		Set<Edge> resultEdges = new HashSet<Edge>();
+		if (sourceID != null && targetID != null)
+		{
+			for (Edge e : edges)
+			{
+				if (e.getSource().getID().equals(sourceID) && e.getTarget().getID().equals(targetID))
+				{
+					resultEdges.add(e);
+				}
+				else if (e.isSymmetrical() && e.getSource().getID().equals(targetID) && e.getTarget().getID().equals(sourceID))
+				{
+					resultEdges.add(e);
+				}
+			}
+		}
+		return resultEdges;
+	}
 
 	/**
 	 * Get all edge definitions (both symmetric and assymetric) in this network between two specific nodes. 

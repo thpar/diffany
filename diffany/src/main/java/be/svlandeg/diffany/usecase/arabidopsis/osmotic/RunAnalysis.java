@@ -420,7 +420,7 @@ public class RunAnalysis
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		ExecutionProgress listener = new StandardProgressListener();
-		boolean cleanInput = false;
+		boolean cleanInput = true;
 		
 		int runID = p.addRunConfiguration(refNet, conditionNets, cleanInput);
 		

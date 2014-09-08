@@ -75,8 +75,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -100,7 +100,7 @@ public class RunAnalysis
 		}
 		if (performStep5OneagainstAll && ! performStep4FromFile)
 		{
-			System.out.println("Can not perform the fourth step without the third!");
+			System.out.println("Can not perform the fifth step without the fourth!");
 			return;
 		}
 
@@ -414,13 +414,16 @@ public class RunAnalysis
 	 * Perform the actual 1 against all analysis
 	 */
 	private void runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
-	{
-		String name = "Osmotic_usecase";
+	{String name = "Osmotic_usecase";
 		NodeMapper nm = new DefaultNodeMapper();
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		ExecutionProgress listener = new StandardProgressListener();
+		
+		System.out.println("tick RA - adding run " + new Date());
 		int runID = p.addRunConfiguration(refNet, conditionNets);
+		System.out.println("tick RA - done adding run " + new Date());
+		
 		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true, listener);
 		
 		// Testing that there is exactly one differential network created

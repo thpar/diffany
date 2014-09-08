@@ -13,7 +13,7 @@ public class StandardProgressListener implements ExecutionProgress
 	@Override
 	public void setProgress(String message, int progress, int total)
 	{
-		System.out.print(message + ": processed " + progress + " of " + total + " edges.");
+		System.out.println(message + ": processed " + progress + " of " + total + " edges.");
 	}
 	
 }

@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.core.algorithms;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +83,7 @@ public class EdgeByEdge
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
+		
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -106,7 +108,7 @@ public class EdgeByEdge
 			for (Set<Node> targets : allEqualSets) // target nodes (equals across networks)
 			{
 				// notify the progress listener of our progress
-				if (progressListener != null && progressed % 100 == 0)
+				if (progressListener != null && progressed % 1000 == 0)
 				{
 					progressListener.setProgress(progressMessage, progressed, totalPairs);
 				}

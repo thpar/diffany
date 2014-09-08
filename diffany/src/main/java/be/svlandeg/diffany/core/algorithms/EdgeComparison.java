@@ -302,6 +302,7 @@ public class EdgeComparison
 		}
 		return map;
 	}
+	
 
 	/**
 	 * Method that defines the differential edge from the corresponding edge categories in the reference and condition-specific networks.

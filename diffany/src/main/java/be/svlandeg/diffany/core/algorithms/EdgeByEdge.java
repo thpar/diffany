@@ -178,55 +178,59 @@ public class EdgeByEdge
 								}
 							}
 						}
-						if (conEdges.isEmpty())
+						/* It only makes sense to try and calculate something if we have at least 1 non-void edge */
+						if (!conEdges.isEmpty() || !refEdges.isEmpty())
 						{
-							conEdges.add(eg.getVoidEdge(symm));
-							conSupportingNetworks.add(new HashSet<Integer>());
-						}
-						if (refEdges.size() > 1)
-						{
-							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
-						}
-						if (refEdges.isEmpty())
-						{
-							refEdges.add(eg.getVoidEdge(symm));
-						}
-						EdgeDefinition refEdge = refEdges.iterator().next();
-
-						List<EdgeDefinition> mergedEdges = new ArrayList<EdgeDefinition>();
-						mergedEdges.add(refEdge);
-						mergedEdges.addAll(conEdges);
-
-						List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(mergedEdges);
-
-						EdgeDefinition cleanedRefEdge = cleanedEdges.get(0);
-
-						List<EdgeDefinition> cleanedConEdges = new ArrayList<EdgeDefinition>();
-						for (int i = 1; i < cleanedEdges.size(); i++)
-						{
-							cleanedConEdges.add(cleanedEdges.get(i));
-						}
-
-						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, supportingCutoff, weightCutoff);
-
-						// non-void differential edge
-						if (diff_edge_def.getWeight() > 0)
-						{
-							if (!allDiffNodes.containsKey(sourceconsensusID))
+							if (conEdges.isEmpty())
 							{
-								allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
+								conEdges.add(eg.getVoidEdge(symm));
+								conSupportingNetworks.add(new HashSet<Integer>());
 							}
-							Node sourceresult = allDiffNodes.get(sourceconsensusID);
-
-							if (!allDiffNodes.containsKey(targetconsensusID))
+							if (refEdges.size() > 1)
 							{
-								allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
+								throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 							}
-							Node targetresult = allDiffNodes.get(targetconsensusID);
+							if (refEdges.isEmpty())
+							{
+								refEdges.add(eg.getVoidEdge(symm));
+							}
+							EdgeDefinition refEdge = refEdges.iterator().next();
 
-							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
-							diff.addEdge(edgediff);
-							//System.out.println("found diff edge: " + edgediff);
+							List<EdgeDefinition> mergedEdges = new ArrayList<EdgeDefinition>();
+							mergedEdges.add(refEdge);
+							mergedEdges.addAll(conEdges);
+
+							List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(mergedEdges);
+
+							EdgeDefinition cleanedRefEdge = cleanedEdges.get(0);
+
+							List<EdgeDefinition> cleanedConEdges = new ArrayList<EdgeDefinition>();
+							for (int i = 1; i < cleanedEdges.size(); i++)
+							{
+								cleanedConEdges.add(cleanedEdges.get(i));
+							}
+
+							EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, supportingCutoff, weightCutoff);
+
+							// non-void differential edge
+							if (diff_edge_def.getWeight() > 0)
+							{
+								if (!allDiffNodes.containsKey(sourceconsensusID))
+								{
+									allDiffNodes.put(sourceconsensusID, new Node(sourceconsensusID, sourceconsensusName));
+								}
+								Node sourceresult = allDiffNodes.get(sourceconsensusID);
+
+								if (!allDiffNodes.containsKey(targetconsensusID))
+								{
+									allDiffNodes.put(targetconsensusID, new Node(targetconsensusID, targetconsensusName));
+								}
+								Node targetresult = allDiffNodes.get(targetconsensusID);
+
+								Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+								diff.addEdge(edgediff);
+								//System.out.println("found diff edge: " + edgediff);
+							}
 						}
 					}
 				}

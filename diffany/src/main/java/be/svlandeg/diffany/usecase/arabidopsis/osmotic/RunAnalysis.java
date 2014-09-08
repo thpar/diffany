@@ -422,9 +422,7 @@ public class RunAnalysis
 		ExecutionProgress listener = new StandardProgressListener();
 		boolean cleanInput = false;
 		
-		System.out.println("tick RA - adding run " + new Date());
 		int runID = p.addRunConfiguration(refNet, conditionNets, cleanInput);
-		System.out.println("tick RA - done adding run " + new Date());
 		
 		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true, listener);
 		

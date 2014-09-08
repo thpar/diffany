@@ -7,6 +7,8 @@ import org.apache.commons.cli.CommandLine;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
+import be.svlandeg.diffany.core.listeners.StandardProgressListener;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
@@ -40,6 +42,7 @@ public class RunProject
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
+		ExecutionProgress listener = new StandardProgressListener();
 		
 		// TODO v3.0: make ontologies adjustable
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology(), new DefaultNodeMapper());
@@ -76,7 +79,7 @@ public class RunProject
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
 		// TODO v2.0: allow to change mode
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
 		
 		// TODO v2.0: check number of differential networks generated
 		RunOutput output = p.getOutput(runID);

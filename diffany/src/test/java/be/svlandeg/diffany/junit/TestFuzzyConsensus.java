@@ -34,7 +34,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true, null);
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -68,7 +68,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		boolean exception = false;
 		try
 		{
-			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 10, true);		// this is an ID of an input network and should thus not work!
+			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 10, true, null);		// this is an ID of an input network and should thus not work!
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -76,7 +76,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		}
 		assertTrue(exception);
 		
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true, null);	
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -109,7 +109,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false, null);
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -141,7 +141,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true, null);
 		
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -225,7 +225,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		boolean exception = false;
 		try
 		{
-			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true);
+			new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 15, true, null);
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -247,7 +247,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true, null);	
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -278,7 +278,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 30, false, null);
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -308,7 +308,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 40, true, null);
 		
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -344,7 +344,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true, null);
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -374,7 +374,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true, null);
 
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
@@ -407,7 +407,7 @@ public class TestFuzzyConsensus extends TestGeneric
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 70, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

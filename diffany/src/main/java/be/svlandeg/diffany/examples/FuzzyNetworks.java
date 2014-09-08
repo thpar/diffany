@@ -266,7 +266,7 @@ public class FuzzyNetworks extends GenericExample
 		System.out.println(" and supporting networks cutoff " + supportingCutoff);
 		
 		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	// consensus, no diff
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true);	// diff, no consensus
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true, null);	// diff, no consensus
 		
 		System.out.println("");
 		//ex.printAllNetworks(p, ID, false, true, false);	// consensus, no diff

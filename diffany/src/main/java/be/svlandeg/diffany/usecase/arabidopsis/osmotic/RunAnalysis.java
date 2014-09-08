@@ -13,6 +13,8 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
+import be.svlandeg.diffany.core.listeners.StandardProgressListener;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -219,7 +221,7 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("5. Performing one against all analysis at cutoff " + weight_cutoff);
 			System.out.println("");
-			if (refNet == null || conditionNets == null || conditionNets.isEmpty())
+			if (refNet == null || conditionNets.isEmpty())
 			{
 				System.out.println(" Did not find the correct reference and condition-specific networks! ");
 				return;
@@ -417,8 +419,9 @@ public class RunAnalysis
 		NodeMapper nm = new DefaultNodeMapper();
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
+		ExecutionProgress listener = new StandardProgressListener();
 		int runID = p.addRunConfiguration(refNet, conditionNets);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true, listener);
 		
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(runID);

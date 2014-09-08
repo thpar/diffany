@@ -23,7 +23,6 @@ public class Run
 	protected RunOutput output;
 	protected Boolean type;	// if true: can do differential
 	protected Logger logger;
-		
 	
 	/**
 	 * Create a new run, belonging to a specific project.

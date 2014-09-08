@@ -14,6 +14,7 @@ import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -85,14 +86,16 @@ public class RunProjectTask implements Task {
 			nextID++;
 		}
 		
+		ExecutionProgress listener = null;		// TODO: #113
+		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator);
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator, listener);
 			break;
 		case REF_TO_ALL:	
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), generateDiff, generateConsensus, minOperator);
+					model.getCutoff(), generateDiff, generateConsensus, minOperator, listener);
 			break;
 		}
 		

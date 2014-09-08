@@ -108,8 +108,8 @@ public class TestConfiguration extends TestGeneric
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		// it should not make a difference how many times this method is called!
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true, null);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true, null);
 		RunOutput output = p.getOutput(ID);
 		
 		boolean diff = diffID >= 0;
@@ -169,7 +169,7 @@ public class TestConfiguration extends TestGeneric
 		assertNrDiffNetworks(dOutput, 0);
 		assertNrConsensusNetworks(dOutput, 0);
 
-		calc.calculateOneDifferentialNetwork(p, ID, cutoff, -1, consensusID, true);
+		calc.calculateOneDifferentialNetwork(p, ID, cutoff, -1, consensusID, true, null);
 		dOutput = p.getOutput(ID);
 
 		assertNrPairs(dOutput, 0);
@@ -188,7 +188,7 @@ public class TestConfiguration extends TestGeneric
 		int ID = ex.getTestDiffConfiguration(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
-		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, consensus, firstID, true);
+		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, consensus, firstID, true, null);
 		RunOutput output = p.getOutput(ID);
 
 		// First, test the number of result networks, depending on the settings.
@@ -270,7 +270,7 @@ public class TestConfiguration extends TestGeneric
 		boolean exceptionThrown = false;
 		try
 		{
-			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true);
+			calc.calculateOneDifferentialNetwork(p, ID, cutoff, diffID, consensusID, true, null);
 		}
 		catch (IllegalArgumentException e)
 		{

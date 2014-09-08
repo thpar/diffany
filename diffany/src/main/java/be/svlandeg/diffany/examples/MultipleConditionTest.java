@@ -60,7 +60,8 @@ public class MultipleConditionTest extends GenericExample
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
-		int ID = p.addRunConfiguration(r, c);
+		boolean cleanInput = true;
+		int ID = p.addRunConfiguration(r, c, cleanInput);
 		return ID;
 	}
 	

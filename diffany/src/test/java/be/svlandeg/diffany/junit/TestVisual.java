@@ -51,7 +51,8 @@ public class TestVisual
 		cn.addEdge(new Edge("increase_ppi", new Node("I"), new Node("J"), true));
 		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
 		
-		p.addRunConfiguration(ref, cn);
+		boolean cleanInput = true;
+		p.addRunConfiguration(ref, cn, cleanInput);
 
 		// process types
 		assertColorInSource("ppi" , Color.YELLOW, eo);

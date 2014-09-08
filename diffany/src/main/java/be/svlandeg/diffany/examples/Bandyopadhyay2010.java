@@ -59,7 +59,8 @@ public class Bandyopadhyay2010 extends GenericExample
 	{
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
-		int ID = p.addRunConfiguration(r, c);
+		boolean cleanInput = true;
+		int ID = p.addRunConfiguration(r, c, cleanInput);
 		return ID;
 	}
 

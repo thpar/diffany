@@ -109,14 +109,15 @@ public class Project
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param condition the condition-specific networks (not null!)
+	 * @param cleanInput whether or not to clean the input networks
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition)
+	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition, boolean cleanInput)
 	{
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
 		cs.add(condition);
-		return addRunConfiguration(reference, cs, 2);
+		return addRunConfiguration(reference, cs, 2, cleanInput);
 	}
 	
 	/**
@@ -127,12 +128,13 @@ public class Project
 	 * 
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
+	 * @param cleanInput whether or not to clean the input networks
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, boolean cleanInput)
 	{
-		return addRunConfiguration(reference, conditions, conditions.size() + 1);
+		return addRunConfiguration(reference, conditions, conditions.size() + 1, cleanInput);
 	}
 	
 	/**
@@ -143,27 +145,41 @@ public class Project
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
+	 * @param cleanInput whether or not to clean the input networks
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 * @throws IllegalArgumentException when the IDs of the provided networks are not unique
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff, boolean cleanInput)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the reference and condition-specific network(s) ");
 		
-		registerSourceNetwork(reference, logger);
-		ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology);
-		
-		Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
-		for (ConditionNetwork conNet : conditions)
+		RunConfiguration rc = null;
+		if (cleanInput)
 		{
-			registerSourceNetwork(conNet, logger);
-			ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology);
-			cleanConditions.add(cleanCon);
+			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */
+			registerSourceNetwork(reference, logger);
+			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology);
+			
+			Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
+			for (ConditionNetwork conNet : conditions)
+			{
+				registerSourceNetwork(conNet, logger);
+				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology);
+				cleanConditions.add(cleanCon);
+			}
+			rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
 		}
-		
-		RunConfiguration rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
+		else
+		{
+			registerSourceNetwork(reference, logger);
+			for (ConditionNetwork conNet : conditions)
+			{
+				registerSourceNetwork(conNet, logger);
+			}
+			rc = new RunDiffConfiguration(reference, conditions, supportingCutoff);
+		}
 		
 		int nextID = runs.size();
 		Run run = new Run(this, nextID, rc, true, logger);

@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.core.algorithms;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -226,7 +225,7 @@ public class EdgeByEdge
 
 						Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 						diff.addEdge(edgediff);
-						System.out.println("found diff edge: " + edgediff);
+						//System.out.println("found diff edge: " + edgediff);
 					}
 				}
 				progressed++;

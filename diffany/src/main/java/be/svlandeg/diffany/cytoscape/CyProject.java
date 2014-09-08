@@ -162,7 +162,7 @@ public class CyProject{
 						project.getEdgeOntology(), project.getNodeMapper());
 				condNets.add(condNet);			
 			}
-			runConfigID = project.addRunConfiguration(refNet, condNets);
+			runConfigID = project.addRunConfiguration(refNet, condNets, true);
 			
 		} else if (model.isGenerateConsensusNets()) {
 			Set<InputNetwork> inputNetworks = new HashSet<InputNetwork>();

@@ -48,7 +48,8 @@ public class ProcessTest extends GenericExample
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
-		int ID = p.addRunConfiguration(r, c);
+		boolean cleanInput = true;
+		int ID = p.addRunConfiguration(r, c, cleanInput);
 		return ID;
 	}
 	

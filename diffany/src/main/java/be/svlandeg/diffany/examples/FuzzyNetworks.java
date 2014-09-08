@@ -64,7 +64,8 @@ public class FuzzyNetworks extends GenericExample
 		c.add(getCondition1());
 		c.add(getCondition2());
 		c.add(getCondition3());	
-		int ID = p.addRunConfiguration(r, c, supportingCutoff);
+		boolean cleanInput = true;
+		int ID = p.addRunConfiguration(r, c, supportingCutoff, cleanInput);
 		return ID;
 	}
 	

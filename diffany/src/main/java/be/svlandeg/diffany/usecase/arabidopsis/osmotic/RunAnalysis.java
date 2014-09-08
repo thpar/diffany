@@ -414,14 +414,16 @@ public class RunAnalysis
 	 * Perform the actual 1 against all analysis
 	 */
 	private void runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
-	{String name = "Osmotic_usecase";
+	{
+		String name = "Osmotic_usecase";
 		NodeMapper nm = new DefaultNodeMapper();
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		ExecutionProgress listener = new StandardProgressListener();
+		boolean cleanInput = false;
 		
 		System.out.println("tick RA - adding run " + new Date());
-		int runID = p.addRunConfiguration(refNet, conditionNets);
+		int runID = p.addRunConfiguration(refNet, conditionNets, cleanInput);
 		System.out.println("tick RA - done adding run " + new Date());
 		
 		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true, listener);

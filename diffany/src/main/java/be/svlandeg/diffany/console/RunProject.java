@@ -73,7 +73,8 @@ public class RunProject
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm, skipHeader);
 
 		/** THE ACTUAL ALGORITHM **/
-		Integer runID = p.addRunConfiguration(refNet, condNet);
+		boolean cleanInput = true;
+		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput);
 		Logger l = p.getLogger(runID);
 		
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());

@@ -270,6 +270,11 @@ public class EdgeByEdge
 				progressed++;
 			}
 		}
+		// notify the progress listener of the fact that we're done (100%)
+		if (progressListener != null)
+		{
+			progressListener.setProgress(progressMessage, totalPairs, totalPairs);
+		}
 
 		return diff;
 	}
@@ -529,6 +534,11 @@ public class EdgeByEdge
 				}
 				progressed++;
 			}
+		}
+		// notify the progress listener of the fact that we're done (100%)
+		if (progressListener != null)
+		{
+			progressListener.setProgress(progressMessage, totalPairs, totalPairs);
 		}
 
 		return consensus;

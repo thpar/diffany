@@ -61,33 +61,15 @@ public class NetworkCleaning
 	private void fullCleaning(Network net, EdgeOntology eo, boolean isMeta)
 	{
 		logger.log(" Full cleaning of " + net.getName());
-		
-		System.out.println("old edges: ");
-		for (Edge e : net.getEdges())
-		{
-			System.out.println(e);
-		}
 
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo, isMeta);
 		
 		net.setNodesAndEdges(nodes, edges);
-		
-		System.out.println("new edges: ");
-		for (Edge e : net.getEdges())
-		{
-			System.out.println(e);
-		}
 
 		// clean edges per semantic category
 		cleanEdges(net, isMeta, eo);
-		
-		System.out.println("newer edges: ");
-		for (Edge e : net.getEdges())
-		{
-			System.out.println(e);
-		}
 	}
 
 	/**

@@ -74,8 +74,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -83,30 +83,37 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
-		boolean performStep3InputNetworksToFile = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
+		boolean performStep3InputNetworksToFile = false;
 
-		boolean performStep4InputNetworksFromFile = false;
+		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = false;
-		boolean performStep6OutputNetworksToFile = false;
+		boolean performStep5AllPairwise = true;
+		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
 			System.out.println("Select exactly one option to perform the first step of the analysis!");
 			return;
 		}
+		if (performStep5OneagainstAll && performStep5AllPairwise)
+		{
+			System.out.println("Select exactly one option to perform the fifth step of the analysis!");
+			return;
+		}
+		
 		if (performStep3InputNetworksToFile && !performStep2ToNetwork)
 		{
 			System.out.println("Can not perform the third step without the second!");
 			return;
 		}
-		if (performStep5OneagainstAll && !performStep4InputNetworksFromFile)
+		if ((performStep5OneagainstAll || performStep5AllPairwise) && !performStep4InputNetworksFromFile)
 		{
 			System.out.println("Can not perform the fifth step without the fourth!");
 			return;
 		}
-		if (performStep6OutputNetworksToFile && !performStep5OneagainstAll)
+		if (performStep6OutputNetworksToFile && !(performStep5OneagainstAll || performStep5AllPairwise))
 		{
 			System.out.println("Can not perform the sixth step without the fifth!");
 			return;
@@ -226,19 +233,19 @@ public class RunAnalysis
 			}
 		}
 
-		/* STEP 5: GENERATE THE DIFFERENTIAL AND CONSENSUS NETWORKS */
+		/* STEP 5 : GENERATE THE DIFFERENTIAL NETWORKS  */
 		RunOutput runOutput = null;
-		if (performStep5OneagainstAll)
+		if (performStep5OneagainstAll || performStep5AllPairwise)	
 		{
 			System.out.println("");
-			System.out.println("5. Performing one against all analysis at cutoff " + weight_cutoff + " and support " + support + " - " + new Date());
+			System.out.println("5. Performing differential analysis at cutoff " + weight_cutoff + " and support " + support + " (only for 1-all) - " + new Date());
 			System.out.println("");
 			if (refNet == null || conditionNets.isEmpty())
 			{
 				System.out.println(" Did not find the correct reference and condition-specific networks! ");
 				return;
 			}
-			runOutput = ra.runDiffany(refNet, conditionNets, weight_cutoff, cleanInputAfterIO, support);
+			runOutput = ra.runDiffany(refNet, conditionNets, weight_cutoff, cleanInputAfterIO, support, performStep5AllPairwise);
 		}
 
 		/* STEP 6: WRITE THE DIFFERENTIAL AND CONSENSUS NETWORKS TO FILE */
@@ -247,15 +254,21 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("6. Writing the generated networks to " + resultDir + " - " + new Date());
 			System.out.println("");
+			
+			String suffix = "";
+			if (performStep5OneagainstAll)
+			{
+				suffix = "_" + support;
+			}
 
 			for (DifferentialNetwork dNetwork : runOutput.getDifferentialNetworks())
 			{
-				NetworkIO.writeNetworkToDir(dNetwork, dNetwork.getNodeMapper(), new File(resultDir, dNetwork.getName() + "_" + support), writeHeaders, allowVirtualEdges);
+				NetworkIO.writeNetworkToDir(dNetwork, dNetwork.getNodeMapper(), new File(resultDir, dNetwork.getName() + suffix), writeHeaders, allowVirtualEdges);
 			}
 
 			for (ConsensusNetwork consNetwork : runOutput.getConsensusNetworks())
 			{
-				NetworkIO.writeNetworkToDir(consNetwork, consNetwork.getNodeMapper(), new File(resultDir, consNetwork.getName() + "_" + support), writeHeaders, allowVirtualEdges);
+				NetworkIO.writeNetworkToDir(consNetwork, consNetwork.getNodeMapper(), new File(resultDir, consNetwork.getName() + suffix), writeHeaders, allowVirtualEdges);
 			}
 		}
 
@@ -439,9 +452,9 @@ public class RunAnalysis
 	}
 
 	/**
-	 * Perform the actual 1 against all analysis
+	 * Perform a differential run; either pairwise or 1 against all (no consensus networks)
 	 */
-	private RunOutput runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff, boolean cleanInputAfterIO, int support)
+	private RunOutput runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff, boolean cleanInputAfterIO, int support, boolean pairwise)
 	{
 		String name = "Osmotic_usecase_" + support;
 		NodeMapper nm = new DefaultNodeMapper();
@@ -451,7 +464,14 @@ public class RunAnalysis
 
 		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
+		if (pairwise)
+		{
+			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, runID, weight_cutoff, true, false, 55, true, listener);
+		}
+		else
+		{
+			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
+		}
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(runID);

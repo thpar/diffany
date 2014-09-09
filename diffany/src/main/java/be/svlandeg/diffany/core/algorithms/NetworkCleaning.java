@@ -61,14 +61,33 @@ public class NetworkCleaning
 	private void fullCleaning(Network net, EdgeOntology eo, boolean isMeta)
 	{
 		logger.log(" Full cleaning of " + net.getName());
+		
+		System.out.println("old edges: ");
+		for (Edge e : net.getEdges())
+		{
+			System.out.println(e);
+		}
 
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
 		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo, isMeta);
+		
 		net.setNodesAndEdges(nodes, edges);
+		
+		System.out.println("new edges: ");
+		for (Edge e : net.getEdges())
+		{
+			System.out.println(e);
+		}
 
 		// clean edges per semantic category
 		cleanEdges(net, isMeta, eo);
+		
+		System.out.println("newer edges: ");
+		for (Edge e : net.getEdges())
+		{
+			System.out.println(e);
+		}
 	}
 
 	/**
@@ -229,7 +248,7 @@ public class NetworkCleaning
 	 * For each node pair and each semantic root category, resolve conflicts by calling 
 	 * {@link #cleanEdgesBetweenNodes(Network, EdgeOntology, Set, Set, Node, Node)}.
 	 * 
-	 * This method also removes redundant symmetrical edges at the end.
+	 * This method avoids adding redundant symmetrical edges, and thus {@link #removeRedundantSymmetricalEdges} does not need to be called.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param isMeta if true, the edges in the input network can/should be cast as MetaEdges
@@ -243,7 +262,8 @@ public class NetworkCleaning
 
 		// first, determine all node pairs which are relevant in this network
 		Set<Edge> oldEdges = net.getEdges();
-		Map<String, Set<String>> pairs = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> directed_pairs = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> symmetrical_pairs = new HashMap<String, Set<String>>();
 
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
 
@@ -258,11 +278,11 @@ public class NetworkCleaning
 			// edge is directed: store source -> target as a valid pair in the network
 			if (!e.isSymmetrical())
 			{
-				if (!pairs.containsKey(sourceID))
+				if (!directed_pairs.containsKey(sourceID))
 				{
-					pairs.put(sourceID, new HashSet<String>());
+					directed_pairs.put(sourceID, new HashSet<String>());
 				}
-				pairs.get(sourceID).add(targetID);
+				directed_pairs.get(sourceID).add(targetID);
 			}
 
 			// if the edge is symmetrical, store X -> Y with X's ID smaller than Y's ID
@@ -270,19 +290,19 @@ public class NetworkCleaning
 			{
 				if (sourceID.compareTo(targetID) < 0)
 				{
-					if (!pairs.containsKey(sourceID))
+					if (!symmetrical_pairs.containsKey(sourceID))
 					{
-						pairs.put(sourceID, new HashSet<String>());
+						symmetrical_pairs.put(sourceID, new HashSet<String>());
 					}
-					pairs.get(sourceID).add(targetID);
+					symmetrical_pairs.get(sourceID).add(targetID);
 				}
 				else
 				{
-					if (!pairs.containsKey(targetID))
+					if (!symmetrical_pairs.containsKey(targetID))
 					{
-						pairs.put(targetID, new HashSet<String>());
+						symmetrical_pairs.put(targetID, new HashSet<String>());
 					}
-					pairs.get(targetID).add(sourceID);
+					symmetrical_pairs.get(targetID).add(sourceID);
 				}
 			}
 
@@ -290,17 +310,17 @@ public class NetworkCleaning
 			mappedNodes.put(targetID, target);
 		}
 
-		// For each node pair, perform a cleaning step
-		for (String ID1 : pairs.keySet())
+		// For each node pair, perform a cleaning step for the asymmetrical pairs
+		for (String ID1 : directed_pairs.keySet())
 		{
 			Node n1 = mappedNodes.get(ID1);
-			Set<String> partners = pairs.get(ID1);
+			Set<String> partners = directed_pairs.get(ID1);
 
 			for (String ID2 : partners)
 			{
 				Node n2 = mappedNodes.get(ID2);
 
-				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(n1, n2);
+				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(n1, n2, false);
 				if (!edges.isEmpty())
 				{
 					Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, n1, n2);
@@ -318,6 +338,36 @@ public class NetworkCleaning
 				}
 			}
 		}
+		
+		// For each node pair, perform a cleaning step for the symmetrical pairs
+		for (String ID1 : symmetrical_pairs.keySet())
+		{
+			Node n1 = mappedNodes.get(ID1);
+			Set<String> partners = symmetrical_pairs.get(ID1);
+
+			for (String ID2 : partners)
+			{
+				Node n2 = mappedNodes.get(ID2);
+
+				Set<EdgeDefinition> edges = net.getAllEdgeDefinitions(n1, n2, true);
+				if (!edges.isEmpty())
+				{
+					Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, n1, n2);
+					for (EdgeDefinition def : cleanedEdges.values())
+					{
+						if (isMeta)
+						{
+							newEdges.add(new MetaEdge(n1, n2, (MetaEdgeDefinition) def)); 
+						}
+						else
+						{
+							newEdges.add(new Edge(n1, n2, def));
+						}
+					}
+				}
+			}
+		}
+		
 		net.setNodesAndEdges(allNodes, newEdges);
 	}
 
@@ -329,13 +379,13 @@ public class NetworkCleaning
 	 * @param eo the edge ontology
 	 * @param roots the root categories of the edge ontology
 	 * @param oldEdges all edges between two nodes, including both directed and symmetrical edges
-	 * 
 	 * @param source the source node (used for logging)
 	 * @param target the target node (used for logging)
 	 * 
 	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
 	 */
-    protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges, Node source, Node target)
+    protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges, 
+    		Node source, Node target)
 	{
 		Map<String, Set<EdgeDefinition>> mappedNormalEdges = resolveEdgesPerRoot(eo, roots, oldEdges);
 		Map<String, EdgeDefinition> mappedSingleEdges = new HashMap<String, EdgeDefinition>();

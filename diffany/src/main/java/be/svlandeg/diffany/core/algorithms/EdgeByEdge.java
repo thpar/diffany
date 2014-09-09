@@ -223,6 +223,11 @@ public class EdgeByEdge
 						}
 						if (refEdges.size() > 1)
 						{
+							System.out.println(sourceID + "-" + targetID);
+							for (EdgeDefinition e : refEdges)
+							{
+								System.out.println(e);
+							}
 							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 						}
 						if (refEdges.isEmpty())
@@ -264,7 +269,6 @@ public class EdgeByEdge
 
 							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 							diff.addEdge(edgediff);
-							System.out.println("edgediff " + edgediff);
 						}
 					}
 				}

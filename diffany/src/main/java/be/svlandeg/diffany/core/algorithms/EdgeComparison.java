@@ -471,7 +471,6 @@ public class EdgeComparison
 		{
 			consensusClean.add(eg.getVoidEdge(final_symm));
 		}
-		System.out.println("consensusClean  --> " + consensusClean);
 		
 		// take the most specific condition category
 		while (consensusClean.size() > 1)

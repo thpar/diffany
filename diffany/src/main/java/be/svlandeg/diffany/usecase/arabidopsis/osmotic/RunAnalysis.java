@@ -75,17 +75,19 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
 		String resultDir = outputDir + File.separator + "result";
 		
 		boolean performStep1FromRaw = false;
+		
 		boolean performStep1FromSupplemental = false;
 		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
+		
 		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = true;
 		boolean performStep6OutputNetworksToFile = true;
@@ -120,6 +122,7 @@ public class RunAnalysis
 		boolean neighbours = true;
 		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
 		boolean includeUnknownReg = false;
+		boolean cleanInputAfterIO = false;	// input should be cleaned before IO in step 3!
 		
 		double weight_cutoff = 0;
 		
@@ -236,7 +239,7 @@ public class RunAnalysis
 				System.out.println(" Did not find the correct reference and condition-specific networks! ");
 				return;
 			}
-			pair = ra.runDiffany(refNet, conditionNets, weight_cutoff);
+			pair = ra.runDiffany(refNet, conditionNets, weight_cutoff, cleanInputAfterIO);
 		}
 		
 		/* STEP 6: WRITE THE DIFFERENTIAL AND CONSENSUS NETWORKS TO FILE */
@@ -427,7 +430,7 @@ public class RunAnalysis
 				}
 			}
 			
-			System.out.println(" Condition network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + 
+			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + 
 					" nodes of which " + strictDEnodes2 + " strict DE nodes and " + fuzzyDEnodes2 + " fuzzy DE nodes");
 		}
 		
@@ -437,16 +440,15 @@ public class RunAnalysis
 	/**
 	 * Perform the actual 1 against all analysis
 	 */
-	private OutputNetworkPair runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff)
+	private OutputNetworkPair runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff, boolean cleanInputAfterIO)
 	{
 		String name = "Osmotic_usecase";
 		NodeMapper nm = new DefaultNodeMapper();
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo, nm);
 		ExecutionProgress listener = new StandardProgressListener();
-		boolean cleanInput = true;
 		
-		int runID = p.addRunConfiguration(refNet, conditionNets, cleanInput);
+		int runID = p.addRunConfiguration(refNet, conditionNets, cleanInputAfterIO);
 		
 		new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, 22, true, listener);
 		

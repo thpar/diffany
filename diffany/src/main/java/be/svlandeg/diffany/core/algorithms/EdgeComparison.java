@@ -44,7 +44,7 @@ public class EdgeComparison
 	 */
 	protected class IntermediateComparison
 	{
-		private SortedMap<Double, Set<Integer>> allWeights;
+		private SortedMap<Double, Set<Integer>> allWeights;		// should not contain support for weight 0
 		private String type;
 
 		protected IntermediateComparison(String type)
@@ -105,41 +105,28 @@ public class EdgeComparison
 	{
 		Set<String> processedCategories = new HashSet<String>(); // make sure we do not process any ontology category twice for the same edge
 
-		// generic, zero-weight (non-existing) edges give support 0 to all categories. Zero weight edges are supposedly 'affirmative'.
+		// zero-weight (non-existing) edges give support 0 to all categories. Zero weight edges are supposedly 'affirmative'.
 		if (e.getWeight() == 0)
 		{
-			Boolean symm_generic = null;
-			if (e.getType().equals(new EdgeGenerator().getVoidEdge(true).getType()))
+			// TODO v.2.1: this should be limited to the relevant subtree!
+			Set<String> categories = teo.getAllSourceCategories(true);
+			for (String category : categories)
 			{
-				symm_generic = true;
-			}
-			if (e.getType().equals(new EdgeGenerator().getVoidEdge(false).getType()))
-			{
-				symm_generic = false;
-			}
-			if (symm_generic != null)
-			{
-				// TODO this should be limited to the relevant subtree!
-				Set<String> categories = teo.getAllSourceCategories(true);
-				for (String category : categories)
+				if (!processedCategories.contains(category))
 				{
-					if (!processedCategories.contains(category))
+					IntermediateComparison intermediate = affirmative_results.get(category);
+					if (intermediate == null)
 					{
-						IntermediateComparison intermediate = affirmative_results.get(category);
-						if (intermediate == null)
-						{
-							intermediate = new IntermediateComparison(category);
-						}
-						for (int networkID : support)
-						{
-							addResult(intermediate, networkID, e.getWeight());
-						}
-						affirmative_results.put(category, intermediate);
-						processedCategories.add(category);
+						intermediate = new IntermediateComparison(category);
 					}
+					for (int networkID : support)
+					{
+						addResult(intermediate, networkID, e.getWeight());
+					}
+					affirmative_results.put(category, intermediate);
+					processedCategories.add(category);
 				}
 			}
-
 		}
 
 		// negated edges travel down the tree, e.g. 'no ptm' also means 'no phosphorylation'
@@ -341,11 +328,7 @@ public class EdgeComparison
 		}
 		double refWeight = refEdge.getWeight();
 
-		boolean allEmpty = true;
-		if (refWeight != 0)
-		{
-			allEmpty = false;
-		}
+		boolean refEmpty = (refWeight == 0);
 
 		EdgeDefinition diff_edge = eg.getDefaultEdge();
 
@@ -356,25 +339,26 @@ public class EdgeComparison
 		// create the set of condition edges by removing the negated ones, and count symmetry while we're at it
 		List<EdgeDefinition> conEdgesPos = new ArrayList<EdgeDefinition>();
 		int countSymmetrical = 0;
+		int countConEmpty = 0;
 
 		for (EdgeDefinition e : conEdges)
 		{
-			if (e.getWeight() != 0)
+			if (e.getWeight() == 0)
 			{
-				allEmpty = false;
+				countConEmpty++;
 			}
 			if (e.isSymmetrical())
 			{
 				countSymmetrical++;
 			}
 			// negated edges are set to void
-			if (!e.isNegated())
+			if (e.isNegated())
 			{
-				conEdgesPos.add(e);
+				conEdgesPos.add(eg.getVoidEdge(e.isSymmetrical()));
 			}
 			else
 			{
-				conEdgesPos.add(eg.getVoidEdge(e.isSymmetrical()));
+				conEdgesPos.add(e);
 			}
 		}
 		if (refEdge.isSymmetrical())
@@ -390,7 +374,9 @@ public class EdgeComparison
 		// a differential edge is only symmetrical if all input edges are
 		boolean final_symm = countSymmetrical == originalEdges;
 		diff_edge.makeSymmetrical(final_symm);
-		if (allEmpty)
+		
+		// all edges are empty -> return a void differential edge
+		if (refEmpty && countConEmpty == conEdges.size())
 		{
 			return eg.getVoidEdge(final_symm);
 		}
@@ -485,6 +471,8 @@ public class EdgeComparison
 		{
 			consensusClean.add(eg.getVoidEdge(final_symm));
 		}
+		System.out.println("consensusClean  --> " + consensusClean);
+		
 		// take the most specific condition category
 		while (consensusClean.size() > 1)
 		{

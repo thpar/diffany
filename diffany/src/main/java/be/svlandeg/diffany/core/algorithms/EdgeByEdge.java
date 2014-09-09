@@ -264,6 +264,7 @@ public class EdgeByEdge
 
 							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
 							diff.addEdge(edgediff);
+							System.out.println("edgediff " + edgediff);
 						}
 					}
 				}

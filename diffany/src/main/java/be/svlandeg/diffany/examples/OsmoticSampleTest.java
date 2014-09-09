@@ -52,28 +52,30 @@ private NodeMapper nm;
 	/**
 	 * Add some custom-defined networks to the project.
 	 * @param p the input project
+	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
 	 * @return the resulting configuration ID
 	 */
-	public int getTestDiffConfiguration(Project p)
+	public int getTestDiffConfiguration(Project p, int supportingCutoff)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r, c, cleanInput);
+		int ID = p.addRunConfiguration(r, c, supportingCutoff, cleanInput);
 		return ID;
 	}
 	
 	/**
 	 * Add some custom-defined networks to the project.
 	 * @param p the input project
+	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined.
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConsensusConfiguration(Project p)
+	public int getTestConsensusConfiguration(Project p, int supportingCutoff)
 	{
 		Set<InputNetwork> i = new HashSet<InputNetwork>();
 		i.addAll(getTestConditions());
 		i.add(getTestReference());
-		int ID = p.addRunConfiguration(i);
+		int ID = p.addRunConfiguration(i, supportingCutoff, false);
 		return ID;
 	}
 
@@ -85,12 +87,15 @@ private NodeMapper nm;
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("at1g06225", new Node("at1g06225"));
-		nodes.put("at1g65690", new Node("at1g65690"));
+		nodes.put("A", new Node("A"));
+		nodes.put("B", new Node("B"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
 		
-		network.addEdge(new Edge("ppi", nodes.get("at1g06225"), nodes.get("at1g65690"), true, 1.0, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
 
 		return network;
 	}
@@ -124,10 +129,13 @@ private NodeMapper nm;
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("at1g06225", new Node("at1g06225"));
-		nodes.put("at1g65690", new Node("at1g65690"));
+		nodes.put("A", new Node("A"));
+		nodes.put("B", new Node("B"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("at1g06225"), nodes.get("at1g65690"), true, 1.0, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
 
 		return network;
 	}
@@ -147,10 +155,13 @@ private NodeMapper nm;
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("at1g06225", new Node("at1g06225"));
-		nodes.put("at1g65690", new Node("at1g65690"));
+		nodes.put("A", new Node("A"));
+		nodes.put("B", new Node("B"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("at1g06225"), nodes.get("at1g65690"), true, 1.3, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
 
 		return network;
 	}
@@ -170,10 +181,13 @@ private NodeMapper nm;
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("at1g06225", new Node("at1g06225"));
-		nodes.put("at1g65690", new Node("at1g65690"));
+		nodes.put("A", new Node("A"));
+		nodes.put("B", new Node("B"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("at1g06225"), nodes.get("at1g65690"), true, 1.3, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
+		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
 
 		return network;
 	}
@@ -193,10 +207,11 @@ private NodeMapper nm;
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("at1g06225", new Node("at1g06225"));
-		nodes.put("at1g65690", new Node("at1g65690"));
+		nodes.put("A", new Node("A"));
+		nodes.put("B", new Node("B"));
 		
-		network.addEdge(new Edge("ppi", nodes.get("at1g06225"), nodes.get("at1g65690"), true, 0.0, false));
+		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.0, false));
+		// no X-Y edge
 
 		return network;
 	}
@@ -212,7 +227,7 @@ private NodeMapper nm;
 		
 		System.out.println("Defining network for weight test");
 		Project p = ex.getTestProject();
-		int ID_diff = ex.getTestDiffConfiguration(p);
+		int ID_diff = ex.getTestDiffConfiguration(p, 5);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, 10, 11, true, null);
@@ -227,29 +242,6 @@ private NodeMapper nm;
 		{
 			System.out.println(e);
 		}
-		
-		/*
-		System.out.println(" ");
-		System.out.println(" **************************************************************** ");
-		System.out.println(" ");
-		
-		System.out.println("Calculating pairwise differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, true, true);
-		
-		System.out.println("");
-		ex.printAllNetworks(p, ID_diff);
-		
-		System.out.println(" ");
-		System.out.println(" **************************************************************** ");
-		System.out.println(" ");
-		
-		System.out.println("Calculating pairwise consensus networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, false, true);
-		
-		System.out.println("");
-		ex.printAllConsensusNetworks(p, ID_diff);
-		*/
-		
 	}
 
 }

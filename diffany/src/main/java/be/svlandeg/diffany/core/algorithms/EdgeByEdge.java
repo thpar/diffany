@@ -223,11 +223,6 @@ public class EdgeByEdge
 						}
 						if (refEdges.size() > 1)
 						{
-							System.out.println(sourceID + "-" + targetID);
-							for (EdgeDefinition e : refEdges)
-							{
-								System.out.println(e);
-							}
 							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
 						}
 						if (refEdges.isEmpty())

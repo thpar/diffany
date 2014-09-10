@@ -29,10 +29,11 @@ import be.svlandeg.diffany.cytoscape.Model;
  * @author Thomas Van Parys
  *
  */
-public class RunProjectTask implements Task {
+public class RunProjectTask implements Task, ExecutionProgress {
 
 	private Model model;
 	private CyProject cyProject;
+	private TaskMonitor taskMonitor;
 	
 	/**
 	 * Constructs a new run task.
@@ -52,12 +53,13 @@ public class RunProjectTask implements Task {
 
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
-		taskMonitor.setTitle("Run Diffany Project");
-		taskMonitor.setProgress(0.1);
+		this.taskMonitor = taskMonitor;
+		this.taskMonitor.setTitle("Diffany Algorithm");
+		this.taskMonitor.setProgress(0.1);
 		
 		this.runAlgorithm();
 		
-		taskMonitor.setProgress(1.0);
+		this.taskMonitor.setProgress(1.0);
 		
 	}
 	
@@ -86,16 +88,15 @@ public class RunProjectTask implements Task {
 			nextID++;
 		}
 		
-		ExecutionProgress listener = null;		// TODO: #113
 		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator, listener);
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator, this);
 			break;
 		case REF_TO_ALL:	
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), generateDiff, generateConsensus, minOperator, listener);
+					model.getCutoff(), generateDiff, generateConsensus, minOperator, this);
 			break;
 		}
 		
@@ -143,6 +144,12 @@ public class RunProjectTask implements Task {
 		reportDialog.pack();
 		reportDialog.setVisible(true);
 		
+	}
+
+	@Override
+	public void setProgress(String message, int progress, int total) {
+		this.taskMonitor.setStatusMessage(message);
+		this.taskMonitor.setProgress((double)progress/(double)total);
 	}
 
 

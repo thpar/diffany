@@ -83,9 +83,9 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
-		boolean performStep3InputNetworksToFile = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
+		boolean performStep3InputNetworksToFile = false;
 
 		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = true;
@@ -131,7 +131,7 @@ public class RunAnalysis
 		boolean cleanInputAfterIO = false; // input should be cleaned before IO in step 3!
 
 		double weight_cutoff = 0;
-		int support = 4;
+		int support = 5;
 
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;

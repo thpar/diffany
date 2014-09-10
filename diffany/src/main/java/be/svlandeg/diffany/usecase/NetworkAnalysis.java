@@ -84,10 +84,26 @@ public class NetworkAnalysis
 			
 			
 		}
+		int totalOccEdges = 0;
+		int totalOccNodes = 0;
+		for (Integer edgeCount : edgeCountByOccurrence.keySet())
+		{
+			int occurrence = edgeCountByOccurrence.get(edgeCount);
+			totalOccEdges += edgeCount * occurrence;
+			totalOccNodes += occurrence;
+		}
+		int accumulOccEdges = 0;
+		int accumulOccNodes = 0;
 		for (Integer edgeCount : edgeCountByOccurrence.keySet())
 		{
 			int occurrence = edgeCountByOccurrence.get(edgeCount);
 			System.out.println(" - " + edgeCount + " edges -> " + occurrence + " occurrences (unique nodes)");
+			accumulOccEdges += edgeCount * occurrence;
+			accumulOccNodes += occurrence;
+			double percEdges = 100 * accumulOccEdges / totalOccEdges;
+			double percNodes = 100 * accumulOccNodes / totalOccNodes;
+			System.out.println("   Accumulated occurrence: " + accumulOccEdges + "/" + totalOccEdges + " = " + percEdges + "% edges for " 
+					+ accumulOccNodes + "/" + totalOccNodes + " = " + percNodes + "% nodes");
 		}
 	}
 	

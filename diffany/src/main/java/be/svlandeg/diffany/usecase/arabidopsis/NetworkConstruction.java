@@ -175,19 +175,25 @@ public class NetworkConstruction
 				weight = 1;
 			}
 			
-			// both are up-regulated: the positive edge weight is (1 + their FC average), or 0 in case they are anti-correlated
+			// both are up-regulated or equal: the positive edge weight is (1 + their FC average), or 0 in case they are anti-correlated
 			else if (targetFC >= 0 && sourceFC >= 0)
 			{
 				weight = 1 + ((sourceFC + targetFC ) / 2);
-				if (!correlation)
+				if (!correlation && targetFC != 0)	// if target is equal, the weight can remain positive
 				{
 					weight = 0;
 				}
 			}
 			
+			// source is downregulated but target is equal: 0 weight
+			else if (targetFC == 0 && sourceFC < 0)
+			{
+				weight = 0;
+			}
+			
 			// both are down-regulated: the positive edge weight is their FC average through an exponential function for normalization, 
 			// or 0 if they are anti-correlated
-			else if (targetFC <= 0 && sourceFC <= 0)
+			else if (targetFC < 0 && sourceFC < 0)
 			{
 				weight = 0;
 				if (correlation)
@@ -200,7 +206,7 @@ public class NetworkConstruction
 			}
 			
 			// one of the two is downregulated (below 0), the other up (above 0) -> break the connection unless they are anti-correlated
-			else if ((targetFC < 0 && sourceFC > 0) || (targetFC > 0 && sourceFC < 0))
+			else if ((targetFC < 0 && sourceFC >= 0) || (targetFC > 0 && sourceFC < 0))
 			{
 				weight = 0;
 				if (! correlation)

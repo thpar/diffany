@@ -2,6 +2,7 @@ package be.svlandeg.diffany.usecase;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -47,11 +48,14 @@ public class NetworkAnalysis
 	
 	/**
 	 * Print information about hubs in the network. This method currently disregards symmetry/directionality information (TODO).
-	 * @param n the input network
+	 * @param n the input network 
+	 * @param perc_most_connected the percentage of most connected hubs we want to obtain
+	 * @param printDetails whether or not to print a detailed account of the hub analysis
+	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public void analyseHubs(Network n)
+	public Set<String> analyseHubs(Network n, int perc_most_connected, boolean printDetails)
 	{
-		System.out.println("HUB ANALYSIS");
+		Set<String> hubs = new HashSet<String>();
 		Map<String, Integer> edgeCountByNodeID = new HashMap<String, Integer>();
 		for (Node node : n.getNodes())
 		{
@@ -70,41 +74,53 @@ public class NetworkAnalysis
 			edgeCountByNodeID.put(targetID, count2+1);
 		}
 		
-		SortedMap<Integer, Integer> edgeCountByOccurrence = new TreeMap<Integer, Integer>();
+		SortedMap<Integer, Set<String>> occurrenceByEdgeCount = new TreeMap<Integer, Set<String>>();
 		for (Node node : n.getNodes())
 		{
 			String id = node.getID();
 			Integer edgeCount = edgeCountByNodeID.get(id);
-			Integer occurrence = edgeCountByOccurrence.get(edgeCount);
-			if (occurrence == null)
+			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
+			if (occurrences == null)
 			{
-				occurrence = 0;
+				occurrences = new HashSet<String>();
 			}
-			edgeCountByOccurrence.put(edgeCount, occurrence+1);
+			occurrences.add(id);
+			occurrenceByEdgeCount.put(edgeCount, occurrences);
 			
 			
 		}
 		int totalOccEdges = 0;
 		int totalOccNodes = 0;
-		for (Integer edgeCount : edgeCountByOccurrence.keySet())
+		for (Integer edgeCount : occurrenceByEdgeCount.keySet())
 		{
-			int occurrence = edgeCountByOccurrence.get(edgeCount);
+			int occurrence = occurrenceByEdgeCount.get(edgeCount).size();
 			totalOccEdges += edgeCount * occurrence;
 			totalOccNodes += occurrence;
 		}
 		int accumulOccEdges = 0;
 		int accumulOccNodes = 0;
-		for (Integer edgeCount : edgeCountByOccurrence.keySet())
+		for (Integer edgeCount : occurrenceByEdgeCount.keySet())
 		{
-			int occurrence = edgeCountByOccurrence.get(edgeCount);
-			System.out.println(" - " + edgeCount + " edges -> " + occurrence + " occurrences (unique nodes)");
-			accumulOccEdges += edgeCount * occurrence;
-			accumulOccNodes += occurrence;
+			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
+			
+			accumulOccEdges += edgeCount * occurrences.size();
+			accumulOccNodes += occurrences.size();
 			double percEdges = 100 * accumulOccEdges / totalOccEdges;
 			double percNodes = 100 * accumulOccNodes / totalOccNodes;
-			System.out.println("   Accumulated occurrence: " + accumulOccEdges + "/" + totalOccEdges + " = " + percEdges + "% edges for " 
+			
+			if (percNodes >= perc_most_connected)
+			{
+				hubs.addAll(occurrences);
+			}
+			
+			if (printDetails)
+			{
+				System.out.println(" - " + edgeCount + " edges -> " + occurrences.size() + " occurrences (unique nodes)");
+				System.out.println("   Accumulated occurrence: " + accumulOccEdges + "/" + totalOccEdges + " = " + percEdges + "% edges for " 
 					+ accumulOccNodes + "/" + totalOccNodes + " = " + percNodes + "% nodes");
+			}
 		}
+		return hubs;
 	}
 	
 	
@@ -133,7 +149,15 @@ public class NetworkAnalysis
 		na.printNetworkStats(network);
 		
 		System.out.println(" ");
-		na.analyseHubs(network);
+		System.out.println("HUB ANALYSIS");
+		boolean printDetails = true;
+		int perc = 98;
+		Set<String> hubs = na.analyseHubs(network, perc, printDetails);
+		System.out.println(" Found " + hubs.size() + " hubs:");
+		for (String hub : hubs)
+		{
+			System.out.println("  " + hub);
+		}
 		
 		System.out.println(" ");
 		System.out.println("DONE");

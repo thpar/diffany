@@ -45,7 +45,10 @@ public class TestOsmoticSample extends TestGeneric
 		// Testing the edges in the differential network
 		DifferentialNetwork dn = pair.getDifferentialNetwork();
 		Set<Edge> dEdges = dn.getEdges();
-		assertEquals(0, dEdges.size());
+		assertEquals(2, dEdges.size());
+		
+		assertAnEdge(dn, "M", "N", false, "decreases_regulation", false, 1.1);
+		assertAnEdge(dn, "O", "P", false, "decreases_regulation", false, 1.1);
 	}
 
 }

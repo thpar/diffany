@@ -606,15 +606,17 @@ public class EdgeComparison
 
 		else
 		{
+			boolean bothNegative = (negSourceCats.contains(refCat) && negSourceCats.contains(conCat));
+			
 			finalDiffWeight = refWeight - conWeight;
-			if (finalDiffWeight < 0) // conWeight is higher than refWeight: differential increase
+			if (finalDiffWeight < 0) 	// conWeight is higher than refWeight: differential increase (unless both negative)
 			{
 				finalDiffWeight *= -1;
-				direction = true;
+				direction = ! bothNegative;
 			}
-			else if (finalDiffWeight > 0) // refWeight is higher than conWeight: differential decrease
+			else if (finalDiffWeight > 0) // refWeight is higher than conWeight: differential decrease (unless both negative)
 			{
-				direction = false;
+				direction = bothNegative;
 			}
 			boolean refNeutral = !(negSourceCats.contains(refCat) || posSourceCats.contains(refCat));
 			boolean conNeutral = !(negSourceCats.contains(conCat) || posSourceCats.contains(conCat));
@@ -660,6 +662,7 @@ public class EdgeComparison
 		type += baseType;
 		diff_edge.setType(type);
 		diff_edge.setWeight(finalDiffWeight);
+		
 		return diff_edge;
 	}
 

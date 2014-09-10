@@ -92,10 +92,18 @@ private NodeMapper nm;
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 		
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		
 		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
+		
+		network.addEdge(new Edge("downregulation", nodes.get("M"), nodes.get("N"), false, 0, false));
+		network.addEdge(new Edge("downregulation", nodes.get("O"), nodes.get("P"), false, 1.0, false));
 
 		return network;
 	}
@@ -134,8 +142,16 @@ private NodeMapper nm;
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 		
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
+		
+		network.addEdge(new Edge("downregulation", nodes.get("M"), nodes.get("N"), false, 1.2, false));
+		network.addEdge(new Edge("downregulation", nodes.get("O"), nodes.get("P"), false, 2.2, false));
 
 		return network;
 	}
@@ -160,8 +176,16 @@ private NodeMapper nm;
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 		
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
+		
+		network.addEdge(new Edge("downregulation", nodes.get("M"), nodes.get("N"), false, 1.4, false));
+		network.addEdge(new Edge("downregulation", nodes.get("O"), nodes.get("P"), false, 2.4, false));
 
 		return network;
 	}
@@ -186,8 +210,16 @@ private NodeMapper nm;
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 		
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
+		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
+		
+		network.addEdge(new Edge("downregulation", nodes.get("M"), nodes.get("N"), false, 1.5, false));
+		network.addEdge(new Edge("downregulation", nodes.get("O"), nodes.get("P"), false, 2.5, false));
 
 		return network;
 	}
@@ -209,9 +241,19 @@ private NodeMapper nm;
 		
 		nodes.put("A", new Node("A"));
 		nodes.put("B", new Node("B"));
+		nodes.put("X", new Node("X"));
+		nodes.put("Y", new Node("Y"));
+		
+		nodes.put("M", new Node("M"));
+		nodes.put("N", new Node("N"));
+		nodes.put("O", new Node("O"));
+		nodes.put("P", new Node("P"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.0, false));
 		// no X-Y edge
+		
+		network.addEdge(new Edge("downregulation", nodes.get("M"), nodes.get("N"), false, 1.1, false));
+		network.addEdge(new Edge("downregulation", nodes.get("O"), nodes.get("P"), false, 2.1, false));
 
 		return network;
 	}

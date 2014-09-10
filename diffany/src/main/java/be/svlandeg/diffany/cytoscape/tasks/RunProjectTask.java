@@ -55,7 +55,7 @@ public class RunProjectTask implements Task, ExecutionProgress {
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		this.taskMonitor = taskMonitor;
 		this.taskMonitor.setTitle("Diffany Algorithm");
-		this.taskMonitor.setProgress(0.1);
+		this.taskMonitor.setProgress(0.01);
 		
 		this.runAlgorithm();
 		

@@ -11,14 +11,15 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
@@ -162,14 +163,17 @@ public class CyProject{
 						project.getEdgeOntology(), project.getNodeMapper());
 				condNets.add(condNet);			
 			}
-			runConfigID = project.addRunConfiguration(refNet, condNets, true);
+			runConfigID = project.addRunConfiguration(refNet, condNets, model.getOverlapSupportCutoff(), true);
+			
+
+					
 			
 		} else if (model.isGenerateConsensusNets()) {
 			Set<InputNetwork> inputNetworks = new HashSet<InputNetwork>();
 			
 			//model might still mark one network as reference, if one was selected already. Treat it as input network in this configuration
 			if (this.getReferenceNetwork() != null){
-				inputNetworks.add(CyNetworkBridge.getInputNetwork(this.getReferenceNetwork(), project.getEdgeOntology(), project.getNodeMapper()));
+				inputNetworks.add(CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), project.getEdgeOntology(), project.getNodeMapper()));
 			}
 			//then add all the conditional networks
 			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
@@ -177,7 +181,7 @@ public class CyProject{
 						project.getEdgeOntology(), project.getNodeMapper());
 				inputNetworks.add(condNet);			
 			}
-			runConfigID = project.addRunConfiguration(inputNetworks);
+			runConfigID = project.addRunConfiguration(inputNetworks, model.getOverlapSupportCutoff(), model.isRefIncludedInOverlapSupportCutoff());
 			
 		} else {
 			//if we're not generating diff or consensus networks, then what are we doing here?
@@ -574,7 +578,18 @@ public class CyProject{
 		this.project.registerSourceNetwork(net, new Logger());
 	}
 
-	
+	/**
+	 * 
+	 * @return the number of selected condition and reference networks 
+	 */
+	public int getNumberOfInputNetworks(){
+		int condNumber = this.conditionalNetworks.size();
+		if (this.referenceNetwork != null){
+			condNumber++;
+		}
+		return condNumber;
+		
+	}
 	
 	
 }

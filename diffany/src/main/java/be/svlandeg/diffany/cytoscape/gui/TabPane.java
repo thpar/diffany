@@ -10,7 +10,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,6 +20,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -59,14 +62,18 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private ProjectDropDownModel collectionModel;
 	private SelectionTableModel networkTableModel;
 
-	private final String COLLECTION_ACTION = "collection";
-	private final String MODE_ACTION = "mode";
-	private final String GENERATE_DIFF_ACTION = "generate differential networks";
-	private final String GENERATE_CONSENSUS_ACTION = "generate consensus networks";
+	private static final String COLLECTION_ACTION = "collection";
+	private static final String MODE_ACTION = "mode";
+	private static final String GENERATE_DIFF_ACTION = "generate differential networks";
+	private static final String GENERATE_CONSENSUS_ACTION = "generate consensus networks";
+
+	private static final String REQUIRE_REF_NET_ACTION = "require reference network";
 	
 	private JButton runButton;
 	private JButton updateVizButton;
 	private JTable table;
+	private JCheckBox requireRefNetCheckBox;
+	private JSlider supportSlider;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the model.
@@ -231,6 +238,29 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		optionPanel.add(outputSelectionPanel);
 		
+		optionPanel.add(Box.createRigidArea(new Dimension(0,10)));
+		JPanel supportPanel = new JPanel();
+		supportPanel.setLayout(new BoxLayout(supportPanel, BoxLayout.PAGE_AXIS));
+		supportPanel.setAlignmentX(LEFT_ALIGNMENT);
+		JLabel supportLabel = new JLabel("Consensus edges cutoff:");
+		supportSlider = new JSlider(JSlider.HORIZONTAL, 0,4,4);
+		supportSlider.addChangeListener(this);
+		supportSlider.setMajorTickSpacing(1);
+		supportSlider.setMinorTickSpacing(1);
+		supportSlider.setPaintTicks(true);
+		supportSlider.setPaintLabels(true);
+		supportSlider.setEnabled(false);
+		
+		requireRefNetCheckBox = new JCheckBox("Require reference network edge");
+		requireRefNetCheckBox.setActionCommand(REQUIRE_REF_NET_ACTION);
+		requireRefNetCheckBox.addActionListener(this);
+		requireRefNetCheckBox.setSelected(true);
+		requireRefNetCheckBox.setEnabled(false);
+		
+		supportPanel.add(supportLabel);
+		supportPanel.add(supportSlider);
+		supportPanel.add(requireRefNetCheckBox);
+		optionPanel.add(supportPanel);
 				
 		return optionPanel;
 	}
@@ -277,6 +307,30 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		} else {
 			this.networkTableModel.clear();
 		}
+		updateSupportSlider();
+	}
+	
+	private void updateSupportSlider(){
+		//enable extra options
+		this.supportSlider.setEnabled(model.getSelectedProject()!=null);
+		if (model.getSelectedProject()!=null 
+				&& !model.isGenerateDiffNets() 
+				&& model.getSelectedProject().getReferenceNetwork()!=null){
+			this.requireRefNetCheckBox.setEnabled(true);
+			this.requireRefNetCheckBox.setSelected(true);
+		} else {
+			this.requireRefNetCheckBox.setEnabled(false);
+			this.requireRefNetCheckBox.setSelected(false);
+		}
+		
+		this.requireRefNetCheckBox.setSelected(model.getSelectedProject().getReferenceNetwork() != null);
+		int currentTicks = supportSlider.getMaximum();
+		int newNumberOfTicks = this.model.getSelectedProject().getNumberOfInputNetworks();
+		if (currentTicks != newNumberOfTicks){
+			this.supportSlider.setMaximum(newNumberOfTicks);
+			this.supportSlider.setMinimum(newNumberOfTicks/2);
+			this.supportSlider.setValue(newNumberOfTicks);			
+		}
 	}
 
 	@Override
@@ -304,6 +358,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		} else if (action.equals(GENERATE_CONSENSUS_ACTION)){
 			JCheckBox cb = (JCheckBox)e.getSource();
 			model.setGenerateConsensusNets(cb.isSelected());
+		} else if (action.equals(REQUIRE_REF_NET_ACTION)){
+			JCheckBox refCb = (JCheckBox)e.getSource();
+			model.setRefIncludedInOverlapSupportCutoff(refCb.isSelected());
 		}
 	}
 
@@ -311,6 +368,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	public void tableChanged(TableModelEvent e) {
 		// triggered when the data of the network selection table has changed
 		this.refreshCyProject();
+		this.updateSupportSlider();
 	}
 	
 	/**
@@ -332,9 +390,17 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		//triggered when cutoff spinner is changed
-		JSpinner spinner = (JSpinner)e.getSource();
-		this.model.setCutoff((Double)spinner.getValue());
+		Object source = e.getSource();
+		if (source instanceof JSpinner){
+			//triggered when cutoff spinner is changed
+			JSpinner spinner = (JSpinner)source;
+			this.model.setCutoff((Double)spinner.getValue());			
+		} else if (source instanceof JSlider){
+			JSlider slider = (JSlider)source;
+			if (!slider.getValueIsAdjusting()){
+				this.model.setOverlapSupportCutoff(slider.getValue());				
+			}
+		}
 		
 	}
 
@@ -352,6 +418,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			}
 			table.setRowSelectionInterval(row, row);
 		}
+		
 	}
 
 	

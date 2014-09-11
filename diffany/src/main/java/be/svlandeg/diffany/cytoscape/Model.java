@@ -97,6 +97,15 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	private CyNetwork networkInFocus;
 
+	
+	/**
+	 * Number of edges that need to be overlapping in order to make
+	 * an edge a consensus edge
+	 */
+	private int overlapCutoff;
+
+	private boolean refIncludedInOverlapSupportCutoff = true;
+
 
 	
 	/**
@@ -304,6 +313,27 @@ public class Model extends Observable implements NetworkAddedListener,
 		notifyObservers();
 	}
 
+	/**
+	 * Specify the number of edges that need to be matching in the different networks in order
+	 * to consider an edge a "consensus" edge.
+	 * 
+	 * @param overlapCutoff number of edges needs to be matching
+	 */
+	public void setOverlapSupportCutoff(int overlapCutoff){
+		this.overlapCutoff = overlapCutoff;
+	}
+	
+
+	/**
+	 * Return the number of edges that need to be matching in the different networks in order
+	 * to consider an edge a "consensus" edge.
+	 * 
+	 * @return number of edges that need to be matching
+	 */
+	public int getOverlapSupportCutoff() {
+		return overlapCutoff;
+	}
+
 
 
 	@Override
@@ -324,6 +354,28 @@ public class Model extends Observable implements NetworkAddedListener,
 	 */
 	public CyNetwork getNetworkInFocus() {
 		return networkInFocus;
+	}
+
+
+	/**
+	 * When calculating only consensus networks, should the reference network
+	 * be required to supply an edge?
+	 * 
+	 * @return whether or not the reference network needs to supply an edge in calculating consensus networks
+	 */
+	public boolean isRefIncludedInOverlapSupportCutoff() {
+		return this.refIncludedInOverlapSupportCutoff ;
+	}
+
+
+	/**
+	 * When calculating only consensus networks, should the reference network
+	 * be required to supply an edge?
+	 * 
+	 * @param refIncludedInOverlapSupportCutoff whether or not the reference network needs to supply an edge in calculating consensus networks
+	 */
+	public void setRefIncludedInOverlapSupportCutoff(boolean refIncludedInOverlapSupportCutoff) {
+		this.refIncludedInOverlapSupportCutoff = refIncludedInOverlapSupportCutoff;
 	}
 	
 

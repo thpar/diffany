@@ -48,22 +48,24 @@ public class NetworkAnalysis
 	
 	/**
 	 * Print information about hubs in the network. This method currently disregards symmetry/directionality information (TODO).
-	 * @param n the input network 
+	 * 
+	 * @param edges the edges in the input network 
+	 * @param nodes the nodes in the input network 
 	 * @param perc_most_connected the percentage of most connected hubs we want to obtain
 	 * @param printDetails whether or not to print a detailed account of the hub analysis
 	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public Set<String> analyseHubs(Network n, int perc_most_connected, boolean printDetails)
+	public Set<String> analyseHubs(Set<Edge> edges, Set<Node> nodes, int perc_most_connected, boolean printDetails)
 	{
-		Set<String> hubs = new HashSet<String>();
+ 		Set<String> hubs = new HashSet<String>();
 		Map<String, Integer> edgeCountByNodeID = new HashMap<String, Integer>();
-		for (Node node : n.getNodes())
+		for (Node node : nodes)
 		{
 			String id = node.getID();
 			edgeCountByNodeID.put(id, 0);
 		}
 		
-		for (Edge e : n.getEdges())
+		for (Edge e : edges)
 		{
 			String sourceID = e.getSource().getID();
 			Integer count1 = edgeCountByNodeID.get(sourceID);
@@ -75,7 +77,7 @@ public class NetworkAnalysis
 		}
 		
 		SortedMap<Integer, Set<String>> occurrenceByEdgeCount = new TreeMap<Integer, Set<String>>();
-		for (Node node : n.getNodes())
+		for (Node node : nodes)
 		{
 			String id = node.getID();
 			Integer edgeCount = edgeCountByNodeID.get(id);
@@ -152,7 +154,7 @@ public class NetworkAnalysis
 		System.out.println("HUB ANALYSIS");
 		boolean printDetails = true;
 		int perc = 98;
-		Set<String> hubs = na.analyseHubs(network, perc, printDetails);
+		Set<String> hubs = na.analyseHubs(network.getEdges(), network.getNodes(), perc, printDetails);
 		System.out.println(" Found " + hubs.size() + " hubs:");
 		for (String hub : hubs)
 		{

@@ -34,6 +34,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
+import be.svlandeg.diffany.usecase.NetworkAnalysis;
 import be.svlandeg.diffany.usecase.arabidopsis.CornetData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -83,9 +84,9 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = false;
-		boolean performStep2ToNetwork = false;
-		boolean performStep3InputNetworksToFile = false;
+		boolean performStep1FromSupplemental = true;
+		boolean performStep2ToNetwork = true;
+		boolean performStep3InputNetworksToFile = true;
 
 		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = true;
@@ -132,6 +133,7 @@ public class RunAnalysis
 
 		double weight_cutoff = 0;
 		int support = 5;
+		int hubPerc = 98;
 
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;
@@ -163,7 +165,7 @@ public class RunAnalysis
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, includeUnknownReg);
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, includeUnknownReg, hubPerc);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -322,7 +324,7 @@ public class RunAnalysis
 	 * Second step in the pipeline: use the overexpression values to generate networks: 
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, int hubPerc) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
@@ -417,13 +419,17 @@ public class RunAnalysis
 
 			Map<String, Double> all_de_nodes = dataAn.getSignificantGenes(data, threshold_strict);
 			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
+			
+			NetworkAnalysis na = new NetworkAnalysis();
+			Set<String> hubs = na.analyseHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), hubPerc, false);
 
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
+			Set<Edge> filteredEdges = constr.filterForHubs(hubs, conditionEdges, all_de_nodes.keySet());
 			Condition c = new Condition("time measurement " + suffix);
 			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, c, nm);
 
 			// By only defining the edges, unconnected nodes are automatically removed
-			condNet.setNodesAndEdges(conditionEdges);
+			condNet.setNodesAndEdges(filteredEdges);
 			// condNet.removeUnconnectedNodes();
 
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo);

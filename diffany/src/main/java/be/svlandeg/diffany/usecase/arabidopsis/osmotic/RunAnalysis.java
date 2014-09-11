@@ -421,10 +421,12 @@ public class RunAnalysis
 			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
 			
 			NetworkAnalysis na = new NetworkAnalysis();
-			Set<String> hubs = na.analyseHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), hubPerc, false);
+			String ppiType = "validated_ppi";
+			
+			Set<String> PPIhubs = na.analyseHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubPerc, false);
 
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
-			Set<Edge> filteredEdges = constr.filterForHubs(hubs, conditionEdges, all_de_nodes.keySet());
+			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());
 			Condition c = new Condition("time measurement " + suffix);
 			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, c, nm);
 

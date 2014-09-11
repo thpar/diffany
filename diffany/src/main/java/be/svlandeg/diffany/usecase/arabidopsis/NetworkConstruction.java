@@ -227,21 +227,22 @@ public class NetworkConstruction
 	 * 
 	 * @param hubs the PPI hubs denoted by their unique IDs
 	 * @param origEdges the original set of edges (will not be changed!)
+	 * @param type the type of connection we want to filter for
 	 * @param all_de_nodes the DE genes
 	 * @return a new set of edges, which will be a subset of the original set of edges
 	 */
-	public Set<Edge> filterForHubs(Set<String> hubs, Set<Edge> origEdges, Set<String> all_de_nodes)
+	public Set<Edge> filterForHubs(Set<String> hubs, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
 	{
 		Set<Edge> resultEdges = new HashSet<Edge>();
 
 		Map<String, Integer> diffEdgeCountByNode = new HashMap<String, Integer>();
 
-		// Count, per node, the number of differentially expressed edges (weights not equal to 1)
+		// Count, per node, the number of differentially expressed edges (weights not equal to 1) - of all types
 		for (Edge e : origEdges)
 		{
 			String sourceID = e.getSource().getID();
 			String targetID = e.getTarget().getID();
-			
+
 			if (!diffEdgeCountByNode.containsKey(sourceID))
 			{
 				diffEdgeCountByNode.put(sourceID, 0);
@@ -268,19 +269,23 @@ public class NetworkConstruction
 
 			int sourceEdgeDiffCount = diffEdgeCountByNode.get(sourceID);
 			int targetEdgeDiffCount = diffEdgeCountByNode.get(targetID);
-			
+
 			boolean keepEdge = true;
 
-			// either source or target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
-			if (sourceEdgeDiffCount == 1 || targetEdgeDiffCount == 1)
+			// we only attempt to remove the differential edge when the type if the one we want to filter
+			if (e.getType().equals(type))
 			{
-				// if either source or target is a hub, we will probably not keep the edge
-				if (hubs.contains(sourceID) || hubs.contains(targetID))
+				// either source or target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
+				if (sourceEdgeDiffCount == 1 || targetEdgeDiffCount == 1)
 				{
-					// unless both source and target are DE, then we do keep the edge
-					if (! (all_de_nodes.contains(sourceID) && all_de_nodes.contains(targetID)))
+					// if either source or target is a hub, we will probably not keep the edge
+					if (hubs.contains(sourceID) || hubs.contains(targetID))
 					{
-						keepEdge = false;
+						// unless both source and target are DE, then we do keep the edge
+						if (!(all_de_nodes.contains(sourceID) && all_de_nodes.contains(targetID)))
+						{
+							keepEdge = false;
+						}
 					}
 				}
 			}

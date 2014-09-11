@@ -47,15 +47,17 @@ public class NetworkAnalysis
 	}
 	
 	/**
-	 * Print information about hubs in the network. This method currently disregards symmetry/directionality information (TODO).
+	 * Print information about hubs in the network. This method disregards symmetry/directionality information, but simply counts all edges, once for source, and one for the target.
+	 * This method is always applied for one specific type of interactions, e.g. 'ppi', in order not to mix different types of connections.
 	 * 
 	 * @param edges the edges in the input network 
 	 * @param nodes the nodes in the input network 
-	 * @param perc_most_connected the percentage of most connected hubs we want to obtain
+	 * @param type the type of interactions we want to count hubs for
+	 * @param perc_most_connected the percentage of most connected hubs we want to obtain 
 	 * @param printDetails whether or not to print a detailed account of the hub analysis
 	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public Set<String> analyseHubs(Set<Edge> edges, Set<Node> nodes, int perc_most_connected, boolean printDetails)
+	public Set<String> analyseHubs(Set<Edge> edges, Set<Node> nodes, String type, int perc_most_connected, boolean printDetails)
 	{
  		Set<String> hubs = new HashSet<String>();
 		Map<String, Integer> edgeCountByNodeID = new HashMap<String, Integer>();
@@ -67,13 +69,17 @@ public class NetworkAnalysis
 		
 		for (Edge e : edges)
 		{
-			String sourceID = e.getSource().getID();
-			Integer count1 = edgeCountByNodeID.get(sourceID);
-			edgeCountByNodeID.put(sourceID, count1+1);
-			
-			String targetID = e.getSource().getID();
-			Integer count2 = edgeCountByNodeID.get(targetID);
-			edgeCountByNodeID.put(targetID, count2+1);
+			// only count this edge if it is of the correct type
+			if (e.getType().equals(type))
+			{
+				String sourceID = e.getSource().getID();
+				Integer count1 = edgeCountByNodeID.get(sourceID);
+				edgeCountByNodeID.put(sourceID, count1+1);
+				
+				String targetID = e.getSource().getID();
+				Integer count2 = edgeCountByNodeID.get(targetID);
+				edgeCountByNodeID.put(targetID, count2+1);
+			}
 		}
 		
 		SortedMap<Integer, Set<String>> occurrenceByEdgeCount = new TreeMap<Integer, Set<String>>();
@@ -154,9 +160,9 @@ public class NetworkAnalysis
 		System.out.println("HUB ANALYSIS");
 		boolean printDetails = true;
 		int perc = 98;
-		Set<String> hubs = na.analyseHubs(network.getEdges(), network.getNodes(), perc, printDetails);
-		System.out.println(" Found " + hubs.size() + " hubs:");
-		for (String hub : hubs)
+		Set<String> PPIhubs = na.analyseHubs(network.getEdges(), network.getNodes(), "validated_ppi", perc, printDetails);
+		System.out.println(" Found " + PPIhubs.size() + " PPI hubs:");
+		for (String hub : PPIhubs)
 		{
 			System.out.println("  " + hub);
 		}

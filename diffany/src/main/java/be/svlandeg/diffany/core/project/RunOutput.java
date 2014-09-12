@@ -94,7 +94,7 @@ public class RunOutput
 
 	/**
 	 * Add a consensus output network. When adding this network, its IDs will be checked for uniquenesss.
-	 * @param on the consensus output network
+	 * @param cn the consensus output network
 	 */
 	public void addConsensus(ConsensusNetwork cn)
 	{

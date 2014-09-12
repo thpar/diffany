@@ -232,6 +232,7 @@ public abstract class Network
 	 * 
 	 * @param source the required source node 
 	 * @param target the required target node
+	 * @param symmetry the symmetrical state of the edges, defining the result set to either be directed or symmetrical
 	 * @return the set of edge definitions between these two nodes (can be empty, but not null)
 	 */
 	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target, boolean symmetry)

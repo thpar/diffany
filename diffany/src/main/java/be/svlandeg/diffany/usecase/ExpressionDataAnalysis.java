@@ -1,12 +1,9 @@
 package be.svlandeg.diffany.usecase;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 
-import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
 
 

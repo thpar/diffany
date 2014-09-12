@@ -22,6 +22,7 @@ import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
+import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
 
 /**
  * This Task gathers information from the model and runs the {@link Project}
@@ -72,8 +73,6 @@ public class RunProjectTask implements Task, ExecutionProgress {
 	private void runAlgorithm() throws InvalidRunConfigurationException{
 		int runId = cyProject.generateRunConfiguration(model);
 		
-		// TODO quick hacks by Sofie
-		boolean minOperator = true;
 		int nextID = 666;
 		int generateDiff = -1;
 		if (model.isGenerateDiffNets())
@@ -92,11 +91,12 @@ public class RunProjectTask implements Task, ExecutionProgress {
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
-					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), nextID, minOperator, this);
+					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), 
+					nextID, model.getOverlapOperator() == OverlapOperator.MIN, this);
 			break;
 		case REF_TO_ALL:	
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), generateDiff, generateConsensus, minOperator, this);
+					model.getCutoff(), generateDiff, generateConsensus, model.getOverlapOperator() == OverlapOperator.MIN, this);
 			break;
 		}
 		

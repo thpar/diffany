@@ -2,6 +2,8 @@ package be.svlandeg.diffany.cytoscape.internal;
 
 import java.util.Properties;
 
+import javax.swing.JMenu;
+
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.application.swing.CySwingApplication;
@@ -31,6 +33,7 @@ import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.SessionListener;
 import be.svlandeg.diffany.cytoscape.actions.LoadExampleAction;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
+import be.svlandeg.diffany.cytoscape.gui.ExtraOptionsMenu;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
@@ -104,6 +107,11 @@ public class CyActivator extends AbstractCyActivator
 		registerAllServices(context, new LoadExampleAction(services,"FuzzyNetworks2", 
 				exampleProject3, example3.getTestConfiguration(exampleProject3, 4)), 
 				new Properties());
+		
+		
+		//add custom menu items
+		JMenu diffanyMenu = swingApplication.getJMenu("Apps.Diffany");
+		diffanyMenu.add(new ExtraOptionsMenu(model));
 		
 		//Register network listeners
 		registerService(context,model, NetworkAddedListener.class, new Properties());

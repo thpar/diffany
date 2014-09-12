@@ -62,9 +62,15 @@ public class Model extends Observable implements NetworkAddedListener,
 	private JFrame swingApplication;
 	
 	/**
-	 * Allows for switching between algorithm execution modes.
+	 * Operator to define the way overlapping edge weights are calculated
 	 * 
-	 * @author Thomas Van Parys
+	 */
+	public enum OverlapOperator{
+		MIN, MAX;
+	}
+	
+	/**
+	 * Allows for switching between algorithm execution modes.
 	 *
 	 */
 	public enum ComparisonMode{
@@ -105,6 +111,8 @@ public class Model extends Observable implements NetworkAddedListener,
 	private int overlapCutoff;
 
 	private boolean refIncludedInOverlapSupportCutoff = true;
+
+	private OverlapOperator overlapOperator = OverlapOperator.MIN;
 
 
 	
@@ -376,6 +384,24 @@ public class Model extends Observable implements NetworkAddedListener,
 	 */
 	public void setRefIncludedInOverlapSupportCutoff(boolean refIncludedInOverlapSupportCutoff) {
 		this.refIncludedInOverlapSupportCutoff = refIncludedInOverlapSupportCutoff;
+	}
+
+	/**
+	 * Set the way in which overlapping edge weights are calculated. Default behaviour: use MIN of weights.
+	 * 
+	 * @param op the operator to calculate overlapping edge weights (Min or Max)
+	 */
+	public void setOverlapOperator(OverlapOperator op){
+		this.overlapOperator = op;
+	}
+	
+	/**
+	 * Get the way in which overlapping edge weights are calculated. Default behaviour: use MIN of weights.
+	 * 
+	 * @return the operator to calculate overlapping edge weights (Min or Max)
+	 */
+	public OverlapOperator getOverlapOperator() {
+		return this.overlapOperator;
 	}
 	
 

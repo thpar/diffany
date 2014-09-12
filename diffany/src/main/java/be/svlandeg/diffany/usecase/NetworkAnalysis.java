@@ -49,16 +49,22 @@ public class NetworkAnalysis
 	/**
 	 * Print information about hubs in the network. This method disregards symmetry/directionality information, but simply counts all edges, once for source, and one for the target.
 	 * This method is always applied for one specific type of interactions, e.g. 'ppi', in order not to mix different types of connections.
+	 * Further, this method returns a set of edges which has min_connections or more.
 	 * 
 	 * @param edges the edges in the input network 
 	 * @param nodes the nodes in the input network 
 	 * @param type the type of interactions we want to count hubs for
-	 * @param perc_most_connected the percentage of most connected hubs we want to obtain 
+	 * @param min_connections the number of connections a 'hub' needs to have to be defined as such (inclusive)
 	 * @param printDetails whether or not to print a detailed account of the hub analysis
 	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public Set<String> analyseHubs(Set<Edge> edges, Set<Node> nodes, String type, int perc_most_connected, boolean printDetails)
+	public Set<String> retrieveHubs(Set<Edge> edges, Set<Node> nodes, String type, int min_connections, boolean printDetails)
 	{
+		if (printDetails)
+		{
+			System.out.println("edge count \t unique nodes \t accumulated edges \t percEdges \t accumulated nodes \t percNodes");
+		}
+		
  		Set<String> hubs = new HashSet<String>();
 		Map<String, Integer> edgeCountByNodeID = new HashMap<String, Integer>();
 		for (Node node : nodes)
@@ -86,7 +92,7 @@ public class NetworkAnalysis
 		for (Node node : nodes)
 		{
 			String id = node.getID();
-			Integer edgeCount = edgeCountByNodeID.get(id);
+			Integer edgeCount = edgeCountByNodeID.get(id) / 2;
 			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
 			if (occurrences == null)
 			{
@@ -107,25 +113,27 @@ public class NetworkAnalysis
 		}
 		int accumulOccEdges = 0;
 		int accumulOccNodes = 0;
-		for (Integer edgeCount : occurrenceByEdgeCount.keySet())
+		for (int edgeCount = 0; edgeCount <= occurrenceByEdgeCount.lastKey(); edgeCount++)
 		{
 			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
+			if (occurrences == null)
+			{
+				occurrences = new HashSet<String>();
+			}
 			
 			accumulOccEdges += edgeCount * occurrences.size();
 			accumulOccNodes += occurrences.size();
-			double percEdges = 100 * accumulOccEdges / totalOccEdges;
-			double percNodes = 100 * accumulOccNodes / totalOccNodes;
+			int percEdges = 100 * accumulOccEdges / totalOccEdges;
+			int percNodes = 100 * accumulOccNodes / totalOccNodes;
 			
-			if (percNodes >= perc_most_connected)
+			if (edgeCount >= min_connections)
 			{
 				hubs.addAll(occurrences);
 			}
 			
 			if (printDetails)
 			{
-				System.out.println(" - " + edgeCount + " edges -> " + occurrences.size() + " occurrences (unique nodes)");
-				System.out.println("   Accumulated occurrence: " + accumulOccEdges + "/" + totalOccEdges + " = " + percEdges + "% edges for " 
-					+ accumulOccNodes + "/" + totalOccNodes + " = " + percNodes + "% nodes");
+				System.out.println(edgeCount + "\t" + occurrences.size() + "\t" + accumulOccEdges + "\t" + percEdges + "\t" + accumulOccNodes + "\t" + percNodes);
 			}
 		}
 		return hubs;
@@ -159,8 +167,8 @@ public class NetworkAnalysis
 		System.out.println(" ");
 		System.out.println("HUB ANALYSIS");
 		boolean printDetails = true;
-		int perc = 98;
-		Set<String> PPIhubs = na.analyseHubs(network.getEdges(), network.getNodes(), "validated_ppi", perc, printDetails);
+		int connections = 10;
+		Set<String> PPIhubs = na.retrieveHubs(network.getEdges(), network.getNodes(), "validated_ppi", connections, printDetails);
 		System.out.println(" Found " + PPIhubs.size() + " PPI hubs:");
 		for (String hub : PPIhubs)
 		{

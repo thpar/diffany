@@ -75,8 +75,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -84,13 +84,13 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = false;
-		boolean performStep2ToNetwork = false;
-		boolean performStep3InputNetworksToFile = false;
+		boolean performStep1FromSupplemental = true;
+		boolean performStep2ToNetwork = true;
+		boolean performStep3InputNetworksToFile = true;
 
 		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = false;
-		boolean performStep5AllPairwise = true;
+		boolean performStep5OneagainstAll = true;
+		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
@@ -133,7 +133,7 @@ public class RunAnalysis
 
 		double weight_cutoff = 0;
 		int support = 5;
-		int hubPerc = 98;
+		int hubConnections = 10;
 
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;
@@ -165,7 +165,8 @@ public class RunAnalysis
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, includeUnknownReg, hubPerc);
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, 
+						includeUnknownReg, hubConnections);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -324,7 +325,8 @@ public class RunAnalysis
 	 * Second step in the pipeline: use the overexpression values to generate networks: 
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, int hubPerc) throws IOException, URISyntaxException
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, 
+			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
@@ -423,7 +425,7 @@ public class RunAnalysis
 			NetworkAnalysis na = new NetworkAnalysis();
 			String ppiType = "validated_ppi";
 			
-			Set<String> PPIhubs = na.analyseHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubPerc, false);
+			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubConnections, false);
 
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
 			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());

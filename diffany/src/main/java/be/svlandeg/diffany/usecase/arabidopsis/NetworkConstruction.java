@@ -272,20 +272,25 @@ public class NetworkConstruction
 
 			boolean keepEdge = true;
 
-			// we only attempt to remove the differential edge when the type if the one we want to filter
+			// we only attempt to remove the differential edge when the type is the one we want to filter
 			if (e.getType().equals(type))
 			{
-				// either source or target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
-				if (sourceEdgeDiffCount == 1 || targetEdgeDiffCount == 1)
+				// the source is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
+				if (sourceEdgeDiffCount == 1)
 				{
-					// if either source or target is a hub, we will probably not keep the edge
-					if (hubs.contains(sourceID) || hubs.contains(targetID))
+					// if target is a hub and the source is not DE
+					if (hubs.contains(targetID) && !(all_de_nodes.contains(sourceID)))
 					{
-						// unless both source and target are DE, then we do keep the edge
-						if (!(all_de_nodes.contains(sourceID) && all_de_nodes.contains(targetID)))
-						{
-							keepEdge = false;
-						}
+						keepEdge = false;
+					}
+				}
+				// the target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
+				if (targetEdgeDiffCount == 1)
+				{
+					// if source is a hub and the target is not DE
+					if (hubs.contains(sourceID) && !(all_de_nodes.contains(targetID)))
+					{
+						keepEdge = false;
 					}
 				}
 			}

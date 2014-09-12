@@ -34,6 +34,7 @@ import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
+import be.svlandeg.diffany.examples.FuzzyNetworks2;
 import be.svlandeg.diffany.examples.Ideker2011;
 
 /**
@@ -96,6 +97,12 @@ public class CyActivator extends AbstractCyActivator
 		Project exampleProject2 = example2.getProjectFigure3A();
 		registerAllServices(context, new LoadExampleAction(services,"Ideker2011", 
 				exampleProject2, example2.getTestConfiguration3A(exampleProject2)), 
+				new Properties());
+		
+		FuzzyNetworks2 example3 = new FuzzyNetworks2();
+		Project exampleProject3 = example3.getProject();
+		registerAllServices(context, new LoadExampleAction(services,"FuzzyNetworks2", 
+				exampleProject3, example3.getTestConfiguration(exampleProject3, 4)), 
 				new Properties());
 		
 		//Register network listeners

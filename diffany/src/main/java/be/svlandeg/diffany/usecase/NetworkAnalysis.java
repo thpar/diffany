@@ -56,9 +56,10 @@ public class NetworkAnalysis
 	 * @param type the type of interactions we want to count hubs for
 	 * @param min_connections the number of connections a 'hub' needs to have to be defined as such (inclusive)
 	 * @param printDetails whether or not to print a detailed account of the hub analysis
+	 * @param divideByTwo put this parameter to true if symmetrical edges are represented twice in the data (i.e. the edges are not cleaned)
 	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public Set<String> retrieveHubs(Set<Edge> edges, Set<Node> nodes, String type, int min_connections, boolean printDetails)
+	public Set<String> retrieveHubs(Set<Edge> edges, Set<Node> nodes, String type, int min_connections, boolean printDetails, boolean divideByTwo)
 	{
 		if (printDetails)
 		{
@@ -92,7 +93,11 @@ public class NetworkAnalysis
 		for (Node node : nodes)
 		{
 			String id = node.getID();
-			Integer edgeCount = edgeCountByNodeID.get(id) / 2;
+			Integer edgeCount = edgeCountByNodeID.get(id);
+			if (divideByTwo)
+			{
+				edgeCount = edgeCount / 2;
+			}
 			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
 			if (occurrences == null)
 			{
@@ -168,7 +173,7 @@ public class NetworkAnalysis
 		System.out.println("HUB ANALYSIS");
 		boolean printDetails = true;
 		int connections = 10;
-		Set<String> PPIhubs = na.retrieveHubs(network.getEdges(), network.getNodes(), "validated_ppi", connections, printDetails);
+		Set<String> PPIhubs = na.retrieveHubs(network.getEdges(), network.getNodes(), "validated_ppi", connections, printDetails, true);
 		System.out.println(" Found " + PPIhubs.size() + " PPI hubs:");
 		for (String hub : PPIhubs)
 		{

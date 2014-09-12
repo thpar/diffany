@@ -89,8 +89,8 @@ public class RunAnalysis
 		boolean performStep3InputNetworksToFile = true;
 
 		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = true;
-		boolean performStep5AllPairwise = false;
+		boolean performStep5OneagainstAll = false;
+		boolean performStep5AllPairwise = true;
 		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
@@ -425,7 +425,8 @@ public class RunAnalysis
 			NetworkAnalysis na = new NetworkAnalysis();
 			String ppiType = "validated_ppi";
 			
-			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubConnections, false);
+			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubConnections, false, false);
+			System.out.println(" filtering with " + PPIhubs.size());
 
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
 			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());

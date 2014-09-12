@@ -226,7 +226,7 @@ public class NetworkConstruction
 	 * In that case, we revert the PPI connection to reference levels (1) because we assume it's not very meaningful, unless both nodes are DE.
 	 * 
 	 * @param hubs the PPI hubs denoted by their unique IDs
-	 * @param origEdges the original set of edges (will not be changed!)
+	 * @param origEdges the original set of edges (will not be changed!) - should not contain redundancy
 	 * @param type the type of connection we want to filter for
 	 * @param all_de_nodes the DE genes
 	 * @return a new set of edges, which will be a subset of the original set of edges

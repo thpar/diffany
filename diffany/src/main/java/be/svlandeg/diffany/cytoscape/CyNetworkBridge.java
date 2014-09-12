@@ -45,20 +45,20 @@ import be.svlandeg.diffany.cytoscape.internal.Services;
  */
 public class CyNetworkBridge {
 	
-
+	
 	/**
 	 * Column name of an extra field to be used to map nodes from different networks onto each other.
 	 */
-	public static final String NORMALIZED_NAME = "normalized_name.SUID";
+	public static final String DIFFANY_UID = "diffany.SUID";
 	
 	/**
 	 * Column name for edge weight (double)
 	 */
-	public static String WEIGHT = "weight";
+	public static final String WEIGHT = "weight";
 	/**
 	 * Column name for negated edges (boolean)
 	 */
-	public static String NEGATED = "negated";
+	public static final String NEGATED = "negated";
 	
 	/**
 	 * Unique ID for the next network (TODO this is a hack by Sofie!)
@@ -104,8 +104,9 @@ public class CyNetworkBridge {
 		CyTable nodeTable = cyNetwork.getDefaultNodeTable();
 		CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
 
-		if (nodeTable.getColumn(NORMALIZED_NAME)==null){
-			nodeTable.createColumn(NORMALIZED_NAME, String.class, false);			
+		
+		if (nodeTable.getColumn(DIFFANY_UID)==null){
+			nodeTable.createColumn(DIFFANY_UID, String.class, false);			
 		}
 
 		if (edgeTable.getColumn(WEIGHT)==null){
@@ -118,9 +119,8 @@ public class CyNetworkBridge {
 		
 		for (Node node: network.getNodes()){
 			CyNode cyNode = cyNetwork.addNode();
-			// TODO (comment by Sofie): keep track of Node ID as well! (#142)
+			cyNetwork.getRow(cyNode).set(DIFFANY_UID, node.getID());
 			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getDisplayName());
-			cyNetwork.getRow(cyNode).set(NORMALIZED_NAME, node.getDisplayName(true));
 		}
 		
 		for (Edge edge : network.getEdges()){
@@ -141,7 +141,8 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * Takes a {@link Node} and looks it up in the given {@link CyNetwork}, using the normalized_name column.
+	 * Takes a {@link Node} and looks it up in the given {@link CyNetwork}, using the unique nodeID.
+	 * If no nodeID is returned, the normalized_name column will be used against a normalized version of the node name.
 	 * 
 	 * @param node {@link Node} to be converted
 	 * @param cyNetwork the {@link CyNetwork} to search in
@@ -153,7 +154,9 @@ public class CyNetworkBridge {
 		final String pk = table.getPrimaryKey().getName();
 		
 		CyNode cyNode = null;
-		Collection<CyRow> matches = table.getMatchingRows(NORMALIZED_NAME, node.getDisplayName(true));
+		
+		Collection<CyRow> matches = table.getMatchingRows(DIFFANY_UID, node.getID());
+		
 		for (final CyRow row : matches){
 			Long suid = row.get(pk, Long.class);
 			cyNode = cyNetwork.getNode(suid);
@@ -244,7 +247,11 @@ public class CyNetworkBridge {
 		Map<Long, Node> nodeMap = new HashMap<Long, Node>();
 		for (CyNode cyNode : cyNodes){
 			String nodeName = getName(cyNetwork, cyNode);
-			Node node = new Node(nodeName, nodeName);	// TODO (comment by Sofie: Node ID?! #142)
+			String nodeID = getDiffanyID(cyNetwork, cyNode);
+			if (nodeID==null || nodeID.isEmpty()){
+				nodeID = nodeName;
+			}
+			Node node = new Node(nodeID, nodeName);
 			nodeMap.put(cyNode.getSUID(), node);	
 		}
 		
@@ -297,6 +304,18 @@ public class CyNetworkBridge {
 	private static String getName(CyNetwork cyNetwork, CyIdentifiable cyObject) {
 		return cyNetwork.getRow(cyObject).get(CyNetwork.NAME, String.class);
 	}
+	
+	/**
+	 * Get the value of the Diffany ID column.
+	 * 
+	 * @param cyNetwork the network containing the node
+	 * @param cyNode the node
+	 * @return a string representing the unique ID used by Diffany
+	 */
+	private static String getDiffanyID(CyNetwork cyNetwork, CyNode cyNode) {
+		return cyNetwork.getRow(cyNode).get(DIFFANY_UID, String.class);
+	}
+	
 	/**
 	 * Get the value of the INTERACTION column for a given edge.
 	 * 

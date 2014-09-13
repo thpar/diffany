@@ -66,7 +66,7 @@ public class NetworkCleaning
 		String progressMessage = "Cleaning network " + net.getName();
 		if (progressListener != null)
 		{
-			progressListener.setProgress(progressMessage, 1, 1);
+			progressListener.setProgress(progressMessage, 0, 1);
 		}
 		
 		logger.log(" Full cleaning of " + net.getName());
@@ -79,6 +79,10 @@ public class NetworkCleaning
 
 		// clean edges per semantic category
 		cleanEdges(net, isMeta, eo);
+		if (progressListener != null)
+		{
+			progressListener.setProgress(progressMessage, 1, 1);
+		}
 	}
 
 	/**

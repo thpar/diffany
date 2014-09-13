@@ -45,7 +45,7 @@ public class ExampleCode
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
 		boolean cleanInput = true;
-		int runID = p.addRunConfiguration(refNet, condNet, cleanInput);
+		int runID = p.addRunConfiguration(refNet, condNet, cleanInput, null);
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();

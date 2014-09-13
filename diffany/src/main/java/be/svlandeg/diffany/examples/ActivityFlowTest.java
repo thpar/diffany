@@ -59,7 +59,7 @@ public class ActivityFlowTest extends GenericExample
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r, c, cleanInput);
+		int ID = p.addRunConfiguration(r, c, cleanInput, null);
 		return ID;
 	}
 	

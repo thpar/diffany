@@ -75,8 +75,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -129,10 +129,10 @@ public class RunAnalysis
 		boolean neighbours = true;
 		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
 		boolean includeUnknownReg = false;
-		boolean cleanInputAfterIO = false; // input should be cleaned before IO in step 3!
+		boolean cleanInputAfterIO = true; // input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
 
 		double weight_cutoff = 0;
-		int support = 3;
+		int support = 5;
 		int hubConnections = 10;
 
 		String overexpressionFile = null;
@@ -391,7 +391,7 @@ public class RunAnalysis
 		refNet.setNodesAndEdges(ppiEdges);
 		// refNet.removeUnconnectedNodes();
 
-		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo);
+		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo, null);
 		networks.add(cleanRefNet);
 
 		int strictDEnodes1 = 0;
@@ -437,7 +437,7 @@ public class RunAnalysis
 			condNet.setNodesAndEdges(filteredEdges);
 			// condNet.removeUnconnectedNodes();
 
-			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo);
+			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo, null);
 			networks.add(cleanCondNet);
 
 			int strictDEnodes2 = 0;
@@ -473,7 +473,7 @@ public class RunAnalysis
 		Project p = new Project(name, eo, nm);
 		ExecutionProgress listener = new StandardProgressListener();
 
-		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO);
+		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO, listener);
 
 		if (pairwise)
 		{

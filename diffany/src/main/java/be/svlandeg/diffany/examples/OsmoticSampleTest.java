@@ -60,7 +60,7 @@ private NodeMapper nm;
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r, c, supportingCutoff, cleanInput);
+		int ID = p.addRunConfiguration(r, c, supportingCutoff, cleanInput, null);
 		return ID;
 	}
 	
@@ -75,7 +75,7 @@ private NodeMapper nm;
 		Set<InputNetwork> i = new HashSet<InputNetwork>();
 		i.addAll(getTestConditions());
 		i.add(getTestReference());
-		int ID = p.addRunConfiguration(i, supportingCutoff, false);
+		int ID = p.addRunConfiguration(i, supportingCutoff, false, null);
 		return ID;
 	}
 

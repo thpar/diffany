@@ -10,6 +10,7 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
@@ -146,7 +147,7 @@ public class CyProject{
 	 * @return the ID of the generated {@link RunConfiguration}
 	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
-	public int generateRunConfiguration(Model model) throws InvalidRunConfigurationException{
+	public int generateRunConfiguration(Model model, ExecutionProgress listener) throws InvalidRunConfigurationException{
 		if (!canExecute(model)){
 			throw new InvalidRunConfigurationException();
 		}
@@ -163,7 +164,7 @@ public class CyProject{
 						project.getEdgeOntology(), project.getNodeMapper());
 				condNets.add(condNet);			
 			}
-			runConfigID = project.addRunConfiguration(refNet, condNets, model.getOverlapSupportCutoff(), true);
+			runConfigID = project.addRunConfiguration(refNet, condNets, model.getOverlapSupportCutoff(), true, listener);
 			
 
 					
@@ -181,7 +182,7 @@ public class CyProject{
 						project.getEdgeOntology(), project.getNodeMapper());
 				inputNetworks.add(condNet);			
 			}
-			runConfigID = project.addRunConfiguration(inputNetworks, model.getOverlapSupportCutoff(), model.isRefIncludedInOverlapSupportCutoff());
+			runConfigID = project.addRunConfiguration(inputNetworks, model.getOverlapSupportCutoff(), model.isRefIncludedInOverlapSupportCutoff(), listener);
 			
 		} else {
 			//if we're not generating diff or consensus networks, then what are we doing here?

@@ -60,7 +60,7 @@ public class Bandyopadhyay2010 extends GenericExample
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r, c, cleanInput);
+		int ID = p.addRunConfiguration(r, c, cleanInput, null);
 		return ID;
 	}
 

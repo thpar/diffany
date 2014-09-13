@@ -74,7 +74,7 @@ public class RunProject
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
-		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput);
+		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 		Logger l = p.getLogger(runID);
 		
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());

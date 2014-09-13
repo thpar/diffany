@@ -8,6 +8,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.algorithms.Unification;
 import be.svlandeg.diffany.core.io.ProjectIO;
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
@@ -110,14 +111,15 @@ public class Project
 	 * @param reference the reference network (not null!)
 	 * @param condition the condition-specific networks (not null!)
 	 * @param cleanInput whether or not to clean the input networks
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition, boolean cleanInput)
+	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition, boolean cleanInput, ExecutionProgress progressListener)
 	{
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
 		cs.add(condition);
-		return addRunConfiguration(reference, cs, 2, cleanInput);
+		return addRunConfiguration(reference, cs, 2, cleanInput, progressListener);
 	}
 	
 	/**
@@ -129,12 +131,13 @@ public class Project
 	 * @param reference the reference network (not null!)
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param cleanInput whether or not to clean the input networks
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, boolean cleanInput)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, boolean cleanInput, ExecutionProgress progressListener)
 	{
-		return addRunConfiguration(reference, conditions, conditions.size() + 1, cleanInput);
+		return addRunConfiguration(reference, conditions, conditions.size() + 1, cleanInput, progressListener);
 	}
 	
 	/**
@@ -146,11 +149,12 @@ public class Project
 	 * @param conditions the condition-specific networks (at least 1!)
 	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
 	 * @param cleanInput whether or not to clean the input networks
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 * @throws IllegalArgumentException when the IDs of the provided networks are not unique
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff, boolean cleanInput)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff, boolean cleanInput, ExecutionProgress progressListener)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the reference and condition-specific network(s) ");
@@ -160,13 +164,13 @@ public class Project
 		{
 			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */
 			registerSourceNetwork(reference, logger);
-			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology);
+			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, progressListener);
 			
 			Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 			for (ConditionNetwork conNet : conditions)
 			{
 				registerSourceNetwork(conNet, logger);
-				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology);
+				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, progressListener);
 				cleanConditions.add(cleanCon);
 			}
 			rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
@@ -203,12 +207,13 @@ public class Project
 	 * This option will use the default requirement of all networks having a consensus edge before it can be include in the ConsensusNetwork.
 	 * 
 	 * @param inputNetworks all the input networks (at least 1!)
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, ExecutionProgress progressListener)
 	{
-		return addRunConfiguration(inputNetworks, inputNetworks.size(), false);
+		return addRunConfiguration(inputNetworks, inputNetworks.size(), false, progressListener);
 	}
 	
 	/**
@@ -219,10 +224,11 @@ public class Project
 	 * @param inputNetworks all the input networks (at least 1!)
 	 * @param supportingCutoff the required number of input networks that need to match for a consensus edge to be present
 	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int supportingCutoff, boolean refRequired)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int supportingCutoff, boolean refRequired, ExecutionProgress progressListener)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
@@ -231,7 +237,7 @@ public class Project
 		for (InputNetwork inputNet : inputNetworks)
 		{
 			registerSourceNetwork(inputNet, logger);
-			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, nodeMapper, edgeOntology);
+			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, nodeMapper, edgeOntology, progressListener);
 			cleanNetworks.add(cleanNet);
 		}
 		

@@ -98,7 +98,7 @@ public class CalculateDiff
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			ConsensusNetwork on = new EdgeByEdge(log).calculateConsensusNetwork(networks, eo, nm, consensus_name, ID, supportingCutoff, refRequired, weightCutoff, minOperator, progressListener);
-			new NetworkCleaning(log).fullConsensusOutputCleaning(on, eo);
+			new NetworkCleaning(log).fullConsensusOutputCleaning(on, eo, progressListener);
 			return on;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);

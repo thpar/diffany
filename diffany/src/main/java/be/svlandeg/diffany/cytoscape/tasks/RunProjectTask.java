@@ -71,7 +71,7 @@ public class RunProjectTask implements Task, ExecutionProgress {
 	 * the information in the {@link CyProject}
 	 */
 	private void runAlgorithm() throws InvalidRunConfigurationException{
-		int runId = cyProject.generateRunConfiguration(model);
+		int runId = cyProject.generateRunConfiguration(model, this);
 		
 		int nextID = 666;
 		int generateDiff = -1;

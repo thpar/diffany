@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
@@ -57,9 +58,14 @@ public class NetworkCleaning
 	 * @param net the network that needs cleaning
 	 * @param isMeta if true, the edges in the input network can/should be cast as MetaEdges
 	 * @param eo the edge ontology
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 */
-	private void fullCleaning(Network net, EdgeOntology eo, boolean isMeta)
+	private void fullCleaning(Network net, EdgeOntology eo, boolean isMeta, ExecutionProgress progressListener)
 	{
+		// TODO: record more detailed progress for the listener!
+		String progressMessage = "Cleaning network " + net.getName();
+		progressListener.setProgress(progressMessage, 1, 1);
+		
 		logger.log(" Full cleaning of " + net.getName());
 
 		// make edges directed when defined as such by the edge ontology
@@ -78,10 +84,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the consensus network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 */
-	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo)
+	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		fullCleaning(net, eo, true);
+		fullCleaning(net, eo, true, progressListener);
 	}
 
 	/**
@@ -174,14 +181,15 @@ public class NetworkCleaning
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
 	 * @param eo the edge ontology
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned condition-specific network representing the same semantic information
 	 */
-	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo)
+	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getConditions(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false);
+		fullCleaning(resultNet, eo, false, progressListener);
 
 		return resultNet;
 	}
@@ -194,14 +202,15 @@ public class NetworkCleaning
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
 	 * @param eo the edge ontology
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo)
+	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false);
+		fullCleaning(resultNet, eo, false, progressListener);
 
 		return resultNet;
 	}
@@ -214,14 +223,15 @@ public class NetworkCleaning
 	 * @param net the network that needs cleaning
 	 * @param nm the node mapper
 	 * @param eo the edge ontology
+	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo)
+	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false);
+		fullCleaning(resultNet, eo, false, progressListener);
 
 		return resultNet;
 	}

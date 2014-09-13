@@ -52,7 +52,7 @@ public class TestVisual
 		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
 		
 		boolean cleanInput = true;
-		p.addRunConfiguration(ref, cn, cleanInput);
+		p.addRunConfiguration(ref, cn, cleanInput, null);
 
 		// process types
 		assertColorInSource("ppi" , Color.YELLOW, eo);

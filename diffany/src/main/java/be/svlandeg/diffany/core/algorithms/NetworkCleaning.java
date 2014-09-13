@@ -64,7 +64,10 @@ public class NetworkCleaning
 	{
 		// TODO: record more detailed progress for the listener!
 		String progressMessage = "Cleaning network " + net.getName();
-		progressListener.setProgress(progressMessage, 1, 1);
+		if (progressListener != null)
+		{
+			progressListener.setProgress(progressMessage, 1, 1);
+		}
 		
 		logger.log(" Full cleaning of " + net.getName());
 

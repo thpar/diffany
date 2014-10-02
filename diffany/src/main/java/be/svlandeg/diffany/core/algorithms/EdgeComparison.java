@@ -44,7 +44,7 @@ public class EdgeComparison
 	 */
 	protected class IntermediateComparison
 	{
-		private SortedMap<Double, Set<Integer>> allWeights;		// should not contain support for weight 0
+		private SortedMap<Double, Set<Integer>> allWeights;	
 		private String type;
 
 		protected IntermediateComparison(String type)
@@ -208,9 +208,7 @@ public class EdgeComparison
 		Set<Integer> supports = new HashSet<Integer>();
 		TreeSet<Double> allWs = new TreeSet<Double>(inter.allWeights.keySet());
 		
-		// We start from the highest possible weights and keep going down until enough accumulated support is found
-		// For the maximum operator, the highest weight is chosen that fits into the provided weight interval
-		
+		// For the maximum operator, the highest weight is chosen that fits into the provided weight interval (and if there is enough support)
 		if (!minOperator)
 		{
 			double highestW = Double.NEGATIVE_INFINITY;
@@ -237,8 +235,7 @@ public class EdgeComparison
 			return map;
 		}
 
-		// For the minimum operator, the first lower weight is chosen that has enough accumulated support
-		
+		// For the minimum operator, the first lower weight (between the limits) is chosen that has enough accumulated support
 		for (double w : allWs.descendingSet())
 		{
 			if (w > weight_min && w < weight_max)
@@ -263,11 +260,12 @@ public class EdgeComparison
 	}
 	
 	/**
-	 * Create all possible edges from an intermediate comparison, by determining the exact weight we want the supporting edge for.
+	 * Create one final edge from an intermediate comparison, in case there is enough support for this specific weight value.
+	 * If not, the map is left empty (never null).
 	 * 
 	 * Further define the type, symmetry and negation status of the new edge
 	 */
-	private Map<EdgeDefinition, Set<Integer>> createAllEdges(IntermediateComparison inter, boolean final_symm, boolean negation, int supportingCutoff, double weight)
+	private Map<EdgeDefinition, Set<Integer>> createOneEdge(IntermediateComparison inter, boolean final_symm, boolean negation, int supportingCutoff, double weight)
 	{
 		Map<EdgeDefinition, Set<Integer>> map = new HashMap<EdgeDefinition, Set<Integer>>();
 				
@@ -411,7 +409,7 @@ public class EdgeComparison
 				// all edges with weight above the reference weight: take the minimum of the condition edges to determine the minimal consensus increase
 				Map<EdgeDefinition, Set<Integer>> map_above = createAllEdges(con_result, final_symm, false, supportingCutoff, refWeight, Double.POSITIVE_INFINITY, true);
 				
-				Map<EdgeDefinition, Set<Integer>> map_same = createAllEdges(con_result, final_symm, false, supportingCutoff, refWeight);
+				Map<EdgeDefinition, Set<Integer>> map_same = createOneEdge(con_result, final_symm, false, supportingCutoff, refWeight);
 				
 				if (map_below.isEmpty() && map_above.isEmpty())
 				{
@@ -432,7 +430,7 @@ public class EdgeComparison
 					// there can be no differential edge because there is evidence for both higher and lower weights
 					return eg.getVoidEdge(final_symm);
 				}
-				// keep only the consensus condition edge with the highest weight (below threshold)
+				// temporarily keep all consensus condition edges below the threshold (if there are any)
 				else if (!map_below.isEmpty())
 				{
 					for (EdgeDefinition consensusEedge : map_below.keySet())
@@ -440,7 +438,7 @@ public class EdgeComparison
 						consensusAll.add(consensusEedge);
 					}
 				}
-				// keep only the consensus condition edge with the highest weight (above threshold)
+				// temporarily keep all consensus condition edges above the threshold (if there are any)
 				else if (!map_above.isEmpty())
 				{
 					for (EdgeDefinition consensusEedge : map_above.keySet())
@@ -451,6 +449,8 @@ public class EdgeComparison
 			}
 		}
 
+		// keep only the consensus condition edge with the highest weight
+		// TODO v2.1: why is this step actually necessary? Shouldn't this have been dealt with by 'createAllEdges'?
 		double max = Double.NEGATIVE_INFINITY;
 		for (EdgeDefinition consensusEedge : consensusAll)
 		{
@@ -472,10 +472,10 @@ public class EdgeComparison
 			consensusClean.add(eg.getVoidEdge(final_symm));
 		}
 		
-		// take the most specific condition category
+		// if there are still several consensus condition edges, take the most specific condition category
 		while (consensusClean.size() > 1)
 		{
-			// TODO: this sometimes generates an infinite loop!!!
+			// TODO v2.1: this may generate an infinite loop?
 
 			Iterator<EdgeDefinition> it = consensusClean.iterator();
 			EdgeDefinition consensusEdge0 = it.next();
@@ -514,7 +514,7 @@ public class EdgeComparison
 
 		String refCat = teo.getSourceCategory(refEdge.getType());
 
-		// DEFINE THE COMMON PARENT OF ALL EDGES
+		// DEFINE THE COMMON PARENT OF THE REFERENCE AND CONSENSUS CONDITION EDGES
 		Set<EdgeDefinition> allEdges = new HashSet<EdgeDefinition>();
 		allEdges.add(consensusConEdge);
 		allEdges.add(refEdge);
@@ -549,6 +549,8 @@ public class EdgeComparison
 			return eg.getVoidEdge(final_symm);
 		}
 		String firstNeutralParent = firstParent;
+		
+		// go up the ontology tree to fetch the next parent, until we find a neutral one (i.e. no polarity)
 		while (firstNeutralParent != null && (posSourceCats.contains(firstNeutralParent) || negSourceCats.contains(firstNeutralParent)))
 		{
 			firstNeutralParent = teo.retrieveCatParent(firstNeutralParent);

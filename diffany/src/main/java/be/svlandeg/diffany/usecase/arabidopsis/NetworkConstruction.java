@@ -65,7 +65,7 @@ public class NetworkConstruction
 
 		Set<Node> nodes_strict_DE = gp.getNodesByLocusID(nodeIDs_strict_DE);
 
-		// first expand the (strict) DE node set with PPI neighbours
+		/* 1. expand the (strict) DE node set with PPI neighbours */
 		if (ppi_file != null)
 		{
 			Set<Edge> PPIedges = null;
@@ -84,7 +84,7 @@ public class NetworkConstruction
 			allNodeIDs.addAll(expandedNodeIDs);
 		}
 
-		// then expand the original (strict) DE node set with regulatory neighbours
+		/* 2. expand the original (strict) DE node set with regulatory neighbours */
 		if (reg_file != null)
 		{
 
@@ -101,7 +101,7 @@ public class NetworkConstruction
 			allNodeIDs.addAll(expandedNodeIDs);
 		}
 
-		// finally, add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners
+		/* 3. add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners */
 		if (nodeIDs_fuzzy_DE != null && !nodeIDs_fuzzy_DE.isEmpty())
 		{
 			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
@@ -162,7 +162,8 @@ public class NetworkConstruction
 				String edgeCat = eo.getSourceCategory(edgeType);
 				if (eo.getAllNegSourceCategories().contains(edgeCat))
 				{
-					correlation = false; // this means they are anti-correlated, e.g. by negative regulation
+					// this means they are anti-correlated, e.g. by negative regulation
+					correlation = false; 
 				}
 			}
 
@@ -237,7 +238,7 @@ public class NetworkConstruction
 
 		Map<String, Integer> diffEdgeCountByNode = new HashMap<String, Integer>();
 
-		// Count, per node, the number of differentially expressed edges (weights not equal to 1) - of all types
+		/* Count, per node, the number of differentially expressed edges (weights not equal to 1) - of all types */
 		for (Edge e : origEdges)
 		{
 			String sourceID = e.getSource().getID();
@@ -272,10 +273,10 @@ public class NetworkConstruction
 
 			boolean keepEdge = true;
 
-			// we only attempt to remove the differential edge when the type is the one we want to filter
+			/* we only attempt to remove the differential edge when the type is the one we want to filter */
 			if (e.getType().equals(type))
 			{
-				// the source is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
+				/* the source is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1) */
 				if (sourceEdgeDiffCount == 1)
 				{
 					// if target is a hub and the source is not DE
@@ -284,7 +285,7 @@ public class NetworkConstruction
 						keepEdge = false;
 					}
 				}
-				// the target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1)
+				/* the target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1) */
 				if (targetEdgeDiffCount == 1)
 				{
 					// if source is a hub and the target is not DE
@@ -294,13 +295,13 @@ public class NetworkConstruction
 					}
 				}
 			}
-			// add a copy of the edge to the result set if we want to keep it
+			/* add a copy of the edge to the result set if we want to keep it */
 			if (keepEdge)
 			{
 				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
 				resultEdges.add(copyE);
 			}
-			// otherwise, put the edge weight to 1 and keep that copy
+			/* otherwise, put the edge weight to 1 and keep that copy */
 			else
 			{
 				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
@@ -398,7 +399,7 @@ public class NetworkConstruction
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			stok.nextToken(); // String id = 
+			stok.nextToken();
 			String locus1 = stok.nextToken().toLowerCase();
 			String locus2 = stok.nextToken().toLowerCase();
 			String type = stok.nextToken();
@@ -420,10 +421,10 @@ public class NetworkConstruction
 				boolean foundSecondIn1 = (nodes1 == null || origLoci1.contains(locus2));
 				boolean foundSecondIn2 = (nodes2 == null || origLoci2.contains(locus2));
 
-				// include the interaction when both are in one of the nodesets (this is automatically true for a nodeset which is null)
+				/* include the interaction when both are in one of the nodesets (this is automatically true for a nodeset which is null) */
 				if ((foundFirstIn1 && foundSecondIn2) || (foundSecondIn1 && foundFirstIn2))
 				{
-					// include when the loci are different, or when self interactions are allowed
+					/* include when the loci are different, or when self interactions are allowed */
 					if (includeSelfInteractions || !locus1.equals(locus2))
 					{
 						Node source = mappedNodes.get(locus1);
@@ -518,7 +519,7 @@ public class NetworkConstruction
 			{
 				String regRead = source_locus + target_locus + type;
 
-				// avoid reading the same regulation twice
+				/* avoid reading the same regulation twice */
 				if (!regsRead.contains(regRead))
 				{
 					regsRead.add(regRead);
@@ -526,10 +527,10 @@ public class NetworkConstruction
 					boolean foundSource = (source_nodes == null || origSourceLoci.contains(source_locus));
 					boolean foundTarget = (target_nodes == null || origTargetLoci.contains(target_locus));
 
-					// include the interaction when both are in the nodeset
+					/* include the interaction when both are in the nodeset */
 					if (foundSource && foundTarget)
 					{
-						// include when the loci are different, or when self interactions are allowed
+						/* include when the loci are different, or when self interactions are allowed */
 						if (includeSelfInteractions || !source_locus.equals(target_locus))
 						{
 							Node source = mappedNodes.get(source_locus);

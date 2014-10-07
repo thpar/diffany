@@ -50,6 +50,7 @@ import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 public class RunAnalysis
 {
 
+	/* Location of the PPI and regulatory data. Set to null when you want to exclude either type */
 	private URI ppi_file;
 	private URI reg_file;
 
@@ -58,7 +59,6 @@ public class RunAnalysis
 	 */
 	public RunAnalysis()
 	{
-		// put to null when you don't want to consult these resources
 		ppi_file = new CornetData().getCornetPPI();
 		reg_file = new CornetData().getCornetReg();
 	}
@@ -127,9 +127,8 @@ public class RunAnalysis
 
 		boolean selfInteractions = false;
 		boolean neighbours = true;
-		//int min_neighbourcount = 1;		// TODO this is currently not implemented anymore
 		boolean includeUnknownReg = false;
-		boolean cleanInputAfterIO = true; // input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
+		boolean cleanInputAfterIO = true; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
 
 		double weight_cutoff = 0;
 		int support = 5;
@@ -345,7 +344,7 @@ public class RunAnalysis
 		Set<String> all_nodeIDs_strict = new HashSet<String>();
 		Set<String> all_nodeIDs_fuzzy = new HashSet<String>();
 
-		// Read all different experiments and determine their overexpressed genes
+		/* Read all different experiments and determine their overexpressed genes */
 		for (OverexpressionData data : datasets)
 		{
 			System.out.println("");
@@ -363,17 +362,17 @@ public class RunAnalysis
 		System.out.println("");
 		System.out.println("Defining the set of important nodes");
 
-		// Clean out the set of DE genes: if they are strict DE once, they do not need to be in the fuzzy set also
+		/* Clean out the set of DE genes: if they are strict DE once, they do not need to be in the fuzzy set also */
 		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
 		System.out.println(" Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 
 		System.out.println("Expanding the network of DE genes to also include important neighbours");
 
-		// Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes
+		/* Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes */
 		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
 
-		// Read all the PPI and regulatory interactions between all the nodes in our expanded network
-		// Without modifying edge strenghts, this becomes our reference network
+		/* Read all the PPI and regulatory interactions between all the nodes in our expanded network
+		 * Without modifying edge strenghts, this becomes our reference network */
 		Set<Node> all_nodes = gp.getNodesByLocusID(expandedNetwork);
 
 		System.out.println("Constructing the reference network");
@@ -387,9 +386,8 @@ public class RunAnalysis
 
 		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nm);
 
-		// By only defining the edges, unconnected nodes are automatically removed
+		/* By only defining the edges, unconnected nodes are automatically removed */
 		refNet.setNodesAndEdges(ppiEdges);
-		// refNet.removeUnconnectedNodes();
 
 		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo, null);
 		networks.add(cleanRefNet);
@@ -411,7 +409,7 @@ public class RunAnalysis
 		}
 		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + " nodes of which " + strictDEnodes1 + " strict DE nodes and " + fuzzyDEnodes1 + " fuzzy DE nodes");
 
-		// Now we create condition-specific networks by altering the edge weights of the original reference network
+		/* Now we create condition-specific networks by altering the edge weights of the original reference network */
 		for (OverexpressionData data : datasets)
 		{
 			String suffix = data.getName();
@@ -433,9 +431,8 @@ public class RunAnalysis
 			Condition c = new Condition("time measurement " + suffix);
 			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, c, nm);
 
-			// By only defining the edges, unconnected nodes are automatically removed
+			/* By only defining the edges, unconnected nodes are automatically removed */
 			condNet.setNodesAndEdges(filteredEdges);
-			// condNet.removeUnconnectedNodes();
 
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo, null);
 			networks.add(cleanCondNet);
@@ -483,8 +480,8 @@ public class RunAnalysis
 		{
 			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
 		}
-
-		// Testing that there is exactly one differential network created
+ 
+		/* Testing that there is exactly one differential network created */
 		RunOutput output = p.getOutput(runID);
 
 		return output;

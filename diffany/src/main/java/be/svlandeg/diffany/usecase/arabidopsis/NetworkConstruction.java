@@ -216,6 +216,13 @@ public class NetworkConstruction
 			}
 
 			newEdge.getDefinition().setWeight(weight);
+			/*
+			if (weight != 1.0)
+			{
+				System.out.println(newEdge);
+			}
+			*/
+			
 			resultEdges.add(newEdge);
 		}
 

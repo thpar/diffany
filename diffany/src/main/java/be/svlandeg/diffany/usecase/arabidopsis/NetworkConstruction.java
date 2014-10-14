@@ -504,15 +504,15 @@ public class NetworkConstruction
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			stok.nextToken(); // String source_symbol = 
+			stok.nextToken(); // source_symbol 
 			String source_locus = stok.nextToken().toLowerCase();
-			stok.nextToken(); // String source_family = 
-			stok.nextToken(); // String target_symbol = 
+			stok.nextToken(); // source_family 
+			stok.nextToken(); // target_symbol 
 			String target_locus = stok.nextToken().toLowerCase();
-			stok.nextToken(); // String yesno = 
-			stok.nextToken(); // String direct = 
-			stok.nextToken(); // String confirmed = 
-			stok.nextToken(); // String description = 
+			stok.nextToken(); // yesno 
+			stok.nextToken(); // direct 
+			stok.nextToken(); // confirmed 
+			stok.nextToken(); // description 
 			String type = stok.nextToken().toLowerCase();
 
 			boolean include = true;
@@ -575,6 +575,57 @@ public class NetworkConstruction
 		reader.close();
 
 		return edges;
+	}
+	
+	/**
+	 * Read a list of (lower-case) locus tags with phosphorylation sites. Either include all, or only those that are experimentally verified.
+	 * Those are apparent from the data by the usage of (pS), (pT) or (pY) in the modified peptide string.
+	 * 
+	 * @param phos_file the location where to find the CSV phosphorylation data
+	 * @param includePredicted whether or not to include predicted sites
+	 * 
+	 * @return the corresponding set of locus tags with phosphorylation sites
+	 * @throws URISyntaxException when the phosphorylation datafile can not be read properly
+	 * @throws IOException when the phosphorylation  datafile can not be read properly
+	 */
+	public Set<String> readPhosphorylationLocusTags(URI phos_file, boolean includePredicted) throws URISyntaxException, IOException
+	{
+		Set<String> locustags = new HashSet<String>();
+
+		BufferedReader reader = new BufferedReader(new FileReader(new File(phos_file)));
+
+		String line = reader.readLine();
+		
+		// skip header
+		line = reader.readLine();
+		
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, ",");
+			String locus = stok.nextToken().toLowerCase();	
+			stok.nextToken();	// species
+			stok.nextToken();	// peptide
+			String peptideModified = stok.nextToken();
+			
+			// remove the part of the locus tag behind the .
+			if (locus.contains("."))
+			{
+				locus = locus.substring(0, locus.indexOf("."));
+			}
+			
+			// only try to add this locus tag if we don't have it already
+			if (! locustags.contains(locus))
+			{
+				if (includePredicted || peptideModified.contains("(pS)") || peptideModified.contains("(pT)") || peptideModified.contains("(pY)"))
+				{
+					locustags.add(locus);
+				}
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+
+		return locustags;
 	}
 
 }

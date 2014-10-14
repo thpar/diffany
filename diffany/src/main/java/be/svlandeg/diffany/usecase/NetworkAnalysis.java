@@ -14,7 +14,7 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
-import be.svlandeg.diffany.usecase.arabidopsis.CornetData;
+import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 
@@ -158,7 +158,7 @@ public class NetworkAnalysis
 		NodeMapper nm = new DefaultNodeMapper();
 		
 		boolean includeSelfInteractions = false;
-		URI file = new CornetData().getCornetPPI();
+		URI file = new ArabidopsisData().getCornetPPI();
 		
 		System.out.println("Reading: " + file + " - " + "includeSelfInteractions=" + includeSelfInteractions);
 		

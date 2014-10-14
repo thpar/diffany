@@ -35,7 +35,7 @@ import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
 import be.svlandeg.diffany.usecase.NetworkAnalysis;
-import be.svlandeg.diffany.usecase.arabidopsis.CornetData;
+import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
@@ -50,17 +50,19 @@ import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 public class RunAnalysis
 {
 
-	/* Location of the PPI and regulatory data. Set to null when you want to exclude either type */
+	/* Location of all external data. Set to null when you want to exclude either type */
 	private URI ppi_file;
 	private URI reg_file;
+	private URI phos_file;
 
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
 	 */
 	public RunAnalysis()
 	{
-		ppi_file = new CornetData().getCornetPPI();
-		reg_file = new CornetData().getCornetReg();
+		ppi_file = new ArabidopsisData().getCornetPPI();
+		reg_file = new ArabidopsisData().getCornetReg();
+		phos_file = new ArabidopsisData().getPhosphat();
 	}
 
 	/**
@@ -133,6 +135,7 @@ public class RunAnalysis
 		double weight_cutoff = 0;
 		int support = 5;
 		int hubConnections = 10;
+		boolean includePredictedPhos = false;
 
 		String overexpressionFile = null;
 		Set<InputNetwork> networks = null;
@@ -165,7 +168,7 @@ public class RunAnalysis
 			try
 			{
 				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, 
-						includeUnknownReg, hubConnections);
+						includeUnknownReg, includePredictedPhos, hubConnections);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -325,7 +328,7 @@ public class RunAnalysis
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, 
-			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, int hubConnections) throws IOException, URISyntaxException
+			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
@@ -381,6 +384,9 @@ public class RunAnalysis
 
 		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
 		System.out.println(" Found " + regEdges.size() + " PPI regulatory between them");
+		
+		// TODO: add as node attribute
+		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
 
 		ppiEdges.addAll(regEdges);
 

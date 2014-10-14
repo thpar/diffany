@@ -94,7 +94,7 @@ public class NetworkIO
 			}
 		}
 		else
-		// TODO: currently, only information about target nodes from virtual edges are includes as additional node attributes
+		// TODO: currently, only information about target nodes from virtual edges are included as additional node attributes
 		{
 			for (Edge e : virtualEdges)
 			{

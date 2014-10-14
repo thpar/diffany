@@ -586,7 +586,7 @@ public class NetworkConstruction
 	 * 
 	 * @return the corresponding set of locus tags with phosphorylation sites
 	 * @throws URISyntaxException when the phosphorylation datafile can not be read properly
-	 * @throws IOException when the phosphorylation  datafile can not be read properly
+	 * @throws IOException when the phosphorylation datafile can not be read properly
 	 */
 	public Set<String> readPhosphorylationLocusTags(URI phos_file, boolean includePredicted) throws URISyntaxException, IOException
 	{
@@ -621,6 +621,43 @@ public class NetworkConstruction
 					locustags.add(locus);
 				}
 			}
+			line = reader.readLine();
+		}
+		reader.close();
+
+		return locustags;
+	}
+	
+	/**
+	 * Read a list of (lower-case) locus tags with kinase activity. The file, downloaded from Gene Ontology, only contains experimentally validated data.
+	 * 
+	 * @param kinase_file the location where to find the tab-delimited kinase activity file
+	 * 
+	 * @return the corresponding set of locus tags with kinase activity
+	 * @throws URISyntaxException when the kinase activity datafile can not be read properly
+	 * @throws IOException when the kinase activity datafile can not be read properly
+	 */
+	public Set<String> readKinaseLocusTags(URI kinase_file) throws URISyntaxException, IOException
+	{
+		Set<String> locustags = new HashSet<String>();
+
+		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_file)));
+
+		String line = reader.readLine();
+		
+		// skip header
+		line = reader.readLine();
+		
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String locus = stok.nextToken().toLowerCase();	
+			
+			if (locus.startsWith("at"))
+			{
+				locustags.add(locus);
+			}
+			
 			line = reader.readLine();
 		}
 		reader.close();

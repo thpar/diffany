@@ -13,6 +13,7 @@ public class ArabidopsisData
 	
 	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
 	private static String cornetRegDataFile = "reg_net_20100205.tab";
+	private static String kinaseDatafile = "kinase_activity_go_14102014.tab";
 	private static String phosphatDataFile = "phosphat_20130429.csv";
 
 	/**
@@ -62,6 +63,23 @@ public class ArabidopsisData
         catch (URISyntaxException e)
         {
 	        System.out.println(" !  Couldn't read " + phosphatDataFile);
+        }
+		return null;
+	}
+	
+	/**
+	 * Retrieve the URI of the kinase activity data
+	 * @return the URI of the kinase activity data, or null if the resource could not be located
+	 */
+	public URI getKinases()
+	{
+		try
+        {
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseDatafile).toURI();
+        }
+        catch (URISyntaxException e)
+        {
+	        System.out.println(" !  Couldn't read " + kinaseDatafile);
         }
 		return null;
 	}

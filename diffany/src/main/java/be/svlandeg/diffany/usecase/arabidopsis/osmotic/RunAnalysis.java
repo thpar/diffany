@@ -54,6 +54,7 @@ public class RunAnalysis
 	private URI ppi_file;
 	private URI reg_file;
 	private URI phos_file;
+	private URI kinase_file;
 
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
@@ -63,6 +64,7 @@ public class RunAnalysis
 		ppi_file = new ArabidopsisData().getCornetPPI();
 		reg_file = new ArabidopsisData().getCornetReg();
 		phos_file = new ArabidopsisData().getPhosphat();
+		kinase_file = new ArabidopsisData().getKinases();
 	}
 
 	/**
@@ -385,8 +387,9 @@ public class RunAnalysis
 		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
 		System.out.println(" Found " + regEdges.size() + " PPI regulatory between them");
 		
-		// TODO: add as node attribute
+		// TODO: add as node attributes
 		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
+		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_file);
 
 		ppiEdges.addAll(regEdges);
 

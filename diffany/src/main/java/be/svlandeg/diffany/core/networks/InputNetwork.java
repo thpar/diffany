@@ -33,13 +33,14 @@ public class InputNetwork extends Network
 	 * 
 	 * @param networkName the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public InputNetwork(String networkName, int ID, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
+	public InputNetwork(String networkName, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
 	{
-		super(networkName, ID, nodes, edges, nm);
+		super(networkName, ID, nodeAttributes, nodes, edges, nm);
 	}
 
 	@Override

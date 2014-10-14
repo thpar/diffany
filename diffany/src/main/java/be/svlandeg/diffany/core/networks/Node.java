@@ -1,5 +1,8 @@
 package be.svlandeg.diffany.core.networks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Class that represents a node in a network. A node can be virtual, i.e. non-existing, for the purpose of modeling
@@ -13,6 +16,7 @@ public class Node
 	protected String ID;
 	protected String name;
 	protected boolean virtual;
+	protected Map<String, String> attributes;
 	
 	/**
 	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
@@ -23,6 +27,7 @@ public class Node
 	public Node(String name) throws IllegalArgumentException
 	{
 		this(name.toLowerCase(), name);
+		attributes = new HashMap<String, String>();
 	}
 
 	/**
@@ -95,6 +100,17 @@ public class Node
 			return name.toLowerCase();
 		}
 		return name;
+	}
+	
+	/**
+	 * Retrieve the value of a certain attribute, or null when it is not defined for this node.
+	 * 
+	 * @param attributeName the name of the attribute
+	 * @return the value of the attribute
+	 */
+	public String getAttribute(String attributeName)
+	{
+		return attributes.get(attributeName);
 	}
 
 	/**

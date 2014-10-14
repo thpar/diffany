@@ -21,6 +21,7 @@ public abstract class Network
 
 	protected Set<Node> nodes; // ensure this set is kept consistent with the edge set!
 	protected Set<Edge> edges;
+	protected Set<String> nodeAttributes;
 
 	protected int ID;
 	protected String name;
@@ -33,11 +34,12 @@ public abstract class Network
 	 * 
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
-	 * @param nodes the nodes of this network
+	 * @param nodeAttributes the required node attribute names for this network
+	 * @param nodes the nodes of this network (should all contain the correct attributes!)
 	 * @param edges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name, int ID, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
+	public Network(String name, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<Edge> edges, NodeMapper nm)
 	{
 		if (nm == null)
 		{
@@ -48,6 +50,7 @@ public abstract class Network
 		this.name = name;
 		this.ID = ID;
 		this.nm = nm;
+		this.nodeAttributes = nodeAttributes;
 		setNodesAndEdges(nodes, edges);
 	}
 
@@ -60,7 +63,7 @@ public abstract class Network
 	 */
 	public Network(String name, int ID, NodeMapper nm)
 	{
-		this(name, ID, new HashSet<Node>(), new HashSet<Edge>(), nm);
+		this(name, ID, new HashSet<String>(), new HashSet<Node>(), new HashSet<Edge>(), nm);
 	}
 
 	/**
@@ -298,12 +301,7 @@ public abstract class Network
 	 */
 	public void setNodesAndEdges(Set<Edge> edges)
 	{
-		nodes = new HashSet<Node>();
-		this.edges = new HashSet<Edge>();
-		for (Edge e : edges)
-		{
-			addEdge(e);
-		}
+		setNodesAndEdges(new HashSet<Node>(), edges);
 	}
 
 	/**
@@ -315,7 +313,11 @@ public abstract class Network
 	 */
 	public void setNodesAndEdges(Set<Node> nodes, Set<Edge> edges)
 	{
-		this.nodes = nodes;
+		this.nodes = new HashSet<Node>();
+		for (Node n : nodes)
+		{
+			addNode(n);
+		}
 		this.edges = new HashSet<Edge>();
 		for (Edge e : edges)
 		{
@@ -345,12 +347,29 @@ public abstract class Network
 	{
 		edges.remove(edge);
 	}
+	
+	/**
+	 * Add a new required node attribute to this network. This is only possible when the current network is empty (i.e. there are no nodes or edges).
+	 * 
+	 * @param nodeAttribute a new nodeAttribute
+	 * @throws IllegalArgumentException when the current network already contains some nodes
+	 */
+	public void addNodeAttribute(String nodeAttribute)
+	{
+		if (nodes.size() > 0)
+		{
+			String errormsg = "Can not add node attributes when the network already contains nodes!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		nodeAttributes.add(nodeAttribute);
+	}
 
 	/**
 	 * Add a new (unconnected) node to this network. If it was already present, nothing happens. The comparison is done with the internal NodeMapper object.
 	 * The comparison is made through the NodeMapper object of this Network.
 	 * 
 	 * @param node a new node in this network
+	 * @throws IllegalArgumentException when the given node does not contain the required attributes, as specified by this network
 	 */
 	public void addNode(Node node)
 	{
@@ -358,6 +377,15 @@ public abstract class Network
 		if (!contained)
 		{
 			nodes.add(node);
+		}
+		for (String nodeAttribute : nodeAttributes)
+		{
+			String value = node.getAttribute(nodeAttribute);
+			if (value == null)
+			{
+				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
+				throw new IllegalArgumentException(errormsg);
+			}
 		}
 	}
 	

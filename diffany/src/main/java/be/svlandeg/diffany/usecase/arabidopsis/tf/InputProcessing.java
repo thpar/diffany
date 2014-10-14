@@ -75,7 +75,9 @@ public class InputProcessing
 		}
 		reader.close();
 		
-		InputNetwork tfNetwork = new InputNetwork(networkName, ID, new HashSet<Node>(nodes.values()), edges, nm);
+		Set<String> nodeAttributes = new HashSet<String>();
+		
+		InputNetwork tfNetwork = new InputNetwork(networkName, ID, nodeAttributes, new HashSet<Node>(nodes.values()), edges, nm);
 		return tfNetwork;
 	}
 

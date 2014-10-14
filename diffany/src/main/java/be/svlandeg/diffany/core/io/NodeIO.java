@@ -2,6 +2,7 @@ package be.svlandeg.diffany.core.io;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
 
 import be.svlandeg.diffany.core.networks.Node;
@@ -22,15 +23,17 @@ public class NodeIO
 	 * Get a string representation of all nodes in a collection, divided by newlines, with nodes in a tabbed format.
 	 * 
 	 * @param nodes the nodes that needs to be written
+	 * @param nodeAttributes the node attribute names
+	 * 
 	 * @return a string representation of all nodes in this network, ready for printing
 	 * @see NodeIO#writeToTab
 	 */
-	public static String writeNodesToTab(Set<Node> nodes)
+	public static String writeNodesToTab(Set<Node> nodes, SortedSet<String> nodeAttributes)
 	{
 		String result = "";
 		for (Node n : nodes)
 		{
-			result += NodeIO.writeToTab(n);
+			result += NodeIO.writeToTab(n, nodeAttributes);
 			result += System.getProperty("line.separator");
 		}
 		return result;
@@ -38,18 +41,28 @@ public class NodeIO
 	
 	/**
 	 * Get a string representation of a node.
-	 * More specifically, print it as: nodeID - node.name - virtual.
+	 * More specifically, print it as: nodeID - node.name - virtual and then the node attributes (alphabetically).
 	 * 
 	 * @param n the node
+	 * @param nodeAttributes the node attribute names
+	 * 
 	 * @return a string representation of this node, ready for printing
 	 */
-	public static String writeToTab(Node n)
+	public static String writeToTab(Node n, SortedSet<String> nodeAttributes)
 	{
 		String virtualResult = writeVirtualToString(n);
 		String result = n.getID() + '\t' + n.getDisplayName() + '\t' + virtualResult;
+		for (String att : nodeAttributes)
+		{
+			result += '\t' + n.getAttribute(att);
+		}
 		return result;
 	}
 	
+	/**
+	 * TODO documentation
+	 * @return TODO
+	 */
 	public static CharSequence getHeader()
     {
 		String result = "ID" + '\t' + "official_symbol" + '\t' + "virtual";

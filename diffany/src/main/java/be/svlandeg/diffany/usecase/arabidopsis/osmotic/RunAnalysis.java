@@ -56,6 +56,9 @@ public class RunAnalysis
 	private URI phos_file;
 	private URI kinase_file;
 
+	private static String phosAttribute = "PhosphorylationSite";
+	private static String kinaseAttribute = "KinaseFunction";
+
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
 	 */
@@ -90,7 +93,7 @@ public class RunAnalysis
 
 		boolean performStep1FromSupplemental = true;
 		boolean performStep2ToNetwork = true;
-		boolean performStep3InputNetworksToFile = false;
+		boolean performStep3InputNetworksToFile = true;
 
 		boolean performStep4InputNetworksFromFile = false;
 		boolean performStep5OneagainstAll = false;
@@ -107,7 +110,7 @@ public class RunAnalysis
 			System.out.println("Select exactly one option to perform the fifth step of the analysis!");
 			return;
 		}
-		
+
 		if (performStep3InputNetworksToFile && !performStep2ToNetwork)
 		{
 			System.out.println("Can not perform the third step without the second!");
@@ -137,7 +140,7 @@ public class RunAnalysis
 		double weight_cutoff = 0;
 		int support = 5;
 		int hubConnections = 10;
-		
+
 		boolean includePhos = true;
 		boolean includeKinase = true;
 		boolean includePredictedPhos = false;
@@ -172,7 +175,7 @@ public class RunAnalysis
 			System.out.println("");
 			try
 			{
-				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, 
+				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours,
 						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, hubConnections);
 			}
 			catch (IllegalArgumentException e)
@@ -245,7 +248,7 @@ public class RunAnalysis
 
 		/* STEP 5 : GENERATE THE DIFFERENTIAL NETWORKS  */
 		RunOutput runOutput = null;
-		if (performStep5OneagainstAll || performStep5AllPairwise)	
+		if (performStep5OneagainstAll || performStep5AllPairwise)
 		{
 			System.out.println("");
 			System.out.println("5. Performing differential analysis at cutoff " + weight_cutoff + " and support " + support + " (only for 1-all) - " + new Date());
@@ -264,7 +267,7 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("6. Writing the generated networks to " + resultDir + " - " + new Date());
 			System.out.println("");
-			
+
 			String suffix = "";
 			if (performStep5OneagainstAll)
 			{
@@ -329,22 +332,22 @@ public class RunAnalysis
 	}
 
 	/**
-	 * Second step in the pipeline: use the overexpression values to generate networks: 
+	 * Second step in the pipeline: use the overexpression values to generate networks:
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
-	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, 
+	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<String> nodeAttributes = new HashSet<String>();
 		if (includePhos)
 		{
-			nodeAttributes.add("PhosphorylationSite");
+			nodeAttributes.add(phosAttribute);
 		}
 		if (includeKinase)
 		{
-			nodeAttributes.add("KinaseFunction");
+			nodeAttributes.add(kinaseAttribute);
 		}
-		
+
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
 
@@ -384,6 +387,7 @@ public class RunAnalysis
 		all_nodeIDs_fuzzy.removeAll(all_nodeIDs_strict);
 		System.out.println(" Total: " + all_nodeIDs_strict.size() + " strict differentially expressed genes at threshold " + threshold_strict + " and " + all_nodeIDs_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 
+		System.out.println("");
 		System.out.println("Expanding the network of DE genes to also include important neighbours");
 
 		/* Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes */
@@ -394,42 +398,62 @@ public class RunAnalysis
 		Set<Node> all_nodes = gp.getNodesByLocusID(expandedNetwork);
 
 		System.out.println("Constructing the reference network");
-		Set<Edge> ppiEdges = constr.readPPIsByLocustags(nm, ppi_file, all_nodes, all_nodes, selfInteractions);
-		System.out.println(" Found " + ppiEdges.size() + " PPI edges between them");
+		Set<Edge> edges = constr.readPPIsByLocustags(nm, ppi_file, all_nodes, all_nodes, selfInteractions);
+		System.out.println(" Found " + edges.size() + " PPI edges between them");
 
 		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
 		System.out.println(" Found " + regEdges.size() + " PPI regulatory between them");
-		
+
 		// TODO: add as node attributes
 		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
 		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_file);
 
-		ppiEdges.addAll(regEdges);
+		edges.addAll(regEdges);
+		Set<Node> nodes = new HashSet<Node>();
+		for (Edge e : edges)
+		{
+			Node source = e.getSource();
+			Node target = e.getTarget();
+			nodes.add(source);
+			nodes.add(target);
+		}
+		
+		/* Add the appropriate attributes to the nodes */
+		for (Node n : nodes)
+		{
+			if (includePhos)
+			{
+				if (phosNodes.contains(n.getID()))
+				{
+					n.setAttribute(phosAttribute, "yes");
+				}
+				else
+				{
+					n.setAttribute(phosAttribute, "yes");
+				}
+			}
+			if (includeKinase)
+			{
+				if (kinaseNodes.contains(n.getID()))
+				{
+					n.setAttribute(kinaseAttribute, "yes");
+				}
+				else
+				{
+					n.setAttribute(kinaseAttribute, "yes");
+				}
+			}
+		}
 
 		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nodeAttributes, nm);
 
 		/* By only defining the edges, unconnected nodes are automatically removed */
-		refNet.setNodesAndEdges(ppiEdges);
+		refNet.setNodesAndEdges(nodes, edges);
 
 		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo, null);
 		networks.add(cleanRefNet);
 
-		int strictDEnodes1 = 0;
-		int fuzzyDEnodes1 = 0;
-
-		for (Node n : cleanRefNet.getNodes())
-		{
-			String id = n.getID();
-			if (all_nodeIDs_strict.contains(id))
-			{
-				strictDEnodes1++;
-			}
-			if (all_nodeIDs_fuzzy.contains(id))
-			{
-				fuzzyDEnodes1++;
-			}
-		}
-		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + " nodes of which " + strictDEnodes1 + " strict DE nodes and " + fuzzyDEnodes1 + " fuzzy DE nodes");
+		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + " nodes");
 
 		/* Now we create condition-specific networks by altering the edge weights of the original reference network */
 		for (OverexpressionData data : datasets)
@@ -441,41 +465,23 @@ public class RunAnalysis
 
 			Map<String, Double> all_de_nodes = dataAn.getSignificantGenes(data, threshold_strict);
 			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
-			
+
 			NetworkAnalysis na = new NetworkAnalysis();
 			String ppiType = "validated_ppi";
-			
+
 			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubConnections, false, false);
-			System.out.println(" filtering with " + PPIhubs.size());
 
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
 			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());
 			Condition c = new Condition("time measurement " + suffix);
 			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, nodeAttributes, c, nm);
-
-			/* By only defining the edges, unconnected nodes are automatically removed */
-			condNet.setNodesAndEdges(filteredEdges);
+			
+			condNet.setNodesAndEdges(nodes, filteredEdges);
 
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo, null);
 			networks.add(cleanCondNet);
 
-			int strictDEnodes2 = 0;
-			int fuzzyDEnodes2 = 0;
-
-			for (Node n : cleanCondNet.getNodes())
-			{
-				String id = n.getID();
-				if (all_nodeIDs_strict.contains(id))
-				{
-					strictDEnodes2++;
-				}
-				if (all_nodeIDs_fuzzy.contains(id))
-				{
-					fuzzyDEnodes2++;
-				}
-			}
-
-			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + " nodes of which " + strictDEnodes2 + " strict DE nodes and " + fuzzyDEnodes2 + " fuzzy DE nodes");
+			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + " nodes");
 		}
 
 		return networks;
@@ -502,7 +508,7 @@ public class RunAnalysis
 		{
 			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
 		}
- 
+
 		/* Testing that there is exactly one differential network created */
 		RunOutput output = p.getOutput(runID);
 

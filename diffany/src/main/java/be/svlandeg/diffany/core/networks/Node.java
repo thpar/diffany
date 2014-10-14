@@ -27,7 +27,6 @@ public class Node
 	public Node(String name) throws IllegalArgumentException
 	{
 		this(name.toLowerCase(), name);
-		attributes = new HashMap<String, String>();
 	}
 
 	/**
@@ -65,6 +64,7 @@ public class Node
 		this.ID = ID;
 		this.name = name;
 		this.virtual = virtual;
+		attributes = new HashMap<String, String>();
 	}
 
 	/**
@@ -111,6 +111,29 @@ public class Node
 	public String getAttribute(String attributeName)
 	{
 		return attributes.get(attributeName);
+	}
+	
+	/**
+	 * Set the value of a certain attribute. If a value already existed for this attribute, it is overwritten.
+	 * 
+	 * @param attributeName the name of the attribute (should not be null!)
+	 * @param value the value of the attribute (should not be null!)
+	 * 
+	 * @throws IllegalArgumentException when either of the two input parameters is null
+	 */
+	public void setAttribute(String attributeName, String value)
+	{
+		if (attributeName == null)
+		{
+			String errormsg = "The attribute name should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (name == null)
+		{
+			String errormsg = "The attribute value should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
+		attributes.put(attributeName, value);
 	}
 
 	/**

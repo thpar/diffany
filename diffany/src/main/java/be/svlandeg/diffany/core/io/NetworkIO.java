@@ -11,19 +11,21 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.activation.UnsupportedDataTypeException;
 
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
@@ -65,7 +67,7 @@ public class NetworkIO
 		// EDGES
 		edgesFile.getParentFile().mkdirs();
 		BufferedWriter edgeWriter = new BufferedWriter(new FileWriter(edgesFile));
-		
+
 		if (writeHeaders)
 		{
 			edgeWriter.append(EdgeIO.getHeader());
@@ -134,6 +136,9 @@ public class NetworkIO
 				}
 			}
 		}
+
+		SortedSet<String> nodeAttributes = new TreeSet<String>();
+		nodeAttributes.addAll(network.getAllNodeAttributes());
 		
 		if (writeHeaders)
 		{
@@ -141,6 +146,11 @@ public class NetworkIO
 			if (!allowVirtualEdges)
 			{
 				nodeWriter.append("\t" + "diffexpr" + "\t" + "FC");
+			}
+			
+			for (String attribute : nodeAttributes)
+			{
+				nodeWriter.append("\t" + attribute);
 			}
 			nodeWriter.newLine();
 			nodeWriter.flush();
@@ -154,7 +164,7 @@ public class NetworkIO
 		for (String ID : sortedNodes.keySet())
 		{
 			Node n = sortedNodes.get(ID);
-			String tabRep = NodeIO.writeToTab(n);
+			String tabRep = NodeIO.writeToTab(n, nodeAttributes);
 
 			nodeWriter.append(tabRep);
 			if (!allowVirtualEdges) // if there are no virtual edges, this information will be printed as node attributes
@@ -180,7 +190,7 @@ public class NetworkIO
 		// TODO create DefinitionIO to read and write the network definition
 		definitionFile.getParentFile().mkdirs();
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
-		
+
 		defWriter.append(ID_field + "\t" + network.getID());
 		defWriter.newLine();
 
@@ -190,7 +200,7 @@ public class NetworkIO
 		String networkClass = network.getClass().getSimpleName();
 		defWriter.append(type_field + "\t" + networkClass);
 		defWriter.newLine();
-		
+
 		String attributes = "";
 		for (String attribute : network.getAllNodeAttributes())
 		{
@@ -572,7 +582,7 @@ public class NetworkIO
 		reader.close();
 		return nodes;
 	}
-	
+
 	/**
 	 * Read the ID of a network from file. Specifically, a line of form "ID \t XYZ" is searched, and XYZ returned as the ID in integer form.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -601,7 +611,6 @@ public class NetworkIO
 		reader.close();
 		return -1;
 	}
-
 
 	/**
 	 * Read the name of a network from file. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
@@ -660,7 +669,7 @@ public class NetworkIO
 		reader.close();
 		return null;
 	}
-	
+
 	/**
 	 * Read the node attributes of a network from file. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -673,7 +682,7 @@ public class NetworkIO
 	public static Set<String> readAttributesFromFile(File definitionFile) throws IOException
 	{
 		Set<String> attributes = new HashSet<String>();
-		
+
 		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
 		String line = reader.readLine();
 
@@ -683,18 +692,18 @@ public class NetworkIO
 			if (stok.nextToken().equals(attributes_field))
 			{
 				String attributeString = "";
-				
+
 				if (stok.hasMoreTokens())
 				{
 					attributeString = stok.nextToken();
 				}
-				
+
 				StringTokenizer stok2 = new StringTokenizer(attributeString, ";");
 				while (stok2.hasMoreTokens())
 				{
 					attributes.add(stok2.nextToken());
 				}
-				
+
 				reader.close();
 				return attributes;
 			}

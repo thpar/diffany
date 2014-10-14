@@ -93,7 +93,7 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.7, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.8, false));
@@ -139,7 +139,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Salty", 2, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Salty", 2, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -181,7 +181,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Draughty", 3, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Draughty", 3, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		

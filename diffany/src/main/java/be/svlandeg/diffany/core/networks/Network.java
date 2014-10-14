@@ -1,6 +1,8 @@
 package be.svlandeg.diffany.core.networks;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
@@ -34,8 +36,8 @@ public abstract class Network
 	 * 
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
-	 * @param nodeAttributes the required node attribute names for this network
-	 * @param nodes the nodes of this network (should all contain the correct attributes!)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
+	 * @param nodes the nodes of this network (should all contain the correct attributes if there are any defined!)
 	 * @param edges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
@@ -50,7 +52,14 @@ public abstract class Network
 		this.name = name;
 		this.ID = ID;
 		this.nm = nm;
-		this.nodeAttributes = nodeAttributes;
+		if (nodeAttributes != null)
+		{
+			this.nodeAttributes = nodeAttributes;
+		}
+		else
+		{
+			this.nodeAttributes = new HashSet<String>();
+		}
 		setNodesAndEdges(nodes, edges);
 	}
 
@@ -59,11 +68,12 @@ public abstract class Network
 	 * 
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public Network(String name, int ID, NodeMapper nm)
+	public Network(String name, int ID, Set<String> nodeAttributes, NodeMapper nm)
 	{
-		this(name, ID, new HashSet<String>(), new HashSet<Node>(), new HashSet<Edge>(), nm);
+		this(name, ID, nodeAttributes, new HashSet<Node>(), new HashSet<Edge>(), nm);
 	}
 
 	/**
@@ -349,9 +359,20 @@ public abstract class Network
 	}
 	
 	/**
+	 * Get all node attributes required in this network.
+	 * 
+	 * @return the set of all node attributes
+	 * @throws IllegalArgumentException when the current network already contains some nodes
+	 */
+	public Set<String> getAllNodeAttributes()
+	{
+		return nodeAttributes;
+	}
+	
+	/**
 	 * Add a new required node attribute to this network. This is only possible when the current network is empty (i.e. there are no nodes or edges).
 	 * 
-	 * @param nodeAttribute a new nodeAttribute
+	 * @param nodeAttribute a new node attribute
 	 * @throws IllegalArgumentException when the current network already contains some nodes
 	 */
 	public void addNodeAttribute(String nodeAttribute)
@@ -362,6 +383,37 @@ public abstract class Network
 			throw new IllegalArgumentException(errormsg);
 		}
 		nodeAttributes.add(nodeAttribute);
+	}
+	
+	/**
+	 * Define the node attributes by taking only those that are in common from a given set of networks.
+	 * This is used for instance at the creation of differential/consensus networks.
+	 * 
+	 * @param originalNetworks the original networks which are scanned for their node attributes
+	 */
+	protected void defineCommonAttributes(Set<Network> originalNetworks)
+	{
+		Map<String, Integer> countedAttributes = new HashMap<String, Integer>();
+		for (Network n : originalNetworks)
+		{
+			for (String att : n.getAllNodeAttributes())
+			{
+				if (!countedAttributes.containsKey(att))
+				{
+					countedAttributes.put(att, 0);
+				}
+				countedAttributes.put(att, countedAttributes.get(att) + 1);
+			}
+		}
+		for (String att : countedAttributes.keySet())
+		{
+			int count = countedAttributes.get(att);
+			if (count == originalNetworks.size())
+			{
+				addNodeAttribute(att);
+			}
+		}
+		
 	}
 
 	/**

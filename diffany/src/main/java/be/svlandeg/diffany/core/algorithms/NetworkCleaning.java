@@ -194,7 +194,7 @@ public class NetworkCleaning
 	 */
 	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getConditions(), nm);
+		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, false, progressListener);
 
@@ -215,7 +215,7 @@ public class NetworkCleaning
 	 */
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), nm);
+		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, false, progressListener);
 
@@ -236,7 +236,7 @@ public class NetworkCleaning
 	 */
 	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), nm);
+		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, false, progressListener);
 

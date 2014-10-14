@@ -225,21 +225,22 @@ public class CyNetworkBridge {
 	 * @return the equivalent {@link Network} object
 	 */
 	private static Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+		// TODO: transfer node attributes (3x null below)
 		
 		Network network = null;
 		String netName = getName(cyNetwork, cyNetwork);
 		switch(type){
 		case REFERENCE: 
-			network = new ReferenceNetwork(netName, nextID++, nodeMapper);
+			network = new ReferenceNetwork(netName, nextID++, null, nodeMapper);
 			break;
 		case CONDITION:
 			//TODO get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
-			network = new ConditionNetwork(netName, nextID++, conditions, nodeMapper);
+			network = new ConditionNetwork(netName, nextID++, null, conditions, nodeMapper);
 			break;
 		case GENERIC:
-			network = new InputNetwork(netName, nextID++, nodeMapper);
+			network = new InputNetwork(netName, nextID++, null, nodeMapper);
 			break;
 		}
 				

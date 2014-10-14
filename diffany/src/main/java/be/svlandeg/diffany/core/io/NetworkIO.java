@@ -43,10 +43,11 @@ public class NetworkIO
 	private static String name_field = "Name";
 	private static String ID_field = "ID";
 	private static String type_field = "Type";
+	private static String attributes_field = "Attributes";
 
 	/**
 	 * Write the string representation of the network: All edges to one File, and all nodes to another, as specified by the parameters.
-	 * Additionally, the network name and type are written to a defitionsfile.
+	 * Additionally, the network name, type and node attributes are written to a defitionsfile.
 	 * 
 	 * @param network the {@link Network} that needs to be written
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
@@ -189,6 +190,14 @@ public class NetworkIO
 		String networkClass = network.getClass().getSimpleName();
 		defWriter.append(type_field + "\t" + networkClass);
 		defWriter.newLine();
+		
+		String attributes = "";
+		for (String attribute : network.getAllNodeAttributes())
+		{
+			attributes += attribute + ";";
+		}
+		defWriter.append(attributes_field + "\t" + attributes);
+		defWriter.newLine();
 
 		defWriter.flush();
 		defWriter.close();
@@ -273,10 +282,11 @@ public class NetworkIO
 		int ID = readIDFromFile(definitionFile);
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
+		Set<String> attributes = readAttributesFromFile(definitionFile);
 
 		if (type.equals("ReferenceNetwork"))
 		{
-			ReferenceNetwork r = new ReferenceNetwork(name, ID, nm);
+			ReferenceNetwork r = new ReferenceNetwork(name, ID, attributes, nm);
 			r.setNodesAndEdges(nodes, edges);
 			return r;
 		}
@@ -284,13 +294,13 @@ public class NetworkIO
 		else if (type.equals("ConditionNetwork"))
 		{
 			Set<Condition> conditions = readConditionsFromFile(conditionsFile);
-			ConditionNetwork c = new ConditionNetwork(name, ID, conditions, nm);
+			ConditionNetwork c = new ConditionNetwork(name, ID, attributes, conditions, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
 		else if (type.equals("InputNetwork"))
 		{
-			InputNetwork c = new InputNetwork(name, ID, nm);
+			InputNetwork c = new InputNetwork(name, ID, attributes, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
 		}
@@ -649,6 +659,49 @@ public class NetworkIO
 		}
 		reader.close();
 		return null;
+	}
+	
+	/**
+	 * Read the node attributes of a network from file. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionFile the file containing the network definition data
+	 * @return the node attributes in the network, as read from the file, or an empty set if none were found
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static Set<String> readAttributesFromFile(File definitionFile) throws IOException
+	{
+		Set<String> attributes = new HashSet<String>();
+		
+		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
+		String line = reader.readLine();
+
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			if (stok.nextToken().equals(attributes_field))
+			{
+				String attributeString = "";
+				
+				if (stok.hasMoreTokens())
+				{
+					attributeString = stok.nextToken();
+				}
+				
+				StringTokenizer stok2 = new StringTokenizer(attributeString, ";");
+				while (stok2.hasMoreTokens())
+				{
+					attributes.add(stok2.nextToken());
+				}
+				
+				reader.close();
+				return attributes;
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+		return attributes;
 	}
 
 }

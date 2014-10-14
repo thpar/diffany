@@ -163,7 +163,7 @@ public class NetworkAnalysis
 		System.out.println("Reading: " + file + " - " + "includeSelfInteractions=" + includeSelfInteractions);
 		
 		Set<Edge> edges = constr.readAllPPIs(nm, file, includeSelfInteractions);
-		Network network = new InputNetwork("Test network", 342, nm);
+		Network network = new InputNetwork("Test network", 342, null, nm);
 		network.setNodesAndEdges(edges);
 		
 		System.out.println(" ");

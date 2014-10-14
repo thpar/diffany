@@ -81,7 +81,7 @@ public class Ideker2011 extends GenericExample
 		nodes.put("E", new Node("E"));
 		nodes.put("F", new Node("F"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", 1, null, nm);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("F"), true, 1.0));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 0.7));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
@@ -102,7 +102,7 @@ public class Ideker2011 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", 2, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", 2, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

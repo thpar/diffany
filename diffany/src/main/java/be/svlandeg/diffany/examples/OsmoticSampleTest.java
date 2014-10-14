@@ -97,7 +97,7 @@ private NodeMapper nm;
 		nodes.put("O", new Node("O"));
 		nodes.put("P", new Node("P"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
@@ -133,7 +133,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 1.5h", 2, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 1.5h", 2, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -167,7 +167,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 3h", 3, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 3h", 3, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -201,7 +201,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 12h", 4, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 12h", 4, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -235,7 +235,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 24h", 5, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 24h", 5, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		

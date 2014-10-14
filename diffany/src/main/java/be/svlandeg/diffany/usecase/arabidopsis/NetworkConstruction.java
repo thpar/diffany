@@ -60,6 +60,8 @@ public class NetworkConstruction
 	 */
 	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
+		// TODO: this method unnecessarily generates Network objects?
+		
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 
@@ -78,7 +80,7 @@ public class NetworkConstruction
 				PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, nodes_strict_DE, selfInteractions);
 			}
 
-			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, nm);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
 			allNodeIDs.addAll(expandedNodeIDs);
@@ -95,7 +97,7 @@ public class NetworkConstruction
 				regEdges.addAll(readRegsByLocustags(nm, reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}
 
-			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, nm);
+			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, null, nm);
 			regNetwork.setNodesAndEdges(regEdges);
 			Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
 			allNodeIDs.addAll(expandedNodeIDs);
@@ -107,14 +109,14 @@ public class NetworkConstruction
 			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
 			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
 			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
-			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, nm);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedPPINodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
 
 			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg); // from fuzzy DE to our combined set
 			regEdges.addAll(readRegsByLocustags(nm, reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 
-			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, nm);
+			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, null, nm);
 			regNetwork.setNodesAndEdges(regEdges);
 			Set<String> expandedRegNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
 			allNodeIDs.addAll(expandedRegNodeIDs);

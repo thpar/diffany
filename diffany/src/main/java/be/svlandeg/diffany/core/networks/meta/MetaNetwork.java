@@ -21,13 +21,14 @@ public abstract class MetaNetwork extends Network
 	 * 
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nodes the nodes of this network
 	 * @param metaEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MetaNetwork(String name, int ID, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm)
+	public MetaNetwork(String name, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm)
 	{
-		super(name, ID, nm);
+		super(name, ID, nodeAttributes, nm);
 		if (nm == null)
 		{
 			String errormsg = "Please define a proper NodeMapper object!";
@@ -45,11 +46,12 @@ public abstract class MetaNetwork extends Network
 	 * 
 	 * @param name the name of this network 
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 */
-	public MetaNetwork(String name, int ID, NodeMapper nm)
+	public MetaNetwork(String name, int ID, Set<String> nodeAttributes, NodeMapper nm)
 	{
-		this(name, ID, new HashSet<Node>(), new HashSet<MetaEdge>(), nm);
+		this(name, ID, nodeAttributes, new HashSet<Node>(), new HashSet<MetaEdge>(), nm);
 	}
 
 }

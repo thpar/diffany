@@ -82,7 +82,7 @@ public class FuzzyNetworks2 extends GenericExample
 		nodes.put("X", new Node("X"));
 		nodes.put("Y", new Node("Y"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, null, nm);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 11, false));
@@ -101,7 +101,7 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -126,7 +126,7 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -152,7 +152,7 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

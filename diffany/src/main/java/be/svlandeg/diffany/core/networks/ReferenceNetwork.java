@@ -1,5 +1,7 @@
 package be.svlandeg.diffany.core.networks;
 
+import java.util.Set;
+
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 
@@ -18,12 +20,13 @@ public class ReferenceNetwork extends InputNetwork
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 */
-	public ReferenceNetwork(String name, int ID, NodeMapper nm)
+	public ReferenceNetwork(String name, int ID, Set<String> nodeAttributes, NodeMapper nm)
 	{
-		super(name, ID, nm);
+		super(name, ID, nodeAttributes, nm);
 	}
 
 	/* (non-Javadoc)

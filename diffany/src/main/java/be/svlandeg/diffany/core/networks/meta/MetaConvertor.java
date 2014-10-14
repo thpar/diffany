@@ -122,8 +122,9 @@ public class MetaConvertor
 		
 		int ID = IDs.last() + 1;
 
+		// TODO: node attributes - currently set to null
 		MetaInputNetwork input = convertInput(inputs);
-		MetaDifferentialNetwork result = new MetaDifferentialNetwork(name, ID, nodes, edges, nm, input);
+		MetaDifferentialNetwork result = new MetaDifferentialNetwork(name, ID, null, nodes, edges, nm, input);
 		
 		return result;
 	}

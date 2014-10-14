@@ -77,7 +77,7 @@ public class ConflictingEdgesTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("ptm", nodes.get("A"), nodes.get("B"), false, 5, false));
@@ -107,7 +107,7 @@ public class ConflictingEdgesTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition-specific network", 2, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition-specific network", 2, null, conditions, nm);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

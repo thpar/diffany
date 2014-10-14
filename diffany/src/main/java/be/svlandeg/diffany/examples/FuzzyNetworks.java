@@ -108,7 +108,7 @@ public class FuzzyNetworks extends GenericExample
 		nodes.put("M", new Node("M"));
 		nodes.put("N", new Node("N"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", 1, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", 1, null, nm);
 		
 		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6, false));
 		
@@ -130,7 +130,7 @@ public class FuzzyNetworks extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -162,7 +162,7 @@ public class FuzzyNetworks extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -194,7 +194,7 @@ public class FuzzyNetworks extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -226,7 +226,7 @@ public class FuzzyNetworks extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 0", 10, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 0", 10, null, conditions, nm);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));

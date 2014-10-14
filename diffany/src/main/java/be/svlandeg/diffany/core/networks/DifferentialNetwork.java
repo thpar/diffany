@@ -35,7 +35,7 @@ public class DifferentialNetwork extends Network
 			ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, NodeMapper nm) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, nm);
+		super(name, ID, null, nm);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";
@@ -48,6 +48,11 @@ public class DifferentialNetwork extends Network
 			throw new IllegalArgumentException(errormsg);
 		}
 		this.conditionNetworks = conditionNetworks;
+		
+		Set<Network> originalNetworks = new HashSet<Network>();
+		originalNetworks.add(reference);
+		originalNetworks.addAll(conditionNetworks);
+		defineCommonAttributes(originalNetworks);
 	}
 	
 	/**
@@ -65,7 +70,7 @@ public class DifferentialNetwork extends Network
 	public DifferentialNetwork(String name, int ID, ReferenceNetwork reference, ConditionNetwork conditionNetwork, NodeMapper nm) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, nm);
+		super(name, ID, null, nm);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";
@@ -79,6 +84,11 @@ public class DifferentialNetwork extends Network
 		}
 		conditionNetworks = new HashSet<ConditionNetwork>();
 		conditionNetworks.add(conditionNetwork);
+		
+		Set<Network> originalNetworks = new HashSet<Network>();
+		originalNetworks.add(reference);
+		originalNetworks.add(conditionNetwork);
+		defineCommonAttributes(originalNetworks);
 	}
 	
 	/**

@@ -21,14 +21,15 @@ public class ConditionNetwork extends InputNetwork
 	 * @param conditions at least 1 condition describing the experimental conditions  (not null or empty!)
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 * 
 	 */
-	public ConditionNetwork(String name, int ID, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, ID, nm);
+		super(name, ID, nodeAttributes, nm);
 		if (conditions == null || conditions.isEmpty())
 		{
 			String errormsg = "Please define at least 1 condition!";
@@ -42,14 +43,15 @@ public class ConditionNetwork extends InputNetwork
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param condition one condition describing the experimental condition  (not null)
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 */
-	public ConditionNetwork(String name, int ID, Condition condition, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Condition condition, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, ID, nm);
+		super(name, ID, nodeAttributes, nm);
 		if (condition == null)
 		{
 			String errormsg = "Please define a non-null condition!";

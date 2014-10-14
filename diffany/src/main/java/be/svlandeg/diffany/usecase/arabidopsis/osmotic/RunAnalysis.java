@@ -137,6 +137,9 @@ public class RunAnalysis
 		double weight_cutoff = 0;
 		int support = 5;
 		int hubConnections = 10;
+		
+		boolean includePhos = true;
+		boolean includeKinase = true;
 		boolean includePredictedPhos = false;
 
 		String overexpressionFile = null;
@@ -170,7 +173,7 @@ public class RunAnalysis
 			try
 			{
 				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours, 
-						includeUnknownReg, includePredictedPhos, hubConnections);
+						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, hubConnections);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -330,8 +333,18 @@ public class RunAnalysis
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy, 
-			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
+			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
 	{
+		Set<String> nodeAttributes = new HashSet<String>();
+		if (includePhos)
+		{
+			nodeAttributes.add("PhosphorylationSite");
+		}
+		if (includeKinase)
+		{
+			nodeAttributes.add("KinaseFunction");
+		}
+		
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
 		GenePrinter gp = new GenePrinter();
 
@@ -393,7 +406,7 @@ public class RunAnalysis
 
 		ppiEdges.addAll(regEdges);
 
-		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nm);
+		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nodeAttributes, nm);
 
 		/* By only defining the edges, unconnected nodes are automatically removed */
 		refNet.setNodesAndEdges(ppiEdges);
@@ -438,7 +451,7 @@ public class RunAnalysis
 			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
 			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());
 			Condition c = new Condition("time measurement " + suffix);
-			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, c, nm);
+			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, nodeAttributes, c, nm);
 
 			/* By only defining the edges, unconnected nodes are automatically removed */
 			condNet.setNodesAndEdges(filteredEdges);

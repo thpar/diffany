@@ -32,12 +32,13 @@ public class ConsensusNetwork extends Network
 	 */
 	public ConsensusNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
 	{
-		super(name, ID, nm);
+		super(name, ID, null, nm);
 		if (originalNetworks == null || originalNetworks.size() < 1)
 		{
 			String errormsg = "Please define at least 1 original network!";
 			throw new IllegalArgumentException(errormsg);
 		}
+		defineCommonAttributes(originalNetworks);
 		this.originalNetworks = originalNetworks;
 	}
 	
@@ -52,5 +53,4 @@ public class ConsensusNetwork extends Network
 		result = result.substring(0, result.length() - 2);
 		return result;
 	}
-
 }

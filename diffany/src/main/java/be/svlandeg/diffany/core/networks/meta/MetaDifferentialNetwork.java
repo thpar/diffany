@@ -23,6 +23,7 @@ public class MetaDifferentialNetwork extends MetaNetwork
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
+	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param nodes the nodes of this network
 	 * @param metaEdges the edges of this network
 	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
@@ -31,10 +32,10 @@ public class MetaDifferentialNetwork extends MetaNetwork
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public MetaDifferentialNetwork(String name, int ID, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm, MetaInputNetwork input) 
+	public MetaDifferentialNetwork(String name, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<MetaEdge> metaEdges, NodeMapper nm, MetaInputNetwork input) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, nodes, metaEdges, nm);
+		super(name, ID, nodeAttributes, nodes, metaEdges, nm);
 		if (input == null)
 		{
 			String errormsg = "Please define a non-null merged input network!";

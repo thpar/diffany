@@ -11,10 +11,12 @@ import java.net.URISyntaxException;
 public class ArabidopsisData
 {
 	
-	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
-	private static String cornetRegDataFile = "reg_net_20100205.tab";
-	private static String kinaseDatafile = "kinase_activity_go_15102014.tab";
-	private static String phosphatDataFile = "phosphat_20130429.csv";
+	private static String cornetPPIFile = "validated_cornet_all_ppi_table_17012012.tab";
+	private static String cornetRegFile = "reg_net_20100205.tab";
+	private static String kinaseInteractionFile = "kinase-targets_20131210.csv";
+	private static String kinaseFunctionFile = "kinase_activity_go_15102014.tab";
+	private static String phosphatFile = "phosphat_20130429.csv";
+	
 
 	/**
 	 * Retrieve the URI of the CORNET PPI data
@@ -24,11 +26,11 @@ public class ArabidopsisData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetPPIDataFile).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetPPIFile).toURI();
         }
         catch (URISyntaxException e)
         {
-	        System.out.println(" !  Couldn't read " + cornetPPIDataFile);
+	        System.out.println(" !  Couldn't read " + cornetPPIFile);
         }
 		return null;
 	}
@@ -41,11 +43,11 @@ public class ArabidopsisData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetRegDataFile).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetRegFile).toURI();
         }
         catch (URISyntaxException e)
         {
-	        System.out.println(" !  Couldn't read " + cornetRegDataFile);
+	        System.out.println(" !  Couldn't read " + cornetRegFile);
         }
 		return null;
 	}
@@ -58,11 +60,11 @@ public class ArabidopsisData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + phosphatDataFile).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + phosphatFile).toURI();
         }
         catch (URISyntaxException e)
         {
-	        System.out.println(" !  Couldn't read " + phosphatDataFile);
+	        System.out.println(" !  Couldn't read " + phosphatFile);
         }
 		return null;
 	}
@@ -75,11 +77,28 @@ public class ArabidopsisData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseDatafile).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseFunctionFile).toURI();
         }
         catch (URISyntaxException e)
         {
-	        System.out.println(" !  Couldn't read " + kinaseDatafile);
+	        System.out.println(" !  Couldn't read " + kinaseFunctionFile);
+        }
+		return null;
+	}
+	
+	/**
+	 * Retrieve the URI of the kinase interaction data
+	 * @return the URI of the kinase interaction data, or null if the resource could not be located
+	 */
+	public URI getKinaseInteractions()
+	{
+		try
+        {
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseInteractionFile).toURI();
+        }
+        catch (URISyntaxException e)
+        {
+	        System.out.println(" !  Couldn't read " + kinaseInteractionFile);
         }
 		return null;
 	}

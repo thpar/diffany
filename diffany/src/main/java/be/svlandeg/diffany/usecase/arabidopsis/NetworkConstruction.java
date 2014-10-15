@@ -49,7 +49,8 @@ public class NetworkConstruction
 	 * @param nodeIDs_strict_DE the overexpressed nodes (not null), with stringent criteria (e.g. FDR 0.05)
 	 * @param nodeIDs_fuzzy_DE the overexpressed nodes (may be null), with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
 	 * @param ppi_file the location of the PPI data
-	 * @param reg_file the location of the regulatory data
+	 * @param reg_file the location of the regulatory data (can be null)
+	 * @param kinase_file the location of the kinase interaction data (can be null)
 	 * @param selfInteractions whether or not to include self interactions
 	 * @param neighbours whether or not to include direct neighbours
 	 * @param includeUnknownReg whether or not to include unknown regulations
@@ -58,10 +59,10 @@ public class NetworkConstruction
 	 * @throws IOException when an IO error occurs
 	 * @throws URISyntaxException when an input file could not be read
 	 */
-	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, URI kinase_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		// TODO: this method unnecessarily generates Network objects?
-		
+
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 
@@ -86,40 +87,55 @@ public class NetworkConstruction
 			allNodeIDs.addAll(expandedNodeIDs);
 		}
 
-		/* 2. expand the original (strict) DE node set with regulatory neighbours */
+		/* 2. expand the original (strict) DE node set with regulatory and kinase neighbours */
+		Set<Edge> regEdges1 = new HashSet<Edge>();
 		if (reg_file != null)
 		{
-
-			Set<Edge> regEdges = null;
 			if (neighbours)
 			{
-				regEdges = readRegsByLocustags(nm, reg_file, nodes_strict_DE, null, selfInteractions, includeUnknownReg); // from our input to their targets
-				regEdges.addAll(readRegsByLocustags(nm, reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+				regEdges1.addAll(readRegsByLocustags(nm, reg_file, nodes_strict_DE, null, selfInteractions, includeUnknownReg)); // from our input to their targets
+				regEdges1.addAll(readRegsByLocustags(nm, reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}
-
-			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, null, nm);
-			regNetwork.setNodesAndEdges(regEdges);
-			Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
-			allNodeIDs.addAll(expandedNodeIDs);
 		}
+		if (kinase_file != null)
+		{
+			if (neighbours)
+			{
+				regEdges1.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, nodes_strict_DE, null, selfInteractions)); // from our input to their targets
+				regEdges1.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, null, nodes_strict_DE, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+			}
+		}
+		InputNetwork regNetwork1 = new InputNetwork("Regulatory network", 666, null, nm);
+		regNetwork1.setNodesAndEdges(regEdges1);
+		Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork1.getNodes());
+		allNodeIDs.addAll(expandedNodeIDs);
 
 		/* 3. add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners */
 		if (nodeIDs_fuzzy_DE != null && !nodeIDs_fuzzy_DE.isEmpty())
 		{
 			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
 			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
+
 			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
 			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null, nm);
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedPPINodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
 
-			Set<Edge> regEdges = readRegsByLocustags(nm, reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg); // from fuzzy DE to our combined set
-			regEdges.addAll(readRegsByLocustags(nm, reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			Set<Edge> regEdges2 = new HashSet<Edge>();
+			if (reg_file != null)
+			{
+				regEdges2.addAll(readRegsByLocustags(nm, reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg)); // from fuzzy DE to our combined set
+				regEdges2.addAll(readRegsByLocustags(nm, reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			}
+			if (kinase_file != null)
+			{
+				regEdges2.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, nodes_fuzzy_DE, allNodes, selfInteractions)); // from fuzzy DE to our combined set
+				regEdges2.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, allNodes, nodes_fuzzy_DE, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			}
 
-			InputNetwork regNetwork = new InputNetwork("Regulatory network", 666, null, nm);
-			regNetwork.setNodesAndEdges(regEdges);
-			Set<String> expandedRegNodeIDs = nm.getNodeIDs(regNetwork.getNodes());
-			allNodeIDs.addAll(expandedRegNodeIDs);
+			InputNetwork regNetwork2 = new InputNetwork("Regulatory network", 666, null, nm);
+			regNetwork2.setNodesAndEdges(regEdges2);
+			Set<String> expandedRegNodeIDs = nm.getNodeIDs(regNetwork2.getNodes());
 
 			allNodeIDs.addAll(expandedPPINodeIDs);
 			allNodeIDs.addAll(expandedRegNodeIDs);
@@ -165,7 +181,7 @@ public class NetworkConstruction
 				if (eo.getAllNegSourceCategories().contains(edgeCat))
 				{
 					// this means they are anti-correlated, e.g. by negative regulation
-					correlation = false; 
+					correlation = false;
 				}
 			}
 
@@ -224,7 +240,7 @@ public class NetworkConstruction
 				System.out.println(newEdge);
 			}
 			*/
-			
+
 			resultEdges.add(newEdge);
 		}
 
@@ -578,7 +594,108 @@ public class NetworkConstruction
 
 		return edges;
 	}
-	
+
+	/**
+	 * Construct a set of kinase interaction edges from a certain input set of nodes, and reading input from a specified URI.
+	 * This method can either only include regulations between the nodes themselves, or also include neighbours, 
+	 * or put a cutoff on minimal number of neighbours to avoid including outliers in the networks.
+	 * 
+	 * @param nm the object that defines equality between nodes
+	 * @param kinase_interactions_file the location where to find the tab-delimited regulatory data
+	 * @param source_nodes the set of input source nodes (or null when any are allowed)
+	 * @param target_nodes the set of input target nodes (or null when any are allowed)
+	 * @param includeSelfInteractions whether or not to include self interactions
+	 * 
+	 * @return the corresponding set of regulation edges
+	 * @throws URISyntaxException when the regulation datafile can not be read properly
+	 * @throws IOException when the regulation datafile can not be read properly
+	 */
+	public Set<Edge> readKinaseInteractionsByLocustags(NodeMapper nm, URI kinase_interactions_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	{
+		Set<Edge> edges = new HashSet<Edge>();
+		Map<String, Node> mappedNodes = nm.getNodesByID(source_nodes);
+		mappedNodes.putAll(nm.getNodesByID(target_nodes));
+
+		Set<String> origSourceLoci = nm.getNodeIDs(source_nodes);
+		Set<String> origTargetLoci = nm.getNodeIDs(target_nodes);
+
+		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_interactions_file)));
+
+		boolean symmetrical = false;
+		Set<String> interactionsRead = new HashSet<String>();
+
+		String line = reader.readLine();
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, ",");
+			stok.nextToken(); // Nr
+			String interaction_type = stok.nextToken().toLowerCase();
+			stok.nextToken(); // GO ID
+			stok.nextToken(); // GO term
+			stok.nextToken(); // MI ID
+			stok.nextToken(); // kinase family
+			stok.nextToken(); // kin_phos
+			String source_locus = stok.nextToken().toLowerCase();
+			String target_locus = stok.nextToken().toLowerCase();
+
+			boolean include = true;
+			// TODO: exclude certain interaction types?
+
+			if (include)
+			{
+				String interactionRead = source_locus + target_locus + interaction_type;
+
+				/* avoid reading the same regulation twice */
+				if (!interactionsRead.contains(interactionRead))
+				{
+					interactionsRead.add(interactionRead);
+
+					boolean foundSource = (source_nodes == null || origSourceLoci.contains(source_locus));
+					boolean foundTarget = (target_nodes == null || origTargetLoci.contains(target_locus));
+
+					/* include the interaction when both are in the nodeset */
+					if (foundSource && foundTarget)
+					{
+						/* include when the loci are different, or when self interactions are allowed */
+						if (includeSelfInteractions || !source_locus.equals(target_locus))
+						{
+							Node source = mappedNodes.get(source_locus);
+							if (source == null)
+							{
+								String symbol = gp.getSymbolByLocusID(source_locus);
+								if (symbol == null)
+								{
+									symbol = source_locus;
+								}
+								source = new Node(source_locus, symbol, false);
+								mappedNodes.put(source_locus, source);
+							}
+							Node target = mappedNodes.get(target_locus);
+							if (target == null)
+							{
+								String symbol = gp.getSymbolByLocusID(target_locus);
+								if (symbol == null)
+								{
+									symbol = target_locus;
+								}
+								target = new Node(target_locus, symbol, false);
+								mappedNodes.put(target_locus, target);
+							}
+							mappedNodes.put(source_locus, source);
+							mappedNodes.put(target_locus, target);
+							Edge regulation = new Edge(interaction_type, source, target, symmetrical);
+							edges.add(regulation);
+						}
+					}
+				}
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+
+		return edges;
+	}
+
 	/**
 	 * Read a list of (lower-case) locus tags with phosphorylation sites. Either include all, or only those that are experimentally verified.
 	 * Those are apparent from the data by the usage of (pS), (pT) or (pY) in the modified peptide string.
@@ -597,26 +714,26 @@ public class NetworkConstruction
 		BufferedReader reader = new BufferedReader(new FileReader(new File(phos_file)));
 
 		String line = reader.readLine();
-		
+
 		// skip header
 		line = reader.readLine();
-		
+
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, ",");
-			String locus = stok.nextToken().toLowerCase();	
-			stok.nextToken();	// species
-			stok.nextToken();	// peptide
+			String locus = stok.nextToken().toLowerCase();
+			stok.nextToken(); // species
+			stok.nextToken(); // peptide
 			String peptideModified = stok.nextToken();
-			
+
 			// remove the part of the locus tag behind the .
 			if (locus.contains("."))
 			{
 				locus = locus.substring(0, locus.indexOf("."));
 			}
-			
+
 			// only try to add this locus tag if we don't have it already
-			if (! locustags.contains(locus))
+			if (!locustags.contains(locus))
 			{
 				if (includePredicted || peptideModified.contains("(pS)") || peptideModified.contains("(pT)") || peptideModified.contains("(pY)"))
 				{
@@ -629,7 +746,7 @@ public class NetworkConstruction
 
 		return locustags;
 	}
-	
+
 	/**
 	 * Read a list of (lower-case) locus tags with kinase activity. 
 	 * The file, downloaded from Gene Ontology, contains all types of annotations and evidence codes, and is currently not filtered further.
@@ -646,18 +763,18 @@ public class NetworkConstruction
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_file)));
 		String line = reader.readLine();
-		
+
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			String locus = stok.nextToken().toLowerCase();	
-			
+			String locus = stok.nextToken().toLowerCase();
+
 			/* Currently, we are not filtering for evidence code as we noticed that quite some known kinases for instance only have the ISS code */
 			if (locus.startsWith("at"))
 			{
 				locustags.add(locus);
 			}
-			
+
 			line = reader.readLine();
 		}
 		reader.close();

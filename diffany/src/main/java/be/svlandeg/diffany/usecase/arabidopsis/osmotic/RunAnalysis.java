@@ -54,7 +54,8 @@ public class RunAnalysis
 	private URI ppi_file;
 	private URI reg_file;
 	private URI phos_file;
-	private URI kinase_file;
+	private URI kinase_function_file;
+	private URI kinase_interaction_file;
 
 	private static String phosAttribute = "phosphorylation_site";
 	private static String kinaseAttribute = "kinase_function";
@@ -67,7 +68,8 @@ public class RunAnalysis
 		ppi_file = new ArabidopsisData().getCornetPPI();
 		reg_file = new ArabidopsisData().getCornetReg();
 		phos_file = new ArabidopsisData().getPhosphat();
-		kinase_file = new ArabidopsisData().getKinases();
+		kinase_function_file = new ArabidopsisData().getKinases();
+		kinase_interaction_file = new ArabidopsisData().getKinaseInteractions();
 	}
 
 	/**
@@ -391,7 +393,7 @@ public class RunAnalysis
 		System.out.println("Expanding the network of DE genes to also include important neighbours");
 
 		/* Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes */
-		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, selfInteractions, neighbours, includeUnknownReg);
+		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, kinase_interaction_file, selfInteractions, neighbours, includeUnknownReg);
 
 		/* Read all the PPI and regulatory interactions between all the nodes in our expanded network
 		 * Without modifying edge strenghts, this becomes our reference network */
@@ -402,13 +404,17 @@ public class RunAnalysis
 		System.out.println(" Found " + edges.size() + " PPI edges between them");
 
 		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
-		System.out.println(" Found " + regEdges.size() + " PPI regulatory between them");
+		edges.addAll(regEdges);
+		System.out.println(" Found " + regEdges.size() + " regulatory edges between them");
+		
+		Set<Edge> kinaseEdges = constr.readKinaseInteractionsByLocustags(nm, kinase_interaction_file, all_nodes, all_nodes, selfInteractions);
+		edges.addAll(kinaseEdges);
+		System.out.println(" Found " + kinaseEdges.size() + " kinase interactions between them");
 
 		// TODO: add as node attributes
 		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
-		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_file);
+		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_function_file);
 
-		edges.addAll(regEdges);
 		Set<Node> nodes = new HashSet<Node>();
 		for (Edge e : edges)
 		{

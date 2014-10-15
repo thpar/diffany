@@ -66,7 +66,7 @@ public class RunAnalysis
 	public RunAnalysis()
 	{
 		ppi_file = new ArabidopsisData().getCornetPPI();
-		reg_file = new ArabidopsisData().getCornetReg();
+		reg_file = new ArabidopsisData().getAtReg();
 		phos_file = new ArabidopsisData().getPhosphat();
 		kinase_function_file = new ArabidopsisData().getKinases();
 		kinase_interaction_file = new ArabidopsisData().getKinaseInteractions();

@@ -12,7 +12,7 @@ public class ArabidopsisData
 {
 	
 	private static String cornetPPIFile = "validated_cornet_all_ppi_table_17012012.tab";
-	private static String cornetRegFile = "reg_net_20100205.tab";
+	private static String atRegFile = "reg_net_20100205.tab";   //"reg_net_20100915.tab";  			
 	private static String kinaseInteractionFile = "kinase-targets_20131210.csv";
 	private static String kinaseFunctionFile = "kinase_activity_go_15102014.tab";
 	private static String phosphatFile = "phosphat_20130429.csv";
@@ -36,18 +36,18 @@ public class ArabidopsisData
 	}
 	
 	/**
-	 * Retrieve the URI of the CORNET regulatory data
+	 * Retrieve the URI of the regulatory data
 	 * @return the URI of the regulatory data, or null if the resource could not be located
 	 */
-	public URI getCornetReg()
+	public URI getAtReg()
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetRegFile).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/" + atRegFile).toURI();
         }
         catch (URISyntaxException e)
         {
-	        System.out.println(" !  Couldn't read " + cornetRegFile);
+	        System.out.println(" !  Couldn't read " + atRegFile);
         }
 		return null;
 	}

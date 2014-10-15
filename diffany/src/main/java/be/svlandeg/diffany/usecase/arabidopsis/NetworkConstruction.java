@@ -519,6 +519,7 @@ public class NetworkConstruction
 		Set<String> regsRead = new HashSet<String>();
 
 		String line = reader.readLine();
+		line = reader.readLine();	// skip header
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
@@ -623,13 +624,23 @@ public class NetworkConstruction
 
 		boolean symmetrical = false;
 		Set<String> interactionsRead = new HashSet<String>();
-
+		
+		Map<String, String> mappedTypes = new HashMap<String, String>();
+		mappedTypes.put("gene regulation", "regulation");
+		mappedTypes.put("protein regulation", "regulation");		// TODO: store these as standard synonyms in EO
+		
+		Set<String> excludedTypes = new HashSet<String>();
+		excludedTypes.add("interaction");
+		excludedTypes.add("pathway");
+		excludedTypes.add("regulation");		// TODO: exclude only when excluding generic regulations
+		
 		String line = reader.readLine();
+		line = reader.readLine(); 		// skip header
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, ",");
 			stok.nextToken(); // Nr
-			String interaction_type = stok.nextToken().toLowerCase();
+			String type = stok.nextToken().toLowerCase();
 			stok.nextToken(); // GO ID
 			stok.nextToken(); // GO term
 			stok.nextToken(); // MI ID
@@ -637,9 +648,14 @@ public class NetworkConstruction
 			stok.nextToken(); // kin_phos
 			String source_locus = stok.nextToken().toLowerCase();
 			String target_locus = stok.nextToken().toLowerCase();
+			
+			String interaction_type = mappedTypes.get(type);
+			if (interaction_type == null)
+			{
+				interaction_type = type;
+			}
 
-			boolean include = true;
-			// TODO: exclude certain interaction types?
+			boolean include = ! (excludedTypes.contains(interaction_type));
 
 			if (include)
 			{

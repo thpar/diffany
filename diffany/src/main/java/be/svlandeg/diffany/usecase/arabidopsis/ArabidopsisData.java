@@ -13,7 +13,7 @@ public class ArabidopsisData
 	
 	private static String cornetPPIDataFile = "validated_cornet_all_ppi_table_17012012.tab";
 	private static String cornetRegDataFile = "reg_net_20100205.tab";
-	private static String kinaseDatafile = "kinase_activity_go_14102014.tab";
+	private static String kinaseDatafile = "kinase_activity_go_15102014.tab";
 	private static String phosphatDataFile = "phosphat_20130429.csv";
 
 	/**

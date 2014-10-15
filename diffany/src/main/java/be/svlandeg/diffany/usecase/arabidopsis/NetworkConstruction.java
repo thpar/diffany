@@ -631,7 +631,8 @@ public class NetworkConstruction
 	}
 	
 	/**
-	 * Read a list of (lower-case) locus tags with kinase activity. The file, downloaded from Gene Ontology, only contains experimentally validated data.
+	 * Read a list of (lower-case) locus tags with kinase activity. 
+	 * The file, downloaded from Gene Ontology, contains all types of annotations and evidence codes, and is currently not filtered further.
 	 * 
 	 * @param kinase_file the location where to find the tab-delimited kinase activity file
 	 * 
@@ -644,17 +645,14 @@ public class NetworkConstruction
 		Set<String> locustags = new HashSet<String>();
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_file)));
-
 		String line = reader.readLine();
-		
-		// skip header
-		line = reader.readLine();
 		
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			String locus = stok.nextToken().toLowerCase();	
 			
+			/* Currently, we are not filtering for evidence code as we noticed that quite some known kinases for instance only have the ISS code */
 			if (locus.startsWith("at"))
 			{
 				locustags.add(locus);

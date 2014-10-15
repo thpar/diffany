@@ -78,8 +78,6 @@ public class NetworkIO
 		Set<Edge> normalEdges = network.getEdgesByVirtualState(false);
 		Set<Edge> virtualEdges = network.getEdgesByVirtualState(true);
 
-		Map<String, Set<String>> virtualNodeAttributes = new HashMap<String, Set<String>>();
-
 		for (Edge e : normalEdges)
 		{
 			edgeWriter.append(EdgeIO.writeToTab(e));
@@ -94,27 +92,6 @@ public class NetworkIO
 				edgeWriter.append(EdgeIO.writeToTab(e));
 				edgeWriter.newLine();
 				edgeWriter.flush();
-			}
-		}
-		else
-		// TODO: currently, only information about target nodes from virtual edges are included as additional node attributes
-		{
-			for (Edge e : virtualEdges)
-			{
-				Node source = e.getSource();
-				Node target = e.getTarget();
-
-				// Target should get meta data on this virtual edge
-				if (source.isVirtual() && !target.isVirtual())
-				{
-					String targetID = target.getID();
-					String attribute = e.getType() + "\t" + e.getWeight();
-					if (!virtualNodeAttributes.containsKey(targetID))
-					{
-						virtualNodeAttributes.put(targetID, new HashSet<String>());
-					}
-					virtualNodeAttributes.get(targetID).add(attribute);
-				}
 			}
 		}
 		edgeWriter.flush();
@@ -142,16 +119,7 @@ public class NetworkIO
 		
 		if (writeHeaders)
 		{
-			nodeWriter.append(NodeIO.getHeader());
-			if (!allowVirtualEdges)
-			{
-				nodeWriter.append("\t" + "diffexpr" + "\t" + "FC");
-			}
-			
-			for (String attribute : nodeAttributes)
-			{
-				nodeWriter.append("\t" + attribute);
-			}
+			nodeWriter.append(NodeIO.getHeader(nodeAttributes));
 			nodeWriter.newLine();
 			nodeWriter.flush();
 		}
@@ -165,21 +133,7 @@ public class NetworkIO
 		{
 			Node n = sortedNodes.get(ID);
 			String tabRep = NodeIO.writeToTab(n, nodeAttributes);
-
 			nodeWriter.append(tabRep);
-			if (!allowVirtualEdges) // if there are no virtual edges, this information will be printed as node attributes
-			{
-				Set<String> attributes = virtualNodeAttributes.get(ID);
-				if (attributes == null || attributes.isEmpty())
-				{
-					attributes = new HashSet<String>();
-					attributes.add("no_meta_data" + "\t" + 1);
-				}
-				for (String at : attributes)
-				{
-					nodeWriter.append("\t" + at);
-				}
-			}
 			nodeWriter.newLine();
 			nodeWriter.flush();
 		}

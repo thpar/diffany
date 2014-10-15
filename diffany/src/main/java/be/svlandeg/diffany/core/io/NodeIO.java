@@ -60,12 +60,17 @@ public class NodeIO
 	}
 	
 	/**
-	 * TODO documentation
-	 * @return TODO
+	 * Write the header for the node file, including the custom node attribute names.
+	 * @param nodeAttributes the node attributes defined for the network of which this node is a part of
+	 * @return a String containing the tab-delimited header for the node file
 	 */
-	public static CharSequence getHeader()
+	public static CharSequence getHeader(SortedSet<String> nodeAttributes)
     {
 		String result = "ID" + '\t' + "official_symbol" + '\t' + "virtual";
+		for (String attribute : nodeAttributes)
+		{
+			result += "\t" + attribute;
+		}
 		return result;
     }
 	

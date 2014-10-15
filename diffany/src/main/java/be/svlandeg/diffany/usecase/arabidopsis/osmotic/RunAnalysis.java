@@ -56,8 +56,8 @@ public class RunAnalysis
 	private URI phos_file;
 	private URI kinase_file;
 
-	private static String phosAttribute = "PhosphorylationSite";
-	private static String kinaseAttribute = "KinaseFunction";
+	private static String phosAttribute = "phosphorylation_site";
+	private static String kinaseAttribute = "kinase_function";
 
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
@@ -82,8 +82,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -429,7 +429,7 @@ public class RunAnalysis
 				}
 				else
 				{
-					n.setAttribute(phosAttribute, "yes");
+					n.setAttribute(phosAttribute, "no");
 				}
 			}
 			if (includeKinase)
@@ -440,7 +440,7 @@ public class RunAnalysis
 				}
 				else
 				{
-					n.setAttribute(kinaseAttribute, "yes");
+					n.setAttribute(kinaseAttribute, "no");
 				}
 			}
 		}

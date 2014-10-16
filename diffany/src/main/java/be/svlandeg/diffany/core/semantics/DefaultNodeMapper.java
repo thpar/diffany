@@ -51,44 +51,4 @@ public class DefaultNodeMapper extends NodeMapper
 		
 		return IDs.iterator().next();
 	}
-
-	@Override
-	public String getConsensusName(Set<Node> nodes) throws IllegalArgumentException
-	{
-		Set<String> IDs = new HashSet<String>();
-		Set<String> normalized_names = new HashSet<String>();
-		Set<String> original_names = new HashSet<String>();
-		for (Node n : nodes)
-		{
-			if (n != null)
-			{
-				IDs.add(n.getID());
-				original_names.add(n.getDisplayName(false));
-				normalized_names.add(n.getDisplayName(true));
-			}
-		}
-		if (IDs.isEmpty())
-		{
-			return null;
-		}
-		if (IDs.size() > 1)
-		{
-			String found = "";
-			for (String s : IDs)
-			{
-				found += s + " / ";
-			}
-			String errormsg = "A consensus name can only be defined for two equal nodes (same IDs), but found more than one ID: " + found;
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (original_names.size() == 1)
-		{
-			// keep casing information if it is the same
-			return original_names.iterator().next();
-		}
-		// return lowercase otherwise
-		return normalized_names.iterator().next();
-	}
-
-
 }

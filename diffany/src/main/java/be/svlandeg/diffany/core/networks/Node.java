@@ -157,4 +157,22 @@ public class Node
 		}
 		return result;
 	}
+	
+	/**
+	 * Provide a long string of this node, including its attributes
+	 * @return a full string representation of this node
+	 */
+	public String toLongString()
+	{
+		String result = "Node " + ID;
+		if (!ID.equals(name))
+		{
+			result += " (" + name + ")";
+		}
+		for (String att : attributes.keySet())
+		{
+			result += '\t' + att + "=" + attributes.get(att);
+		}
+		return result;
+	}
 }

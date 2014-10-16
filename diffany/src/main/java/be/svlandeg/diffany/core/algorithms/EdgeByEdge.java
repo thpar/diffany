@@ -139,12 +139,12 @@ public class EdgeByEdge
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
 			Set<Node> sources = nodesByID.get(sourceID);
-			String sourceconsensusName = nm.getConsensusName(sources);
+			Node example_source = sources.iterator().next();
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Set<Node> targets = nodesByID.get(targetID);
-				String targetconsensusName = nm.getConsensusName(targets);
+				Node example_target = targets.iterator().next();
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -252,13 +252,13 @@ public class EdgeByEdge
 						{
 							if (!allDiffNodes.containsKey(sourceID))
 							{
-								allDiffNodes.put(sourceID, new Node(sourceID, sourceconsensusName));
+								allDiffNodes.put(sourceID, example_source);
 							}
 							Node sourceresult = allDiffNodes.get(sourceID);
 
 							if (!allDiffNodes.containsKey(targetID))
 							{
-								allDiffNodes.put(targetID, new Node(targetID, targetconsensusName));
+								allDiffNodes.put(targetID, example_target);
 							}
 							Node targetresult = allDiffNodes.get(targetID);
 
@@ -398,12 +398,12 @@ public class EdgeByEdge
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
 			Set<Node> sources = nodesByID.get(sourceID);
-			String sourceconsensusName = nm.getConsensusName(sources);
+			Node example_source = sources.iterator().next();
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Set<Node> targets = nodesByID.get(targetID);
-				String targetconsensusName = nm.getConsensusName(targets);
+				Node example_target = targets.iterator().next();
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -484,13 +484,13 @@ public class EdgeByEdge
 						{
 							if (!allDiffNodes.containsKey(sourceID))
 							{
-								allDiffNodes.put(sourceID, new Node(sourceID, sourceconsensusName));
+								allDiffNodes.put(sourceID, example_source);
 							}
 							Node sourceresult = allDiffNodes.get(sourceID);
 
 							if (!allDiffNodes.containsKey(targetID))
 							{
-								allDiffNodes.put(targetID, new Node(targetID, targetconsensusName));
+								allDiffNodes.put(targetID, example_target);
 							}
 							Node targetresult = allDiffNodes.get(targetID);
 

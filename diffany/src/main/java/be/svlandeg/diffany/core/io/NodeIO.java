@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.core.io;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
@@ -110,21 +111,27 @@ public class NodeIO
 	 * Read a Node from a tab-delimited String.
 	 * 
 	 * @param s the tab-delimited string containing all parameters of the Node
+	 * @param nodeAttributes the node attribute names
 	 * @return the corresponding Node object
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Node readFromTab(String s) throws IOException
+	public static Node readFromTab(String s, List<String> nodeAttributes) throws IOException
 	{
 		StringTokenizer stok = new StringTokenizer(s, "\t");
 		String ID = stok.nextToken();
 		String name = stok.nextToken();
 		String virtual = stok.nextToken();
-		
-		// TODO currently this method does not read information on virtual edges as written by NetworkIO.writeNetworkToFiles when !allowVirtualEdges
-		
 		boolean isVirtual = NodeIO.isVirtual(virtual);
 		
-		return new Node(ID, name, isVirtual);
+		Node n = new Node(ID, name, isVirtual);
+		
+		for (String att : nodeAttributes)
+		{
+			String value = stok.nextToken();
+			n.setAttribute(att, value);
+		}
+		
+		return n;
 	}
 
 }

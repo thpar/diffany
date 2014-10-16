@@ -6,8 +6,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -239,14 +241,15 @@ public class NetworkIO
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
 		File conditionsFile = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
-
-		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader);
-		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
-
+		
 		int ID = readIDFromFile(definitionFile);
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
-		Set<String> attributes = readAttributesFromFile(definitionFile);
+		List<String> listedAttributes = readAttributesFromFile(definitionFile);
+		Set<String> attributes = new HashSet<String>(listedAttributes);
+
+		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader, listedAttributes);
+		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
 
 		if (type.equals("ReferenceNetwork"))
 		{
@@ -358,13 +361,15 @@ public class NetworkIO
 		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
 		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
 		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-
-		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader);
-		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
-
+		
 		int ID = readIDFromFile(definitionFile);
 		String name = readNameFromFile(definitionFile);
 		String type = readTypeFromFile(definitionFile);
+		List<String> listedAttributes = readAttributesFromFile(definitionFile);
+
+		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader, listedAttributes);
+		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
+
 
 		if (type.equals("DifferentialNetwork"))
 		{
@@ -508,11 +513,12 @@ public class NetworkIO
 	 * @param nodesFile the file containing the node data
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param skipHeader whether or not the nodes and edges file contain a header
-	 * @return the set of nodes read from the file, or an empty set if no nodes were found
+	 * @param nodeAttributes the node attribute names
 	 * 
+	 * @return the set of nodes read from the file, or an empty set if no nodes were found
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm, boolean skipHeader) throws IOException
+	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException
 	{
 		Set<Node> nodes = new HashSet<Node>();
 
@@ -524,7 +530,7 @@ public class NetworkIO
 		}
 		while (line != null)
 		{
-			Node n = NodeIO.readFromTab(line.trim());
+			Node n = NodeIO.readFromTab(line.trim(), nodeAttributes);
 			if (!nm.isContained(n, nodes))
 			{
 				nodes.add(n);
@@ -633,9 +639,9 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<String> readAttributesFromFile(File definitionFile) throws IOException
+	public static List<String> readAttributesFromFile(File definitionFile) throws IOException
 	{
-		Set<String> attributes = new HashSet<String>();
+		List<String> attributes = new ArrayList<String>();
 
 		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
 		String line = reader.readLine();

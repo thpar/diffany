@@ -626,8 +626,8 @@ public class NetworkConstruction
 		Set<String> interactionsRead = new HashSet<String>();
 		
 		Map<String, String> mappedTypes = new HashMap<String, String>();
-		mappedTypes.put("gene regulation", "regulation");
-		mappedTypes.put("protein regulation", "regulation");		// TODO: store these as standard synonyms in EO
+		mappedTypes.put("motif phosphorylation", "phosphorylation");	
+		mappedTypes.put("peptidearray phosphorylation", "phosphorylation");
 		
 		Set<String> excludedTypes = new HashSet<String>();
 		excludedTypes.add("interaction");

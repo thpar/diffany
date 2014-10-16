@@ -12,6 +12,7 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
+import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
@@ -449,7 +450,7 @@ public class NetworkCleaning
 	 * Resolve a set of edges to one. This is currently implemented by taking the edge with the highest weight.
 	 * If there are more of the same (highest) weight, take the most specific one, unless it's a negated edge, in which case the most general one is chosen.
 	 * 
-	 * It is assumed that resolveEdgesPerRoot was previously used to provide an set of edges which only contains edges for one root category,
+	 * It is assumed that resolveEdgesPerRoot was previously used to provide a set of edges which only contains edges for one root category,
 	 * and that all edges within this category are either symmetrical, or all directed.
 	 * 
 	 * This method currently only works for input networks as it uses the source categories of the edge ontology!
@@ -597,10 +598,19 @@ public class NetworkCleaning
 				}
 			}
 		}
+		
+		for (EdgeDefinition e : edges)
+		{
+			System.out.println(" e " + e);
+		}
 
+		// TODO: fix this
 		String msg = "Could not resolve the set of edges to one.";
-		logger.log("Fatal error: " + msg);
-		throw new RuntimeException(msg);
+		System.out.println(msg);
+		return edges.iterator().next();
+		
+		//logger.log("Fatal error: " + msg);
+		//throw new RuntimeException(msg);
 	}
 
 }

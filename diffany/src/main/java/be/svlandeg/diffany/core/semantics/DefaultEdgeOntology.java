@@ -318,7 +318,9 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("affect", "regulation", overwrite);
 		addSourceCategoryMapping("affects", "regulation", overwrite);
 		addSourceCategoryMapping("affecting", "regulation", overwrite);
-		addSourceCategoryMapping("unknown_regulation", "regulation", overwrite);	
+		addSourceCategoryMapping("unknown_regulation", "regulation", overwrite);
+		addSourceCategoryMapping("gene regulation", "regulation", overwrite);
+		addSourceCategoryMapping("protein regulation", "regulation", overwrite);
 
 		// positive regulation category and common synonyms
 		addSourceCategoryMapping("positive regulation", "positive_regulation", overwrite);
@@ -356,6 +358,10 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("negatively regulating", "negative_regulation", overwrite);
 		addSourceCategoryMapping("downregulation", "negative_regulation", overwrite);
 		addSourceCategoryMapping("downregulated", "negative_regulation", overwrite);
+		addSourceCategoryMapping("inactivation", "negative_regulation", overwrite);
+		addSourceCategoryMapping("inactivate", "negative_regulation", overwrite);
+		addSourceCategoryMapping("inactivates", "negative_regulation", overwrite);
+		addSourceCategoryMapping("inactivated", "negative_regulation", overwrite);
 
 		addSourceCategoryMapping("inhibit", "inhibition", overwrite);
 		addSourceCategoryMapping("inhibits", "inhibition", overwrite);

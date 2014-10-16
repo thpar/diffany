@@ -436,7 +436,6 @@ public abstract class Network
 			if (value == null)
 			{
 				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
-				System.out.println(" node: " + node.toLongString());
 				throw new IllegalArgumentException(errormsg);
 			}
 		}

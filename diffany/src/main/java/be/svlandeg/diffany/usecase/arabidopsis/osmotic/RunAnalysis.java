@@ -98,8 +98,8 @@ public class RunAnalysis
 		boolean performStep3InputNetworksToFile = false;
 
 		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = false;
-		boolean performStep5AllPairwise = true;
+		boolean performStep5OneagainstAll = true;
+		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
@@ -140,7 +140,7 @@ public class RunAnalysis
 		boolean cleanInputAfterIO = true; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
 
 		double weight_cutoff = 0;
-		int support = 5;
+		int support = 4;
 		int hubConnections = 10;
 
 		boolean includePhos = true;

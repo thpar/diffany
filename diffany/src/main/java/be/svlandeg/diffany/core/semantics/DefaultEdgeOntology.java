@@ -65,8 +65,10 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		cats.put("regulation", false);
 		cats.put("positive_regulation", false);
 		cats.put("catalysis", false);
+		cats.put("overexpression", false);
 		cats.put("negative_regulation", false);
 		cats.put("inhibition", false);
+		cats.put("underexpression", false);
 
 		cats.put("ppi", true);
 		cats.put("colocalization", true);
@@ -104,6 +106,8 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceCatParent("negative_regulation", "regulation");
 		putSourceCatParent("catalysis", "positive_regulation");
 		putSourceCatParent("inhibition", "negative_regulation");
+		putSourceCatParent("overexpression", "positive_regulation");
+		putSourceCatParent("underexpression", "negative_regulation");
 
 		putSourceCatParent("genetic_interaction", GENERIC_SYMMETRICAL_CAT);
 		putSourceCatParent("positive_genetic_interaction", "genetic_interaction");
@@ -141,9 +145,11 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	{
 		addPosSourceCat("positive_regulation");
 		addPosSourceCat("catalysis");
+		addPosSourceCat("overexpression");
 
 		addNegSourceCat("negative_regulation");
 		addNegSourceCat("inhibition");
+		addNegSourceCat("underexpression");
 
 		addPosSourceCat("positive_genetic_interaction");
 
@@ -346,6 +352,11 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("catalyzing", "catalysis", overwrite);
 		addSourceCategoryMapping("catalysation", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyzation", "catalysis", overwrite);
+		
+		addSourceCategoryMapping("overexpression", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpresses", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpressed", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpress", "overexpression", overwrite);
 
 		// negative regulation category and common synonyms
 		addSourceCategoryMapping("negative regulation", "negative_regulation", overwrite);
@@ -371,7 +382,11 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("represses", "inhibition", overwrite);
 		addSourceCategoryMapping("repressing", "inhibition", overwrite);
 		addSourceCategoryMapping("repression", "inhibition", overwrite);
-
+		
+		addSourceCategoryMapping("underexpression", "underexpression", overwrite);
+		addSourceCategoryMapping("underexpresses", "underexpression", overwrite);
+		addSourceCategoryMapping("underexpressed", "underexpression", overwrite);
+		addSourceCategoryMapping("underexpress", "underexpression", overwrite);
 
 		// genetic interactions
 		addSourceCategoryMapping("positive genetic interaction", "positive_genetic_interaction", overwrite);

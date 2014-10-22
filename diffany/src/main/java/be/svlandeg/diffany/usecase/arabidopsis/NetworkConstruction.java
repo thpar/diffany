@@ -248,7 +248,8 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * Remove the PPI hub biases from a given set of edges. To this end, we look for nodes that are only differently connected to one other interaction partner, which is a PPI hub.
+	 * Remove the PPI hub biases from a given set of edges. 
+	 * To this end, we look for nodes that are only differently connected to one other interaction partner, which is a PPI hub.
 	 * In that case, we revert the PPI connection to reference levels (1) because we assume it's not very meaningful, unless both nodes are DE.
 	 * 
 	 * @param hubs the PPI hubs denoted by their unique IDs
@@ -338,39 +339,52 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * Create virtual regulation edges for a collection of targets, which are down-regulated (negative weight) or up-regulated.
-	 * This method is currently not used anymore, as fold changes are encoded into the PPI and regulatory edges.
+	 * Create virtual regulation edges for a collection of DE nodes, which are underexpressed (negative weight) or overexpressed.
 	 * 
-	 * @param targets the map of target nodes with their corresponding regulation weights (negative weights refer to down-regulation)
+	 * @param DEnodeIDs the map of target node IDs with their corresponding fold change values (negative weights refer to down-regulation)
+	 * @param nodes the set of existing nodes in the network - virtual edges will only be generated for this subset
 	 * @return the set of corresponding virtual edges
 	 */
-	public Set<Edge> constructVirtualRegulations(Map<Node, Double> targets)
+	public Set<Edge> constructVirtualRegulations(Map<String, Double> DEnodeIDs, Set<Node> nodes)
 	{
 		Set<Edge> edges = new HashSet<Edge>();
 		Map<String, Node> virtualNodes = new HashMap<String, Node>();
-
-		for (Node n : targets.keySet())
+		
+		Map<String, Node> normalNodes = new HashMap<String, Node>();
+		for (Node n : nodes)
 		{
-			double FC = targets.get(n);
+			normalNodes.put(n.getID(), n);
+		}
+		
 
-			String type = "upregulated";
-			String regulator = "upregulator";
-
-			if (FC < 0)
+		for (String id : DEnodeIDs.keySet())
+		{
+			Node n = normalNodes.get(id);
+			if (n != null)
 			{
-				type = "downregulated";
-				regulator = "downregulator";
+				double FC = DEnodeIDs.get(id);
+	
+				String type = "overexpression";
+				String regulator = "upregulator";
+				String prefix = "up";
+	
+				if (FC < 0)
+				{
+					type = "underexpression";
+					regulator = "downregulator";
+					prefix = "down";
+				}
+	
+				String virtualID = prefix + "_" + n.getID();
+				String fullname = regulator + "_of_" + n.getDisplayName();
+				if (!virtualNodes.containsKey(virtualID))
+				{
+					virtualNodes.put(virtualID, new Node(virtualID, fullname, true));
+				}
+				Node virtualRegulator = virtualNodes.get(virtualID);
+				Edge e = new Edge(type, virtualRegulator, n, false, Math.abs(FC), false);
+				edges.add(e);
 			}
-
-			String ID = type.charAt(0) + "_" + n.getID();
-			String fullname = regulator + "_of_" + n.getDisplayName();
-			if (!virtualNodes.containsKey(ID))
-			{
-				virtualNodes.put(ID, new Node(ID, fullname, true));
-			}
-			Node virtualRegulator = virtualNodes.get(ID);
-			Edge e = new Edge(type, virtualRegulator, n, false, Math.abs(FC), false);
-			edges.add(e);
 		}
 
 		return edges;

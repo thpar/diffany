@@ -93,14 +93,14 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = false;
-		boolean performStep2ToNetwork = false;
-		boolean performStep3InputNetworksToFile = false;
+		boolean performStep1FromSupplemental = true;
+		boolean performStep2ToNetwork = true;
+		boolean performStep3InputNetworksToFile = true;
 
-		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = true;
+		boolean performStep4InputNetworksFromFile = false;
+		boolean performStep5OneagainstAll = false;
 		boolean performStep5AllPairwise = false;
-		boolean performStep6OutputNetworksToFile = true;
+		boolean performStep6OutputNetworksToFile = false;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
@@ -132,7 +132,7 @@ public class RunAnalysis
 		double threshold_strict = 0.05;
 		double threshold_fuzzy = 0.1;
 		boolean writeHeaders = true;
-		boolean allowVirtualEdges = false;
+		boolean allowVirtualEdges = true;
 
 		boolean selfInteractions = false;
 		boolean neighbours = true;
@@ -178,7 +178,7 @@ public class RunAnalysis
 			try
 			{
 				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours,
-						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, hubConnections);
+						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, allowVirtualEdges, hubConnections);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -338,7 +338,8 @@ public class RunAnalysis
 	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
-			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
+			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
+			boolean includePredictedPhos, boolean addVirtualEdges, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<String> nodeAttributes = new HashSet<String>();
 		if (includePhos)
@@ -458,6 +459,7 @@ public class RunAnalysis
 
 		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo, null);
 		networks.add(cleanRefNet);
+		nodes = cleanRefNet.getNodes();
 
 		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + " nodes");
 
@@ -466,23 +468,44 @@ public class RunAnalysis
 		{
 			String suffix = data.getName();
 			String name = "Network" + suffix;
-			System.out.println("");
-			System.out.println("Constructing the condition-specific network for " + name);
-
-			Map<String, Double> all_de_nodes = dataAn.getSignificantGenes(data, threshold_strict);
-			all_de_nodes.putAll(dataAn.getSignificantGenes(data, threshold_fuzzy));
-
-			NetworkAnalysis na = new NetworkAnalysis();
-			String ppiType = "validated_ppi";
-
-			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), cleanRefNet.getNodes(), ppiType, hubConnections, false, false);
-
-			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_nodes);
-			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_nodes.keySet());
 			Condition c = new Condition("time measurement " + suffix);
 			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, nodeAttributes, c, nm);
 			
-			condNet.setNodesAndEdges(nodes, filteredEdges);
+			System.out.println("");
+			System.out.println("Constructing the condition-specific network for " + name);
+
+			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
+
+			NetworkAnalysis na = new NetworkAnalysis();
+			String ppiType = "validated_ppi";
+			
+			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), nodes, ppiType, hubConnections, false, false);
+
+			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_genes);
+			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_genes.keySet());
+			
+			if (addVirtualEdges)
+			{
+				Set<Edge> virtualDEedges = constr.constructVirtualRegulations(all_de_genes, nodes);
+				
+				for (Edge e : virtualDEedges)
+				{
+					if (includeKinase)
+					{
+						e.getSource().setAttribute(kinaseAttribute, "unknown");
+						e.getTarget().setAttribute(kinaseAttribute, "unknown");
+					}	
+					if (includePhos)
+					{
+						e.getSource().setAttribute(phosAttribute, "unknown");
+						e.getTarget().setAttribute(phosAttribute, "unknown");
+					}	
+				}
+				
+				filteredEdges.addAll(virtualDEedges);
+			}
+			
+			condNet.setNodesAndEdges(filteredEdges);
 
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo, null);
 			networks.add(cleanCondNet);

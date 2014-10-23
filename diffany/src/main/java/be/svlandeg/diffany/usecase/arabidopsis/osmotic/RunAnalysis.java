@@ -140,8 +140,10 @@ public class RunAnalysis
 		boolean cleanInputAfterIO = true; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
 
 		double weight_cutoff = 0;
-		int support = 4;
 		int hubConnections = 10;
+		
+		// 5 means that all conditions need to match (4 conditions+reference). 4 means that only 3 time-points (+reference) need to match ("more fuzzy")
+		int support = 5;		
 
 		boolean includePhos = true;
 		boolean includeKinase = true;

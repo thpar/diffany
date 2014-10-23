@@ -65,15 +65,17 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		cats.put("regulation", false);
 		cats.put("positive_regulation", false);
 		cats.put("catalysis", false);
-		cats.put("overexpression", false);
 		cats.put("negative_regulation", false);
 		cats.put("inhibition", false);
+		
+		cats.put("expression", false);
 		cats.put("underexpression", false);
+		cats.put("overexpression", false);
+		
+		cats.put("coexpression", true);
 
 		cats.put("ppi", true);
 		cats.put("colocalization", true);
-
-		cats.put("coexpression", true);
 
 		cats.put("protein-dna_binding", false);
 		cats.put("transcription", false);
@@ -106,7 +108,9 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		putSourceCatParent("negative_regulation", "regulation");
 		putSourceCatParent("catalysis", "positive_regulation");
 		putSourceCatParent("inhibition", "negative_regulation");
-		putSourceCatParent("overexpression", "positive_regulation");
+		
+		putSourceCatParent("expression", GENERIC_DIRECTED_CAT);
+		putSourceCatParent("overexpression", "expression");
 		putSourceCatParent("underexpression", "negative_regulation");
 
 		putSourceCatParent("genetic_interaction", GENERIC_SYMMETRICAL_CAT);
@@ -352,11 +356,6 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("catalyzing", "catalysis", overwrite);
 		addSourceCategoryMapping("catalysation", "catalysis", overwrite);
 		addSourceCategoryMapping("catalyzation", "catalysis", overwrite);
-		
-		addSourceCategoryMapping("overexpression", "overexpression", overwrite);
-		addSourceCategoryMapping("overexpresses", "overexpression", overwrite);
-		addSourceCategoryMapping("overexpressed", "overexpression", overwrite);
-		addSourceCategoryMapping("overexpress", "overexpression", overwrite);
 
 		// negative regulation category and common synonyms
 		addSourceCategoryMapping("negative regulation", "negative_regulation", overwrite);
@@ -382,6 +381,18 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		addSourceCategoryMapping("represses", "inhibition", overwrite);
 		addSourceCategoryMapping("repressing", "inhibition", overwrite);
 		addSourceCategoryMapping("repression", "inhibition", overwrite);
+		
+		//  (virtual) expression edges
+		
+		addSourceCategoryMapping("expression", "expression", overwrite);
+		addSourceCategoryMapping("expresses", "expression", overwrite);
+		addSourceCategoryMapping("expressed", "expression", overwrite);
+		addSourceCategoryMapping("express", "expression", overwrite);
+		
+		addSourceCategoryMapping("overexpression", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpresses", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpressed", "overexpression", overwrite);
+		addSourceCategoryMapping("overexpress", "overexpression", overwrite);
 		
 		addSourceCategoryMapping("underexpression", "underexpression", overwrite);
 		addSourceCategoryMapping("underexpresses", "underexpression", overwrite);

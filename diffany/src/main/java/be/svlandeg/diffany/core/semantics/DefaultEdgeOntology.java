@@ -111,7 +111,7 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		
 		putSourceCatParent("expression", GENERIC_DIRECTED_CAT);
 		putSourceCatParent("overexpression", "expression");
-		putSourceCatParent("underexpression", "negative_regulation");
+		putSourceCatParent("underexpression", "expression");
 
 		putSourceCatParent("genetic_interaction", GENERIC_SYMMETRICAL_CAT);
 		putSourceCatParent("positive_genetic_interaction", "genetic_interaction");

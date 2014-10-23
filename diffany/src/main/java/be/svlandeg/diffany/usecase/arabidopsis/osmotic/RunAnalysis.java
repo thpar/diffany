@@ -98,8 +98,8 @@ public class RunAnalysis
 		boolean performStep3InputNetworksToFile = false;
 
 		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = false;
-		boolean performStep5AllPairwise = true;
+		boolean performStep5OneagainstAll = true;
+		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
@@ -143,7 +143,7 @@ public class RunAnalysis
 		int hubConnections = 10;
 		
 		// 5 means that all conditions need to match (4 conditions+reference). 4 means that only 3 time-points (+reference) need to match ("more fuzzy")
-		int support = 5;		
+		int support = 4;		
 
 		boolean includePhos = true;
 		boolean includeKinase = true;

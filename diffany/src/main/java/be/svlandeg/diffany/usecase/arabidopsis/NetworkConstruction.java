@@ -193,23 +193,34 @@ public class NetworkConstruction
 				weight = 1;
 			}
 
-			// both are up-regulated or equal: the positive edge weight is (1 + their FC average), or 0 in case they are anti-correlated
+			// both are up-regulated or non-DE: the positive edge weight is (1 + their FC average), or 0 in case they are anti-correlated
 			else if (targetFC >= 0 && sourceFC >= 0)
 			{
 				weight = 1 + ((sourceFC + targetFC) / 2);
-				if (!correlation && targetFC != 0) // if target is equal, the weight can remain positive
+				if (!correlation && targetFC != 0) // if target is non-DE, the weight can remain positive
 				{
 					weight = 0;
 				}
 			}
+			
+			// the target is downregulated (below 0), the source is up (above 0) or non-DE -> break the connection unless they are anti-correlated
+			else if (targetFC < 0 && sourceFC >= 0)
+			{
+				weight = 0;
+				if (!correlation)
+				{
+					weight = 1 + ((sourceFC + Math.abs(targetFC)) / 2);
+				}
+			}
 
-			// source is downregulated but target is equal: 0 weight
-			else if (targetFC == 0 && sourceFC < 0)
+			// the source is downregulated, the target is upregulated or non-DE -> break the connection, even if they are anti-correlated
+			// if they were anti-correlated (e.g. inhibition), this is not the case anymore and the differential will be an increase_regulation
+			else if (sourceFC < 0 && targetFC >= 0)
 			{
 				weight = 0;
 			}
 
-			// both are down-regulated: the positive edge weight is their FC average through an exponential function for normalization, 
+			// both are down-regulated: the positive edge weight ]0,1[ is their FC average through an exponential function for normalization, 
 			// or 0 if they are anti-correlated
 			else if (targetFC < 0 && sourceFC < 0)
 			{
@@ -219,28 +230,12 @@ public class NetworkConstruction
 					double neg_avg = (sourceFC + targetFC) / 2;
 
 					// this 0.5 factor determines the steepness of the normalization curve
+					// after this normalization, the weight will be somewhere between 0 and 1
 					weight = Math.exp(0.5 * neg_avg);
 				}
 			}
 
-			// one of the two is downregulated (below 0), the other up (above 0) -> break the connection unless they are anti-correlated
-			else if ((targetFC < 0 && sourceFC >= 0) || (targetFC > 0 && sourceFC < 0))
-			{
-				weight = 0;
-				if (!correlation)
-				{
-					weight = 1 + ((Math.abs(sourceFC) + Math.abs(targetFC)) / 2);
-				}
-			}
-
 			newEdge.getDefinition().setWeight(weight);
-			/*
-			if (weight != 1.0)
-			{
-				System.out.println(newEdge);
-			}
-			*/
-
 			resultEdges.add(newEdge);
 		}
 

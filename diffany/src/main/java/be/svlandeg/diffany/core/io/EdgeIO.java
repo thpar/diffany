@@ -5,12 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.networks.meta.MetaEdge;
-import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 
 /**
  * This class allows reading/writing an {@link Edge} from/to File.
@@ -25,9 +22,6 @@ public class EdgeIO
 	
 	private static String negatedString = "negated";
 	private static String notnegatedString = "affirmative";
-	
-	private static String referenceString = "inReference";
-	private static String notreferenceString = "notInReference";
 
 	/**
 	 * Get a string representation of all edges in a collection, divided by newlines, with edges in a tabbed format.
@@ -57,10 +51,6 @@ public class EdgeIO
 	public static String writeToTab(Edge e)
 	{
 		String defResult = writeDefinitionToTab(e.getDefinition());
-		if (e instanceof MetaEdge)
-		{
-			defResult += writeMergedDefinitionToTab((MetaEdgeDefinition) e.getDefinition());
-		}
 		String result = e.getSource().getID() + '\t' + e.getTarget().getID() + '\t' + defResult;
 		return result;
 	}
@@ -87,32 +77,6 @@ public class EdgeIO
 		double weight = def.getWeight();
 		String result = def.getType() + '\t' + symm + '\t' + weight + '\t' + neg;
 		
-		return result;
-	}
-	
-	/**
-	 * Get a string representation of a merged edge definition.
-	 * More specifically, print it as: edge.type - symmetrical - weight - negated.
-	 * 
-	 * @param def the original edge definition
-	 * @return a string representation of this edge definition, ready for printing
-	 */
-	public static String writeMergedDefinitionToTab(MetaEdgeDefinition def)
-	{
-		String result = "\t" + def.getSupport();
-		if (def.inReferenceNetwork())
-		{
-			result += '\t' + referenceString;
-		}
-		else
-		{
-			result += '\t' + notreferenceString;
-		}
-		result += '\t';
-		for (Condition c : def.getConditions())
-		{
-			result += c + " --- ";
-		}
 		return result;
 	}
 	
@@ -155,7 +119,7 @@ public class EdgeIO
 	
 	
 	/**
-	 * Read an EdgeDefinition from a tab-delimited String. TODO: MetaEdgeDefinition
+	 * Read an EdgeDefinition from a tab-delimited String.
 	 * 
 	 * @param def the original edge definition, in string format
 	 * @return the edge definition represented by the input string

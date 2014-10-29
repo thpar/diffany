@@ -18,8 +18,6 @@ import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.networks.meta.MetaEdge;
-import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -305,8 +303,6 @@ public class EdgeByEdge
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return the consensus network between the input networks. 
-	 * The network will contain Meta edges that store which input networks provide support, given by the original conditions when the input contains ConditionNetworks, or by artificial Conditions
-	 * displaying the name of the Networks.
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
@@ -496,7 +492,6 @@ public class EdgeByEdge
 
 							Set<Condition> conditions = new HashSet<Condition>();
 							boolean inReference = false;
-							int support = 0;
 
 							if (supports.isEmpty())
 							{
@@ -505,7 +500,6 @@ public class EdgeByEdge
 
 							for (int i : supports)
 							{
-								support++;
 								Network input = allNetworks.get(i);
 								if (input instanceof ReferenceNetwork)
 								{
@@ -524,9 +518,7 @@ public class EdgeByEdge
 							// only add this edge when the reference network does not matter, or was actually present
 							if (!refRequired || inReference)
 							{
-								MetaEdgeDefinition mergedDef = new MetaEdgeDefinition(def, conditions, support, inReference);
-
-								MetaEdge consensusdiff = new MetaEdge(sourceresult, targetresult, mergedDef);
+								Edge consensusdiff = new Edge(sourceresult, targetresult, def);
 								consensus.addEdge(consensusdiff);
 							}
 						}

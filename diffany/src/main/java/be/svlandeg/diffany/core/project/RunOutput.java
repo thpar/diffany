@@ -6,9 +6,6 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
-import be.svlandeg.diffany.core.networks.meta.MetaConvertor;
-import be.svlandeg.diffany.core.networks.meta.MetaDifferentialNetwork;
-import be.svlandeg.diffany.core.networks.meta.MetaConsensusNetwork;
 
 /**
  * This class keeps the output of differential network algorithms, both differential networks as well consensus networks.
@@ -138,32 +135,6 @@ public class RunOutput
 	public Set<ConsensusNetwork> getConsensusNetworks()
 	{
 		return cns;
-	}
-
-	/**
-	 * Retrieve all differential networks as one large merged network
-	 * @return the differential networks in this output, all merged together (or null when there were no differential networks)
-	 */
-	public MetaDifferentialNetwork getMergedDifferential()
-	{
-		if (dns == null || dns.isEmpty())
-		{
-			return null;
-		}
-		return MetaConvertor.convertDifferentials(dns);
-	}
-
-	/**
-	 * Retrieve all consensus networks as one large merged network
-	 * @return the consensus networks in this output, all merged together
-	 */
-	public MetaConsensusNetwork getMergedConsensusNetworks()
-	{
-		if (cns == null || cns.isEmpty())
-		{
-			return null;
-		}
-		return MetaConvertor.convertConsensus(cns);
 	}
 
 }

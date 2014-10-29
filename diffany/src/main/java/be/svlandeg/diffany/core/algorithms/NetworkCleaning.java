@@ -16,8 +16,6 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.networks.meta.MetaEdge;
-import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
@@ -56,11 +54,10 @@ public class NetworkCleaning
 	 * Be aware: this function changes the input network object!
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param isMeta if true, the edges in the input network can/should be cast as MetaEdges
 	 * @param eo the edge ontology
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 */
-	private void fullCleaning(Network net, EdgeOntology eo, boolean isMeta, ExecutionProgress progressListener)
+	private void fullCleaning(Network net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
 		// TODO: record more detailed progress for the listener!
 		String progressMessage = "Cleaning network " + net.getName();
@@ -73,12 +70,12 @@ public class NetworkCleaning
 
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo, isMeta);
+		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
 		
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		cleanEdges(net, isMeta, eo);
+		cleanEdges(net, eo);
 		if (progressListener != null)
 		{
 			progressListener.setProgress(progressMessage, 1, 1);
@@ -95,7 +92,7 @@ public class NetworkCleaning
 	 */
 	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		fullCleaning(net, eo, true, progressListener);
+		fullCleaning(net, eo, progressListener);
 	}
 
 	/**
@@ -196,7 +193,7 @@ public class NetworkCleaning
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false, progressListener);
+		fullCleaning(resultNet, eo, progressListener);
 
 		return resultNet;
 	}
@@ -217,7 +214,7 @@ public class NetworkCleaning
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false, progressListener);
+		fullCleaning(resultNet, eo, progressListener);
 
 		return resultNet;
 	}
@@ -238,7 +235,7 @@ public class NetworkCleaning
 	{
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, false, progressListener);
+		fullCleaning(resultNet, eo, progressListener);
 
 		return resultNet;
 	}
@@ -250,10 +247,9 @@ public class NetworkCleaning
 	 * This method avoids adding redundant symmetrical edges, and thus {@link #removeRedundantSymmetricalEdges} does not need to be called.
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param isMeta if true, the edges in the input network can/should be cast as MetaEdges
 	 * @param eo the edge ontology
 	 */
-	protected void cleanEdges(Network net, boolean isMeta, EdgeOntology eo)
+	protected void cleanEdges(Network net, EdgeOntology eo)
 	{
 		Set<Node> allNodes = net.getNodes();
 		Set<Edge> newEdges = new HashSet<Edge>();
@@ -325,14 +321,7 @@ public class NetworkCleaning
 					Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, n1, n2);
 					for (EdgeDefinition def : cleanedEdges.values())
 					{
-						if (isMeta)
-						{
-							newEdges.add(new MetaEdge(n1, n2, (MetaEdgeDefinition) def)); 
-						}
-						else
-						{
-							newEdges.add(new Edge(n1, n2, def));
-						}
+						newEdges.add(new Edge(n1, n2, def));
 					}
 				}
 			}
@@ -354,14 +343,7 @@ public class NetworkCleaning
 					Map<String, EdgeDefinition> cleanedEdges = cleanEdgesBetweenNodes(net, eo, roots, edges, n1, n2);
 					for (EdgeDefinition def : cleanedEdges.values())
 					{
-						if (isMeta)
-						{
-							newEdges.add(new MetaEdge(n1, n2, (MetaEdgeDefinition) def)); 
-						}
-						else
-						{
-							newEdges.add(new Edge(n1, n2, def));
-						}
+						newEdges.add(new Edge(n1, n2, def));
 					}
 				}
 			}
@@ -371,7 +353,7 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Clean a (generic, non-meta) network:
+	 * Clean a network:
 	 * Group all input edges into subclasses per root category of the EdgeOntology, resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning

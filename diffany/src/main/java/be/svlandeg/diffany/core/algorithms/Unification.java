@@ -7,8 +7,6 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
-import be.svlandeg.diffany.core.networks.meta.MetaEdge;
-import be.svlandeg.diffany.core.networks.meta.MetaEdgeDefinition;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 
@@ -110,19 +108,14 @@ public class Unification
 	 * 
 	 * @param oldEdges the old set of edges
 	 * @param eo the edge ontology defining the semantics of edge types
-	 * @param isMeta if true, the provided edges can be cast as MetaEdges, and the result will also contain Meta edges
 	 * @return the new, unified set of edges adhering to the edge ontology
 	 */
-	public Set<Edge> unifyEdgeDirection(Set<Edge> oldEdges, EdgeOntology eo, boolean isMeta)
+	public Set<Edge> unifyEdgeDirection(Set<Edge> oldEdges, EdgeOntology eo)
 	{
 		Set<Edge> newEdges = new HashSet<Edge>();
 		for (Edge oldE : oldEdges)
 		{
 			EdgeDefinition newDef = new EdgeDefinition(oldE.getDefinition());
-			if (isMeta)
-			{
-				newDef = new MetaEdgeDefinition((MetaEdgeDefinition) ((MetaEdge) oldE).getDefinition());
-			}
 
 			boolean shouldBeSymmetrical = eo.isSymmetricalSourceType(newDef.getType());
 			boolean isSymmetrical = newDef.isSymmetrical();
@@ -133,18 +126,10 @@ public class Unification
 				newDef.makeSymmetrical(shouldBeSymmetrical);
 				
 				Edge newEdge1 = new Edge(oldE.getSource(), oldE.getTarget(), newDef);
-				if (isMeta)
-				{
-					newEdge1 = new MetaEdge(oldE.getSource(), oldE.getTarget(), (MetaEdgeDefinition) newDef);
-				}
 				newEdges.add(newEdge1);
 				
 				// make new directed target-source edge
 				Edge newEdge2 = new Edge(oldE.getTarget(), oldE.getSource(), newDef);
-				if (isMeta)
-				{
-					newEdge2 = new MetaEdge(oldE.getTarget(), oldE.getSource(), (MetaEdgeDefinition) newDef);
-				}
 				newEdges.add(newEdge2);
 			}
 			else
@@ -152,10 +137,6 @@ public class Unification
 				// simply keep the current edge
 				
 				Edge newEdge = new Edge(oldE.getSource(), oldE.getTarget(), newDef);
-				if (isMeta)
-				{
-					newEdge = new MetaEdge(oldE.getSource(), oldE.getTarget(), (MetaEdgeDefinition) newDef);
-				}
 				newEdges.add(newEdge);
 			}
 		}

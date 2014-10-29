@@ -19,7 +19,7 @@ public class Edge
 
 	/**
 	 * Create a new node from a certain definition and specifying source and target nodes.
-	 * The EdgeDefinition object is kept as such, and can also be of the class MetaEdgeDefinition.
+	 * The EdgeDefinition object is kept as such (not copied).
 	 * 
 	 * @param source the source node
 	 * @param target the target node

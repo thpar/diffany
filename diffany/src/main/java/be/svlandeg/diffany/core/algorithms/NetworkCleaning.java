@@ -75,7 +75,8 @@ public class NetworkCleaning
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		cleanEdges(net, eo);
+		//cleanEdges(net, eo);
+		removeRedundantSymmetricalEdges(net, eo);
 		if (progressListener != null)
 		{
 			progressListener.setProgress(progressMessage, 1, 1);
@@ -101,20 +102,22 @@ public class NetworkCleaning
 	 * Be aware: this function changes the network object!
 	 * 
 	 * @param net the network that needs cleaning
+	 * @param eo the edge ontology
 	 */
-	public void fullDifferentialOutputCleaning(Network net)
+	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo)
 	{
 		// Note: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX"
-		removeRedundantSymmetricalEdges(net);
+		removeRedundantSymmetricalEdges(net, eo);
 	}
 
 	/**
 	 * Remove edges in the network that are symmetrical and are represented twice (source-target and target-source). 
 	 * One of the two is removed only then when the type, weight and negation are all equal.
+	 * Additional, a more generic (affirmative) edge of the same weight will also be removed
 	 * 
 	 * @param net the network that needs cleaning
 	 */
-	protected void removeRedundantSymmetricalEdges(Network net)
+	protected void removeRedundantSymmetricalEdges(Network net, EdgeOntology eo)
 	{
 		logger.log(" Removing redundant symmetrical edges from network " + net.getName());
 
@@ -134,15 +137,44 @@ public class NetworkCleaning
 				// comparing two edges 'et' and 'eb', not removed in a previous iteration
 				if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
 				{
+					boolean etParent = false;
+					boolean ebParent = false;
+					
+					String typeET = et.getType();
+					String typeEB = eb.getType();
+					
+					// this check allows the method to be used also for output networks
+					
+					if (eo.isDefinedSourceType(typeEB) && eo.isDefinedSourceType(typeET))
+					{
+						String catEB = eo.getSourceCategory(typeEB);
+						String catET = eo.getSourceCategory(typeET);
+						
+						etParent = eo.isSourceCatChildOf(catEB, catET) > 0;  // if positive, typeET is a parent of typeEB
+						ebParent = eo.isSourceCatChildOf(catET, catEB) > 0;  // if positive, typeEB is a parent of typeET eo.isSourceCatChildOf(typeET, typeEB) > 0;  // if positive, typeEB is a parent of typeET
+					}
+					
+					boolean equalType = typeET.equals(typeEB);
+					
 					// both are symmetrical and have the same type
-					if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.getType().equals(eb.getType())))
+					if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.isNegated() == eb.isNegated()))
 					{
 						// both have the same weight and negation status
-						if ((et.getWeight() == eb.getWeight()) && (et.isNegated() == eb.isNegated()))
+						
+						if (Math.abs(et.getWeight()) - Math.abs(eb.getWeight()) < 0.000001)		// allow for small rounding errors
 						{
-							// remove one of the two
-							net.removeEdge(eb);
-							removed_edges.add(eb);
+							if (equalType || ebParent)
+							{
+								// remove the least specific one
+								net.removeEdge(eb);
+								removed_edges.add(eb);
+							}
+							else if (etParent)
+							{
+								// remove the least specific one
+								net.removeEdge(et);
+								removed_edges.add(et);
+							}
 						}
 					}
 				}
@@ -249,6 +281,7 @@ public class NetworkCleaning
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
 	 */
+	/*
 	protected void cleanEdges(Network net, EdgeOntology eo)
 	{
 		Set<Node> allNodes = net.getNodes();
@@ -350,7 +383,7 @@ public class NetworkCleaning
 		}
 		
 		net.setNodesAndEdges(allNodes, newEdges);
-	}
+	}*/
 
 	/**
 	 * Clean a network:
@@ -365,6 +398,7 @@ public class NetworkCleaning
 	 * 
 	 * @return all edges grouped by semantic root category, with unified directionality, and only 1 edge per network and root cat.
 	 */
+	/*
     protected Map<String, EdgeDefinition> cleanEdgesBetweenNodes(Network net, EdgeOntology eo, Set<String> roots, Set<EdgeDefinition> oldEdges, 
     		Node source, Node target)
 	{
@@ -378,7 +412,7 @@ public class NetworkCleaning
 			mappedSingleEdges.put(rootCat, singleEdge);
 		}
 		return mappedSingleEdges;
-	}
+	}*/
 	
 
 	/**
@@ -428,8 +462,10 @@ public class NetworkCleaning
 	}
 
 	/**
-	 * Resolve a set of edges to one. This is currently implemented by taking the edge with the highest weight.
-	 * If there are more of the same (highest) weight, take the most specific one, unless it's a negated edge, in which case the most general one is chosen.
+	 * Remove redundancy in a set of edges, attempting to resolve them to as little edges as possible. 
+	 * This is currently implemented by taking the edge with the highest weight.
+	 * If there are more affirmative edges of the same (highest) weight, take the most specific one
+	 * If there are multiple negated edges with similar weight, keep all of them.
 	 * 
 	 * It is assumed that resolveEdgesPerRoot was previously used to provide a set of edges which only contains edges for one root category,
 	 * and that all edges within this category are either symmetrical, or all directed.
@@ -445,9 +481,9 @@ public class NetworkCleaning
 	 * 
 	 * @return one edge, produced after resolving conflicts, or throws a RunTimeException if no best edge could be found.
 	 */
-	protected EdgeDefinition resolveToOne(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
+	protected Set<EdgeDefinition> removeRedundancy(Set<EdgeDefinition> edges, EdgeOntology eo, String network_name, Node source, Node target, String rootCat)
 	{
-		double maxWeight = 0.0;
+		double maxWeight = Double.NEGATIVE_INFINITY;
 
 		for (EdgeDefinition e : edges)
 		{
@@ -462,21 +498,22 @@ public class NetworkCleaning
 
 		for (EdgeDefinition e : edges)
 		{
-			if (maxWeight == e.getWeight())
+			if (Math.abs(maxWeight - e.getWeight()) < 0.000001)		// allow for small rounding errors
 			{
 				thickestEdges.add(e);
+				String type = eo.getSourceCategory(e.getType());
 				if (e.isNegated())
 				{
-					negated_cats.add(eo.getSourceCategory(e.getType()));
+					negated_cats.add(type);
 				}
 				else
 				{
-					affirmative_cats.add(eo.getSourceCategory(e.getType()));
+					affirmative_cats.add(type);
 				}
 			}
 		}
 
-		// For the non-negated types, we'll take the most specific one that still covers all 
+		// For the non-negated types, we take the most specific one that still covers all 
 		String affirmativeConsensus = null;
 		for (String aff_cat : affirmative_cats)
 		{
@@ -486,8 +523,8 @@ public class NetworkCleaning
 			}
 			else
 			{
-				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus); // if positive, aff_type is a child of the consensus
-				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat); // if positive, aff_type is a parent of the consensus
+				int child = eo.isSourceCatChildOf(aff_cat, affirmativeConsensus);   // if positive, aff_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(affirmativeConsensus, aff_cat);  // if positive, aff_type is a parent of the consensus
 
 				// they are siblings or something such: take the first common parent
 				if (child < 0 && parent < 0)
@@ -505,7 +542,7 @@ public class NetworkCleaning
 			}
 		}
 
-		// For the negated types, we'll take the most general one
+		// For the negated types, we take the most general one
 		String negatedConsensus = null;
 		for (String neg_cat : negated_cats)
 		{
@@ -515,8 +552,8 @@ public class NetworkCleaning
 			}
 			else
 			{
-				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus); // if positive, neg_type is a child of the consensus
-				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat); // if positive, neg_type is a parent of the consensus
+				int child = eo.isSourceCatChildOf(neg_cat, negatedConsensus);   // if positive, neg_type is a child of the consensus
+				int parent = eo.isSourceCatChildOf(negatedConsensus, neg_cat);  // if positive, neg_type is a parent of the consensus
 
 				// they are siblings or something such: take the first common parent
 				// TODO: this is not entirely correct because negative evidence shouldn't travel up the tree... but it seems the most sensible thing to do to summarize the given information
@@ -563,7 +600,8 @@ public class NetworkCleaning
 			{
 				if (e.isNegated() && maxWeight == e.getWeight() && negatedConsensus.equals(eo.getSourceCategory(e.getType())))
 				{
-					return e;
+					//return e;
+					return edges;
 				}
 			}
 		}
@@ -575,7 +613,7 @@ public class NetworkCleaning
 			{
 				if (!e.isNegated() && maxWeight == e.getWeight() && affirmativeConsensus.equals(eo.getSourceCategory(e.getType())))
 				{
-					return e;
+					return edges;
 				}
 			}
 		}
@@ -588,7 +626,7 @@ public class NetworkCleaning
 		// TODO: fix this
 		String msg = "Could not resolve the set of edges to one.";
 		System.out.println(msg);
-		return edges.iterator().next();
+		return edges;
 		
 		//logger.log("Fatal error: " + msg);
 		//throw new RuntimeException(msg);

@@ -219,10 +219,6 @@ public class EdgeByEdge
 							conEdges.add(eg.getVoidEdge(symm));
 							conSupportingNetworks.add(new HashSet<Integer>());
 						}
-						if (refEdges.size() > 1)
-						{
-							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
-						}
 						if (refEdges.isEmpty())
 						{
 							refEdges.add(eg.getVoidEdge(symm));

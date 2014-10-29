@@ -39,6 +39,7 @@ import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.FuzzyNetworks2;
 import be.svlandeg.diffany.examples.Ideker2011;
+import be.svlandeg.diffany.examples.OsmoticSampleTest;
 
 /**
  * Entry point for the Diffany Cytoscape 3 App. Here the necessary services are called and bundled into the
@@ -108,6 +109,11 @@ public class CyActivator extends AbstractCyActivator
 				exampleProject3, example3.getTestConfiguration(exampleProject3, 4)), 
 				new Properties());
 		
+		OsmoticSampleTest example4 = new OsmoticSampleTest();
+		Project exampleProject4 = example4.getTestProject();
+		registerAllServices(context, new LoadExampleAction(services,"OsmoticSampleTest", 
+				exampleProject4, example4.getTestDiffConfiguration(exampleProject4, 4)),
+				new Properties());
 		
 		//add custom menu items
 		JMenu diffanyMenu = swingApplication.getJMenu("Apps.Diffany");

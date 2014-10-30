@@ -75,8 +75,8 @@ public class NetworkCleaning
 		net.setNodesAndEdges(nodes, edges);
 
 		// clean edges per semantic category
-		//cleanEdges(net, eo);
-		removeRedundantSymmetricalEdges(net, eo);
+		// cleanEdges(net, eo);
+		removeRedundantEdges(net, eo);
 		if (progressListener != null)
 		{
 			progressListener.setProgress(progressMessage, 1, 1);
@@ -106,18 +106,19 @@ public class NetworkCleaning
 	 */
 	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo)
 	{
-		// Note: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX"
-		removeRedundantSymmetricalEdges(net, eo);
+		// TODO: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX" (I think this is fixed, to check)
+		removeRedundantEdges(net, eo);
 	}
 
 	/**
-	 * Remove edges in the network that are symmetrical and are represented twice (source-target and target-source). 
-	 * One of the two is removed only then when the type, weight and negation are all equal.
-	 * Additional, a more generic (affirmative) edge of the same weight will also be removed
+	 * Remove redundant edges in the network, such as those that are symmetrical and represented twice (source-target and target-source),
+	 * or a generic edge (e.g. regulation) when a specific edge (e.g. inhibition) is also present.
+	 * 
+	 * OOtherwise, the weight and negation status should be equal.
 	 * 
 	 * @param net the network that needs cleaning
 	 */
-	protected void removeRedundantSymmetricalEdges(Network net, EdgeOntology eo)
+	protected void removeRedundantEdges(Network net, EdgeOntology eo)
 	{
 		logger.log(" Removing redundant symmetrical edges from network " + net.getName());
 
@@ -137,6 +138,8 @@ public class NetworkCleaning
 				// comparing two edges 'et' and 'eb', not removed in a previous iteration
 				if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
 				{
+					//System.out.println("comparing " + et + " and " + eb);
+					
 					boolean etParent = false;
 					boolean ebParent = false;
 					
@@ -144,36 +147,80 @@ public class NetworkCleaning
 					String typeEB = eb.getType();
 					
 					// this check allows the method to be used also for output networks
-					
 					if (eo.isDefinedSourceType(typeEB) && eo.isDefinedSourceType(typeET))
 					{
 						String catEB = eo.getSourceCategory(typeEB);
 						String catET = eo.getSourceCategory(typeET);
 						
 						etParent = eo.isSourceCatChildOf(catEB, catET) > 0;  // if positive, typeET is a parent of typeEB
-						ebParent = eo.isSourceCatChildOf(catET, catEB) > 0;  // if positive, typeEB is a parent of typeET eo.isSourceCatChildOf(typeET, typeEB) > 0;  // if positive, typeEB is a parent of typeET
+						ebParent = eo.isSourceCatChildOf(catET, catEB) > 0;  // if positive, typeEB is a parent of typeET 
 					}
 					
 					boolean equalType = typeET.equals(typeEB);
 					
-					// both are symmetrical and have the same type
-					if ((et.isSymmetrical() && eb.isSymmetrical()) && (et.isNegated() == eb.isNegated()))
+					boolean theSame = true;
+
+					// they need to be both symmetrical or both directed
+					
+					// TODO: currently this thus does not filter for A -> B which is redundant because of A <-> B
+					// but this shouldn't happen because of the edge ontology definitions
+					
+					if (et.isSymmetrical() != eb.isSymmetrical())
 					{
-						// both have the same weight and negation status
-						
+						theSame = false;
+					}
+					// if they are directed, check that the source & target agree (checking only source should be enough, but just to be sure...)
+					if (! et.isSymmetrical())
+					{
+						if (! et.getSource().getID().equals(eb.getSource().getID()))
+						{
+							theSame = false;
+						}
+						if (! et.getTarget().getID().equals(eb.getTarget().getID()))
+						{
+							theSame = false;
+						}
+					}
+					
+					// both have the same symmetry status and negation status
+					if (theSame && (et.isNegated() == eb.isNegated()))
+					{
+						// both have the same weight 
 						if (Math.abs(et.getWeight()) - Math.abs(eb.getWeight()) < 0.000001)		// allow for small rounding errors
 						{
 							if (equalType || ebParent)
 							{
-								// remove the least specific one
-								net.removeEdge(eb);
-								removed_edges.add(eb);
+								if (! et.isNegated())
+								{
+									// remove the least specific one
+									net.removeEdge(eb);
+									removed_edges.add(eb);
+									//System.out.println("removing affirmative parent " + eb);
+								}
+								else
+								{
+									// remove the most specific one
+									net.removeEdge(et);
+									removed_edges.add(et);
+									//System.out.println("removing negated child " + et);
+								}
 							}
 							else if (etParent)
 							{
-								// remove the least specific one
-								net.removeEdge(et);
-								removed_edges.add(et);
+								if (! et.isNegated())
+								{
+									// remove the least specific one
+									net.removeEdge(et);
+									removed_edges.add(et);
+									//System.out.println("removing affirmative parent " + et);
+								}
+								else
+								{
+									// remove the most specific one
+									net.removeEdge(eb);
+									removed_edges.add(eb);
+									//System.out.println("removing panegated child " + eb);
+								}
 							}
 						}
 					}

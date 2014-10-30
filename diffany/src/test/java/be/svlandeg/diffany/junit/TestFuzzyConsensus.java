@@ -40,7 +40,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
@@ -82,7 +81,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
@@ -115,7 +113,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
@@ -147,18 +144,19 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
 		Set<Edge> sEdges = on.getEdges();
-		assertEquals(4, sEdges.size());
+		assertEquals(6, sEdges.size());
 
 		assertAnEdge(on, "A", "B", false, "colocalization", false, 0.6);
+		assertAnEdge(on, "A", "B", false, "ppi", false, 0.3);
 		assertAnEdge(on, "B", "A", false, "ppi", false, 0.4);
 
 		assertAnEdge(on, "X", "Y", false, "positive_regulation", false, 0.7);	
+		assertAnEdge(on, "X", "Y", false, "negative_regulation", false, 0.5);	
 		
 		assertAnEdge(on, "M", "N", false, "ptm", true, 0.5);
 	}
@@ -253,8 +251,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
-
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
 
@@ -284,7 +280,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
@@ -313,7 +308,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
-		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
@@ -350,7 +344,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
 		assertNrDiffNetworks(output, 0);
-		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
 		ConsensusNetwork on = output.getConsensusNetworks().iterator().next();
@@ -379,7 +372,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		// Testing that there is exactly one consensus network created
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
-		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network
@@ -412,7 +404,6 @@ public class TestFuzzyConsensus extends TestGeneric
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrConsensusNetworks(output, 1);
-		assertNrDiffNetworks(output, 0);
 		assertNrDiffNetworks(output, 0);
 
 		// Testing the edges in the consensus network

@@ -207,7 +207,10 @@ public class EdgeByEdge
 							}
 							else if (networkID == reference.getID() && !refEdges.contains(e))
 							{
-								refEdges.add(e);
+								if (! (e.isNegated() || e.getWeight() == 0))
+								{
+									refEdges.add(e);
+								}
 							}
 						}
 					}
@@ -219,18 +222,17 @@ public class EdgeByEdge
 							conEdges.add(eg.getVoidEdge(symm));
 							conSupportingNetworks.add(new HashSet<Integer>());
 						}
-						if (refEdges.size() > 1)
-						{
-							throw new IllegalArgumentException("Found more than 1 reference edge in " + reference.getName() + " for semantic root " + root);
-						}
 						if (refEdges.isEmpty())
 						{
 							refEdges.add(eg.getVoidEdge(symm));
 						}
-						EdgeDefinition refEdge = refEdges.iterator().next();
-
+						if (refEdges.size() > 1)
+						{
+							throw new IllegalArgumentException("Found more than 1 non-zero reference edge in " + reference.getName() + " for semantic root " + root);
+						}
+						
 						List<EdgeDefinition> mergedEdges = new ArrayList<EdgeDefinition>();
-						mergedEdges.add(refEdge);
+						mergedEdges.addAll(refEdges);
 						mergedEdges.addAll(conEdges);
 
 						List<EdgeDefinition> cleanedEdges = cleaning.unifyDirection(mergedEdges);

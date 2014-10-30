@@ -260,18 +260,20 @@ public class FuzzyNetworks extends GenericExample
 		System.out.println("Defining network for FuzzyNetworks configuration");
 		Project p = ex.getProject();
 		int supportingCutoff = 2;
-		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
-		//int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 		
 		System.out.print("Calculating 1-all consensus network at weight cutoff " + weight_cutoff);
 		System.out.println(" and supporting networks cutoff " + supportingCutoff);
-		
-		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true);	// consensus, no diff
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true, null);	// diff, no consensus
-		
 		System.out.println("");
-		//ex.printAllNetworks(p, ID, false, true, false);	// consensus, no diff
-		ex.printAllNetworks(p, ID, false, false, true);	// diff, no consensus
+		
+		// diff, no consensus
+		//int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
+		//new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 20, -1, true, null);	
+		//ex.printAllNetworks(p, ID, false, false, true);	
+		
+		// consensus, no diff
+		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true, null);			
+		ex.printAllNetworks(p, ID, false, true, false);	
 		
 		System.out.println("Log:");
 		Logger logger = p.getLogger(ID);

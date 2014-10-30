@@ -421,22 +421,28 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "A", "B", false, "increases_regulation", false, 6);
 		assertAnEdge(dNetwork, "A", "B", false, "decreases_ptm", false, 5);
 		assertAnEdge(dNetwork, "A", "B", false, "decreases_somerandomInteraction", false, 4);
+		
 		assertAnEdge(dNetwork, "G", "H", false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "G", "H", false, "decreases_ptm", false, 1);
+		
 		assertAnEdge(dNetwork, "J", "K", false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "K", "J", false, "decreases_regulation", false, 4);
-		assertAnEdge(dNetwork, "J", "K", false, "increases_ptm", false, 6);
+		assertAnEdge(dNetwork, "J", "K", false, "increases_ptm", false, 4);
 		assertAnEdge(dNetwork, "K", "J", false, "increases_ptm", false, 1);
 
 		// Testing the edges in the corresponding consensus network
 		ConsensusNetwork sNetwork = pair.getConsensusNetwork();
 		Set<Edge> sEdges = sNetwork.getEdges();
-		assertEquals(5, sEdges.size());
+		assertEquals(7, sEdges.size());
 
 		assertAnEdge(sNetwork, "A", "B", false, "positive_regulation", false, 2);
+		
 		assertAnEdge(sNetwork, "G", "H", false, "regulation", false, 4);
 		assertAnEdge(sNetwork, "G", "H", false, "ptm", false, 2);
+		
 		assertAnEdge(sNetwork, "J", "K", false, "regulation", false, 4);
+		assertAnEdge(sNetwork, "J", "K", false, "positive_regulation", true, 3);
 		assertAnEdge(sNetwork, "K", "J", false, "ptm", false, 2);
+		assertAnEdge(sNetwork, "J", "K", false, "ptm", false, 2);
 	}
 }

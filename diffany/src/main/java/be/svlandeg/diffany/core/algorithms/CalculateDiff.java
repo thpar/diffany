@@ -135,7 +135,7 @@ public class CalculateDiff
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
 			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, nm, diff_name, ID, supportingCutoff, weightCutoff, progressListener);
-			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn);
+			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn, eo);
 			return dn;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);

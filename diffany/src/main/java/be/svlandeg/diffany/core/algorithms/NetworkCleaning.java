@@ -121,8 +121,6 @@ public class NetworkCleaning
 	protected void removeRedundantEdges(Network net, EdgeOntology eo)
 	{
 		logger.log(" Removing redundant edges from network " + net.getName());
-		System.out.println("Removing redundant edges from network " + net.getName());
-		System.out.println(" ");
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
 
@@ -140,8 +138,6 @@ public class NetworkCleaning
 				// comparing two edges 'et' and 'eb', not removed in a previous iteration
 				if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
 				{
-					System.out.println("comparing " + et + " and " + eb);
-					
 					boolean etParent = false;
 					boolean ebParent = false;
 					
@@ -160,7 +156,7 @@ public class NetworkCleaning
 					
 					boolean equalType = typeET.equals(typeEB);
 					
-					boolean theSame = true;
+					boolean equalDirection = true;
 
 					// they need to be both symmetrical or both directed
 					
@@ -169,62 +165,56 @@ public class NetworkCleaning
 					
 					if (et.isSymmetrical() != eb.isSymmetrical())
 					{
-						theSame = false;
+						equalDirection = false;
 					}
 					// if they are directed, check that the source & target agree (checking only source should be enough, but just to be sure...)
 					if (! et.isSymmetrical())
 					{
 						if (! et.getSource().getID().equals(eb.getSource().getID()))
 						{
-							theSame = false;
+							equalDirection = false;
 						}
 						if (! et.getTarget().getID().equals(eb.getTarget().getID()))
 						{
-							theSame = false;
+							equalDirection = false;
 						}
 					}
 					
 					// both have the same symmetry status and negation status
-					if (theSame && (et.isNegated() == eb.isNegated()))
+					if (equalDirection && (et.isNegated() == eb.isNegated()))
 					{
-						// both have the same weight 
-						if (Math.abs(et.getWeight() - Math.abs(eb.getWeight())) < 0.000001)		// allow for small rounding errors
+						// allow for small rounding errors
+						boolean equalWeight = Math.abs(et.getWeight() - Math.abs(eb.getWeight())) < 0.000001;
+						
+						boolean ebLower = et.getWeight() > eb.getWeight();
+						boolean etLower = eb.getWeight() > et.getWeight();
+						
+						Edge toRemove = null;		
+						
+						// remove the affirmative parent (or equal) with equal or lower weight
+						if ((equalType || ebParent) && ! eb.isNegated() && (equalWeight || ebLower))
 						{
-							System.out.println("equal weight: " + Math.abs(et.getWeight()) + " " + Math.abs(eb.getWeight()));
-							if (equalType || ebParent)
-							{
-								if (! et.isNegated())
-								{
-									// remove the least specific one
-									net.removeEdge(eb);
-									removed_edges.add(eb);
-									System.out.println("removing affirmative parent " + eb);
-								}
-								else
-								{
-									// remove the most specific one
-									net.removeEdge(et);
-									removed_edges.add(et);
-									System.out.println("removing negated child " + et);
-								}
-							}
-							else if (etParent)
-							{
-								if (! et.isNegated())
-								{
-									// remove the least specific one
-									net.removeEdge(et);
-									removed_edges.add(et);
-									System.out.println("removing affirmative parent " + et);
-								}
-								else
-								{
-									// remove the most specific one
-									net.removeEdge(eb);
-									removed_edges.add(eb);
-									System.out.println("removing panegated child " + eb);
-								}
-							}
+							toRemove = eb;
+						}
+						if ((equalType || etParent) && ! et.isNegated() && (equalWeight || etLower))
+						{
+							toRemove = et;
+						}
+						
+						// remove the negated child (or equal) if it's of equal weight or lower
+						if ((equalType || ebParent) && et.isNegated() && (equalWeight || etLower))
+						{
+							toRemove = et;
+						}
+						if ((equalType || etParent) && eb.isNegated() && (equalWeight || ebLower))
+						{
+							toRemove = eb;
+						}
+						
+						if (toRemove != null)
+						{
+							net.removeEdge(toRemove);
+							removed_edges.add(toRemove);
 						}
 					}
 				}

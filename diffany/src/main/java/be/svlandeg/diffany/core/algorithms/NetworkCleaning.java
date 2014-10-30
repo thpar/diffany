@@ -112,15 +112,17 @@ public class NetworkCleaning
 
 	/**
 	 * Remove redundant edges in the network, such as those that are symmetrical and represented twice (source-target and target-source),
-	 * or a generic edge (e.g. regulation) when a specific edge (e.g. inhibition) is also present.
+	 * or a generic edge (e.g. regulation) when a specific edge (e.g. inhibition) is also present (of the same weight or more).
 	 * 
-	 * OOtherwise, the weight and negation status should be equal.
+	 * Otherwise, the weight and negation status should be equal.
 	 * 
 	 * @param net the network that needs cleaning
 	 */
 	protected void removeRedundantEdges(Network net, EdgeOntology eo)
 	{
-		logger.log(" Removing redundant symmetrical edges from network " + net.getName());
+		logger.log(" Removing redundant edges from network " + net.getName());
+		System.out.println("Removing redundant edges from network " + net.getName());
+		System.out.println(" ");
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
 
@@ -138,7 +140,7 @@ public class NetworkCleaning
 				// comparing two edges 'et' and 'eb', not removed in a previous iteration
 				if (!et.equals(eb) && !removed_edges.contains(et) && !removed_edges.contains(eb))
 				{
-					//System.out.println("comparing " + et + " and " + eb);
+					System.out.println("comparing " + et + " and " + eb);
 					
 					boolean etParent = false;
 					boolean ebParent = false;
@@ -186,8 +188,9 @@ public class NetworkCleaning
 					if (theSame && (et.isNegated() == eb.isNegated()))
 					{
 						// both have the same weight 
-						if (Math.abs(et.getWeight()) - Math.abs(eb.getWeight()) < 0.000001)		// allow for small rounding errors
+						if (Math.abs(et.getWeight() - Math.abs(eb.getWeight())) < 0.000001)		// allow for small rounding errors
 						{
+							System.out.println("equal weight: " + Math.abs(et.getWeight()) + " " + Math.abs(eb.getWeight()));
 							if (equalType || ebParent)
 							{
 								if (! et.isNegated())
@@ -195,14 +198,14 @@ public class NetworkCleaning
 									// remove the least specific one
 									net.removeEdge(eb);
 									removed_edges.add(eb);
-									//System.out.println("removing affirmative parent " + eb);
+									System.out.println("removing affirmative parent " + eb);
 								}
 								else
 								{
 									// remove the most specific one
 									net.removeEdge(et);
 									removed_edges.add(et);
-									//System.out.println("removing negated child " + et);
+									System.out.println("removing negated child " + et);
 								}
 							}
 							else if (etParent)
@@ -212,14 +215,14 @@ public class NetworkCleaning
 									// remove the least specific one
 									net.removeEdge(et);
 									removed_edges.add(et);
-									//System.out.println("removing affirmative parent " + et);
+									System.out.println("removing affirmative parent " + et);
 								}
 								else
 								{
 									// remove the most specific one
 									net.removeEdge(eb);
 									removed_edges.add(eb);
-									//System.out.println("removing panegated child " + eb);
+									System.out.println("removing panegated child " + eb);
 								}
 							}
 						}

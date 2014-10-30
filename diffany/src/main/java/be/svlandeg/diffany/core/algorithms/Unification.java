@@ -89,7 +89,7 @@ public class Unification
 			{
 				boolean symmetryOld = existingCats.get(cat);
 				
-				// only symmetrical when all input edges of this type are ánd the previous definition is
+				// only symmetrical when all input edges of this type are AND the previous definition is
 				boolean symmetryNew = symmetryNow && symmetryOld;
 				eo.addSourceCategory(cat, symmetryNew, true);
 				if (symmetryNew != symmetryOld)

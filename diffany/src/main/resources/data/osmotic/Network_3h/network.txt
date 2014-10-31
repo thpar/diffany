@@ -1,0 +1,4 @@
+ID	3
+Name	Network_3h
+Type	ConditionNetwork
+Attributes	kinase_function;phosphorylation_site;

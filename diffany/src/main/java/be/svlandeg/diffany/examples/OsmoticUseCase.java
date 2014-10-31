@@ -1,8 +1,10 @@
 package be.svlandeg.diffany.examples;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
@@ -26,43 +28,39 @@ public class OsmoticUseCase extends GenericExample{
 		return p;
 	}
 	
-	public int getTestConfiguration(Project p, int supportingCutoff){
-		ReferenceNetwork r = getTestReference();
-		Set<ConditionNetwork> c = getTestConditions();
+	public int getTestConfiguration(Project p, int supportingCutoff) throws IOException{
+		String jarDir = "/resources/data/osmotic/";
+		ReferenceNetwork r = getTestReference(jarDir);
+		Set<ConditionNetwork> c = getTestConditions(jarDir);
 		boolean cleanInput = true;
 		int ID = p.addRunConfiguration(r,  c, supportingCutoff, cleanInput, null);
 		return ID;
 	}
 
-	private ReferenceNetwork getTestReference() {
-		// TODO Auto-generated method stub
-		return null;
+	private ReferenceNetwork getTestReference(String jarDir) throws IOException{
+		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", nm, true);
 	}
 	
-	private Set<ConditionNetwork> getTestConditions() {
+	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{
 		Set<ConditionNetwork> cnetworks = new HashSet<ConditionNetwork>();
-		cnetworks.add(getFirstCondition());
-		cnetworks.add(getSecondCondition());
-		cnetworks.add(getThirdCondition());
-		cnetworks.add(getFourthCondition());
+		cnetworks.add(getFirstCondition(jarDir));
+		cnetworks.add(getSecondCondition(jarDir));
+		cnetworks.add(getThirdCondition(jarDir));
+		cnetworks.add(getFourthCondition(jarDir));
 		return cnetworks;
 	}
 
-	private ConditionNetwork getFirstCondition() {
-		String description = "1.5h";
-		return null;
+	private ConditionNetwork getFirstCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_1.5h", nm, true);
 	}
-	private ConditionNetwork getSecondCondition() {
-		String description = "3h";
-		return null;
+	private ConditionNetwork getSecondCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_3h", nm, true);
 	}
-	private ConditionNetwork getThirdCondition() {
-		String description = "12h";
-		return null;
+	private ConditionNetwork getThirdCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_12h", nm, true);
 	}	
-	private ConditionNetwork getFourthCondition() {
-		String description = "24h";
-		return null;
+	private ConditionNetwork getFourthCondition(String jarDir)throws IOException {
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_24h", nm, true);
 	}
 
 

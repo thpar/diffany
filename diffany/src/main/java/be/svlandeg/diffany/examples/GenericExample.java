@@ -2,6 +2,8 @@ package be.svlandeg.diffany.examples;
 
 import java.util.Collection;
 
+import org.cytoscape.work.TaskMonitor;
+
 import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
@@ -22,6 +24,27 @@ import be.svlandeg.diffany.core.project.RunOutput;
  */
 public abstract class GenericExample
 {
+	
+	private String name = "";
+	protected TaskMonitor taskMonitor;
+	
+	/**
+	 * Allows subclasses to specify a default project for this example. 
+	 * 
+	 * @return the default project. Returns null if no default was defined.
+	 */
+	public Project getDefaultProject(){
+		return null;
+	}
+	
+	/**
+	 * Allows subclasses to specify a default runconfig for this example. 
+	 * 
+	 * @return the default configuration. Returns -1 if no default was defined.
+	 */
+	public int getDefaultRunConfigurationID(Project p){
+		return -1;
+	}
 
 	/**
 	 * Print a network by printing its string representation and its edges.
@@ -114,4 +137,20 @@ public abstract class GenericExample
 			}
 		}
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
+	public void setTaskMonitor(TaskMonitor taskMonitor) {
+		this.taskMonitor = taskMonitor;
+		
+	}
+	
+	
 }

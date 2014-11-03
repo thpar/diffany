@@ -10,6 +10,7 @@ import org.cytoscape.work.swing.DialogTaskManager;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 import be.svlandeg.diffany.cytoscape.tasks.LoadExampleTaskFactory;
+import be.svlandeg.diffany.examples.GenericExample;
 
 /**
  * Action that loads example {@link CyNetwork}s into a Cytoscape session, based on a given {@link Project}.
@@ -23,6 +24,7 @@ public class LoadExampleAction extends AbstractCyAction{
 	private Services services;
 	private Project exampleProject;
 	private int runConfigurationID;
+	private GenericExample example;
 	
 	/**
 	 * Load an example {@link Project} into the current Cytoscape session. 
@@ -41,10 +43,30 @@ public class LoadExampleAction extends AbstractCyAction{
 		setPreferredMenu("Apps.Diffany.Examples");
 	}
 
+	/**
+	 * Set up the action, but don't load the example just yet. The project will only be constructed upon
+	 * runtime.
+	 * 
+	 * @param services
+	 * @param name
+	 * @param example
+	 */
+	public LoadExampleAction(Services services, GenericExample example) {
+		super(example.getName(), services.getCyApplicationManager(), null, null);
+		this.services = services;
+		this.example = example;
+		setPreferredMenu("Apps.Diffany.Examples");
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		LoadExampleTaskFactory tf = new LoadExampleTaskFactory(services, exampleProject, runConfigurationID);
+		LoadExampleTaskFactory tf = null;
+		if (exampleProject == null){
+			tf = new LoadExampleTaskFactory(services, example);			
+		} else {
+			tf = new LoadExampleTaskFactory(services, exampleProject, runConfigurationID);			
+		}
+		
 
 		if (tf.isReady()){
 			TaskIterator it = tf.createTaskIterator();			

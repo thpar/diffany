@@ -31,10 +31,14 @@ public class OsmoticUseCase extends GenericExample{
 	}
 	
 	public int getTestConfiguration(Project p) throws IOException{
+		this.updateStatusMessage("Loading reference network");
 		ReferenceNetwork r = getTestReference(JAR_DIR);
+		this.updateStatusMessage("Loading condition networks");
 		Set<ConditionNetwork> c = getTestConditions(JAR_DIR);
-		boolean cleanInput = true;
+		boolean cleanInput = false;
+		this.updateStatusMessage("Adding run configuration to example project");
 		int ID = p.addRunConfiguration(r,  c, cleanInput, null);
+		this.updateStatusMessage("Example loaded.");
 		return ID;
 	}
 
@@ -44,10 +48,15 @@ public class OsmoticUseCase extends GenericExample{
 	
 	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{
 		Set<ConditionNetwork> cnetworks = new HashSet<ConditionNetwork>();
+		this.updateStatusMessage("Loading condition network 1");
 		cnetworks.add(getFirstCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 2");
 		cnetworks.add(getSecondCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 3");
 		cnetworks.add(getThirdCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 4");
 		cnetworks.add(getFourthCondition(jarDir));
+		
 		return cnetworks;
 	}
 
@@ -64,7 +73,27 @@ public class OsmoticUseCase extends GenericExample{
 		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_24h", nm, true);
 	}
 
+	@Override
+	public Project getDefaultProject() {	
+		return this.getTestProject();
+	}
 
+	@Override
+	public int getDefaultRunConfigurationID(Project p) {	
+		try {
+			return this.getTestConfiguration(p);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+
+	private void updateStatusMessage(String message){
+		if (this.taskMonitor != null){
+			this.taskMonitor.setStatusMessage(message);
+		}
+	}
 
 
 	

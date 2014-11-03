@@ -21,6 +21,7 @@ import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunDiffConfiguration;
 import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.internal.Services;
+import be.svlandeg.diffany.examples.GenericExample;
 
 /**
  * Task to load example {@link Project}s into Cytoscape.
@@ -33,6 +34,9 @@ public class LoadExampleTask implements Task{
 	private Services services;
 	private Project exampleProject ;
 	private int runConfigurationID;
+	private GenericExample example;
+	
+	private String exampleName = "";
 	
 	/**
 	 * Construct a new task from to load networks from a {@link Project}. The resulting networks and 
@@ -47,11 +51,24 @@ public class LoadExampleTask implements Task{
 		this.exampleProject = exampleProject;
 		this.runConfigurationID = runConfigurationID;
 	}
-
+	
+	public LoadExampleTask(Services services, GenericExample example) {
+		this.services = services;
+		this.example = example;
+		this.exampleName = example.getName();
+	}
+	
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
+		taskMonitor.setTitle("Loading example: "+this.exampleName);			
+		if (exampleProject == null){
+			taskMonitor.setStatusMessage("Loading example networks");
+			this.example.setTaskMonitor(taskMonitor);
+			this.exampleProject = example.getDefaultProject();
+			this.runConfigurationID = example.getDefaultRunConfigurationID(this.exampleProject);
+		}
 		
-		// TODO (after Sofie's refactoring) check type of current ronConfigurationID
+		taskMonitor.setStatusMessage("Constructing Cytoscape networks");
 		ReferenceNetwork refNet = ((RunDiffConfiguration) exampleProject.getRunConfiguration(runConfigurationID)).getReferenceNetwork();
 		Collection<ConditionNetwork> condNets = ((RunDiffConfiguration) exampleProject.getRunConfiguration(runConfigurationID)).getConditionNetworks();
 		

@@ -42,7 +42,6 @@ public class TestIO
 	{
 		// System-dependent tmp dir. E.g. windows 7: C:\Users\YourUserName\AppData\Local\Temp
 		String testLocation = System.getProperty("java.io.tmpdir") + File.separator + "diffany" + File.separator;
-		
 		File rDir = new File(testLocation + "reference/");
 		File cDir = new File(testLocation + "condition/");
 		File dDir = new File(testLocation + "differential/");

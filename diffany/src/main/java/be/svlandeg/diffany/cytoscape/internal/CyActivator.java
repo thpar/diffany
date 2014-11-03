@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.cytoscape.internal;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.swing.JMenu;
@@ -39,7 +40,7 @@ import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.FuzzyNetworks2;
 import be.svlandeg.diffany.examples.Ideker2011;
-import be.svlandeg.diffany.examples.OsmoticSampleTest;
+import be.svlandeg.diffany.examples.OsmoticUseCase;
 
 /**
  * Entry point for the Diffany Cytoscape 3 App. Here the necessary services are called and bundled into the
@@ -92,28 +93,30 @@ public class CyActivator extends AbstractCyActivator
 		
 		//register actions to import the projects defined in the examples package
 		Bandyopadhyay2010 example1 = new Bandyopadhyay2010();
+		example1.setName("Bandyopadhyay2010");
 		Project exampleProject1 = example1.getProjectFigure1C();
-		registerAllServices(context, new LoadExampleAction(services,"Bandyopadhyay2010", 
+		registerAllServices(context, new LoadExampleAction(services,example1.getName(), 
 				exampleProject1, example1.getTestConfiguration1C(exampleProject1)), 
 				new Properties());
 		
 		Ideker2011 example2 = new Ideker2011();
+		example2.setName("Ideker2011");
 		Project exampleProject2 = example2.getProjectFigure3A();
-		registerAllServices(context, new LoadExampleAction(services,"Ideker2011", 
+		registerAllServices(context, new LoadExampleAction(services,example2.getName(), 
 				exampleProject2, example2.getTestConfiguration3A(exampleProject2)), 
 				new Properties());
 		
 		FuzzyNetworks2 example3 = new FuzzyNetworks2();
+		example3.setName("FuzzyNetworks2");
 		Project exampleProject3 = example3.getProject();
-		registerAllServices(context, new LoadExampleAction(services,"FuzzyNetworks2", 
+		registerAllServices(context, new LoadExampleAction(services,example3.getName(), 
 				exampleProject3, example3.getTestConfiguration(exampleProject3, 4)), 
 				new Properties());
-		
-		OsmoticSampleTest example4 = new OsmoticSampleTest();
-		Project exampleProject4 = example4.getTestProject();
-		registerAllServices(context, new LoadExampleAction(services,"OsmoticSampleTest", 
-				exampleProject4, example4.getTestDiffConfiguration(exampleProject4, 4)),
-				new Properties());
+	
+		OsmoticUseCase example4 = new OsmoticUseCase();
+		example4.setName("OsmoticUseCase");
+		registerAllServices(context,new LoadExampleAction(services, example4), new Properties());
+
 		
 		//add custom menu items
 		JMenu diffanyMenu = swingApplication.getJMenu("Apps.Diffany");

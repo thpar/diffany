@@ -3,14 +3,17 @@ package be.svlandeg.diffany.core.io;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -226,6 +229,31 @@ public class NetworkIO
 	}
 
 	/**
+	 * Read a network from a directory in a Resource: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
+	 * 
+	 * @param dir the dir in which the tab files are stored
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @param skipHeader whether or not the nodes and edges file contain a header
+	 * @return a Network representation of the nodes and edges in the files
+	 * 
+	 * @throws IOException when an error occurs during reading
+	 */
+	private static Network readInputNetworkFromResource(String dir, NodeMapper nm, boolean skipHeader) throws IOException
+	{			
+		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir+ "/" + default_edge_file);
+		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_node_file);
+		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_definition_file);
+		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);
+		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);
+		edgeStream.close();
+		nodeStream.close();
+		definitionStream.close();
+		if (conditionsStream != null){
+			conditionsStream.close();			
+		}
+		return inputNetwork;
+	}
+	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
 	 * @param dir the output dir in which the tab files were previously written
@@ -235,22 +263,46 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during reading
 	 */
-	private static Network readInputNetworkFromDir(File dir, NodeMapper nm, boolean skipHeader) throws IOException
-	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
-		File conditionsFile = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
+	private static Network readInputNetworkFromDir(File dir, NodeMapper nm, boolean skipHeader) throws IOException{
+		InputStream edgeStream = new FileInputStream(new File(dir.getAbsolutePath()+ "/" + default_edge_file));
+		InputStream nodeStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_node_file));
+		InputStream definitionStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_definition_file));
+		InputStream conditionsStream = null;
+		try {
+			conditionsStream = new FileInputStream(new File(
+					dir.getAbsolutePath() + "/" + default_conditions_file));
+		} catch (Exception e) {
+			// maybe there is no condition file. we don't care.
+		}
+		try{
+			Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);			
+			return inputNetwork;
+		} catch(IOException ioe){
+			throw ioe;
+		} finally{
+			edgeStream.close();
+			nodeStream.close();
+			definitionStream.close();
+			if (conditionsStream !=null){
+				conditionsStream.close();			
+			}			
+		}
+	}
+	
+	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream, 
+			InputStream definitionStream, InputStream conditionsStream, NodeMapper nm, boolean skipHeader) throws IOException{
 		
-		int ID = readIDFromFile(definitionFile);
-		String name = readNameFromFile(definitionFile);
-		String type = readTypeFromFile(definitionFile);
-		List<String> listedAttributes = readAttributesFromFile(definitionFile);
+		Map<String, String> definitionMap = cacheDefinitionStream(definitionStream);
+		int ID = readIDFromMap(definitionMap);
+		String name = readNameFromMap(definitionMap);
+		String type = readTypeFromMap(definitionMap);
+		List<String> listedAttributes = readAttributesFromMap(definitionMap);
 		Set<String> attributes = new HashSet<String>(listedAttributes);
 
-		Set<Node> nodes = readNodesFromFile(nodeFile, nm, skipHeader, listedAttributes);
-		Set<Edge> edges = readEdgesFromFile(edgeFile, getMappedNodes(nodes), skipHeader);
-
+		Set<Node> nodes = readNodesFromStream(nodeStream, nm, skipHeader, listedAttributes);
+		Set<Edge> edges = readEdgesFromStream(edgeStream, getMappedNodes(nodes), skipHeader);
+		
+		
 		if (type.equals("ReferenceNetwork"))
 		{
 			ReferenceNetwork r = new ReferenceNetwork(name, ID, attributes, nm);
@@ -260,7 +312,7 @@ public class NetworkIO
 
 		else if (type.equals("ConditionNetwork"))
 		{
-			Set<Condition> conditions = readConditionsFromFile(conditionsFile);
+			Set<Condition> conditions = readConditionsFromStream(conditionsStream);
 			ConditionNetwork c = new ConditionNetwork(name, ID, attributes, conditions, nm);
 			c.setNodesAndEdges(nodes, edges);
 			return c;
@@ -274,7 +326,22 @@ public class NetworkIO
 
 		throw new UnsupportedDataTypeException("Encountered unknown input network type: " + type);
 	}
-
+	
+	
+	/**
+	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
+	 * 
+	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @param skipHeader whether or not the nodes and edges file contain a header
+	 * @return a ReferenceNetwork representation of the nodes and edges in the files
+	 * 
+	 * @throws IOException when an error occurs during reading
+	 */
+	public static ReferenceNetwork readReferenceNetworkFromResource(String dir, NodeMapper nm, boolean skipHeader) throws IOException{
+		return (ReferenceNetwork) readInputNetworkFromResource(dir, nm, skipHeader);
+	}
+	
 	/**
 	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -289,7 +356,20 @@ public class NetworkIO
 	{
 		return (ReferenceNetwork) readInputNetworkFromDir(dir, nm, skipHeader);
 	}
-
+	/**
+	 * Read a {@link ConditionNetwork} from a resource: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
+	 * 
+	 * @param dir the output dir in which the tab files were previously written
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @param skipHeader whether or not the nodes and edges file contain a header
+	 * @return a ConditionNetwork representation of the nodes and edges in the files
+	 * 
+	 * @throws IOException when an error occurs during reading
+	 */
+	public static ConditionNetwork readConditionNetworkFromResource(String dir, NodeMapper nm, boolean skipHeader) throws IOException
+	{
+		return (ConditionNetwork) readInputNetworkFromResource(dir, nm, skipHeader);
+	}
 	/**
 	 * Read a {@link ConditionNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -304,7 +384,6 @@ public class NetworkIO
 	{
 		return (ConditionNetwork) readInputNetworkFromDir(dir, nm, skipHeader);
 	}
-
 	/**
 	 * Read an {@link InputNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
@@ -441,18 +520,17 @@ public class NetworkIO
 	}
 
 	/**
-	 * Read all conditions from a file containing one tab-delimited condition per line.
+	 * Read all conditions from a stream containing one tab-delimited condition per line.
 	 * 
-	 * @param conditionsFile the file containing the condition data
+	 * @param conditionsStream the stream containing the condition data
 	 * @return the set of conditions read from the file, or an empty set if no conditions were found
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Condition> readConditionsFromFile(File conditionsFile) throws IOException
+	public static Set<Condition> readConditionsFromStream(InputStream conditionsStream) throws IOException
 	{
 		Set<Condition> conditions = new HashSet<Condition>();
-
-		BufferedReader reader = new BufferedReader(new FileReader(conditionsFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(conditionsStream));
 		String line = reader.readLine();
 		while (line != null)
 		{
@@ -469,15 +547,27 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
-
 		return conditions;
 	}
-
+	
 	/**
-	 * Read all edges from a file containing one tab-delimited edge per line. As input, a set of nodes should be given, mapped by their unique IDs.
+	 * Read all conditions from a file containing one tab-delimited condition per line.
 	 * 
-	 * @param edgesFile the file containing the edge data
+	 * @param conditionsFile the file containing the condition data
+	 * @return the set of conditions read from the file, or an empty set if no conditions were found
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static Set<Condition> readConditionsFromFile(File conditionsFile) throws IOException{
+		FileInputStream condStream = new FileInputStream(conditionsFile);
+		Set<Condition> conds = readConditionsFromStream(condStream);
+		condStream.close();
+		return conds;
+	}
+	/**
+	 * Read all edges from a stream containing one tab-delimited edge per line. As input, a set of nodes should be given, mapped by their unique IDs.
+	 * 
+	 * @param edgesStream the stream containing the edge data
 	 * @param nodes the nodes relevant to the edges that will be read
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return the set of edges read from the file, or an empty set if no edges were found
@@ -485,11 +575,10 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Edge> readEdgesFromFile(File edgesFile, Map<String, Node> nodes, boolean skipHeader) throws IOException
+	public static Set<Edge> readEdgesFromStream(InputStream edgesStream, Map<String, Node> nodes, boolean skipHeader) throws IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-
-		BufferedReader reader = new BufferedReader(new FileReader(edgesFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(edgesStream));
 		String line = reader.readLine();
 		if (skipHeader)
 		{
@@ -502,15 +591,31 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
-
+		return edges;
+	}
+	
+	/**
+	 * Read all edges from a file containing one tab-delimited edge per line. As input, a set of nodes should be given, mapped by their unique IDs.
+	 * 
+	 * @param edgesFile the file containing the edge data
+	 * @param nodes the nodes relevant to the edges that will be read
+	 * @param skipHeader whether or not the nodes and edges file contain a header
+	 * @return the set of edges read from the file, or an empty set if no edges were found
+	 * @see EdgeIO#readFromTab
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static Set<Edge> readEdgesFromFile(File edgesFile, Map<String, Node> nodes, boolean skipHeader) throws IOException{
+		FileInputStream edgesStream = new FileInputStream(edgesFile);
+		Set<Edge> edges = readEdgesFromStream(edgesStream, nodes, skipHeader);
+		edgesStream.close();
 		return edges;
 	}
 
 	/**
-	 * Read all nodes from a file containing one node name per line
+	 * Read all nodes from a stream containing one node name per line
 	 * 
-	 * @param nodesFile the file containing the node data
+	 * @param nodesStream the stream containing the node data
 	 * @param nm the {@link NodeMapper} object that determines equality between nodes
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @param nodeAttributes the node attribute names
@@ -518,11 +623,10 @@ public class NetworkIO
 	 * @return the set of nodes read from the file, or an empty set if no nodes were found
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException
+	public static Set<Node> readNodesFromStream(InputStream nodesStream, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException
 	{
 		Set<Node> nodes = new HashSet<Node>();
-
-		BufferedReader reader = new BufferedReader(new FileReader(nodesFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(nodesStream));
 		String line = reader.readLine();
 		if (skipHeader)
 		{
@@ -539,10 +643,94 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
+		return nodes;
+	}
+	
+	/**
+	 * Read all nodes from a file containing one node name per line
+	 * 
+	 * @param nodesFile the file containing the node data
+	 * @param nm the {@link NodeMapper} object that determines equality between nodes
+	 * @param skipHeader whether or not the nodes and edges file contain a header
+	 * @param nodeAttributes the node attribute names
+	 * 
+	 * @return the set of nodes read from the file, or an empty set if no nodes were found
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException{
+		FileInputStream nodesStream = new FileInputStream(nodesFile);
+		Set<Node> nodes = readNodesFromStream(nodesStream, nm, skipHeader, nodeAttributes);
+		nodesStream.close();
 		return nodes;
 	}
 
+	/**
+	 * Read and parse a definition file from an input stream and store the key value pairs in a Map.
+	 *  
+	 * @param definitionStream
+	 * @return
+	 * @throws IOException
+	 */
+	private static Map<String, String> cacheDefinitionStream(InputStream definitionStream) throws IOException{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
+		String line = reader.readLine();
+
+		Map<String, String> definitionMap = new HashMap<String, String>();
+			
+		while (line != null) {
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String key = stok.nextToken();
+			String value = new String();
+			if (stok.hasMoreTokens()){
+				value  = stok.nextToken();
+			} else {
+				value = "";
+			}
+			definitionMap.put(key, value);
+			line = reader.readLine();
+		}
+		return definitionMap;
+	}
+	
+	/**
+	 * Return the ID of a network from stream. 
+	 * 
+	 * @param definitionMap key value pairs read from a definition file
+	 * @return the ID of the network, as read from the file, or -1 if no ID was found or it could not be parsed as Integer
+	 * 
+	 */
+	public static int readIDFromMap(Map<String, String> definitionMap) {
+		if (definitionMap.containsKey(ID_field)){
+			return Integer.valueOf(definitionMap.get(ID_field));
+		} else return -1;
+	}
+	
+	/**
+	 * Read the ID of a network from stream. Specifically, a line of form "ID \t XYZ" is searched, and XYZ returned as the ID in integer form.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionStream the file containing the network definition data
+	 * @return the ID of the network, as read from the file, or -1 if no ID was found or it could not be parsed as Integer
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static int readIDFromStream(InputStream definitionStream) throws IOException
+	{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
+		String line = reader.readLine();
+
+		while (line != null)
+		{
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			if (stok.nextToken().equals(ID_field))
+			{
+				String ID = stok.nextToken();
+				return Integer.parseInt(ID);
+			}
+			line = reader.readLine();
+		}
+		return -1;
+	}
 	/**
 	 * Read the ID of a network from file. Specifically, a line of form "ID \t XYZ" is searched, and XYZ returned as the ID in integer form.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -552,26 +740,53 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static int readIDFromFile(File definitionFile) throws IOException
+	public static int readIDFromFile(File definitionFile) throws IOException{
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		int id = readIDFromStream(defStream);
+		defStream.close();
+		return id; 
+	}
+	
+	/**
+	 * Return the name of a network from a stream.
+	 *  
+	 *  @param definitionMap key value pairs read from a definition file
+	 * 
+	 * @return the name of the network, as read from the stream, or null if no name was found
+	 */
+	private static String readNameFromMap(Map<String, String> definitionMap){
+		if (definitionMap.containsKey(name_field)){
+			return definitionMap.get(name_field);
+		} else return null;
+	}
+	
+	/**
+	 * Read the name of a network from a stream. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionStream the stream containing the network definition data
+	 * @return the name of the network, as read from the stream, or null if no name was found
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static String readNameFromStream(InputStream definitionStream) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
 		String line = reader.readLine();
-
+		
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			if (stok.nextToken().equals(ID_field))
+			if (stok.nextToken().equals(name_field))
 			{
-				String ID = stok.nextToken();
-				reader.close();
-				return Integer.parseInt(ID);
+				String name = stok.nextToken();
+				return name;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
-		return -1;
+		return null;
 	}
-
+	
 	/**
 	 * Read the name of a network from file. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -581,26 +796,48 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static String readNameFromFile(File definitionFile) throws IOException
+	public static String readNameFromFile(File definitionFile) throws IOException{
+		InputStream definitionStream = new FileInputStream(definitionFile);
+		String name = readNameFromStream(definitionStream);
+		definitionStream.close();
+		return name; 
+	}
+
+	private static String readTypeFromMap(Map<String, String> definitionMap){
+		if (definitionMap.containsKey(type_field)){
+			return definitionMap.get(type_field);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Read the type of a network from stream. Specifically, a line of form "Type \t XYZ" is searched, and XYZ returned as the type.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionStream the stream containing the network definition data
+	 * @return the type of the network, as read from the file, or null if no type was found
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static String readTypeFromStream(InputStream definitionStream) throws IOException
 	{
-		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
 		String line = reader.readLine();
 
 		while (line != null)
 		{
 			StringTokenizer stok = new StringTokenizer(line, "\t");
-			if (stok.nextToken().equals(name_field))
+			if (stok.nextToken().equals(type_field))
 			{
-				String name = stok.nextToken();
-				reader.close();
-				return name;
+				String type = stok.nextToken();
+				return type;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return null;
 	}
-
+	
 	/**
 	 * Read the type of a network from file. Specifically, a line of form "Type \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -610,40 +847,45 @@ public class NetworkIO
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static String readTypeFromFile(File definitionFile) throws IOException
-	{
-		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
-		String line = reader.readLine();
-
-		while (line != null)
-		{
-			StringTokenizer stok = new StringTokenizer(line, "\t");
-			if (stok.nextToken().equals(type_field))
-			{
-				String type = stok.nextToken();
-				reader.close();
-				return type;
-			}
-			line = reader.readLine();
-		}
-		reader.close();
-		return null;
+	public static String readTypeFromFile(File definitionFile) throws IOException{
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		String type = readTypeFromStream(defStream);
+		defStream.close();
+		return type;
+	
 	}
-
+	
 	/**
-	 * Read the node attributes of a network from file. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
+	 * Read the node attributes of a network from map.
+	 * 
+	 * @param definitionMap the hashmap containing the network definition data
+	 * @return the node attributes in the network, as read from the file, or an empty set if none were found
+	 */
+	private static List<String> readAttributesFromMap(Map<String, String> definitionMap){
+		List<String> attributes = new ArrayList<String>();
+		if (definitionMap.containsKey(attributes_field)){
+			String attributeString = definitionMap.get(attributes_field);
+			StringTokenizer stok = new StringTokenizer(attributeString, ";");
+			while (stok.hasMoreTokens()){
+				attributes.add(stok.nextToken());
+			}
+		}
+		return attributes;
+	}
+	
+	/**
+	 * Read the node attributes of a network from stream. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
 	 * 
-	 * @param definitionFile the file containing the network definition data
+	 * @param definitionStream the stream containing the network definition data
 	 * @return the node attributes in the network, as read from the file, or an empty set if none were found
 	 * 
 	 * @throws IOException when an error occurs during parsing
 	 */
-	public static List<String> readAttributesFromFile(File definitionFile) throws IOException
+	public static List<String> readAttributesFromStream(InputStream definitionStream) throws IOException
 	{
 		List<String> attributes = new ArrayList<String>();
-
-		BufferedReader reader = new BufferedReader(new FileReader(definitionFile));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
 		String line = reader.readLine();
 
 		while (line != null)
@@ -664,13 +906,26 @@ public class NetworkIO
 					attributes.add(stok2.nextToken());
 				}
 
-				reader.close();
 				return attributes;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return attributes;
 	}
 
+	/**
+	 * Read the node attributes of a network from file. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
+	 * In case more than one such line matches in the file, the first one is picked.
+	 * 
+	 * @param definitionFile the file containing the network definition data
+	 * @return the node attributes in the network, as read from the file, or an empty set if none were found
+	 * 
+	 * @throws IOException when an error occurs during parsing
+	 */
+	public static List<String> readAttributesFromFile(File definitionFile) throws IOException{
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		List<String> attrs = readAttributesFromStream(defStream);
+		defStream.close();
+		return attrs;
+	}
 }

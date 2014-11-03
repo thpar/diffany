@@ -5,6 +5,7 @@ import org.cytoscape.work.TaskIterator;
 
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.cytoscape.internal.Services;
+import be.svlandeg.diffany.examples.GenericExample;
 
 /**
  * Factory to call {@link LoadExampleTask}
@@ -17,6 +18,7 @@ public class LoadExampleTaskFactory implements TaskFactory{
 	private Services services;
 	private Project exampleProject;
 	private int runConfigurationID;
+	private GenericExample example;
 	
 	/**
 	 * 
@@ -30,11 +32,20 @@ public class LoadExampleTaskFactory implements TaskFactory{
 		this.runConfigurationID = runConfigurationID;
 	}
 
+	public LoadExampleTaskFactory(Services services, GenericExample example) {
+		this.services = services;
+		this.example = example;
+	}
+	
 	@Override
 	public TaskIterator createTaskIterator() {
 		TaskIterator it = new TaskIterator();
-
-		it.append(new LoadExampleTask(services, exampleProject, runConfigurationID));
+		
+		if (exampleProject != null){
+			it.append(new LoadExampleTask(services, exampleProject, runConfigurationID));			
+		} else {
+			it.append(new LoadExampleTask(services, example));			
+		}
 
 		return it;
 	}

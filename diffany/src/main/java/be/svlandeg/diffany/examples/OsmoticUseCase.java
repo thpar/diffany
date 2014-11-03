@@ -1,8 +1,10 @@
 package be.svlandeg.diffany.examples;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
@@ -15,6 +17,8 @@ public class OsmoticUseCase extends GenericExample{
 
 	private NodeMapper nm;
 
+	private final String JAR_DIR = "/data/osmotic/";
+	
 	public OsmoticUseCase() {
 		nm = new DefaultNodeMapper();
 	}
@@ -26,46 +30,70 @@ public class OsmoticUseCase extends GenericExample{
 		return p;
 	}
 	
-	public int getTestConfiguration(Project p, int supportingCutoff){
-		ReferenceNetwork r = getTestReference();
-		Set<ConditionNetwork> c = getTestConditions();
-		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r,  c, supportingCutoff, cleanInput, null);
+	public int getTestConfiguration(Project p) throws IOException{
+		this.updateStatusMessage("Loading reference network");
+		ReferenceNetwork r = getTestReference(JAR_DIR);
+		this.updateStatusMessage("Loading condition networks");
+		Set<ConditionNetwork> c = getTestConditions(JAR_DIR);
+		boolean cleanInput = false;
+		this.updateStatusMessage("Adding run configuration to example project");
+		int ID = p.addRunConfiguration(r,  c, cleanInput, null);
+		this.updateStatusMessage("Example loaded.");
 		return ID;
 	}
 
-	private ReferenceNetwork getTestReference() {
-		// TODO Auto-generated method stub
-		return null;
+	private ReferenceNetwork getTestReference(String jarDir) throws IOException{
+		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", nm, true);
 	}
 	
-	private Set<ConditionNetwork> getTestConditions() {
+	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{
 		Set<ConditionNetwork> cnetworks = new HashSet<ConditionNetwork>();
-		cnetworks.add(getFirstCondition());
-		cnetworks.add(getSecondCondition());
-		cnetworks.add(getThirdCondition());
-		cnetworks.add(getFourthCondition());
+		this.updateStatusMessage("Loading condition network 1");
+		cnetworks.add(getFirstCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 2");
+		cnetworks.add(getSecondCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 3");
+		cnetworks.add(getThirdCondition(jarDir));
+		this.updateStatusMessage("Loading condition network 4");
+		cnetworks.add(getFourthCondition(jarDir));
+		
 		return cnetworks;
 	}
 
-	private ConditionNetwork getFirstCondition() {
-		String description = "1.5h";
-		return null;
+	private ConditionNetwork getFirstCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_1.5h", nm, true);
 	}
-	private ConditionNetwork getSecondCondition() {
-		String description = "3h";
-		return null;
+	private ConditionNetwork getSecondCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_3h", nm, true);
 	}
-	private ConditionNetwork getThirdCondition() {
-		String description = "12h";
-		return null;
+	private ConditionNetwork getThirdCondition(String jarDir) throws IOException{
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_12h", nm, true);
 	}	
-	private ConditionNetwork getFourthCondition() {
-		String description = "24h";
-		return null;
+	private ConditionNetwork getFourthCondition(String jarDir)throws IOException {
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_24h", nm, true);
+	}
+
+	@Override
+	public Project getDefaultProject() {	
+		return this.getTestProject();
+	}
+
+	@Override
+	public int getDefaultRunConfigurationID(Project p) {	
+		try {
+			return this.getTestConfiguration(p);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 
+	private void updateStatusMessage(String message){
+		if (this.taskMonitor != null){
+			this.taskMonitor.setStatusMessage(message);
+		}
+	}
 
 
 	

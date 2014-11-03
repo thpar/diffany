@@ -244,7 +244,12 @@ public class NetworkIO
 		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_node_file);
 		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_definition_file);
 		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);			
-		return readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);
+		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);
+		edgeStream.close();
+		nodeStream.close();
+		definitionStream.close();
+		conditionsStream.close();
+		return inputNetwork;
 	}
 	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
@@ -267,7 +272,19 @@ public class NetworkIO
 		} catch (Exception e) {
 			// maybe there is no condition file. we don't care.
 		}
-		return readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);
+		try{
+			Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);			
+			return inputNetwork;
+		} catch(IOException ioe){
+			throw ioe;
+		} finally{
+			edgeStream.close();
+			nodeStream.close();
+			definitionStream.close();
+			if (conditionsStream !=null){
+				conditionsStream.close();			
+			}			
+		}
 	}
 	
 	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream, 
@@ -526,8 +543,6 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
-
 		return conditions;
 	}
 	
@@ -540,7 +555,10 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static Set<Condition> readConditionsFromFile(File conditionsFile) throws IOException{
-		return readConditionsFromStream(new FileInputStream(conditionsFile));
+		FileInputStream condStream = new FileInputStream(conditionsFile);
+		Set<Condition> conds = readConditionsFromStream(condStream);
+		condStream.close();
+		return conds;
 	}
 	/**
 	 * Read all edges from a stream containing one tab-delimited edge per line. As input, a set of nodes should be given, mapped by their unique IDs.
@@ -570,8 +588,6 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
-
 		return edges;
 	}
 	
@@ -587,7 +603,10 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static Set<Edge> readEdgesFromFile(File edgesFile, Map<String, Node> nodes, boolean skipHeader) throws IOException{
-		return readEdgesFromStream(new FileInputStream(edgesFile), nodes, skipHeader);
+		FileInputStream edgesStream = new FileInputStream(edgesFile);
+		Set<Edge> edges = readEdgesFromStream(edgesStream, nodes, skipHeader);
+		edgesStream.close();
+		return edges;
 	}
 
 	/**
@@ -622,7 +641,6 @@ public class NetworkIO
 			line = reader.readLine();
 		}
 
-		reader.close();
 		return nodes;
 	}
 	
@@ -638,7 +656,10 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static Set<Node> readNodesFromFile(File nodesFile, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException{
-		return readNodesFromStream(new FileInputStream(nodesFile), nm, skipHeader, nodeAttributes);
+		FileInputStream nodesStream = new FileInputStream(nodesFile);
+		Set<Node> nodes = readNodesFromStream(nodesStream, nm, skipHeader, nodeAttributes);
+		nodesStream.close();
+		return nodes;
 	}
 
 	/**
@@ -661,12 +682,10 @@ public class NetworkIO
 			if (stok.nextToken().equals(ID_field))
 			{
 				String ID = stok.nextToken();
-				reader.close();
 				return Integer.parseInt(ID);
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return -1;
 	}
 	/**
@@ -679,7 +698,10 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static int readIDFromFile(File definitionFile) throws IOException{
-		return readIDFromStream(new FileInputStream(definitionFile));
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		int id = readIDFromStream(defStream);
+		defStream.close();
+		return id; 
 	}
 	/**
 	 * Read the name of a network from a stream. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
@@ -701,12 +723,10 @@ public class NetworkIO
 			if (stok.nextToken().equals(name_field))
 			{
 				String name = stok.nextToken();
-				reader.close();
 				return name;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return null;
 	}
 	
@@ -721,7 +741,9 @@ public class NetworkIO
 	 */
 	public static String readNameFromFile(File definitionFile) throws IOException{
 		InputStream definitionStream = new FileInputStream(definitionFile);
-		return readNameFromStream(definitionStream);
+		String name = readNameFromStream(definitionStream);
+		definitionStream.close();
+		return name; 
 	}
 
 	/**
@@ -744,12 +766,10 @@ public class NetworkIO
 			if (stok.nextToken().equals(type_field))
 			{
 				String type = stok.nextToken();
-				reader.close();
 				return type;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return null;
 	}
 	
@@ -763,7 +783,10 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static String readTypeFromFile(File definitionFile) throws IOException{
-		return readTypeFromStream(new FileInputStream(definitionFile));
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		String type = readTypeFromStream(defStream);
+		defStream.close();
+		return type;
 	}
 	/**
 	 * Read the node attributes of a network from stream. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
@@ -799,12 +822,10 @@ public class NetworkIO
 					attributes.add(stok2.nextToken());
 				}
 
-				reader.close();
 				return attributes;
 			}
 			line = reader.readLine();
 		}
-		reader.close();
 		return attributes;
 	}
 
@@ -818,6 +839,9 @@ public class NetworkIO
 	 * @throws IOException when an error occurs during parsing
 	 */
 	public static List<String> readAttributesFromFile(File definitionFile) throws IOException{
-		return readAttributesFromStream(new FileInputStream(definitionFile));
+		FileInputStream defStream = new FileInputStream(definitionFile);
+		List<String> attrs = readAttributesFromStream(defStream);
+		defStream.close();
+		return attrs;
 	}
 }

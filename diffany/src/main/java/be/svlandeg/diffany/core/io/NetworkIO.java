@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -289,10 +290,12 @@ public class NetworkIO
 	
 	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream, 
 			InputStream definitionStream, InputStream conditionsStream, NodeMapper nm, boolean skipHeader) throws IOException{
-		int ID = readIDFromStream(definitionStream);
-		String name = readNameFromStream(definitionStream);
-		String type = readTypeFromStream(definitionStream);
-		List<String> listedAttributes = readAttributesFromStream(definitionStream);
+		
+		Map<String, String> definitionMap = cacheDefinitionStream(definitionStream);
+		int ID = readIDFromMap(definitionMap);
+		String name = readNameFromMap(definitionMap);
+		String type = readTypeFromMap(definitionMap);
+		List<String> listedAttributes = readAttributesFromMap(definitionMap);
 		Set<String> attributes = new HashSet<String>(listedAttributes);
 
 		Set<Node> nodes = readNodesFromStream(nodeStream, nm, skipHeader, listedAttributes);
@@ -525,7 +528,6 @@ public class NetworkIO
 	public static Set<Condition> readConditionsFromStream(InputStream conditionsStream) throws IOException
 	{
 		Set<Condition> conditions = new HashSet<Condition>();
-
 		BufferedReader reader = new BufferedReader(new InputStreamReader(conditionsStream));
 		String line = reader.readLine();
 		while (line != null)
@@ -574,7 +576,6 @@ public class NetworkIO
 	public static Set<Edge> readEdgesFromStream(InputStream edgesStream, Map<String, Node> nodes, boolean skipHeader) throws IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-
 		BufferedReader reader = new BufferedReader(new InputStreamReader(edgesStream));
 		String line = reader.readLine();
 		if (skipHeader)
@@ -623,7 +624,6 @@ public class NetworkIO
 	public static Set<Node> readNodesFromStream(InputStream nodesStream, NodeMapper nm, boolean skipHeader, List<String> nodeAttributes) throws IOException
 	{
 		Set<Node> nodes = new HashSet<Node>();
-
 		BufferedReader reader = new BufferedReader(new InputStreamReader(nodesStream));
 		String line = reader.readLine();
 		if (skipHeader)
@@ -662,6 +662,47 @@ public class NetworkIO
 		return nodes;
 	}
 
+	/**
+	 * Read and parse a definition file from an input stream and store the key value pairs in a Map.
+	 *  
+	 * @param definitionStream
+	 * @return
+	 * @throws IOException
+	 */
+	private static Map<String, String> cacheDefinitionStream(InputStream definitionStream) throws IOException{
+		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
+		String line = reader.readLine();
+
+		Map<String, String> definitionMap = new HashMap<String, String>();
+			
+		while (line != null) {
+			StringTokenizer stok = new StringTokenizer(line, "\t");
+			String key = stok.nextToken();
+			String value = new String();
+			if (stok.hasMoreTokens()){
+				value  = stok.nextToken();
+			} else {
+				value = "";
+			}
+			definitionMap.put(key, value);
+			line = reader.readLine();
+		}
+		return definitionMap;
+	}
+	
+	/**
+	 * Return the ID of a network from stream. 
+	 * 
+	 * @param definitionMap key value pairs read from a definition file
+	 * @return the ID of the network, as read from the file, or -1 if no ID was found or it could not be parsed as Integer
+	 * 
+	 */
+	public static int readIDFromMap(Map<String, String> definitionMap) {
+		if (definitionMap.containsKey(ID_field)){
+			return Integer.valueOf(definitionMap.get(ID_field));
+		} else return -1;
+	}
+	
 	/**
 	 * Read the ID of a network from stream. Specifically, a line of form "ID \t XYZ" is searched, and XYZ returned as the ID in integer form.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -703,6 +744,20 @@ public class NetworkIO
 		defStream.close();
 		return id; 
 	}
+	
+	/**
+	 * Return the name of a network from a stream.
+	 *  
+	 *  @param definitionMap key value pairs read from a definition file
+	 * 
+	 * @return the name of the network, as read from the stream, or null if no name was found
+	 */
+	private static String readNameFromMap(Map<String, String> definitionMap){
+		if (definitionMap.containsKey(name_field)){
+			return definitionMap.get(name_field);
+		} else return null;
+	}
+	
 	/**
 	 * Read the name of a network from a stream. Specifically, a line of form "Name \t XYZ" is searched, and XYZ returned as the name.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -746,6 +801,14 @@ public class NetworkIO
 		return name; 
 	}
 
+	private static String readTypeFromMap(Map<String, String> definitionMap){
+		if (definitionMap.containsKey(type_field)){
+			return definitionMap.get(type_field);
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Read the type of a network from stream. Specifically, a line of form "Type \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -787,7 +850,27 @@ public class NetworkIO
 		String type = readTypeFromStream(defStream);
 		defStream.close();
 		return type;
+	
 	}
+	
+	/**
+	 * Read the node attributes of a network from map.
+	 * 
+	 * @param definitionMap the hashmap containing the network definition data
+	 * @return the node attributes in the network, as read from the file, or an empty set if none were found
+	 */
+	private static List<String> readAttributesFromMap(Map<String, String> definitionMap){
+		List<String> attributes = new ArrayList<String>();
+		if (definitionMap.containsKey(attributes_field)){
+			String attributeString = definitionMap.get(attributes_field);
+			StringTokenizer stok = new StringTokenizer(attributeString, ";");
+			while (stok.hasMoreTokens()){
+				attributes.add(stok.nextToken());
+			}
+		}
+		return attributes;
+	}
+	
 	/**
 	 * Read the node attributes of a network from stream. Specifically, a line of form "Attributes \t XYZ" is searched, and XYZ returned as the type.
 	 * In case more than one such line matches in the file, the first one is picked.
@@ -800,7 +883,6 @@ public class NetworkIO
 	public static List<String> readAttributesFromStream(InputStream definitionStream) throws IOException
 	{
 		List<String> attributes = new ArrayList<String>();
-
 		BufferedReader reader = new BufferedReader(new InputStreamReader(definitionStream));
 		String line = reader.readLine();
 

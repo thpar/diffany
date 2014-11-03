@@ -240,16 +240,17 @@ public class NetworkIO
 	 */
 	private static Network readInputNetworkFromResource(String dir, NodeMapper nm, boolean skipHeader) throws IOException
 	{			
-		
 		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir+ "/" + default_edge_file);
 		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_node_file);
 		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_definition_file);
-		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);			
+		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);
 		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, nm, skipHeader);
 		edgeStream.close();
 		nodeStream.close();
 		definitionStream.close();
-		conditionsStream.close();
+		if (conditionsStream != null){
+			conditionsStream.close();			
+		}
 		return inputNetwork;
 	}
 	/**
@@ -300,7 +301,8 @@ public class NetworkIO
 
 		Set<Node> nodes = readNodesFromStream(nodeStream, nm, skipHeader, listedAttributes);
 		Set<Edge> edges = readEdgesFromStream(edgeStream, getMappedNodes(nodes), skipHeader);
-
+		
+		
 		if (type.equals("ReferenceNetwork"))
 		{
 			ReferenceNetwork r = new ReferenceNetwork(name, ID, attributes, nm);

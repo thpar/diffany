@@ -117,7 +117,7 @@ public class CyActivator extends AbstractCyActivator
 					context,
 					new LoadExampleAction(services, "OsmoticUseCase",
 							exampleProject4, example4.getTestConfiguration(
-									exampleProject4, 4)), new Properties());
+									exampleProject4)), new Properties());
 		} catch (IOException e) {
 			System.err.println("Failed to load Osmotic Use Case.");
 			e.printStackTrace();

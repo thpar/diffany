@@ -17,6 +17,8 @@ public class OsmoticUseCase extends GenericExample{
 
 	private NodeMapper nm;
 
+	private final String JAR_DIR = "/data/osmotic/";
+	
 	public OsmoticUseCase() {
 		nm = new DefaultNodeMapper();
 	}
@@ -28,12 +30,11 @@ public class OsmoticUseCase extends GenericExample{
 		return p;
 	}
 	
-	public int getTestConfiguration(Project p, int supportingCutoff) throws IOException{
-		String jarDir = "/resources/data/osmotic/";
-		ReferenceNetwork r = getTestReference(jarDir);
-		Set<ConditionNetwork> c = getTestConditions(jarDir);
+	public int getTestConfiguration(Project p) throws IOException{
+		ReferenceNetwork r = getTestReference(JAR_DIR);
+		Set<ConditionNetwork> c = getTestConditions(JAR_DIR);
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r,  c, supportingCutoff, cleanInput, null);
+		int ID = p.addRunConfiguration(r,  c, cleanInput, null);
 		return ID;
 	}
 

@@ -349,9 +349,14 @@ public class Model extends Observable implements NetworkAddedListener,
 		//triggered when a CyView gets selected
 		CyNetworkView view = e.getNetworkView();
 		CyNetwork net = view.getModel();
-		CyRootNetwork collection = services.getCyRootNetworkManager().getRootNetwork(net);
 		this.networkInFocus = net;
-		this.setSelectedProject(this.projects.get(collection));
+		
+		CyRootNetwork collection = services.getCyRootNetworkManager().getRootNetwork(net);
+		CyProject currentProject = this.getSelectedProject();
+		CyProject newlySelectedProject = this.projects.get(collection);
+		if (newlySelectedProject != currentProject){
+			this.setSelectedProject(newlySelectedProject);			
+		}
 	}
 
 

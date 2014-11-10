@@ -50,7 +50,7 @@ public abstract class AbstractVisualDiffanyStyle {
 	
 	//color definitions
 	private static final Color NETWORK_BACKGROUND_COLOR = Color.WHITE;
-	private static final Color NODE_COLOR = Color.YELLOW;
+	private static final Color NODE_COLOR = Color.GRAY;
 	
 	
 	
@@ -86,9 +86,10 @@ public abstract class AbstractVisualDiffanyStyle {
 		vis.setDefaultValue(BasicVisualLexicon.NETWORK_BACKGROUND_PAINT, NETWORK_BACKGROUND_COLOR);
 		
 		//node default style
-		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ELLIPSE);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, NODE_COLOR);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SIZE, 30d);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_BORDER_WIDTH, 0d);
 		
 		//node basic mappings
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");

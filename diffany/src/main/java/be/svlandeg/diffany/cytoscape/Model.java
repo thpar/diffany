@@ -15,6 +15,7 @@ import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedEvent;
 import org.cytoscape.model.events.NetworkDestroyedListener;
+import org.cytoscape.model.events.RowSetRecord;
 import org.cytoscape.model.events.RowsSetEvent;
 import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
@@ -224,11 +225,21 @@ public class Model extends Observable implements NetworkAddedListener,
 	public void handleEvent(RowsSetEvent e) {
 		//triggered when one or more rows change in a CyTable
 		
-		//check if the row is part of a table we care about				
+		//check if the row is part of a table we care about	
+		//and if something changed besides a "selected" field
 		//if yes, refresh the visual styles and re-apply them on the views
 		Long suid = e.getSource().getSUID();
+		Collection<RowSetRecord> rowSetRecord = e.getPayloadCollection();
+		boolean contentChange = false;
+		for (RowSetRecord rec : rowSetRecord){
+			if (!rec.getColumn().equalsIgnoreCase("selected")){
+				contentChange = true;
+				break;
+			}
+		}
 		
-		if (this.selectedProject.containsTableId(suid)){
+		
+		if (contentChange && this.selectedProject.containsTableId(suid)){
 			CyNetwork net = this.selectedProject.getNetworkByTableId(suid);
 			if (this.selectedProject.isReferenceNetwork(net)){
 				this.selectedProject.registerReferenceNetwork(net);

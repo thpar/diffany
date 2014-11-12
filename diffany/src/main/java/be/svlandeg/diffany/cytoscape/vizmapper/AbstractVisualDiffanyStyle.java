@@ -12,6 +12,7 @@ import org.cytoscape.view.presentation.property.LineTypeVisualProperty;
 import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.presentation.property.values.LineType;
+import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.view.vizmap.mappings.BoundaryRangeValues;
@@ -106,7 +107,12 @@ public abstract class AbstractVisualDiffanyStyle {
 		DiscreteMapping<Boolean, LineType> edgeLineMapping = (DiscreteMapping<Boolean, LineType>)vmffD.createVisualMappingFunction(CyNetworkBridge.NEGATED, Boolean.class, BasicVisualLexicon.EDGE_LINE_TYPE);
 		edgeLineMapping.putMapValue(true, LineTypeVisualProperty.DASH_DOT);
 		edgeLineMapping.putMapValue(false, LineTypeVisualProperty.SOLID);
-		vis.addVisualMappingFunction(edgeLineMapping);		
+		vis.addVisualMappingFunction(edgeLineMapping);
+		
+		ExtraDiffanyVisMappings extras = new ExtraDiffanyVisMappings(services);
+		for (VisualMappingFunction<?, ?> mapping : extras.getMappings()){
+			vis.addVisualMappingFunction(mapping);
+		}
 		
 		
 	}

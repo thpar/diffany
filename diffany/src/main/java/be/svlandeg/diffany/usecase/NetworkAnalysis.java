@@ -105,8 +105,6 @@ public class NetworkAnalysis
 			}
 			occurrences.add(id);
 			occurrenceByEdgeCount.put(edgeCount, occurrences);
-			
-			
 		}
 		int totalOccEdges = 0;
 		int totalOccNodes = 0;
@@ -128,8 +126,18 @@ public class NetworkAnalysis
 			
 			accumulOccEdges += edgeCount * occurrences.size();
 			accumulOccNodes += occurrences.size();
-			int percEdges = 100 * accumulOccEdges / totalOccEdges;
-			int percNodes = 100 * accumulOccNodes / totalOccNodes;
+			
+			int percEdges = 0;
+			//if (totalOccEdges == 0)
+			{
+				percEdges = 100 * accumulOccEdges / totalOccEdges;
+			}
+			
+			int percNodes = 0;
+			//if (totalOccNodes != 0)
+			{
+				percNodes = 100 * accumulOccNodes / totalOccNodes;
+			}
 			
 			if (edgeCount >= min_connections)
 			{

@@ -533,17 +533,33 @@ public class NetworkCleaning
 	{
 		double maxAffWeight = Double.NEGATIVE_INFINITY;
 		double maxNegWeight = Double.NEGATIVE_INFINITY;
+		
+		boolean affSymm = true;
+		boolean negSymm = true;
+		
+		int nr_aff = 0;
+		int nr_neg = 0;
 
 		for (EdgeDefinition e : edges)
 		{
 			double weight = e.getWeight();
 			if (e.isNegated())
 			{
+				nr_neg++;
 				maxNegWeight = Math.max(maxNegWeight, weight);
+				if (! e.isSymmetrical())
+				{
+					negSymm = false;
+				}
 			}
 			else
 			{
+				nr_aff++;
 				maxAffWeight = Math.max(maxAffWeight, weight);
+				if (! e.isSymmetrical())
+				{
+					affSymm = false;
+				}
 			}
 		}
 
@@ -634,80 +650,40 @@ public class NetworkCleaning
 			}
 		}
 
-		int nr_aff = 0;
-		EdgeDefinition affy = null;
+		Set<EdgeDefinition> results = new HashSet<EdgeDefinition>();
 		
-		int nr_neg = 0;
-		EdgeDefinition neggy = null;
-		
-		// we had affirmative edges 
 		if (affirmativeConsensus != null)
 		{
-			for (EdgeDefinition e : edges)
+			EdgeDefinition ed = new EdgeDefinition(affirmativeConsensus, affSymm, maxAffWeight, false);
+			results.add(ed);
+			
+			if (nr_aff > 1)
 			{
-				if (!e.isNegated())
-				{
-					nr_aff++;
-					boolean eqWeight = Math.abs(maxAffWeight - e.getWeight()) < 0.000001;
-					if (eqWeight && affirmativeConsensus.equals(eo.getSourceCategory(e.getType())))
-					{
-						affy = e;
-					}
-				}
+				logger.log("  Kept only the affirmative edge with weight (" + maxAffWeight + ") and type " + affirmativeConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
 			}
 		}
-		if (nr_aff > 1)
+		if (affirmativeConsensus == null && nr_aff > 0)
 		{
-			if (affy == null)
-			{
-				System.out.println("! Could not resolve the set of affirmative edges to one !");
-			}
-			else
-			{
-				logger.log("  Selected only the affirmative edge with weight (" + maxAffWeight + ") and type " + affirmativeConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
-		
-			}
+			// TODO: this should never happen - throw error?
+			System.out.println("Could not resolve the set of affirmative edges to one !");
 		}
 
-		// we had negated edges 
 		if (negatedConsensus != null)
 		{
-			for (EdgeDefinition e : edges)
+			EdgeDefinition ed = new EdgeDefinition(negatedConsensus, negSymm, maxNegWeight, true);
+			results.add(ed);
+			
+			if (nr_neg > 1)
 			{
-				if (e.isNegated())
-				{
-					nr_neg++;
-					boolean eqWeight = Math.abs(maxNegWeight - e.getWeight()) < 0.000001;
-					if (eqWeight && negatedConsensus.equals(eo.getSourceCategory(e.getType())))
-					{
-						neggy = e;
-					}
-				}
+				logger.log("  Kept only the negated edge with weight (" + maxNegWeight + ") and type " + negatedConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
 			}
 		}
-		if (nr_neg > 1)
+		if (negatedConsensus == null && nr_neg > 0)
 		{
-			if (neggy == null)
-			{
-				System.out.println("! Could not resolve the set of negated edges to one !");
-			}
-			else
-			{
-				logger.log("  Selected only the negated edge with weight (" + maxNegWeight + ") and type " + negatedConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
-			}
+			// TODO: this should never happen - throw error?
+			System.out.println("Could not resolve the set of negated edges to one !");
 		}
 
-		
-		Set<EdgeDefinition> results = new HashSet<EdgeDefinition>();
-		if (affy != null)
-		{
-			results.add(affy);
-		}
-		if (neggy != null)
-		{
-			results.add(neggy);
-		}
-		
 		return results;
 	}
 

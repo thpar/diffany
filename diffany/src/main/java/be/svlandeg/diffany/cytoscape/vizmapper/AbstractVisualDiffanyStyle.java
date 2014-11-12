@@ -14,9 +14,8 @@ import org.cytoscape.view.presentation.property.values.ArrowShape;
 import org.cytoscape.view.presentation.property.values.LineType;
 import org.cytoscape.view.vizmap.VisualMappingFunction;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualPropertyDependency;
 import org.cytoscape.view.vizmap.VisualStyle;
-import org.cytoscape.view.vizmap.mappings.BoundaryRangeValues;
-import org.cytoscape.view.vizmap.mappings.ContinuousMapping;
 import org.cytoscape.view.vizmap.mappings.DiscreteMapping;
 import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
 
@@ -53,6 +52,9 @@ public abstract class AbstractVisualDiffanyStyle {
 	private static final Color NETWORK_BACKGROUND_COLOR = Color.WHITE;
 	private static final Color NODE_COLOR = Color.GRAY;
 	
+	private static final double NODE_HEIGHT = 55;
+	private static final double NODE_WIDTH = 80;
+	private static final int FONT_SIZE = 11;
 	
 	
 	/**
@@ -91,6 +93,20 @@ public abstract class AbstractVisualDiffanyStyle {
 		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, NODE_COLOR);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SIZE, 30d);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_BORDER_WIDTH, 0d);
+		
+		//Disable "Lock node width and height", so we can set a custom width and height.
+		for(VisualPropertyDependency<?> visualPropertyDependency : vis.getAllVisualPropertyDependencies()) {
+			if(visualPropertyDependency.getIdString().equals("nodeSizeLocked")) {
+				visualPropertyDependency.setDependency(false);
+				break;
+			}
+		}
+		
+		vis.setDefaultValue(BasicVisualLexicon.NODE_HEIGHT, NODE_HEIGHT);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_WIDTH, NODE_WIDTH);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_LABEL_FONT_SIZE, FONT_SIZE);
+		
+		
 		
 		//node basic mappings
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");

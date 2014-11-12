@@ -33,6 +33,7 @@ public class ExtraDiffanyVisMappings implements ExtraVisMappings{
 	
 	private final String KINASE_COLUMN = "kinase_function";
 	private final double KINASE_BORDER_SIZE = 2d;
+	private final Color KINASE_BORDER_COLOR = Color.BLACK;
 	private final String KINASE_YES = "yes";
 	private final String KINASE_NO = "no";
 	
@@ -56,6 +57,11 @@ public class ExtraDiffanyVisMappings implements ExtraVisMappings{
 				(DiscreteMapping<String, Double>)vmffD.createVisualMappingFunction(KINASE_COLUMN, String.class, BasicVisualLexicon.NODE_BORDER_WIDTH);
 		nodeBorderMapping.putMapValue(KINASE_YES, KINASE_BORDER_SIZE);
 		mappings.add(nodeBorderMapping);
+		
+		DiscreteMapping<String, Paint> nodeBorderColorMapping = 
+				(DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction(KINASE_COLUMN, String.class, BasicVisualLexicon.NODE_BORDER_PAINT);
+		nodeBorderColorMapping.putMapValue(KINASE_YES, KINASE_BORDER_COLOR);
+		mappings.add(nodeBorderColorMapping);
 		
 		DiscreteMapping<String, Paint> nodeColorMapping = 
 				(DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction(DE_COLUMN, String.class, BasicVisualLexicon.NODE_FILL_COLOR);

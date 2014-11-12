@@ -634,41 +634,54 @@ public class NetworkCleaning
 			}
 		}
 
-		// TODO logging per negated/affirmative
-		/*if (edges.size() > 1)
-		{
-			logger.log("  Selected only the edge with the highest weight (" + maxWeight + ") between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
-		}*/
-		
-		
+		int nr_aff = 0;
 		EdgeDefinition affy = null;
+		
+		int nr_neg = 0;
 		EdgeDefinition neggy = null;
+		
+		// we had affirmative edges 
+		if (affirmativeConsensus != null)
+		{
+			for (EdgeDefinition e : edges)
+			{
+				if (!e.isNegated())
+				{
+					nr_aff++;
+					boolean eqWeight = Math.abs(maxAffWeight - e.getWeight()) < 0.000001;
+					if (eqWeight && affirmativeConsensus.equals(eo.getSourceCategory(e.getType())))
+					{
+						affy = e;
+					}
+				}
+			}
+		}
+		if (nr_aff > 1)
+		{
+			logger.log("  Selected only the affirmative edge with weight (" + maxAffWeight + ") and type " + affirmativeConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+		}
 
 		// we had negated edges 
 		if (negatedConsensus != null)
 		{
 			for (EdgeDefinition e : edges)
 			{
-				boolean eqWeight = Math.abs(maxNegWeight - e.getWeight()) < 0.000001;
-				if (e.isNegated() && eqWeight && negatedConsensus.equals(eo.getSourceCategory(e.getType())))
+				if (e.isNegated())
 				{
-					neggy = e;
+					nr_neg++;
+					boolean eqWeight = Math.abs(maxNegWeight - e.getWeight()) < 0.000001;
+					if (eqWeight && negatedConsensus.equals(eo.getSourceCategory(e.getType())))
+					{
+						neggy = e;
+					}
 				}
 			}
+		}
+		if (nr_neg > 1)
+		{
+			logger.log("  Selected only the negated edge with weight (" + maxNegWeight + ") and type " + negatedConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
 		}
 
-		// we only had negated edges -> returning the most general one
-		if (affirmativeConsensus != null)
-		{
-			for (EdgeDefinition e : edges)
-			{
-				boolean eqWeight = Math.abs(maxAffWeight - e.getWeight()) < 0.000001;
-				if (!e.isNegated() && eqWeight && affirmativeConsensus.equals(eo.getSourceCategory(e.getType())))
-				{
-					affy = e;
-				}
-			}
-		}
 		
 		Set<EdgeDefinition> results = new HashSet<EdgeDefinition>();
 		if (affy != null)

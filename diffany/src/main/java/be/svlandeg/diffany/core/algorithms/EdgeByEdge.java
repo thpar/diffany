@@ -114,6 +114,7 @@ public class EdgeByEdge
 
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
 
+		NodeComparison nc = new NodeComparison();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -137,12 +138,12 @@ public class EdgeByEdge
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
 			Set<Node> sources = nodesByID.get(sourceID);
-			Node example_source = sources.iterator().next();
+			Node output_source = nc.getConsensusNode(sources, supportingCutoff);	// TODO
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Set<Node> targets = nodesByID.get(targetID);
-				Node example_target = targets.iterator().next();
+				Node output_target = nc.getConsensusNode(targets, supportingCutoff);	// TODO
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -252,13 +253,13 @@ public class EdgeByEdge
 						{
 							if (!allDiffNodes.containsKey(sourceID))
 							{
-								allDiffNodes.put(sourceID, example_source);
+								allDiffNodes.put(sourceID, output_source);
 							}
 							Node sourceresult = allDiffNodes.get(sourceID);
 
 							if (!allDiffNodes.containsKey(targetID))
 							{
-								allDiffNodes.put(targetID, example_target);
+								allDiffNodes.put(targetID, output_target);
 							}
 							Node targetresult = allDiffNodes.get(targetID);
 
@@ -278,6 +279,7 @@ public class EdgeByEdge
 
 		return diff;
 	}
+	
 
 	/**
 	 * Calculate the consensus network between a set of networks.
@@ -371,8 +373,9 @@ public class EdgeByEdge
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
-
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
+		
+		NodeComparison nc = new NodeComparison();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -396,12 +399,12 @@ public class EdgeByEdge
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
 			Set<Node> sources = nodesByID.get(sourceID);
-			Node example_source = sources.iterator().next();
+			Node output_source = nc.getConsensusNode(sources, supportingCutoff);	// TODO
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Set<Node> targets = nodesByID.get(targetID);
-				Node example_target = targets.iterator().next();
+				Node output_target = nc.getConsensusNode(targets, supportingCutoff);	// TODO
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -482,13 +485,13 @@ public class EdgeByEdge
 						{
 							if (!allDiffNodes.containsKey(sourceID))
 							{
-								allDiffNodes.put(sourceID, example_source);
+								allDiffNodes.put(sourceID, output_source);
 							}
 							Node sourceresult = allDiffNodes.get(sourceID);
 
 							if (!allDiffNodes.containsKey(targetID))
 							{
-								allDiffNodes.put(targetID, example_target);
+								allDiffNodes.put(targetID, output_target);
 							}
 							Node targetresult = allDiffNodes.get(targetID);
 

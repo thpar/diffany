@@ -18,28 +18,6 @@ public class Node
 	protected boolean virtual;
 	protected Map<String, String> attributes;
 	
-	/**
-	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
-	 * 
-	 * @param name the name of this node - should be unique within a network!
-	 * @throws IllegalArgumentException when the name is null
-	 */
-	public Node(String name) throws IllegalArgumentException
-	{
-		this(name.toLowerCase(), name);
-	}
-
-	/**
-	 * Create a new (non-virtual) node with a specific ID and name
-	 * 
-	 * @param ID the ID of this node - should be unique within a network!
-	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
-	 * @throws IllegalArgumentException when the name or ID is null
-	 */
-	public Node(String ID, String name) throws IllegalArgumentException
-	{
-		this(ID, name, false);
-	}
 
 	/**
 	 * Create a new node with a specific ID, name and which is virtual or not
@@ -65,6 +43,30 @@ public class Node
 		this.name = name;
 		this.virtual = virtual;
 		attributes = new HashMap<String, String>();
+	}
+	
+	/**
+	 * Create a new (non-virtual) node with a specific ID and name
+	 * 
+	 * @param ID the ID of this node - should be unique within a network!
+	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
+	 * @throws IllegalArgumentException when the name or ID is null
+	 */
+	public Node(String ID, String name) throws IllegalArgumentException
+	{
+		this(ID, name, false);
+	}
+	
+	/**
+	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
+	 * The use of this constructor should be avoided!
+	 * 
+	 * @param name the name of this node - should be unique within a network!
+	 * @throws IllegalArgumentException when the name is null
+	 */
+	public Node(String name) throws IllegalArgumentException
+	{
+		this(name.toLowerCase(), name);
 	}
 
 	/**

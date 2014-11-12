@@ -658,7 +658,15 @@ public class NetworkCleaning
 		}
 		if (nr_aff > 1)
 		{
-			logger.log("  Selected only the affirmative edge with weight (" + maxAffWeight + ") and type " + affirmativeConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+			if (affy == null)
+			{
+				System.out.println("! Could not resolve the set of affirmative edges to one !");
+			}
+			else
+			{
+				logger.log("  Selected only the affirmative edge with weight (" + maxAffWeight + ") and type " + affirmativeConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+		
+			}
 		}
 
 		// we had negated edges 
@@ -679,7 +687,14 @@ public class NetworkCleaning
 		}
 		if (nr_neg > 1)
 		{
-			logger.log("  Selected only the negated edge with weight (" + maxNegWeight + ") and type " + negatedConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+			if (neggy == null)
+			{
+				System.out.println("! Could not resolve the set of negated edges to one !");
+			}
+			else
+			{
+				logger.log("  Selected only the negated edge with weight (" + maxNegWeight + ") and type " + negatedConsensus + " between " + source + " and " + target + " for the category " + rootCat + " in " + network_name);
+			}
 		}
 
 		

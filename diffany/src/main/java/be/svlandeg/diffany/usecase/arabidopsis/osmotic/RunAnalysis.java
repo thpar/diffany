@@ -95,12 +95,12 @@ public class RunAnalysis
 
 		boolean performStep1FromSupplemental = true;
 		boolean performStep2ToNetwork = true;
-		boolean performStep3InputNetworksToFile = false;
+		boolean performStep3InputNetworksToFile = true;
 
-		boolean performStep4InputNetworksFromFile = false;
-		boolean performStep5OneagainstAll = false;
+		boolean performStep4InputNetworksFromFile = true;
+		boolean performStep5OneagainstAll = true;
 		boolean performStep5AllPairwise = false;
-		boolean performStep6OutputNetworksToFile = false;
+		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{

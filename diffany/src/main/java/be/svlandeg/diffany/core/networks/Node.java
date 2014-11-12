@@ -2,6 +2,7 @@ package be.svlandeg.diffany.core.networks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -17,6 +18,10 @@ public class Node
 	protected String name;
 	protected boolean virtual;
 	protected Map<String, String> attributes;
+	
+	public static final String de_attribute = "differentially_expressed";
+	public static final String phos_attribute = "phosphorylation_site";
+	public static final String kinase_attribute = "kinase_function";
 	
 
 	/**
@@ -105,7 +110,20 @@ public class Node
 	}
 	
 	/**
+	 * Retrieve all attributes recorded for this node.
+	 * Note that from the Network this Node belongs to, you can derive all required attribute names for this node.
+	 * 
+	 * @return all attribute names recorded for this Node
+	 */
+	public Set<String> getAllAttributeNames()
+	{
+		return attributes.keySet();
+	}
+	
+	
+	/**
 	 * Retrieve the value of a certain attribute, or null when it is not defined for this node.
+	 * From the Network this Node belongs to, you can derive all required attribute names for this node.
 	 * 
 	 * @param attributeName the name of the attribute
 	 * @return the value of the attribute

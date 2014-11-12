@@ -72,13 +72,12 @@ public class EdgeByEdge
 		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
 
 		Set<Network> allOriginals = new HashSet<Network>();
-		allOriginals.addAll(conditionNetworks);
-		allOriginals.add(reference);
 
 		Map<String, Set<String>> source2targetIDs = new HashMap<String, Set<String>>();
-		Map<String, Set<Node>> nodesByID = new HashMap<String, Set<Node>>();
+		Map<String, Set<Node>> condNodesByID = new HashMap<String, Set<Node>>();
+		Map<String, Node> refNodesByID = new HashMap<String, Node>();
 
-		for (Network n : allOriginals)
+		for (Network n : conditionNetworks)
 		{
 			for (Edge e : n.getEdges())
 			{
@@ -95,19 +94,40 @@ public class EdgeByEdge
 				source2targetIDs.get(sourceID).add(targetID);
 
 				// add the source node by ID
-				if (!nodesByID.containsKey(sourceID))
+				if (!condNodesByID.containsKey(sourceID))
 				{
-					nodesByID.put(sourceID, new HashSet<Node>());
+					condNodesByID.put(sourceID, new HashSet<Node>());
 				}
-				nodesByID.get(sourceID).add(source);
+				condNodesByID.get(sourceID).add(source);
 
 				// add the target node by ID
-				if (!nodesByID.containsKey(targetID))
+				if (!condNodesByID.containsKey(targetID))
 				{
-					nodesByID.put(targetID, new HashSet<Node>());
+					condNodesByID.put(targetID, new HashSet<Node>());
 				}
-				nodesByID.get(targetID).add(target);
+				condNodesByID.get(targetID).add(target);
 			}
+		}
+		
+		for (Edge e : reference.getEdges())
+		{
+			Node source = e.getSource();
+			String sourceID = source.getID();
+			Node target = e.getTarget();
+			String targetID = target.getID();
+
+			// add the source-target mapping
+			if (!source2targetIDs.containsKey(sourceID))
+			{
+				source2targetIDs.put(sourceID, new HashSet<String>());
+			}
+			source2targetIDs.get(sourceID).add(targetID);
+
+			// add the source node by ID
+			refNodesByID.put(sourceID, source);
+
+			// add the target node by ID
+			refNodesByID.put(targetID, target);
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
@@ -135,15 +155,25 @@ public class EdgeByEdge
 
 		int progressed = 0;
 
-		for (String sourceID : source2targetIDs.keySet()) // source node ID 
+		for (String sourceID : source2targetIDs.keySet())
 		{
-			Set<Node> sources = nodesByID.get(sourceID);
-			Node output_source = nc.getConsensusNode(sources, supportingCutoff);	// TODO
-
-			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
+			// Determine the node with this source ID in the differential network
+			Node diff_source = allDiffNodes.get(sourceID);
+			if (diff_source == null)
 			{
-				Set<Node> targets = nodesByID.get(targetID);
-				Node output_target = nc.getConsensusNode(targets, supportingCutoff);	// TODO
+				diff_source = nc.getConsensusNode(refNodesByID.get(sourceID), condNodesByID.get(sourceID), supportingCutoff);	
+				allDiffNodes.put(sourceID, diff_source);
+			}
+
+			for (String targetID : source2targetIDs.get(sourceID)) // all possible targets for this source
+			{
+				// Determine the node with this target ID in the differential network
+				Node diff_target = allDiffNodes.get(targetID);
+				if (diff_target == null)
+				{
+					diff_target = nc.getConsensusNode(refNodesByID.get(targetID), condNodesByID.get(targetID), supportingCutoff);	
+					allDiffNodes.put(targetID, diff_target);
+				}
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -251,19 +281,7 @@ public class EdgeByEdge
 						// non-void differential edge
 						if (diff_edge_def.getWeight() > 0)
 						{
-							if (!allDiffNodes.containsKey(sourceID))
-							{
-								allDiffNodes.put(sourceID, output_source);
-							}
-							Node sourceresult = allDiffNodes.get(sourceID);
-
-							if (!allDiffNodes.containsKey(targetID))
-							{
-								allDiffNodes.put(targetID, output_target);
-							}
-							Node targetresult = allDiffNodes.get(targetID);
-
-							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+							Edge edgediff = new Edge(diff_source, diff_target, diff_edge_def);
 							diff.addEdge(edgediff);
 						}
 					}
@@ -398,13 +416,11 @@ public class EdgeByEdge
 
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
-			Set<Node> sources = nodesByID.get(sourceID);
-			Node output_source = nc.getConsensusNode(sources, supportingCutoff);	// TODO
+			Node output_source = nc.getConsensusNode(null, nodesByID.get(sourceID), supportingCutoff);	
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
-				Set<Node> targets = nodesByID.get(targetID);
-				Node output_target = nc.getConsensusNode(targets, supportingCutoff);	// TODO
+				Node output_target = nc.getConsensusNode(null, nodesByID.get(targetID), supportingCutoff);	
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)

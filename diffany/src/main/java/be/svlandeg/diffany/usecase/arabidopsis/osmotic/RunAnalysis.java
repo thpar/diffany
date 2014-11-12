@@ -57,8 +57,7 @@ public class RunAnalysis
 	private URI kinase_function_file;
 	private URI kinase_interaction_file;
 
-	private static String phosAttribute = "phosphorylation_site";
-	private static String kinaseAttribute = "kinase_function";
+	
 
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
@@ -353,11 +352,11 @@ public class RunAnalysis
 		Set<String> nodeAttributes = new HashSet<String>();
 		if (includePhos)
 		{
-			nodeAttributes.add(phosAttribute);
+			nodeAttributes.add(Node.phos_attribute);
 		}
 		if (includeKinase)
 		{
-			nodeAttributes.add(kinaseAttribute);
+			nodeAttributes.add(Node.kinase_attribute);
 		}
 
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
@@ -421,7 +420,6 @@ public class RunAnalysis
 		edges.addAll(kinaseEdges);
 		System.out.println(" Found " + kinaseEdges.size() + " kinase interactions between them");
 
-		// TODO: add as node attributes
 		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
 		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_function_file);
 
@@ -441,22 +439,22 @@ public class RunAnalysis
 			{
 				if (phosNodes.contains(n.getID()))
 				{
-					n.setAttribute(phosAttribute, "yes");
+					n.setAttribute(Node.phos_attribute, "yes");
 				}
 				else
 				{
-					n.setAttribute(phosAttribute, "no");
+					n.setAttribute(Node.phos_attribute, "no");
 				}
 			}
 			if (includeKinase)
 			{
 				if (kinaseNodes.contains(n.getID()))
 				{
-					n.setAttribute(kinaseAttribute, "yes");
+					n.setAttribute(Node.kinase_attribute, "yes");
 				}
 				else
 				{
-					n.setAttribute(kinaseAttribute, "no");
+					n.setAttribute(Node.kinase_attribute, "no");
 				}
 			}
 		}
@@ -501,11 +499,11 @@ public class RunAnalysis
 				{
 					if (includeKinase)
 					{
-						e.getSource().setAttribute(kinaseAttribute, "unknown");
+						e.getSource().setAttribute(Node.kinase_attribute, "unknown");
 					}	
 					if (includePhos)
 					{
-						e.getSource().setAttribute(phosAttribute, "unknown");
+						e.getSource().setAttribute(Node.phos_attribute, "unknown");
 					}	
 				}
 				

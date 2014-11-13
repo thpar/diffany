@@ -56,9 +56,11 @@ public class Ideker2011 extends GenericExample
 	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getReferenceFigure3A();
+		
 		Set<ConditionNetwork> c = getConditionFigure3A();
 		boolean cleanInput = true;
 		int ID = p.addRunConfiguration(r, c, cleanInput, null);
+		
 		return ID;
 	}
 
@@ -80,6 +82,7 @@ public class Ideker2011 extends GenericExample
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 0.7));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("E"), true, 0.8));
+		
 		return network;
 	}
 
@@ -126,9 +129,11 @@ public class Ideker2011 extends GenericExample
 		System.out.println("Defining network for Ideker2011 figure 3A");
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
+		ex.printAllNetworks(p.getRunConfiguration(ID));
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);
+
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false, false);

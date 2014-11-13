@@ -48,7 +48,7 @@ public abstract class GenericExample
 	 * 
 	 * @param n the network to be printed
 	 */
-	private void printNetwork(Network n)
+	protected void printNetwork(Network n)
 	{
 		System.out.println(n.getStringRepresentation());
 		System.out.println(EdgeIO.writeEdgesToTab(n.getEdges()));
@@ -58,7 +58,7 @@ public abstract class GenericExample
 	/**
 	 * Print a differential run configuration 
 	 */
-	private void printAllNetworks(RunDiffConfiguration rc)
+	protected void printAllNetworks(RunDiffConfiguration rc)
 	{
 		System.out.println("Reference network : ");
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -75,7 +75,7 @@ public abstract class GenericExample
 	/**
 	 * Print a run configuration
 	 */
-	private void printAllNetworks(RunConfiguration rc)
+	protected void printAllNetworks(RunConfiguration rc)
 	{
 		System.out.println("Input networks : ");
 

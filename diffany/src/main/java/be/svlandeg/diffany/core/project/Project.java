@@ -154,6 +154,7 @@ public class Project
 		logger.log("Analysing the reference and condition-specific network(s) ");
 		
 		RunConfiguration rc = null;
+		
 		if (cleanInput)
 		{
 			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */

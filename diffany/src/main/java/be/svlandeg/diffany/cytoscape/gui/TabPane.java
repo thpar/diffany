@@ -12,7 +12,6 @@ import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -71,9 +70,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private JButton runButton;
 	private JButton updateVizButton;
-	private JTable table;
+	private JTable networkTable;
 	private JCheckBox requireRefNetCheckBox;
 	private JSlider supportSlider;
+	private JTable filterEdgesTable;
+	private EdgeFilterTableModel filterTableModel;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the model.
@@ -94,6 +95,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		this.add(createNetworkSelectionPanel());
 
+		this.add(createFilterPanel());
+		
 		this.add(createOptionPanel());
 
 		JPanel runPanel = new JPanel();
@@ -120,9 +123,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	
 	
+	
+
 	/**
 	 * Creates the panel containing the dropdown list with {@link CyProject}s and the table
-	 * containin the networks.
+	 * containing the networks.
 	 * 
 	 * @return {@link JPanel} containing the project and network lists.
 	 */
@@ -152,30 +157,57 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		if (model.getSelectedProject() !=null){
 			networkTableModel.refresh(model.getSelectedProject());			
 		}
-		table = new JTable(networkTableModel);
-		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
+		networkTable = new JTable(networkTableModel);
+		networkTable.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
-		table.getColumnModel().getColumn(0).setPreferredWidth(20);
-		table.getColumnModel().getColumn(2).setPreferredWidth(20);
-		table.setFillsViewportHeight(true);
+		networkTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		networkTable.getColumnModel().getColumn(2).setPreferredWidth(20);
+		networkTable.setFillsViewportHeight(true);
 		
 		networkTableModel.addTableModelListener(this);
 		
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(this);
+		networkTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		networkTable.getSelectionModel().addListSelectionListener(this);
 		
 		CyNetwork focused = model.getNetworkInFocus();
 		if (focused !=null){
 			int focusRow = networkTableModel.getRowNumber(focused);
 			if (focusRow >=0){
-				table.setRowSelectionInterval(focusRow, focusRow);				
+				networkTable.setRowSelectionInterval(focusRow, focusRow);				
 			}
 		}
 		
-		JScrollPane scrollPane = new JScrollPane(table);
+		JScrollPane scrollPane = new JScrollPane(networkTable);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		return panel;
 	}
+	
+	private Component createFilterPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBorder(BorderFactory.createTitledBorder("Interaction filter"));
+		panel.setAlignmentX(CENTER_ALIGNMENT);
+		
+		filterTableModel = new EdgeFilterTableModel();
+		if (model.getSelectedProject() != null){
+			filterTableModel.refresh(model.getSelectedProject());
+		}
+		
+		filterEdgesTable = new JTable(filterTableModel);
+		filterEdgesTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
+		filterEdgesTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+		filterEdgesTable.setFillsViewportHeight(true);
+		
+		filterTableModel.addTableModelListener(this);
+		
+		filterEdgesTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//table.getSelectionModel().addListSelectionListener(this);
+		JScrollPane scrollPane = new JScrollPane(filterEdgesTable);
+		panel.add(scrollPane, BorderLayout.CENTER);
+				
+		return panel;
+	}
+	
 	
 	/**
 	 * Creates the panel containing extra project options like cut off and comparison mode
@@ -299,13 +331,16 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			if (focused !=null){
 				int focusRow = networkTableModel.getRowNumber(focused);
 				if (focusRow >=0){
-					table.setRowSelectionInterval(focusRow, focusRow);					
+					networkTable.setRowSelectionInterval(focusRow, focusRow);					
 				}
 			}
+			
+			this.filterTableModel.refresh(model.getSelectedProject());
 			
 			refreshCyProject();
 		} else {
 			this.networkTableModel.clear();
+			this.filterTableModel.clear();
 		}
 		updateSupportSlider();
 	}
@@ -369,6 +404,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		// triggered when the data of the network selection table has changed
 		this.refreshCyProject();
 		this.updateSupportSlider();
+		//TODO: update the filter table without causing an infinite loop
+//		this.filterTableModel.refresh(model.getSelectedProject());
 	}
 	
 	/**
@@ -407,7 +444,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		//triggered when a row gets selected
-		int row = table.getSelectedRow();
+		int row = networkTable.getSelectedRow();
 		if (row>=0){
 			NetworkEntry selectedEntry = networkTableModel.getNetworkEntry(row);
 			CyNetwork selectedNetwork = selectedEntry.getNetwork();
@@ -416,7 +453,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			for (CyNetworkView cyView : cyViews){
 				model.getServices().getCyApplicationManager().setCurrentNetworkView(cyView);
 			}
-			table.setRowSelectionInterval(row, row);
+			networkTable.setRowSelectionInterval(row, row);
 		}
 		
 	}

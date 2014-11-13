@@ -19,10 +19,14 @@ public class Node
 	protected boolean virtual;
 	protected Map<String, String> attributes;
 	
+	// TODO - record this information somewhere else?
 	public static final String de_attribute = "differentially_expressed";
 	public static final String phos_attribute = "phosphorylation_site";
 	public static final String kinase_attribute = "kinase_function";
 	
+	public static final String upregulated = "up-regulated";
+	public static final String downregulated = "down-regulated";
+	public static final String not_de = "no";
 
 	/**
 	 * Create a new node with a specific ID, name and which is virtual or not

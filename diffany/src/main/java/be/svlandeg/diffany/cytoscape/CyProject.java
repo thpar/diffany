@@ -94,9 +94,11 @@ public class CyProject{
 	 * @param referenceNetwork the reference network for this {@link CyProject}. NULL if no reference network is selected.
 	 */
 	public void setReferenceNetwork(CyNetwork referenceNetwork) {
-		this.referenceNetwork = referenceNetwork;
-		if (referenceNetwork != null){
-			this.registerReferenceNetwork(referenceNetwork);			
+		if (this.referenceNetwork != referenceNetwork){
+			this.referenceNetwork = referenceNetwork;
+			if (referenceNetwork != null){
+				this.registerReferenceNetwork(referenceNetwork);			
+			}			
 		}
 	}
 
@@ -123,8 +125,19 @@ public class CyProject{
 	 * @param conditionalNetworks set of conditional networks for this project
 	 */
 	public void setConditionalNetworks(Set<CyNetwork> conditionalNetworks) {
-		this.conditionalNetworks = conditionalNetworks;
+		//which conditional networks are actually new and need to be registered?
+		HashSet<CyNetwork> newConditionalNetworks = new HashSet<CyNetwork>();
 		for (CyNetwork condNet : conditionalNetworks){
+			if (!this.conditionalNetworks.contains(condNet)){
+				newConditionalNetworks.add(condNet);
+			}
+		}
+		
+		//set the new set
+		this.conditionalNetworks = conditionalNetworks;
+		
+		//register only the new ones
+		for (CyNetwork condNet : newConditionalNetworks){
 			this.registerConditionNetwork(condNet);
 		}
 	}

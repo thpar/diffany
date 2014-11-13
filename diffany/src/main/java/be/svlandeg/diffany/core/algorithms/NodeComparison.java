@@ -7,7 +7,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.networks.Node;
 
 /**
- * This class defines the nodes to be used in output (differential/consensus) networks
+ * This class defines the nodes to be used in output (differential/consensus) networks, by transferring the node attributes and name/ID from the corresponding input nodes.
  * 
  * @author Sofie Van Landeghem
  */

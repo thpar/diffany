@@ -9,24 +9,21 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 public class OsmoticUseCase extends GenericExample{
 
-	private NodeMapper nm;
 
 	private final String JAR_DIR = "/data/osmotic/";
 	
-	public OsmoticUseCase() {
-		nm = new DefaultNodeMapper();
+	public OsmoticUseCase() 
+	{
 	}
 	
 	public Project getTestProject(){
 		String name = "Osmotic Use Case";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -43,7 +40,7 @@ public class OsmoticUseCase extends GenericExample{
 	}
 
 	private ReferenceNetwork getTestReference(String jarDir) throws IOException{
-		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", nm, true);
+		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", true);
 	}
 	
 	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{
@@ -61,16 +58,16 @@ public class OsmoticUseCase extends GenericExample{
 	}
 
 	private ConditionNetwork getFirstCondition(String jarDir) throws IOException{
-		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_1.5h", nm, true);
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_1.5h", true);
 	}
 	private ConditionNetwork getSecondCondition(String jarDir) throws IOException{
-		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_3h", nm, true);
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_3h", true);
 	}
 	private ConditionNetwork getThirdCondition(String jarDir) throws IOException{
-		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_12h", nm, true);
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_12h", true);
 	}	
 	private ConditionNetwork getFourthCondition(String jarDir)throws IOException {
-		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_24h", nm, true);
+		return NetworkIO.readConditionNetworkFromResource(jarDir+"Network_24h", true);
 	}
 
 	@Override

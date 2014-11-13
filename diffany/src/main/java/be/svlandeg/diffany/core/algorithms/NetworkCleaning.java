@@ -18,7 +18,6 @@ import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * This class provides generic methods useful for network cleaning before or
@@ -123,6 +122,7 @@ public class NetworkCleaning
 	 * Otherwise, the weight and negation status should be equal.
 	 * 
 	 * @param net the network that needs cleaning
+	 * @param eo the edge ontology
 	 */
 	protected void removeRedundantEdges(Network net, EdgeOntology eo)
 	{
@@ -260,15 +260,14 @@ public class NetworkCleaning
 	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
 	 * @param eo the edge ontology
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned condition-specific network representing the same semantic information
 	 */
-	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
+	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions(), nm);
+		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, progressListener, false);
 
@@ -281,15 +280,14 @@ public class NetworkCleaning
 	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
 	 * @param eo the edge ontology
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
+	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
+		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, progressListener, true);
 
@@ -302,15 +300,14 @@ public class NetworkCleaning
 	 * (either all symmetric or all directed, as dictated by the edge ontology), and resolve conflicts within a root category.
 	 * 
 	 * @param net the network that needs cleaning
-	 * @param nm the node mapper
 	 * @param eo the edge ontology
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public InputNetwork fullInputCleaning(InputNetwork net, NodeMapper nm, EdgeOntology eo, ExecutionProgress progressListener)
+	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
-		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), nm);
+		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, progressListener, false);
 

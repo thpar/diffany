@@ -12,8 +12,6 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -163,15 +161,14 @@ public class NetworkAnalysis
 		NetworkAnalysis na = new NetworkAnalysis();
 		GenePrinter gp = new GenePrinter();
 		NetworkConstruction constr = new NetworkConstruction(gp);
-		NodeMapper nm = new DefaultNodeMapper();
 		
 		boolean includeSelfInteractions = false;
 		URI file = new ArabidopsisData().getCornetPPI();
 		
 		System.out.println("Reading: " + file + " - " + "includeSelfInteractions=" + includeSelfInteractions);
 		
-		Set<Edge> edges = constr.readAllPPIs(nm, file, includeSelfInteractions);
-		Network network = new InputNetwork("Test network", 342, null, nm);
+		Set<Edge> edges = constr.readAllPPIs(file, includeSelfInteractions);
+		Network network = new InputNetwork("Test network", 342, null);
 		network.setNodesAndEdges(edges);
 		
 		System.out.println(" ");

@@ -16,7 +16,6 @@ public class Node
 
 	protected String ID;
 	protected String name;
-	protected boolean virtual;
 	protected Map<String, String> attributes;
 	
 	// TODO - record this information somewhere else?
@@ -28,15 +27,15 @@ public class Node
 	public static final String downregulated = "down-regulated";
 	public static final String not_de = "no";
 
+	
 	/**
-	 * Create a new node with a specific ID, name and which is virtual or not
+	 * Create a new (non-virtual) node with a specific ID and name
 	 * 
 	 * @param ID the ID of this node - should be unique within a network!
-	 * @param name the name of this node - should be unique within a network!
-	 * @param virtual whether this node is virtual
+	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
 	 * @throws IllegalArgumentException when the name or ID is null
 	 */
-	public Node(String ID, String name, boolean virtual) throws IllegalArgumentException
+	public Node(String ID, String name) throws IllegalArgumentException
 	{
 		if (ID == null)
 		{
@@ -50,20 +49,7 @@ public class Node
 		}
 		this.ID = ID;
 		this.name = name;
-		this.virtual = virtual;
 		attributes = new HashMap<String, String>();
-	}
-	
-	/**
-	 * Create a new (non-virtual) node with a specific ID and name
-	 * 
-	 * @param ID the ID of this node - should be unique within a network!
-	 * @param name the name of this node - will be used for displaying the node and is ideally unique, too
-	 * @throws IllegalArgumentException when the name or ID is null
-	 */
-	public Node(String ID, String name) throws IllegalArgumentException
-	{
-		this(ID, name, false);
 	}
 	
 	/**
@@ -160,16 +146,6 @@ public class Node
 		attributes.put(attributeName, value);
 	}
 
-	/**
-	 * Check whether or not this node is virtual or not.
-	 * E.g. visualisations will want to hide virtual nodes.
-	 * 
-	 * @return whether or not this node is virtual
-	 */
-	public boolean isVirtual()
-	{
-		return virtual;
-	}
 
 	@Override
 	public String toString()

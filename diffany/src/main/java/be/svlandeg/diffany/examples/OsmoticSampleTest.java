@@ -16,8 +16,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -27,26 +25,28 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  */
 public class OsmoticSampleTest extends GenericExample
 {
-private NodeMapper nm;
 	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public OsmoticSampleTest()
-	{
-		nm = new DefaultNodeMapper();
-	}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project
 	 */
-	public Project getTestProject()
+	public Project getDefaultProject()
 	{
 		String name = "Osmotic_sample_test";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
+	}
+	
+	/**
+	 * Add some custom-defined networks to the project: 1 reference network and 3 condition-specific.
+	 * @param p the fuzzy project
+	 * @return the resulting configuration ID.
+	 */
+	public int getDefaultRunConfigurationID(Project p)
+	{
+		return getTestDiffConfiguration(p, 5);
 	}
 	
 	/**
@@ -97,7 +97,7 @@ private NodeMapper nm;
 		nodes.put("O", new Node("O"));
 		nodes.put("P", new Node("P"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
@@ -133,7 +133,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 1.5h", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 1.5h", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -167,7 +167,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 3h", 3, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 3h", 3, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -201,7 +201,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 12h", 4, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 12h", 4, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -235,7 +235,7 @@ private NodeMapper nm;
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Mannitol after 24h", 5, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Mannitol after 24h", 5, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -268,7 +268,7 @@ private NodeMapper nm;
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for weight test");
-		Project p = ex.getTestProject();
+		Project p = ex.getDefaultProject();
 		int ID_diff = ex.getTestDiffConfiguration(p, 5);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);

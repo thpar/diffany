@@ -177,20 +177,5 @@ public class Edge
 	{
 		return def.weight;
 	}
-	
-	
-	/** 
-	 * Retrieve whether or not an edge is virtual. It is considered virtual if the source and/or target nodes are virtual.
-	 * @return whether or not this is a virtual edge
-	 */
-	public boolean isVirtual()
-	{
-		boolean virtual = false;
-		if (source.isVirtual() || target.isVirtual())
-		{
-			virtual = true;
-		}
-		return virtual;
-	}
 
 }

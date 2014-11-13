@@ -31,9 +31,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
 
@@ -64,9 +64,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
 
@@ -97,9 +97,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
 
@@ -132,9 +132,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
 
@@ -167,9 +167,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
 
@@ -201,9 +201,9 @@ public class TestFuzzyBoth extends TestGeneric
 	{
 		FuzzyNetworks2 ex = new FuzzyNetworks2();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
 

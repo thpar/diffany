@@ -13,9 +13,7 @@ import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.core.visualstyle.EdgeStyle.ArrowHead;
 
@@ -35,19 +33,18 @@ public class TestVisual
 	public void testAll()
 	{
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
-		Project p = new Project("testProject", eo, nm);
+		Project p = new Project("testProject", eo);
 		
 		// ****** SOURCE NETWORK ****** //
 		
-		ReferenceNetwork ref = new ReferenceNetwork("testRef", 1, null, nm);
+		ReferenceNetwork ref = new ReferenceNetwork("testRef", 1, null);
 		ref.addEdge(new Edge("somethingRandom", new Node("A"), new Node("B"), true));
 		ref.addEdge(new Edge("increase", new Node("C"), new Node("D"), true));
 		ref.addEdge(new Edge("ppiptm", new Node("E"), new Node("F"), true));
 		ref.addEdge(new Edge("increasewhatever", new Node("G"), new Node("H"), true));
 		
 		Condition c = new Condition("sample condition");
-		ConditionNetwork cn = new ConditionNetwork("testCon", 2, null, c, nm);
+		ConditionNetwork cn = new ConditionNetwork("testCon", 2, null, c);
 		cn.addEdge(new Edge("increase_ppi", new Node("I"), new Node("J"), true));
 		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
 		

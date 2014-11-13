@@ -16,26 +16,16 @@ import be.svlandeg.diffany.core.semantics.*;
 public class ProcessTest extends GenericExample
 {
 	
-	private NodeMapper nm;
-	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public ProcessTest()
-	{
-		nm = new DefaultNodeMapper();
-	}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project
 	 */
-	public Project getTestProject()
+	public Project getDefaultProject()
 	{
 		String name = "Process_test";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -44,7 +34,7 @@ public class ProcessTest extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConfiguration(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
@@ -73,7 +63,7 @@ public class ProcessTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, null);
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 2, false));
 		network.addEdge(new Edge("ppi", nodes.get("S"), nodes.get("T"), true, 3, false));
 		network.addEdge(new Edge("ptm", nodes.get("X"), nodes.get("Y"), true, 4, false));
@@ -95,7 +85,7 @@ public class ProcessTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -131,8 +121,8 @@ public class ProcessTest extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for weight test");
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);

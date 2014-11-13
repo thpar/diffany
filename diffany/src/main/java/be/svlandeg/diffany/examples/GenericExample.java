@@ -33,18 +33,15 @@ public abstract class GenericExample
 	 * 
 	 * @return the default project. Returns null if no default was defined.
 	 */
-	public Project getDefaultProject(){
-		return null;
-	}
+	public abstract Project getDefaultProject();
 	
 	/**
 	 * Allows subclasses to specify a default runconfig for this example. 
+	 * @param p the project used in this example
 	 * 
 	 * @return the default configuration. Returns -1 if no default was defined.
 	 */
-	public int getDefaultRunConfigurationID(Project p){
-		return -1;
-	}
+	public abstract int getDefaultRunConfigurationID(Project p);
 
 	/**
 	 * Print a network by printing its string representation and its edges.
@@ -138,16 +135,19 @@ public abstract class GenericExample
 		}
 	}
 
-	public String getName() {
+	public String getName() 
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) 
+	{
 		this.name = name;
 	}
 
 	
-	public void setTaskMonitor(TaskMonitor taskMonitor) {
+	public void setTaskMonitor(TaskMonitor taskMonitor) 
+	{
 		this.taskMonitor = taskMonitor;
 		
 	}

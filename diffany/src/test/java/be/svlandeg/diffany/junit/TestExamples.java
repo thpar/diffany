@@ -40,8 +40,8 @@ public class TestExamples extends TestGeneric
 	{
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProjectFigure1C();
-		int ID = ex.getTestConfiguration1C(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there is exactly one differential network created
@@ -76,8 +76,8 @@ public class TestExamples extends TestGeneric
 	{
 		Ideker2011 ex = new Ideker2011();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProjectFigure3A();
-		int ID = ex.getTestConfiguration3A(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there is exactly one differential network created
@@ -114,8 +114,8 @@ public class TestExamples extends TestGeneric
 	{
 		ActivityFlowTest ex = new ActivityFlowTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there is exactly one differential network created
@@ -157,8 +157,8 @@ public class TestExamples extends TestGeneric
 	{
 		ProcessTest ex = new ProcessTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there is exactly one differential network created
@@ -204,8 +204,8 @@ public class TestExamples extends TestGeneric
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestDiffConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 10, 20, true, null);
 
 		// Testing that there is exactly one differential network created
@@ -250,8 +250,8 @@ public class TestExamples extends TestGeneric
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestDiffConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there are exactly two differential networks created (1 for each condition)
@@ -343,8 +343,8 @@ public class TestExamples extends TestGeneric
 	{
 		MultipleConditionTest ex = new MultipleConditionTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestDiffConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, false, true, 10, true, null);
 
 		// Testing that there are exactly three consensus networks created (3 pairs)
@@ -402,8 +402,8 @@ public class TestExamples extends TestGeneric
 	{
 		ConflictingEdgesTest ex = new ConflictingEdgesTest();
 		double cutoff = 0.0;
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, 10, 20, true, null);
 
 		// Testing that there is exactly one differential network created

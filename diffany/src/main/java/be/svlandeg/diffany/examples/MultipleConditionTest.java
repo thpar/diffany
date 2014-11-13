@@ -16,8 +16,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -29,25 +27,16 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class MultipleConditionTest extends GenericExample
 {
 	
-	private NodeMapper nm;
-	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public MultipleConditionTest()
-	{
-		nm = new DefaultNodeMapper();
-	}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project
 	 */
-	public Project getTestProject()
+	public Project getDefaultProject()
 	{
 		String name = "Multiple_test";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -56,7 +45,7 @@ public class MultipleConditionTest extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestDiffConfiguration(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestConditions();
@@ -93,7 +82,7 @@ public class MultipleConditionTest extends GenericExample
 		nodes.put("W", new Node("W"));
 		nodes.put("Z", new Node("Z"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.7, false));
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("C"), true, 0.8, false));
@@ -139,7 +128,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Salty", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Salty", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -181,7 +170,7 @@ public class MultipleConditionTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Draughty", 3, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Draughty", 3, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
@@ -222,8 +211,8 @@ public class MultipleConditionTest extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for weight test");
-		Project p = ex.getTestProject();
-		int ID_diff = ex.getTestDiffConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID_diff = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, 10, 11, true, null);

@@ -19,7 +19,6 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -58,7 +57,6 @@ public class EdgeByEdge
 	 * @param reference the reference network
 	 * @param conditionNetworks a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diffName the name to give to the differential network
 	 * @param ID the ID of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
@@ -67,9 +65,9 @@ public class EdgeByEdge
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int supportingCutoff, double weightCutoff, ExecutionProgress progressListener)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, String diffName, int ID, int supportingCutoff, double weightCutoff, ExecutionProgress progressListener)
 	{
-		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
+		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks);
 
 		Set<Network> allOriginals = new HashSet<Network>();
 
@@ -314,7 +312,6 @@ public class EdgeByEdge
 	 * 
 	 * @param networks a set of networks (at least 2).
 	 * @param eo the edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param consensusName the name to give to the consensus network
 	 * @param ID the ID of the resulting network
 	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
@@ -328,9 +325,9 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ExecutionProgress progressListener)
+	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ExecutionProgress progressListener)
 	{
-		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks, nm);
+		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks);
 
 		Set<Integer> refNetworks = new HashSet<Integer>();
 		Map<Integer, Network> allNetworks = new HashMap<Integer, Network>();

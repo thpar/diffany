@@ -14,16 +14,13 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
  * A project consists of a number of Diffany runs and the ontology settings within one user session.
  * 
- * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types,
- * and a {@link NodeMapper} that establishes equality of nodes across networks.
+ * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types.
  * 
  * Project data can be saved and loaded through the {@link ProjectIO} class.
  * 
@@ -35,7 +32,6 @@ public class Project
 	protected String name;
 
 	protected TreeEdgeOntology edgeOntology;
-	protected NodeMapper nodeMapper;
 	
 	// List of runs; their IDs are given by the index in this list
 	protected List<Run> runs;
@@ -50,7 +46,7 @@ public class Project
 	 */
 	public Project(String name) throws IllegalArgumentException
 	{
-		this(name, new DefaultEdgeOntology(), new DefaultNodeMapper());
+		this(name, new DefaultEdgeOntology());
 	}
 
 	/**
@@ -58,11 +54,10 @@ public class Project
 	 * 
 	 * @param name the name of this project (not null!)
 	 * @param edgeOntology the edge ontology (not null!)
-	 * @param nodeMapper the node mapper (not null!)
 	 * 
 	 * @throws IllegalArgumentException if any of the restrictions above are not fulfilled
 	 */
-	public Project(String name, TreeEdgeOntology edgeOntology, NodeMapper nodeMapper) throws IllegalArgumentException
+	public Project(String name, TreeEdgeOntology edgeOntology) throws IllegalArgumentException
 	{
 		if (name == null)
 		{
@@ -72,7 +67,6 @@ public class Project
 		this.name = name;
 		
 		setEdgeOntology(edgeOntology);
-		setNodeMapper(nodeMapper);
 		
 		runs = new ArrayList<Run>();
 	}
@@ -164,13 +158,13 @@ public class Project
 		{
 			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */
 			registerSourceNetwork(reference, logger);
-			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, nodeMapper, edgeOntology, progressListener);
+			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, edgeOntology, progressListener);
 			
 			Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 			for (ConditionNetwork conNet : conditions)
 			{
 				registerSourceNetwork(conNet, logger);
-				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, nodeMapper, edgeOntology, progressListener);
+				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, edgeOntology, progressListener);
 				cleanConditions.add(cleanCon);
 			}
 			rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
@@ -237,7 +231,7 @@ public class Project
 		for (InputNetwork inputNet : inputNetworks)
 		{
 			registerSourceNetwork(inputNet, logger);
-			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, nodeMapper, edgeOntology, progressListener);
+			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, edgeOntology, progressListener);
 			cleanNetworks.add(cleanNet);
 		}
 		
@@ -338,32 +332,6 @@ public class Project
 	public TreeEdgeOntology getEdgeOntology()
 	{
 		return edgeOntology;
-	}
-
-	/**
-	 * Set the node mapper for this project.
-	 * (currently not a public method - changes to it would influence the differential networks (TODO v3.0))
-	 * 
-	 * @param nodeMapper the node mapper (not null!)
-	 * @throws IllegalArgumentException if the nodeMapper is null
-	 */
-	private void setNodeMapper(NodeMapper nodeMapper) throws IllegalArgumentException
-	{
-		if (nodeMapper == null)
-		{
-			String errormsg = "The node mapper should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		this.nodeMapper = nodeMapper;
-	}
-
-	/**
-	 * Get the node mapper of this project, which defines equality between nodes of the different networks.
-	 * @return the node mapper of this project (should not be null)
-	 */
-	public NodeMapper getNodeMapper()
-	{
-		return nodeMapper;
 	}
 
 

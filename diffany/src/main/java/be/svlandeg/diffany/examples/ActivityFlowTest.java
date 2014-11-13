@@ -14,8 +14,6 @@ import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -27,25 +25,15 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class ActivityFlowTest extends GenericExample
 {
 	
-	private NodeMapper nm;
-	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public ActivityFlowTest()
-	{
-		nm = new DefaultNodeMapper();
-	}
-	
 	/**
 	 * Get a custom project
 	 * @return an example project.
 	 */
-	public Project getTestProject()
+	public Project getDefaultProject()
 	{
 		String name = "AF_test";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -54,7 +42,7 @@ public class ActivityFlowTest extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConfiguration(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
@@ -83,7 +71,7 @@ public class ActivityFlowTest extends GenericExample
 		nodes.put("J", new Node("J"));
 		nodes.put("K", new Node("K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, null);
 		
 		// non-alphanumerical chars (punctuation, spaces, ...) should be ignored!
 		network.addEdge(new Edge(" positi ve reg ulation", nodes.get("A"), nodes.get("B"), false, 2, false));
@@ -112,7 +100,7 @@ public class ActivityFlowTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		nodes.put("A", new Node("A"));
@@ -155,8 +143,8 @@ public class ActivityFlowTest extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for negation test");
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);

@@ -6,8 +6,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -33,9 +35,14 @@ import javax.swing.event.TableModelListener;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyRow;
+import org.cytoscape.model.CyTable;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.View;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -407,11 +414,39 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			this.updateSupportSlider();
 			this.filterTableModel.refresh(model.getSelectedProject());
 		} else if (source instanceof EdgeFilterTableModel){
-			//TODO catch filter table change and apply filters to all views in the project
-			
+			applyEdgeFilters();			
 		}
 	}
 	
+	/**
+	 * Read the data from the {@link EdgeFilterTableModel} and apply those filters on 
+	 * all Views in the current project.
+	 * 
+	 */
+	private void applyEdgeFilters() {
+		Set<String> hiddenInteractions = filterTableModel.getHiddenInteractions();
+		Set<CyNetworkView> allViews = new HashSet<CyNetworkView>();
+		allViews.addAll(model.getSelectedProject().getAllSourceViews(model.getServices()));
+		allViews.addAll(model.getSelectedProject().getAllDifferentialViews(model.getServices()));
+		for (CyNetworkView cyView : allViews){
+			CyNetwork cyNetwork = cyView.getModel();
+			CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
+			
+			final String pk = edgeTable.getPrimaryKey().getName();
+			
+			for (CyRow row : edgeTable.getAllRows()){
+				Long suid = row.get(pk, Long.class);
+				String edgeInteraction = row.get("interaction", String.class);
+				
+				CyEdge cyEdge = cyNetwork.getEdge(suid);
+				View<CyEdge> edgeView = cyView.getEdgeView(cyEdge);
+				edgeView.setVisualProperty(BasicVisualLexicon.EDGE_VISIBLE, !hiddenInteractions.contains(edgeInteraction));
+			}
+			cyView.updateView();
+		
+		}
+	}
+
 	/**
 	 * Reads the selections in the GUI and reflects them in the current {@link CyProject} object.
 	 */

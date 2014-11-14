@@ -112,12 +112,6 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 		}
 		this.interactions = newInteractions;
 		
-		System.out.println("---");
-		for (Entry<String, Boolean> entry : this.interactions.entrySet()){
-			System.out.println(entry.getKey()+" = "+entry.getValue());
-		}
-		System.out.println("---");
-		
 		this.fireTableDataChanged();
 	}
 	

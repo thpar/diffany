@@ -414,8 +414,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			this.updateSupportSlider();
 			this.filterTableModel.refresh(model.getSelectedProject());
 		} else if (source instanceof EdgeFilterTableModel){
-			applyEdgeFilters();			
 		}
+		applyEdgeFilters();			
 	}
 	
 	/**

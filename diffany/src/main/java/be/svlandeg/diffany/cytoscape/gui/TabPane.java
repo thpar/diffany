@@ -326,6 +326,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		if (model.getSelectedProject() !=null){
 			this.networkTableModel.refresh(model.getSelectedProject());
+			this.filterTableModel.refresh(model.getSelectedProject());
 			
 			CyNetwork focused = model.getNetworkInFocus();
 			if (focused !=null){
@@ -334,8 +335,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 					networkTable.setRowSelectionInterval(focusRow, focusRow);					
 				}
 			}
-			
-			this.filterTableModel.refresh(model.getSelectedProject());
 			
 			refreshCyProject();
 		} else {
@@ -402,10 +401,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		// triggered when the data of the network selection table has changed
-		this.refreshCyProject();
-		this.updateSupportSlider();
-		//TODO: update the filter table without causing an infinite loop
-//		this.filterTableModel.refresh(model.getSelectedProject());
+		Object source = e.getSource();
+		if (source instanceof SelectionTableModel){
+			this.refreshCyProject();
+			this.updateSupportSlider();
+			this.filterTableModel.refresh(model.getSelectedProject());
+		} else if (source instanceof EdgeFilterTableModel){
+			//TODO catch filter table change and apply filters to all views in the project
+			
+		}
 	}
 	
 	/**

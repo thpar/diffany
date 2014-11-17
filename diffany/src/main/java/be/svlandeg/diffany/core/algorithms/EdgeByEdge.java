@@ -19,7 +19,6 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Logger;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -58,7 +57,6 @@ public class EdgeByEdge
 	 * @param reference the reference network
 	 * @param conditionNetworks a set of condition-specific networks (at least 2)
 	 * @param eo the tree edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param diffName the name to give to the differential network
 	 * @param ID the ID of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
@@ -67,18 +65,19 @@ public class EdgeByEdge
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, NodeMapper nm, String diffName, int ID, int supportingCutoff, double weightCutoff, ExecutionProgress progressListener)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, String diffName, int ID, int supportingCutoff, double weightCutoff, ExecutionProgress progressListener)
 	{
-		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks, nm);
+		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks);
 
 		Set<Network> allOriginals = new HashSet<Network>();
-		allOriginals.addAll(conditionNetworks);
 		allOriginals.add(reference);
+		allOriginals.addAll(conditionNetworks);
 
 		Map<String, Set<String>> source2targetIDs = new HashMap<String, Set<String>>();
-		Map<String, Set<Node>> nodesByID = new HashMap<String, Set<Node>>();
+		Map<String, Set<Node>> condNodesByID = new HashMap<String, Set<Node>>();
+		Map<String, Node> refNodesByID = new HashMap<String, Node>();
 
-		for (Network n : allOriginals)
+		for (Network n : conditionNetworks)
 		{
 			for (Edge e : n.getEdges())
 			{
@@ -95,25 +94,47 @@ public class EdgeByEdge
 				source2targetIDs.get(sourceID).add(targetID);
 
 				// add the source node by ID
-				if (!nodesByID.containsKey(sourceID))
+				if (!condNodesByID.containsKey(sourceID))
 				{
-					nodesByID.put(sourceID, new HashSet<Node>());
+					condNodesByID.put(sourceID, new HashSet<Node>());
 				}
-				nodesByID.get(sourceID).add(source);
+				condNodesByID.get(sourceID).add(source);
 
 				// add the target node by ID
-				if (!nodesByID.containsKey(targetID))
+				if (!condNodesByID.containsKey(targetID))
 				{
-					nodesByID.put(targetID, new HashSet<Node>());
+					condNodesByID.put(targetID, new HashSet<Node>());
 				}
-				nodesByID.get(targetID).add(target);
+				condNodesByID.get(targetID).add(target);
 			}
+		}
+		
+		for (Edge e : reference.getEdges())
+		{
+			Node source = e.getSource();
+			String sourceID = source.getID();
+			Node target = e.getTarget();
+			String targetID = target.getID();
+
+			// add the source-target mapping
+			if (!source2targetIDs.containsKey(sourceID))
+			{
+				source2targetIDs.put(sourceID, new HashSet<String>());
+			}
+			source2targetIDs.get(sourceID).add(targetID);
+
+			// add the source node by ID
+			refNodesByID.put(sourceID, source);
+
+			// add the target node by ID
+			refNodesByID.put(targetID, target);
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
 
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
 
+		NodeComparison nc = new NodeComparison();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -134,15 +155,25 @@ public class EdgeByEdge
 
 		int progressed = 0;
 
-		for (String sourceID : source2targetIDs.keySet()) // source node ID 
+		for (String sourceID : source2targetIDs.keySet())
 		{
-			Set<Node> sources = nodesByID.get(sourceID);
-			Node example_source = sources.iterator().next();
-
-			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
+			// Determine the node with this source ID in the differential network
+			Node diff_source = allDiffNodes.get(sourceID);
+			if (diff_source == null)
 			{
-				Set<Node> targets = nodesByID.get(targetID);
-				Node example_target = targets.iterator().next();
+				diff_source = nc.getConsensusNode(refNodesByID.get(sourceID), condNodesByID.get(sourceID), supportingCutoff);	
+				allDiffNodes.put(sourceID, diff_source);
+			}
+
+			for (String targetID : source2targetIDs.get(sourceID)) // all possible targets for this source
+			{
+				// Determine the node with this target ID in the differential network
+				Node diff_target = allDiffNodes.get(targetID);
+				if (diff_target == null)
+				{
+					diff_target = nc.getConsensusNode(refNodesByID.get(targetID), condNodesByID.get(targetID), supportingCutoff);	
+					allDiffNodes.put(targetID, diff_target);
+				}
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -159,7 +190,6 @@ public class EdgeByEdge
 				for (Network n : allOriginals)
 				{
 					Set<Edge> allEdges = n.getAllEdges(sourceID, targetID);
-
 					for (String root : roots)
 					{
 						Set<EdgeDefinition> rootEdges = new HashSet<EdgeDefinition>();
@@ -214,6 +244,7 @@ public class EdgeByEdge
 							}
 						}
 					}
+					
 					/* It only makes sense to try and calculate something if we have at least 1 non-void edge */
 					if (!conEdges.isEmpty() || !refEdges.isEmpty())
 					{
@@ -250,19 +281,7 @@ public class EdgeByEdge
 						// non-void differential edge
 						if (diff_edge_def.getWeight() > 0)
 						{
-							if (!allDiffNodes.containsKey(sourceID))
-							{
-								allDiffNodes.put(sourceID, example_source);
-							}
-							Node sourceresult = allDiffNodes.get(sourceID);
-
-							if (!allDiffNodes.containsKey(targetID))
-							{
-								allDiffNodes.put(targetID, example_target);
-							}
-							Node targetresult = allDiffNodes.get(targetID);
-
-							Edge edgediff = new Edge(sourceresult, targetresult, diff_edge_def);
+							Edge edgediff = new Edge(diff_source, diff_target, diff_edge_def);
 							diff.addEdge(edgediff);
 						}
 					}
@@ -278,6 +297,7 @@ public class EdgeByEdge
 
 		return diff;
 	}
+	
 
 	/**
 	 * Calculate the consensus network between a set of networks.
@@ -294,7 +314,6 @@ public class EdgeByEdge
 	 * 
 	 * @param networks a set of networks (at least 2).
 	 * @param eo the edge ontology that provides meaning to the edge types
-	 * @param nm the node mapper that allows to map nodes from the one network to the other
 	 * @param consensusName the name to give to the consensus network
 	 * @param ID the ID of the resulting network
 	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
@@ -308,9 +327,9 @@ public class EdgeByEdge
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, NodeMapper nm, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ExecutionProgress progressListener)
+	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ExecutionProgress progressListener)
 	{
-		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks, nm);
+		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks);
 
 		Set<Integer> refNetworks = new HashSet<Integer>();
 		Map<Integer, Network> allNetworks = new HashMap<Integer, Network>();
@@ -371,8 +390,9 @@ public class EdgeByEdge
 		}
 
 		Map<String, Node> allDiffNodes = new HashMap<String, Node>();
-
 		Set<String> roots = eo.retrieveAllSourceRootCats(true);
+		
+		NodeComparison nc = new NodeComparison();
 		EdgeComparison ec = new EdgeComparison(eo);
 		EdgeGenerator eg = new EdgeGenerator();
 		NetworkCleaning cleaning = new NetworkCleaning(log);
@@ -395,13 +415,11 @@ public class EdgeByEdge
 
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
-			Set<Node> sources = nodesByID.get(sourceID);
-			Node example_source = sources.iterator().next();
+			Node output_source = nc.getConsensusNode(null, nodesByID.get(sourceID), supportingCutoff);	
 
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
-				Set<Node> targets = nodesByID.get(targetID);
-				Node example_target = targets.iterator().next();
+				Node output_target = nc.getConsensusNode(null, nodesByID.get(targetID), supportingCutoff);	
 
 				// notify the progress listener of our progress
 				if (progressListener != null && progressed % 1000 == 0)
@@ -482,13 +500,13 @@ public class EdgeByEdge
 						{
 							if (!allDiffNodes.containsKey(sourceID))
 							{
-								allDiffNodes.put(sourceID, example_source);
+								allDiffNodes.put(sourceID, output_source);
 							}
 							Node sourceresult = allDiffNodes.get(sourceID);
 
 							if (!allDiffNodes.containsKey(targetID))
 							{
-								allDiffNodes.put(targetID, example_target);
+								allDiffNodes.put(targetID, output_target);
 							}
 							Node targetresult = allDiffNodes.get(targetID);
 

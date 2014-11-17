@@ -22,16 +22,16 @@ public class TestGeneric
 	 * This method will also fail if the found edge has the wrong symmetry, weight, negation, or interaction type.
 	 * 
 	 * @param n the network to test
-	 * @param sourceName the name of the source node in the network
-	 * @param targetName the name of the target node in the network
+	 * @param sourceID the ID of the source node in the network
+	 * @param targetID the ID of the target node in the network
 	 * @param symm whether or not the relationship is symmetrical
 	 * @param type the type the edge should have
 	 * @param negated whether or not the edge should be negated
 	 * @param weight the weight the edge should have
 	 */
-	protected void assertAnEdge(Network n, String sourceName, String targetName, boolean symm, String type, boolean negated, double weight)
+	protected void assertAnEdge(Network n, String sourceID, String targetID, boolean symm, String type, boolean negated, double weight)
 	{
-		Set<Edge> edges = n.getAllEdgesByName(sourceName.toLowerCase(), targetName.toLowerCase(), symm);
+		Set<Edge> edges = n.getAllEdges(sourceID, targetID);
 		boolean found = false;
 		for (Edge edge : edges)
 		{

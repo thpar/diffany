@@ -27,9 +27,7 @@ import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
@@ -57,8 +55,7 @@ public class RunAnalysis
 	private URI kinase_function_file;
 	private URI kinase_interaction_file;
 
-	private static String phosAttribute = "phosphorylation_site";
-	private static String kinaseAttribute = "kinase_function";
+	
 
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
@@ -139,7 +136,6 @@ public class RunAnalysis
 		}
 		
 		boolean writeHeaders = true;
-		boolean allowVirtualEdges = true;
 
 		boolean selfInteractions = false;
 		boolean neighbours = true;
@@ -187,7 +183,7 @@ public class RunAnalysis
 			try
 			{
 				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours,
-						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, allowVirtualEdges, hubConnections);
+						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, hubConnections);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -206,10 +202,9 @@ public class RunAnalysis
 		{
 			System.out.println("");
 			System.out.println("3. Writing output networks to " + outputDir + " - " + new Date());
-			System.out.println("   allowVirtualEdges " + allowVirtualEdges);
 			for (InputNetwork net : networks)
 			{
-				NetworkIO.writeNetworkToDir(net, net.getNodeMapper(), new File(outputDir, net.getName()), writeHeaders, allowVirtualEdges);
+				NetworkIO.writeNetworkToDir(net, new File(outputDir, net.getName()), writeHeaders);
 			}
 		}
 
@@ -223,7 +218,7 @@ public class RunAnalysis
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
 
-			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), new DefaultNodeMapper(), writeHeaders);
+			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
 			for (InputNetwork net : readNetworks)
 			{
 				if (net instanceof ReferenceNetwork)
@@ -287,12 +282,12 @@ public class RunAnalysis
 
 			for (DifferentialNetwork dNetwork : runOutput.getDifferentialNetworks())
 			{
-				NetworkIO.writeNetworkToDir(dNetwork, dNetwork.getNodeMapper(), new File(resultDir, dNetwork.getName() + suffix), writeHeaders, allowVirtualEdges);
+				NetworkIO.writeNetworkToDir(dNetwork, new File(resultDir, dNetwork.getName() + suffix), writeHeaders);
 			}
 
 			for (ConsensusNetwork consNetwork : runOutput.getConsensusNetworks())
 			{
-				NetworkIO.writeNetworkToDir(consNetwork, consNetwork.getNodeMapper(), new File(resultDir, consNetwork.getName() + suffix), writeHeaders, allowVirtualEdges);
+				NetworkIO.writeNetworkToDir(consNetwork, new File(resultDir, consNetwork.getName() + suffix), writeHeaders);
 			}
 		}
 
@@ -348,16 +343,16 @@ public class RunAnalysis
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
-			boolean includePredictedPhos, boolean addVirtualEdges, int hubConnections) throws IOException, URISyntaxException
+			boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<String> nodeAttributes = new HashSet<String>();
 		if (includePhos)
 		{
-			nodeAttributes.add(phosAttribute);
+			nodeAttributes.add(Node.phos_attribute);
 		}
 		if (includeKinase)
 		{
-			nodeAttributes.add(kinaseAttribute);
+			nodeAttributes.add(Node.kinase_attribute);
 		}
 
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();
@@ -367,7 +362,6 @@ public class RunAnalysis
 		ExpressionDataAnalysis dataAn = new ExpressionDataAnalysis();
 		NetworkConstruction constr = new NetworkConstruction(gp);
 
-		NodeMapper nm = new DefaultNodeMapper();
 		EdgeOntology eo = new DefaultEdgeOntology();
 		Logger logger = new Logger();
 		NetworkCleaning cleaning = new NetworkCleaning(logger);
@@ -383,14 +377,14 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Set<String> nodes_strict = dataAn.getSignificantGenes(data, threshold_strict).keySet();
-			all_nodeIDs_strict.addAll(nodes_strict);
+			Set<String> ids_strict = dataAn.getSignificantGenes(data, threshold_strict).keySet();
+			all_nodeIDs_strict.addAll(ids_strict);
 
-			Set<String> nodes_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy).keySet();
-			nodes_fuzzy.removeAll(nodes_strict);
-			all_nodeIDs_fuzzy.addAll(nodes_fuzzy);
+			Set<String> ids_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy).keySet();
+			ids_fuzzy.removeAll(ids_strict);
+			all_nodeIDs_fuzzy.addAll(ids_fuzzy);
 
-			System.out.println("  Found " + nodes_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + nodes_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
+			System.out.println("  Found " + ids_strict.size() + " differentially expressed genes at threshold " + threshold_strict + " and " + ids_fuzzy.size() + " additional ones at threshold " + threshold_fuzzy);
 		}
 		System.out.println("");
 		System.out.println("Defining the set of important nodes");
@@ -403,118 +397,107 @@ public class RunAnalysis
 		System.out.println("Expanding the network of DE genes to also include important neighbours");
 
 		/* Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes */
-		Set<String> expandedNetwork = constr.expandNetwork(nm, all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, kinase_interaction_file, selfInteractions, neighbours, includeUnknownReg);
+		Set<String> expanded_ID_set = constr.expandNetwork(all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, kinase_interaction_file, selfInteractions, neighbours, includeUnknownReg);
 
 		/* Read all the PPI and regulatory interactions between all the nodes in our expanded network
 		 * Without modifying edge strenghts, this becomes our reference network */
-		Set<Node> all_nodes = gp.getNodesByLocusID(expandedNetwork);
+		Set<Node> ref_nodes = gp.getNodesByLocusID(expanded_ID_set);
 
 		System.out.println("Constructing the reference network");
-		Set<Edge> edges = constr.readPPIsByLocustags(nm, ppi_file, all_nodes, all_nodes, selfInteractions);
-		System.out.println(" Found " + edges.size() + " PPI edges between them");
+		Set<Edge> ref_edges = constr.readPPIsByLocustags(ppi_file, ref_nodes, ref_nodes, selfInteractions);
+		System.out.println(" Found " + ref_edges.size() + " PPI edges between them");
 
-		Set<Edge> regEdges = constr.readRegsByLocustags(nm, reg_file, all_nodes, all_nodes, selfInteractions, includeUnknownReg);
-		edges.addAll(regEdges);
-		System.out.println(" Found " + regEdges.size() + " regulatory edges between them");
+		Set<Edge> ref_reg_Edges = constr.readRegsByLocustags(reg_file, ref_nodes, ref_nodes, selfInteractions, includeUnknownReg);
+		System.out.println(" Found " + ref_reg_Edges.size() + " regulatory edges between them");
+		ref_edges.addAll(ref_reg_Edges);
 		
-		Set<Edge> kinaseEdges = constr.readKinaseInteractionsByLocustags(nm, kinase_interaction_file, all_nodes, all_nodes, selfInteractions);
-		edges.addAll(kinaseEdges);
-		System.out.println(" Found " + kinaseEdges.size() + " kinase interactions between them");
+		Set<Edge> ref_kinase_edges = constr.readKinaseInteractionsByLocustags(kinase_interaction_file, ref_nodes, ref_nodes, selfInteractions);
+		System.out.println(" Found " + ref_kinase_edges.size() + " kinase interactions between them");
+		ref_edges.addAll(ref_kinase_edges);
 
-		// TODO: add as node attributes
 		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
 		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_function_file);
 
-		Set<Node> nodes = new HashSet<Node>();
-		for (Edge e : edges)
+		Set<Node> ref_filtered_nodes = new HashSet<Node>();
+		for (Edge e : ref_edges)
 		{
 			Node source = e.getSource();
 			Node target = e.getTarget();
-			nodes.add(source);
-			nodes.add(target);
+			ref_filtered_nodes.add(source);
+			ref_filtered_nodes.add(target);
 		}
 		
 		/* Add the appropriate attributes to the nodes */
-		for (Node n : nodes)
+		for (Node n : ref_filtered_nodes)
 		{
 			if (includePhos)
 			{
 				if (phosNodes.contains(n.getID()))
 				{
-					n.setAttribute(phosAttribute, "yes");
+					n.setAttribute(Node.phos_attribute, "yes");
 				}
 				else
 				{
-					n.setAttribute(phosAttribute, "no");
+					n.setAttribute(Node.phos_attribute, "no");
 				}
 			}
 			if (includeKinase)
 			{
 				if (kinaseNodes.contains(n.getID()))
 				{
-					n.setAttribute(kinaseAttribute, "yes");
+					n.setAttribute(Node.kinase_attribute, "yes");
 				}
 				else
 				{
-					n.setAttribute(kinaseAttribute, "no");
+					n.setAttribute(Node.kinase_attribute, "no");
 				}
 			}
 		}
 
-		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nodeAttributes, nm);
+		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nodeAttributes);
 
 		/* By only defining the edges, unconnected nodes are automatically removed */
-		refNet.setNodesAndEdges(nodes, edges);
+		refNet.setNodesAndEdges(ref_filtered_nodes, ref_edges);
 
-		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, nm, eo, null);
+		ReferenceNetwork cleanRefNet = cleaning.fullInputRefCleaning(refNet, eo, null);
 		networks.add(cleanRefNet);
-		nodes = cleanRefNet.getNodes();
+		
+		Set<String> ref_node_IDs = new HashSet<String>();
+		for (Node n : cleanRefNet.getNodes())
+		{
+			ref_node_IDs.add(n.getID());
+		}
 
 		System.out.println(" Final, cleaned reference network: " + cleanRefNet.getEdges().size() + " non-redundant edges between " + cleanRefNet.getNodes().size() + " nodes");
 
 		/* Now we create condition-specific networks by altering the edge weights of the original reference network */
 		for (OverexpressionData data : datasets)
 		{
+			// create a new copy of nodes
+			Set<Node> condition_nodes = gp.getNodesByLocusID(ref_node_IDs);
+			
 			String suffix = data.getName();
 			String name = "Network" + suffix;
 			Condition c = new Condition("time measurement " + suffix);
-			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, nodeAttributes, c, nm);
+			ConditionNetwork condNet = new ConditionNetwork(name, firstID++, nodeAttributes, c);
 			
 			System.out.println("");
 			System.out.println("Constructing the condition-specific network for " + name);
 
+			// record the DE state as node attribute
 			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
+			constr.modifyDEState(all_de_genes, condition_nodes);
 
 			NetworkAnalysis na = new NetworkAnalysis();
 			String ppiType = "ppi";
 			
-			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), nodes, ppiType, hubConnections, false, false);
+			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), condition_nodes, ppiType, hubConnections, false, false);
 
-			Set<Edge> conditionEdges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_genes);
-			Set<Edge> filteredEdges = constr.filterForHubs(PPIhubs, conditionEdges, ppiType, all_de_genes.keySet());
+			Set<Edge> condition_edges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_genes);
+			Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_edges, ppiType, all_de_genes.keySet());
+			condNet.setNodesAndEdges(filtered_edges);
 			
-			if (addVirtualEdges)
-			{
-				Set<Edge> virtualDEedges = constr.constructVirtualRegulations(all_de_genes, nodes);
-				
-				for (Edge e : virtualDEedges)
-				{
-					if (includeKinase)
-					{
-						e.getSource().setAttribute(kinaseAttribute, "unknown");
-					}	
-					if (includePhos)
-					{
-						e.getSource().setAttribute(phosAttribute, "unknown");
-					}	
-				}
-				
-				filteredEdges.addAll(virtualDEedges);
-			}
-			
-			condNet.setNodesAndEdges(filteredEdges);
-
-			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, nm, eo, null);
+			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, eo, null);
 			networks.add(cleanCondNet);
 
 			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + " nodes");
@@ -529,9 +512,8 @@ public class RunAnalysis
 	private RunOutput runDiffany(ReferenceNetwork refNet, Set<ConditionNetwork> conditionNets, double weight_cutoff, boolean cleanInputAfterIO, int support, boolean pairwise)
 	{
 		String name = "Osmotic_usecase_" + support;
-		NodeMapper nm = new DefaultNodeMapper();
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		ExecutionProgress listener = new StandardProgressListener();
 
 		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO, listener);

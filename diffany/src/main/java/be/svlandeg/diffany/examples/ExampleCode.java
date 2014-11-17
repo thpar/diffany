@@ -15,8 +15,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
@@ -31,16 +29,15 @@ public class ExampleCode
 	{
 		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
-		Project p = new Project("testProject", eo, nm);
+		Project p = new Project("testProject", eo);
 
 		/** READ THE INPUT NETWORKS **/
 		boolean skipHeader = true;
 		File refDir = new File(refLocation);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm, skipHeader);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
 		File condDir = new File(condLocation);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm, skipHeader);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
@@ -59,13 +56,12 @@ public class ExampleCode
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;
-		boolean allowVirtualEdges = true;
 		
 		File diffDir = new File(diffLocation);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 
 		File consensusDir = new File(consensusLocation);
-		NetworkIO.writeNetworkToDir(consensusNet, nm, consensusDir, writeHeaders, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
 
 		/** WRITE LOG OUTPUT **/
 		Logger logger = p.getLogger(runID);

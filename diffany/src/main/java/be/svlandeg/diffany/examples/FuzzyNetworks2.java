@@ -15,8 +15,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
@@ -28,26 +26,32 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class FuzzyNetworks2 extends GenericExample
 {
 
-	private NodeMapper nm;
-	
 	/**
-	 * Constructor: generates a default {@link NodeMapper} object
+	 * Constructor
 	 */
 	public FuzzyNetworks2()
-	{
-		nm = new DefaultNodeMapper();
-	}
+	{}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project illustrating figure 1C.
 	 */
-	public Project getProject()
+	public Project getDefaultProject()
 	{
 		String name = "FuzzyNetworks2";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
+	}
+	
+	/**
+	 * Add some custom-defined networks to the project: 1 reference network and 3 condition-specific.
+	 * @param p the fuzzy project
+	 * @return the resulting configuration ID.
+	 */
+	public int getDefaultRunConfigurationID(Project p)
+	{
+		return getDefaultRunConfigurationID(p, 4);
 	}
 	
 	/**
@@ -56,7 +60,7 @@ public class FuzzyNetworks2 extends GenericExample
 	 * @param supportingCutoff the number of networks that should at least match for consensus to be defined: min. 2, max conditions.size + 1.
 	 * @return the resulting configuration ID.
 	 */
-	public int getTestConfiguration(Project p, int supportingCutoff)
+	public int getDefaultRunConfigurationID(Project p, int supportingCutoff)
 	{
 		ReferenceNetwork r = getReference();
 		Set<ConditionNetwork> c = new HashSet<ConditionNetwork>();
@@ -76,13 +80,13 @@ public class FuzzyNetworks2 extends GenericExample
 	private ReferenceNetwork getReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, null);
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 11, false));
@@ -101,14 +105,14 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.2, false));
 
@@ -126,14 +130,14 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.6, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 6, false));
@@ -152,14 +156,14 @@ public class FuzzyNetworks2 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), true, 0.4, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 4, false));
@@ -178,9 +182,9 @@ public class FuzzyNetworks2 extends GenericExample
 		double weightCutoff = 0.0;
 		
 		System.out.println("Defining network for FuzzyNetworks2 configuration");
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
-		int ID = ex.getTestConfiguration(p, supportingCutoff);
+		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 		
 		System.out.print("Calculating 1-all differential networks at weight cutoff " + weightCutoff);
 		System.out.println(" and supporting cutoff " + supportingCutoff);

@@ -3,7 +3,6 @@ package be.svlandeg.diffany.core.networks;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * A differential network contains differential edges between 2 (or more) networks,
@@ -26,16 +25,15 @@ public class DifferentialNetwork extends Network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param reference the corresponding reference network (not null!)
 	 * @param conditionNetworks the corresponding condition-specific networks (not null or empty!)
-	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
 	public DifferentialNetwork(String name, int ID, 
-			ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, NodeMapper nm) 
+			ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, null, nm);
+		super(name, ID, null);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";
@@ -62,15 +60,14 @@ public class DifferentialNetwork extends Network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param reference the corresponding reference network (not null!)
 	 * @param conditionNetwork the corresponding condition-specific network (not null!)
-	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public DifferentialNetwork(String name, int ID, ReferenceNetwork reference, ConditionNetwork conditionNetwork, NodeMapper nm) 
+	public DifferentialNetwork(String name, int ID, ReferenceNetwork reference, ConditionNetwork conditionNetwork) 
 			throws IllegalArgumentException
 	{
-		super(name, ID, null, nm);
+		super(name, ID, null);
 		if (reference == null)
 		{
 			String errormsg = "Please define at least 1 reference network!";

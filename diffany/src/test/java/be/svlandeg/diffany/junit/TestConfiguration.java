@@ -36,7 +36,7 @@ public class TestConfiguration extends TestGeneric
 		CalculateDiff calc = new CalculateDiff();
 
 		MultipleConditionTest ex = new MultipleConditionTest();
-		Project p = ex.getTestProject();
+		Project p = ex.getDefaultProject();
 
 		int calls = 0;
 
@@ -92,7 +92,7 @@ public class TestConfiguration extends TestGeneric
 	{
 		assertTrue(0 == p.getNumberOfRuns());
 
-		int ID = ex.getTestDiffConfiguration(p);
+		int ID = ex.getDefaultRunConfigurationID(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 		
 		RunOutput dOutput = p.getOutput(ID);
@@ -104,7 +104,7 @@ public class TestConfiguration extends TestGeneric
 	 */
 	private void testDifferentialOneMulti(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, int diffID, int consensusID)
 	{
-		int ID = ex.getTestDiffConfiguration(p);
+		int ID = ex.getDefaultRunConfigurationID(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		// it should not make a difference how many times this method is called!
@@ -185,7 +185,7 @@ public class TestConfiguration extends TestGeneric
 	 */
 	private void testDifferentialPairwise(Project p, CalculateDiff calc, MultipleConditionTest ex, int calls, boolean diff, boolean consensus, int firstID)
 	{
-		int ID = ex.getTestDiffConfiguration(p);
+		int ID = ex.getDefaultRunConfigurationID(p);
 		assertTrue(calls + 1 == p.getNumberOfRuns());
 
 		calc.calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, diff, consensus, firstID, true, null);

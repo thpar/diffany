@@ -20,8 +20,6 @@ import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunDiffConfiguration;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 
 /** 
@@ -53,8 +51,8 @@ public class TestIO
 		consDir.mkdirs();
 		
 		Bandyopadhyay2010 ex = new Bandyopadhyay2010();
-		Project p = ex.getProjectFigure1C();
-		int ID = ex.getTestConfiguration1C(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		double cutoff = 0.0;
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 20, true, null);
 		
@@ -73,18 +71,15 @@ public class TestIO
 				
 		// The consensus network (there should be only 1)
 		ConsensusNetwork cNetwork = pair.getConsensusNetwork();
-		
-		NodeMapper nm = new DefaultNodeMapper();
 			
 		// WRITING
-		boolean allowVirtualEdges = true;
 		boolean writeHeader = true;
 		try
 		{
-			NetworkIO.writeNetworkToDir(rWriteNetwork, nm, rDir, allowVirtualEdges, writeHeader);
-			NetworkIO.writeNetworkToDir(cWriteNetwork, nm, cDir, allowVirtualEdges, writeHeader);
-			NetworkIO.writeNetworkToDir(dNetwork, nm, dDir, allowVirtualEdges, writeHeader);
-			NetworkIO.writeNetworkToDir(cNetwork, nm, consDir, allowVirtualEdges, writeHeader);
+			NetworkIO.writeNetworkToDir(rWriteNetwork, rDir, writeHeader);
+			NetworkIO.writeNetworkToDir(cWriteNetwork, cDir, writeHeader);
+			NetworkIO.writeNetworkToDir(dNetwork, dDir, writeHeader);
+			NetworkIO.writeNetworkToDir(cNetwork, consDir, writeHeader);
 		}
 		catch(IOException io)
 		{
@@ -94,22 +89,22 @@ public class TestIO
 		// READING
 		try
 		{
-			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, nm, writeHeader);
+			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, writeHeader);
 			assertEquals(3, rReadNetwork.getEdges().size());
 			assertEquals(5, rReadNetwork.getNodes().size());
 			
-			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, nm, writeHeader);
+			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, writeHeader);
 			assertEquals(3, cReadNetwork.getEdges().size());
 			assertEquals(4, cReadNetwork.getNodes().size());
 			
 			Set<ConditionNetwork> cReadNetworks = new HashSet<ConditionNetwork>();
 			cReadNetworks.add(cReadNetwork);
 			
-			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, nm, rReadNetwork, cReadNetworks, writeHeader);
+			DifferentialNetwork dReadNetwork = NetworkIO.readDifferentialNetworkFromDir(dDir, rReadNetwork, cReadNetworks, writeHeader);
 			assertEquals(3, dReadNetwork.getEdges().size());
 			assertEquals(4, dReadNetwork.getNodes().size());
 			
-			ConsensusNetwork consReadNetwork = NetworkIO.readConsensusNetworkFromDir(consDir, nm, rReadNetwork, cReadNetworks, writeHeader);
+			ConsensusNetwork consReadNetwork = NetworkIO.readConsensusNetworkFromDir(consDir, rReadNetwork, cReadNetworks, writeHeader);
 			assertEquals(2, consReadNetwork.getEdges().size());
 			assertEquals(3, consReadNetwork.getNodes().size());
 		}

@@ -33,25 +33,22 @@ public abstract class GenericExample
 	 * 
 	 * @return the default project. Returns null if no default was defined.
 	 */
-	public Project getDefaultProject(){
-		return null;
-	}
+	public abstract Project getDefaultProject();
 	
 	/**
 	 * Allows subclasses to specify a default runconfig for this example. 
+	 * @param p the project used in this example
 	 * 
 	 * @return the default configuration. Returns -1 if no default was defined.
 	 */
-	public int getDefaultRunConfigurationID(Project p){
-		return -1;
-	}
+	public abstract int getDefaultRunConfigurationID(Project p);
 
 	/**
 	 * Print a network by printing its string representation and its edges.
 	 * 
 	 * @param n the network to be printed
 	 */
-	private void printNetwork(Network n)
+	protected void printNetwork(Network n)
 	{
 		System.out.println(n.getStringRepresentation());
 		System.out.println(EdgeIO.writeEdgesToTab(n.getEdges()));
@@ -61,7 +58,7 @@ public abstract class GenericExample
 	/**
 	 * Print a differential run configuration 
 	 */
-	private void printAllNetworks(RunDiffConfiguration rc)
+	protected void printAllNetworks(RunDiffConfiguration rc)
 	{
 		System.out.println("Reference network : ");
 		ReferenceNetwork r = rc.getReferenceNetwork();
@@ -78,7 +75,7 @@ public abstract class GenericExample
 	/**
 	 * Print a run configuration
 	 */
-	private void printAllNetworks(RunConfiguration rc)
+	protected void printAllNetworks(RunConfiguration rc)
 	{
 		System.out.println("Input networks : ");
 
@@ -138,16 +135,19 @@ public abstract class GenericExample
 		}
 	}
 
-	public String getName() {
+	public String getName() 
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) 
+	{
 		this.name = name;
 	}
 
 	
-	public void setTaskMonitor(TaskMonitor taskMonitor) {
+	public void setTaskMonitor(TaskMonitor taskMonitor) 
+	{
 		this.taskMonitor = taskMonitor;
 		
 	}

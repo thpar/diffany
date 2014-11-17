@@ -30,7 +30,7 @@ public class TestFuzzyDiff extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
@@ -58,7 +58,7 @@ public class TestFuzzyDiff extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
@@ -88,7 +88,7 @@ public class TestFuzzyDiff extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 

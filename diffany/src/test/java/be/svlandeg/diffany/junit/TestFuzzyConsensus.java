@@ -30,7 +30,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
@@ -59,7 +59,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
@@ -103,7 +103,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
@@ -134,7 +134,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
 
@@ -169,7 +169,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	public void testFuzzyConsensusWithReferenceAsCondition_1()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 1;
 		
 		boolean exception = false;
@@ -192,7 +192,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	public void testFuzzyConsensusWithReferenceAsCondition_0()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 0;
 
 		boolean exception = false;
@@ -216,7 +216,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
@@ -241,7 +241,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
@@ -270,7 +270,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
@@ -299,7 +299,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, false);
 
@@ -334,7 +334,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 4;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
@@ -363,7 +363,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 3;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
@@ -395,7 +395,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
 		double weight_cutoff = 0.0;
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 2;
 		int ID = ex.getTestConfigurationWithReference(p, supportingCutoff);
 
@@ -426,7 +426,7 @@ public class TestFuzzyConsensus extends TestGeneric
 	public void testFuzzyConsensusWithReference_1()
 	{
 		FuzzyNetworks ex = new FuzzyNetworks();
-		Project p = ex.getProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 1;
 		boolean exception = false;
 		try

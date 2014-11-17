@@ -71,11 +71,11 @@ public class Ideker2011 extends GenericExample
 	private ReferenceNetwork getReferenceFigure3A()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("E", new Node("E"));
-		nodes.put("F", new Node("F"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("E", new Node("E", "E"));
+		nodes.put("F", new Node("F", "F"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", 1, null);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("F"), true, 1.0));
@@ -102,11 +102,11 @@ public class Ideker2011 extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("C", new Node("C"));
-		nodes.put("F", new Node("F"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("F", new Node("F", "F"));
 
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("F"), nodes.get("A"), true, 1.0));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("B"), nodes.get("A"), true, 0.4));
@@ -129,7 +129,6 @@ public class Ideker2011 extends GenericExample
 		System.out.println("Defining network for Ideker2011 figure 3A");
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		ex.printAllNetworks(p.getRunConfiguration(ID));
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);

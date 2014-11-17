@@ -38,15 +38,15 @@ public class TestVisual
 		// ****** SOURCE NETWORK ****** //
 		
 		ReferenceNetwork ref = new ReferenceNetwork("testRef", 1, null);
-		ref.addEdge(new Edge("somethingRandom", new Node("A"), new Node("B"), true));
-		ref.addEdge(new Edge("increase", new Node("C"), new Node("D"), true));
-		ref.addEdge(new Edge("ppiptm", new Node("E"), new Node("F"), true));
-		ref.addEdge(new Edge("increasewhatever", new Node("G"), new Node("H"), true));
+		ref.addEdge(new Edge("somethingRandom", new Node("A", "A"), new Node("B", "B"), true));
+		ref.addEdge(new Edge("increase", new Node("C", "C"), new Node("D", "D"), true));
+		ref.addEdge(new Edge("ppiptm", new Node("E", "E"), new Node("F", "F"), true));
+		ref.addEdge(new Edge("increasewhatever", new Node("G", "G"), new Node("H", "H"), true));
 		
 		Condition c = new Condition("sample condition");
 		ConditionNetwork cn = new ConditionNetwork("testCon", 2, null, c);
-		cn.addEdge(new Edge("increase_ppi", new Node("I"), new Node("J"), true));
-		cn.addEdge(new Edge("neutral", new Node("K"), new Node("L"), true));
+		cn.addEdge(new Edge("increase_ppi", new Node("I", "I"), new Node("J", "J"), true));
+		cn.addEdge(new Edge("neutral", new Node("K", "K"), new Node("L", "L"), true));
 		
 		boolean cleanInput = true;
 		p.addRunConfiguration(ref, cn, cleanInput, null);

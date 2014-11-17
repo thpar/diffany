@@ -59,12 +59,12 @@ public class ConflictingEdgesTest extends GenericExample
 	private ReferenceNetwork getTestReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null);
 		
@@ -99,12 +99,12 @@ public class ConflictingEdgesTest extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition-specific network", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 8, false));
 		

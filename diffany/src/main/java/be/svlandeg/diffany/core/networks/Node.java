@@ -51,21 +51,9 @@ public class Node
 		this.name = name;
 		attributes = new HashMap<String, String>();
 	}
-	
-	/**
-	 * Create a new (non-virtual) node with a specific name. The lower-case version of this name will be used as unique identifier, so ensure its unambiguity across the project!
-	 * The use of this constructor should be avoided!
-	 * 
-	 * @param name the name of this node - should be unique within a network!
-	 * @throws IllegalArgumentException when the name is null
-	 */
-	public Node(String name) throws IllegalArgumentException
-	{
-		this(name.toLowerCase(), name);
-	}
 
 	/**
-	 * Return the unique ID of this node
+	 * Return the unique ID of this node.
 	 * 
 	 * @return the name of this node
 	 */
@@ -75,27 +63,12 @@ public class Node
 	}
 
 	/**
-	 * Return the name of this node, in its original (unnormalized) form.
+	 * Return the name of this node.
 	 * 
 	 * @return the name of this node
 	 */
 	public String getDisplayName()
 	{
-		return getDisplayName(false);
-	}
-
-	/**
-	 * Return the name of this node, either normalized or in original form.
-	 * 
-	 * @param normalized whether or not the name should be converted to lower case.
-	 * @return the name of this node
-	 */
-	public String getDisplayName(boolean normalized)
-	{
-		if (normalized)
-		{
-			return name.toLowerCase();
-		}
 		return name;
 	}
 	

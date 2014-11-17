@@ -58,7 +58,7 @@ public class NodeComparison
 		{
 			allNodes.add(refNode);
 		}
-		Node consensusNode = new Node(exampleNode.getID(), exampleNode.getDisplayName(false));
+		Node consensusNode = new Node(exampleNode.getID(), exampleNode.getDisplayName());
 
 		// collect all known node attributes from the input data
 		Set<String> attributes = new HashSet<String>();

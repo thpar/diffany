@@ -87,15 +87,15 @@ public class OsmoticSampleTest extends GenericExample
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("O", new Node("O"));
-		nodes.put("P", new Node("P"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("O", new Node("O", "O"));
+		nodes.put("P", new Node("P", "P"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null);
 		
@@ -137,15 +137,15 @@ public class OsmoticSampleTest extends GenericExample
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("O", new Node("O"));
-		nodes.put("P", new Node("P"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("O", new Node("O", "O"));
+		nodes.put("P", new Node("P", "P"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.0, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.0, false));
@@ -171,15 +171,15 @@ public class OsmoticSampleTest extends GenericExample
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("O", new Node("O"));
-		nodes.put("P", new Node("P"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("O", new Node("O", "O"));
+		nodes.put("P", new Node("P", "P"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
@@ -205,15 +205,15 @@ public class OsmoticSampleTest extends GenericExample
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("O", new Node("O"));
-		nodes.put("P", new Node("P"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("O", new Node("O", "O"));
+		nodes.put("P", new Node("P", "P"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.3, false));
 		network.addEdge(new Edge("ppi", nodes.get("X"), nodes.get("Y"), true, 1.3, false));
@@ -239,15 +239,15 @@ public class OsmoticSampleTest extends GenericExample
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
 		
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("O", new Node("O"));
-		nodes.put("P", new Node("P"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("O", new Node("O", "O"));
+		nodes.put("P", new Node("P", "P"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.0, false));
 		// no X-Y edge

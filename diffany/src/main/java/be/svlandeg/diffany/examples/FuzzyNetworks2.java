@@ -80,11 +80,11 @@ public class FuzzyNetworks2 extends GenericExample
 	private ReferenceNetwork getReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Fuzzy2 reference network", 1, null);
 		
@@ -108,11 +108,11 @@ public class FuzzyNetworks2 extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 1.2, false));
 
@@ -133,11 +133,11 @@ public class FuzzyNetworks2 extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.6, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 6, false));
@@ -159,11 +159,11 @@ public class FuzzyNetworks2 extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), true, 0.4, false));
 		network.addEdge(new Edge("regulates", nodes.get("X"), nodes.get("Y"), false, 4, false));

@@ -98,14 +98,14 @@ public class FuzzyNetworks extends GenericExample
 	private ReferenceNetwork getReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Fuzzy reference network", 1, null);
 		
@@ -132,14 +132,14 @@ public class FuzzyNetworks extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 1", 11, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), true, 0.8));
 		
@@ -164,14 +164,14 @@ public class FuzzyNetworks extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 2", 12, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("A"), nodes.get("B"), false, 0.3));
 		
@@ -196,14 +196,14 @@ public class FuzzyNetworks extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 3", 13, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
+		nodes.put("X", new Node("M", "MX"));
+		nodes.put("Y", new Node("N", "N"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), false, 0.4));
 		
@@ -228,14 +228,14 @@ public class FuzzyNetworks extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition network 0", 10, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
 		
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
 		
 		network.addEdge(new Edge("colocalization", nodes.get("A"), nodes.get("B"), false, 0.6));
 		

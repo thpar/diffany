@@ -61,11 +61,11 @@ public class Bandyopadhyay2010 extends GenericExample
 	private ReferenceNetwork getReferenceFigure1C()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
-		nodes.put("D", new Node("D"));
-		nodes.put("E", new Node("E"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("E", new Node("E", "E"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Untreated Network", 1, null);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
@@ -90,10 +90,10 @@ public class Bandyopadhyay2010 extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Treated Network", 2, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
-		nodes.put("D", new Node("D"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
 		
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.4));

@@ -155,6 +155,8 @@ public class EdgeByEdge
 
 		for (String sourceID : source2targetIDs.keySet())
 		{
+			System.out.println(" sourceID " + sourceID);
+			
 			// Determine the node with this source ID in the differential network
 			Node diff_source = allDiffNodes.get(sourceID);
 			if (diff_source == null)
@@ -165,6 +167,8 @@ public class EdgeByEdge
 
 			for (String targetID : source2targetIDs.get(sourceID)) // all possible targets for this source
 			{
+				System.out.println(" targetID " + targetID);
+				
 				// Determine the node with this target ID in the differential network
 				Node diff_target = allDiffNodes.get(targetID);
 				if (diff_target == null)
@@ -210,6 +214,8 @@ public class EdgeByEdge
 
 				for (String root : roots)
 				{
+					System.out.println(" root " + root);
+					
 					boolean symm = eo.isSymmetricalSourceCat(root);
 
 					List<EdgeDefinition> refEdges = new ArrayList<EdgeDefinition>();
@@ -243,6 +249,10 @@ public class EdgeByEdge
 							}
 						}
 					}
+					
+					System.out.println("  conEdges " + conEdges.size());
+					System.out.println("  refEdges " + refEdges.size());
+					
 					/* It only makes sense to try and calculate something if we have at least 1 non-void edge */
 					if (!conEdges.isEmpty() || !refEdges.isEmpty())
 					{
@@ -274,7 +284,9 @@ public class EdgeByEdge
 							cleanedConEdges.add(cleanedEdges.get(i));
 						}
 
+						System.out.println("calculating diff edge " + diff_source.getID() + " - " + diff_target.getID());
 						EdgeDefinition diff_edge_def = ec.getDifferentialEdge(cleanedRefEdge, cleanedConEdges, conSupportingNetworks, supportingCutoff, weightCutoff);
+						System.out.println(" diff edge " + diff_edge_def);
 
 						// non-void differential edge
 						if (diff_edge_def.getWeight() > 0)

@@ -58,18 +58,18 @@ public class ActivityFlowTest extends GenericExample
 	private ReferenceNetwork getTestReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("S", new Node("S"));
-		nodes.put("T", new Node("T"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("S", new Node("S", "S"));
+		nodes.put("T", new Node("T", "T"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
 		ReferenceNetwork network = new ReferenceNetwork("Condition 1", 1, null);
 		
@@ -103,18 +103,18 @@ public class ActivityFlowTest extends GenericExample
 		ConditionNetwork network = new ConditionNetwork("Condition 2", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("M", new Node("M"));
-		nodes.put("N", new Node("N"));
-		nodes.put("S", new Node("S"));
-		nodes.put("T", new Node("T"));
-		nodes.put("X", new Node("X"));
-		nodes.put("Y", new Node("Y"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
+		nodes.put("S", new Node("S", "S"));
+		nodes.put("T", new Node("T", "T"));
+		nodes.put("X", new Node("X", "X"));
+		nodes.put("Y", new Node("Y", "Y"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 3, false));
 		network.addEdge(new Edge("positive regulation", nodes.get("B"), nodes.get("A"), false, 2, true));

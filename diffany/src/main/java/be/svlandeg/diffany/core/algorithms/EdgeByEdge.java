@@ -70,6 +70,8 @@ public class EdgeByEdge
 		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks);
 
 		Set<Network> allOriginals = new HashSet<Network>();
+		allOriginals.add(reference);
+		allOriginals.addAll(conditionNetworks);
 
 		Map<String, Set<String>> source2targetIDs = new HashMap<String, Set<String>>();
 		Map<String, Set<Node>> condNodesByID = new HashMap<String, Set<Node>>();
@@ -192,6 +194,7 @@ public class EdgeByEdge
 				for (Network n : allOriginals)
 				{
 					Set<Edge> allEdges = n.getAllEdges(sourceID, targetID);
+					System.out.println("  -->  " + allEdges.size());
 
 					for (String root : roots)
 					{
@@ -209,6 +212,7 @@ public class EdgeByEdge
 							rootEdges.add(eg.getVoidEdge(eo.isSymmetricalSourceCat(root)));
 						}
 						edgesBySemanticRoot.get(root).put(n.getID(), rootEdges);
+						System.out.println("    set semantic for : " + n.getID() + " -> " + rootEdges.size());
 					}
 				}
 
@@ -226,8 +230,10 @@ public class EdgeByEdge
 
 					for (int networkID : edgesByNetwork.keySet())
 					{
+						System.out.println("    networkID : " + networkID);
 						for (EdgeDefinition e : edgesByNetwork.get(networkID))
 						{
+							System.out.println("    in this network : " + e);
 							if (networkID != reference.getID() && conEdges.contains(e))
 							{
 								int position = conEdges.indexOf(e);

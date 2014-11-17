@@ -202,8 +202,8 @@ public class FuzzyNetworks extends GenericExample
 		nodes.put("X", new Node("X", "X"));
 		nodes.put("Y", new Node("Y", "Y"));
 		
-		nodes.put("X", new Node("M", "MX"));
-		nodes.put("Y", new Node("N", "N"));
+		nodes.put("M", new Node("M", "M"));
+		nodes.put("N", new Node("N", "N"));
 		
 		network.addEdge(new Edge("ppi", nodes.get("B"), nodes.get("A"), false, 0.4));
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.io.EdgeIO;
 import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -288,8 +289,19 @@ public class NetworkCleaning
 	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
+		
+		System.out.println("BEFORE");
+		System.out.println(net.getStringRepresentation());
+		System.out.println(EdgeIO.writeEdgesToTab(net.getEdges()));
+		System.out.println("");
+		
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, progressListener, true);
+		
+		System.out.println("AFTER");
+		System.out.println(resultNet.getStringRepresentation());
+		System.out.println(EdgeIO.writeEdgesToTab(resultNet.getEdges()));
+		System.out.println("");
 
 		return resultNet;
 	}

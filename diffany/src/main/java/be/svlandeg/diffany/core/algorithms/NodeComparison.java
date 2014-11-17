@@ -31,17 +31,27 @@ public class NodeComparison
 	 * @param supportingCutoff the minimal number of condition networks (inclusive) that need to reach the same DE consensus for the differential node to be DE as well
 	 * 
 	 * @return the node in the differential network, with its proper attributes.
-	 * @throws IllegalArgumentException when the type of the reference or condition-specific edge does not exist in this ontology
+	 * @throws IllegalArgumentException when both the refnode is null and the set of conditional nodes is also null or empty
 	 */
 	public Node getConsensusNode(Node refNode, Set<Node> conNodes, int supportingCutoff) throws IllegalArgumentException
 	{
+		if (refNode == null && (conNodes == null || conNodes.isEmpty()))
+		{
+			String errormsg = "At least one non-null node should be specified! ";
+			throw new IllegalArgumentException(errormsg);
+		}
+		
 		Set<Node> allNodes = new HashSet<Node>();
-		allNodes.addAll(conNodes);
+		if (conNodes != null)
+		{
+			allNodes.addAll(conNodes);
+		}
 
 		Node exampleNode = refNode;
-		Iterator<Node> it = conNodes.iterator();
+		Iterator<Node> it = null;
 		if (refNode == null)
 		{
+			it = conNodes.iterator();
 			exampleNode = it.next();
 		}
 		else
@@ -97,7 +107,7 @@ public class NodeComparison
 		{
 			String att_value = exampleNode.getAttribute(att_name);
 
-			while (att_value == null && it.hasNext())
+			while (att_value == null && it != null && it.hasNext())
 			{
 				att_value = it.next().getAttribute(att_name);
 			}

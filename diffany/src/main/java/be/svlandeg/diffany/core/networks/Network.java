@@ -126,7 +126,7 @@ public abstract class Network
 			{
 				if (!e.isSymmetrical())
 				{
-					if (e.getSource().ID.equals(source) && e.getTarget().ID.equals(target))
+					if (e.getSource().ID.equals(source.ID) && e.getTarget().ID.equals(target.ID))
 					{
 						resultEdges.add(e);
 					}
@@ -146,22 +146,10 @@ public abstract class Network
 	 */
 	public Set<Edge> getAllEdges(Node source, Node target)
 	{
-		Set<Edge> resultEdges = new HashSet<Edge>();
-		if (source != null && target != null)
-		{
-			for (Edge e : edges)
-			{
-				if (e.getSource().ID.equals(source) && e.getTarget().ID.equals(target))
-				{
-					resultEdges.add(e);
-				}
-				else if (e.isSymmetrical() && e.getSource().ID.equals(target) && e.getTarget().ID.equals(source))
-				{
-					resultEdges.add(e);
-				}
-			}
-		}
-		return resultEdges;
+		String sourceID = source.ID;
+		String targetID = target.ID;
+		
+		return getAllEdges(sourceID, targetID);
 	}
 	
 	/**
@@ -179,11 +167,14 @@ public abstract class Network
 		{
 			for (Edge e : edges)
 			{
-				if (e.getSource().getID().equals(sourceID) && e.getTarget().getID().equals(targetID))
+				String edgeSourceID = e.getSource().ID;
+				String edgeTargetID = e.getTarget().ID;
+				
+				if (edgeSourceID.equals(sourceID) && edgeTargetID.equals(targetID))
 				{
 					resultEdges.add(e);
 				}
-				else if (e.isSymmetrical() && e.getSource().getID().equals(targetID) && e.getTarget().getID().equals(sourceID))
+				else if (e.isSymmetrical() && edgeSourceID.equals(targetID) && edgeTargetID.equals(sourceID))
 				{
 					resultEdges.add(e);
 				}
@@ -215,36 +206,7 @@ public abstract class Network
 		return resultEdgeDefinitions;
 	}
 
-	/**
-	 * Get all edges in this network between two nodes with a specific name, assuming these names are unique. 
-	 * In case there are symmetrical edges in this network between target-source, these will also be added if addSyms is true.
-	 * 
-	 * @param source the name of the required source node (normalized version in case that option is chosen)
-	 * @param target the name of the required target node (normalized version in case that option is chosen)
-	 * @param addSyms defined whether or not to also include symmetrical target-source edges
-	 * @return the set of edges between these two nodes (can be empty, but not null)
-	 */
-	public Set<Edge> getAllEdgesByName(String source, String target, boolean addSyms)
-	{
-		Set<Edge> resultEdges = new HashSet<Edge>();
-		if (source == null || target == null)
-			return resultEdges;
-
-		for (Edge e : edges)
-		{
-			Node edgeSource = e.getSource();
-			Node edgeTarget = e.getTarget();
-			if (edgeSource.ID.equals(source) && edgeTarget.ID.equals(target))
-			{
-				resultEdges.add(e);
-			}
-			else if (addSyms && e.isSymmetrical() && edgeSource.ID.equals(target) && edgeTarget.ID.equals(source))
-			{
-				resultEdges.add(e);
-			}
-		}
-		return resultEdges;
-	}
+	
 	
 	/**
 	 * This method removes all unconnected nodes from the network - can not be reverted!

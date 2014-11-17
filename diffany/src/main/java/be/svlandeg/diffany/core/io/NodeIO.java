@@ -63,7 +63,7 @@ public class NodeIO
 	 */
 	public static CharSequence getHeader(SortedSet<String> nodeAttributes)
     {
-		String result = "ID" + '\t' + "official_symbol" + '\t' + "virtual";
+		String result = "ID" + '\t' + "official_symbol";
 		for (String attribute : nodeAttributes)
 		{
 			result += "\t" + attribute;

@@ -81,8 +81,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -90,14 +90,14 @@ public class RunAnalysis
 
 		boolean performStep1FromRaw = false;
 
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
 
-		boolean performStep4InputNetworksFromFile = false;
-		boolean performStep5OneagainstAll = false;
+		boolean performStep4InputNetworksFromFile = true;
+		boolean performStep5OneagainstAll = true;
 		boolean performStep5AllPairwise = false;
-		boolean performStep6OutputNetworksToFile = false;
+		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
@@ -127,7 +127,7 @@ public class RunAnalysis
 		}
 
 		double threshold_strict = 0.05;
-		double threshold_fuzzy = 0.01;		// if you don't want a fuzzy cut-off, simply put it equal to the strict one.
+		double threshold_fuzzy = 0.1;		// if you don't want a fuzzy cut-off, simply put it equal to the strict one.
 		
 		if (threshold_fuzzy < threshold_strict)
 		{

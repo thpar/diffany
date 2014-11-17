@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.cytoscape.internal;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.swing.JMenu;

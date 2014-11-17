@@ -36,7 +36,9 @@ import javax.swing.event.TableModelListener;
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyEdge.Type;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.view.model.CyNetworkView;
@@ -428,20 +430,36 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		Set<CyNetworkView> allViews = new HashSet<CyNetworkView>();
 		allViews.addAll(model.getSelectedProject().getAllSourceViews(model.getServices()));
 		allViews.addAll(model.getSelectedProject().getAllDifferentialViews(model.getServices()));
+		
+		System.out.println("-----");
+		for (String intt : hiddenInteractions){
+			System.out.println(intt);
+		}
+		System.out.println("-----");
+		
+		
 		for (CyNetworkView cyView : allViews){
 			CyNetwork cyNetwork = cyView.getModel();
 			CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
 			
-			final String pk = edgeTable.getPrimaryKey().getName();
-			
-			for (CyRow row : edgeTable.getAllRows()){
-				Long suid = row.get(pk, Long.class);
-				String edgeInteraction = row.get("interaction", String.class);
-				
-				CyEdge cyEdge = cyNetwork.getEdge(suid);
-				View<CyEdge> edgeView = cyView.getEdgeView(cyEdge);
-				edgeView.setVisualProperty(BasicVisualLexicon.EDGE_VISIBLE, !hiddenInteractions.contains(edgeInteraction));
+			for (View<CyNode> nodeView : cyView.getNodeViews()){
+				CyNode node = nodeView.getModel();
+				Iterable<CyEdge> edgesIt = cyNetwork.getAdjacentEdgeIterable(node, Type.ANY);
+				int visibleEdgeCount = 0;
+				for (CyEdge edge : edgesIt){
+					Long edgeSUID = edge.getSUID();
+					CyRow edgeRow = edgeTable.getRow(edgeSUID);
+					String interaction = edgeRow.get("interaction", String.class);
+					boolean isHidden = hiddenInteractions.contains(interaction);
+					View<CyEdge> edgeView = cyView.getEdgeView(edge);
+					edgeView.setVisualProperty(BasicVisualLexicon.EDGE_VISIBLE, !isHidden);
+					if (!isHidden){
+						visibleEdgeCount++;
+					}
+				}
+				nodeView.setVisualProperty(BasicVisualLexicon.NODE_VISIBLE, visibleEdgeCount!=0);
 			}
+			
 			cyView.updateView();
 		
 		}

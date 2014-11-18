@@ -1,6 +1,5 @@
 package be.svlandeg.diffany.cytoscape;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +33,6 @@ import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 
 /**
@@ -203,12 +201,11 @@ public class CyNetworkBridge {
 	 * 
 	 * @param network the "shared name" of the network in the network table.
 	 * @param edgeOntology will determine which edge types are considered symmetrical
-	 * @param nodeMapper will determine which nodes are considered identical
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public static ReferenceNetwork getReferenceNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
-		return (ReferenceNetwork)getNetwork(network, NetworkType.REFERENCE, edgeOntology, nodeMapper);
+	public static ReferenceNetwork getReferenceNetwork(CyNetwork network, EdgeOntology edgeOntology){
+		return (ReferenceNetwork)getNetwork(network, NetworkType.REFERENCE, edgeOntology);
 	}
 	
 	/**
@@ -216,12 +213,11 @@ public class CyNetworkBridge {
 	 * 
 	 * @param network the "shared name" of the network in the network table.
 	 * @param edgeOntology will determine which edge types are considered symmetrical
-	 * @param nodeMapper will determine which nodes are considered identical
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public static ConditionNetwork getConditionNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
-		return (ConditionNetwork)getNetwork(network, NetworkType.CONDITION, edgeOntology, nodeMapper);
+	public static ConditionNetwork getConditionNetwork(CyNetwork network, EdgeOntology edgeOntology){
+		return (ConditionNetwork)getNetwork(network, NetworkType.CONDITION, edgeOntology);
 	}
 	
 	/**
@@ -229,12 +225,11 @@ public class CyNetworkBridge {
 	 * 
 	 * @param network the "shared name" of the network in the network table.
 	 * @param edgeOntology will determine which edge types are considered symmetrical
-	 * @param nodeMapper will determine which nodes are considered identical
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	public static InputNetwork getInputNetwork(CyNetwork network, EdgeOntology edgeOntology, NodeMapper nodeMapper){
-		return (InputNetwork)getNetwork(network, NetworkType.GENERIC, edgeOntology, nodeMapper);
+	public static InputNetwork getInputNetwork(CyNetwork network, EdgeOntology edgeOntology){
+		return (InputNetwork)getNetwork(network, NetworkType.GENERIC, edgeOntology);
 	}
 	
 	/**
@@ -248,7 +243,7 @@ public class CyNetworkBridge {
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
-	private static Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology, NodeMapper nodeMapper){
+	private static Network getNetwork(CyNetwork cyNetwork, NetworkType type, EdgeOntology edgeOntology){
 	
 		Network network = null;
 		String netName = getName(cyNetwork, cyNetwork);
@@ -266,16 +261,16 @@ public class CyNetworkBridge {
 		
 		switch(type){
 		case REFERENCE: 
-			network = new ReferenceNetwork(netName, nextID++, nodeAttrs, nodeMapper);
+			network = new ReferenceNetwork(netName, nextID++, nodeAttrs);
 			break;
 		case CONDITION:
 			//TODO get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
-			network = new ConditionNetwork(netName, nextID++, nodeAttrs, conditions, nodeMapper);
+			network = new ConditionNetwork(netName, nextID++, nodeAttrs, conditions);
 			break;
 		case GENERIC:
-			network = new InputNetwork(netName, nextID++, nodeAttrs, nodeMapper);
+			network = new InputNetwork(netName, nextID++, nodeAttrs);
 			break;
 		}
 				

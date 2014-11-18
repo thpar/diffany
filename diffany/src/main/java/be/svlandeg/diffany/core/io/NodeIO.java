@@ -15,9 +15,6 @@ import be.svlandeg.diffany.core.networks.Node;
  */
 public class NodeIO
 {
-	
-	private static String virtualString = "virtual";
-	private static String nonVirtualString = "normal";
 
 	
 	/**
@@ -42,7 +39,7 @@ public class NodeIO
 	
 	/**
 	 * Get a string representation of a node.
-	 * More specifically, print it as: nodeID - node.name - virtual and then the node attributes (alphabetically).
+	 * More specifically, print it as: nodeID - node.name - and then the node attributes (alphabetically).
 	 * 
 	 * @param n the node
 	 * @param nodeAttributes the node attribute names
@@ -51,8 +48,7 @@ public class NodeIO
 	 */
 	public static String writeToTab(Node n, SortedSet<String> nodeAttributes)
 	{
-		String virtualResult = writeVirtualToString(n);
-		String result = n.getID() + '\t' + n.getDisplayName() + '\t' + virtualResult;
+		String result = n.getID() + '\t' + n.getDisplayName();
 		for (String att : nodeAttributes)
 		{
 			result += '\t' + n.getAttribute(att);
@@ -67,45 +63,13 @@ public class NodeIO
 	 */
 	public static CharSequence getHeader(SortedSet<String> nodeAttributes)
     {
-		String result = "ID" + '\t' + "official_symbol" + '\t' + "virtual";
+		String result = "ID" + '\t' + "official_symbol";
 		for (String attribute : nodeAttributes)
 		{
 			result += "\t" + attribute;
 		}
 		return result;
     }
-	
-	/**
-	 * Get a string representation of the boolean virtual state.
-	 * @param n the original node
-	 * 
-	 * @return a string representation of this node's virtual state
-	 */
-	public static String writeVirtualToString(Node n)
-	{
-		String result = nonVirtualString;
-		if (n.isVirtual())
-		{
-			result = virtualString;
-		}
-		return result;
-	}
-	
-	
-	/**
-	 * Parse the boolean virtual state from the Node's string representation.
-	 * 
-	 * @param s the string representation
-	 * @return a boolean indicating the virtual state of the node
-	 */
-	public static boolean isVirtual(String s)
-	{
-		if (s.equals(virtualString))
-		{
-			return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * Read a Node from a tab-delimited String.
@@ -120,10 +84,8 @@ public class NodeIO
 		StringTokenizer stok = new StringTokenizer(s, "\t");
 		String ID = stok.nextToken();
 		String name = stok.nextToken();
-		String virtual = stok.nextToken();
-		boolean isVirtual = NodeIO.isVirtual(virtual);
 		
-		Node n = new Node(ID, name, isVirtual);
+		Node n = new Node(ID, name);
 		
 		for (String att : nodeAttributes)
 		{

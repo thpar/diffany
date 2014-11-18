@@ -14,8 +14,6 @@ import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /**
@@ -27,25 +25,16 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class ConflictingEdgesTest extends GenericExample
 {
 
-	private NodeMapper nm;
-	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public ConflictingEdgesTest()
-	{
-		nm = new DefaultNodeMapper();
-	}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project
 	 */
-	public Project getTestProject()
+	public Project getDefaultProject()
 	{
 		String name = "Conflict_test";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -54,7 +43,7 @@ public class ConflictingEdgesTest extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConfiguration(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getTestReference();
 		Set<ConditionNetwork> c = getTestCondition();
@@ -70,14 +59,14 @@ public class ConflictingEdgesTest extends GenericExample
 	private ReferenceNetwork getTestReference()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference", 1, null);
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 2, false));
 		network.addEdge(new Edge("ptm", nodes.get("A"), nodes.get("B"), false, 5, false));
@@ -107,15 +96,15 @@ public class ConflictingEdgesTest extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition-specific network", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition-specific network", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("G", new Node("G"));
-		nodes.put("H", new Node("H"));
-		nodes.put("J", new Node("J"));
-		nodes.put("K", new Node("K"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("G", new Node("G", "G"));
+		nodes.put("H", new Node("H", "H"));
+		nodes.put("J", new Node("J", "J"));
+		nodes.put("K", new Node("K", "K"));
 		
 		network.addEdge(new Edge("positive regulation", nodes.get("A"), nodes.get("B"), false, 8, false));
 		
@@ -142,8 +131,8 @@ public class ConflictingEdgesTest extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for conflict test");
-		Project p = ex.getTestProject();
-		int ID = ex.getTestConfiguration(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);

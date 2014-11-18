@@ -19,8 +19,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * This class can run the Diffany algorithms from a {@link org.apache.commons.cli.CommandLine} object.
@@ -45,8 +43,7 @@ public class RunProject
 		ExecutionProgress listener = new StandardProgressListener();
 		
 		// TODO v3.0: make ontologies adjustable
-		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology(), new DefaultNodeMapper());
-		NodeMapper nm = p.getNodeMapper();
+		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());
 
 		/** PARSE INPUT **/
 		boolean toLog = false;
@@ -67,10 +64,10 @@ public class RunProject
 		}
 		
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm, skipHeader);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
 		File condDir = getRequiredDir(cmd, DiffanyOptions.conShort);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm, skipHeader);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
@@ -90,14 +87,13 @@ public class RunProject
 
 		/** WRITE NETWORK OUTPUT **/
 		boolean writeHeaders = true;
-		boolean allowVirtualEdges = true;
 		
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeNetworkToDir(diffNet, nm, diffDir, writeHeaders, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 		l.log("Writing the differential network to " + diffDir);
 
 		File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
-		NetworkIO.writeNetworkToDir(consensusNet, nm, consensusDir, writeHeaders, allowVirtualEdges);
+		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
 		l.log("Writing the consensus network to " + consensusDir);
 		
 		l.log("Done !");

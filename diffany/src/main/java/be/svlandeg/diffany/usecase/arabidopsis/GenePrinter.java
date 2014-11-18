@@ -173,7 +173,7 @@ public class GenePrinter
 			{
 				symbol = locusID;
 			}
-			nodes.add(new Node(locusID, symbol, false));
+			nodes.add(new Node(locusID, symbol));
 		}
 		return nodes;
 	}

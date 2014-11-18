@@ -30,7 +30,7 @@ public class TestOsmoticSample extends TestGeneric
 	{
 		OsmoticSampleTest ex = new OsmoticSampleTest();
 		double weight_cutoff = 0.0;
-		Project p = ex.getTestProject();
+		Project p = ex.getDefaultProject();
 		int supportingCutoff = 5;
 		int ID = ex.getTestDiffConfiguration(p, supportingCutoff);
 

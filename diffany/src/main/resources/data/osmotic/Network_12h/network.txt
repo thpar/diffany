@@ -1,4 +1,4 @@
 ID	4
 Name	Network_12h
 Type	ConditionNetwork
-Attributes	kinase_function;phosphorylation_site;
+Attributes	differentially_expressed;kinase_function;phosphorylation_site;

@@ -15,8 +15,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 
@@ -31,26 +29,22 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  */
 public class Ideker2011 extends GenericExample
 {
-
-	private NodeMapper nm;
 	
 	/**
-	 * Constructor: generates a default {@link NodeMapper} object
+	 * Constructor
 	 */
 	public Ideker2011()
-	{
-		nm = new DefaultNodeMapper();
-	}
+	{}
 	
 	/**
 	 * Get a custom project.
 	 * @return an example project illustrating figure 1C
 	 */
-	public Project getProjectFigure3A()
+	public Project getDefaultProject()
 	{
 		String name = "Ideker2011_fig3A";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -59,12 +53,14 @@ public class Ideker2011 extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConfiguration3A(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getReferenceFigure3A();
+		
 		Set<ConditionNetwork> c = getConditionFigure3A();
 		boolean cleanInput = true;
 		int ID = p.addRunConfiguration(r, c, cleanInput, null);
+		
 		return ID;
 	}
 
@@ -75,17 +71,18 @@ public class Ideker2011 extends GenericExample
 	private ReferenceNetwork getReferenceFigure3A()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("E", new Node("E"));
-		nodes.put("F", new Node("F"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("E", new Node("E", "E"));
+		nodes.put("F", new Node("F", "F"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Reference Network Ideker2011", 1, null);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("F"), true, 1.0));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 0.7));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("E"), true, 0.8));
+		
 		return network;
 	}
 
@@ -102,14 +99,14 @@ public class Ideker2011 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Condition Network Ideker2011", 2, null, conditions);
 		
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("D", new Node("D"));
-		nodes.put("C", new Node("C"));
-		nodes.put("F", new Node("F"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("F", new Node("F", "F"));
 
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("F"), nodes.get("A"), true, 1.0));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("B"), nodes.get("A"), true, 0.4));
@@ -130,11 +127,12 @@ public class Ideker2011 extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for Ideker2011 figure 3A");
-		Project p = ex.getProjectFigure3A();
-		int ID = ex.getTestConfiguration3A(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);
+
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false, false);

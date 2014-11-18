@@ -45,7 +45,6 @@ public class NetworkConstruction
 	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
 	 * The set of strict and 'fuzzy' DE genes thus contain all genes that are DE in at least one of the conditions in the experiment.
 	 * 
-	 * @param nm the object that defines equality between nodes
 	 * @param nodeIDs_strict_DE the overexpressed nodes (not null), with stringent criteria (e.g. FDR 0.05)
 	 * @param nodeIDs_fuzzy_DE the overexpressed nodes (may be null), with less stringent criteria (e.g. FDR 0.1, this set does not need to include the strict DE ones)
 	 * @param ppi_file the location of the PPI data
@@ -59,7 +58,7 @@ public class NetworkConstruction
 	 * @throws IOException when an IO error occurs
 	 * @throws URISyntaxException when an input file could not be read
 	 */
-	public Set<String> expandNetwork(NodeMapper nm, Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, URI kinase_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
+	public Set<String> expandNetwork(Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, URI kinase_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		// TODO: this method unnecessarily generates Network objects?
 
@@ -74,16 +73,16 @@ public class NetworkConstruction
 			Set<Edge> PPIedges = null;
 			if (neighbours)
 			{
-				PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, null, selfInteractions);
+				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, null, selfInteractions);
 			}
 			else
 			{
-				PPIedges = readPPIsByLocustags(nm, ppi_file, nodes_strict_DE, nodes_strict_DE, selfInteractions);
+				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, nodes_strict_DE, selfInteractions);
 			}
 
-			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null, nm);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null);
 			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedNodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
+			Set<String> expandedNodeIDs = NodeMapper.getNodeIDs(PPInetwork.getNodes());
 			allNodeIDs.addAll(expandedNodeIDs);
 		}
 
@@ -93,21 +92,22 @@ public class NetworkConstruction
 		{
 			if (neighbours)
 			{
-				regEdges1.addAll(readRegsByLocustags(nm, reg_file, nodes_strict_DE, null, selfInteractions, includeUnknownReg)); // from our input to their targets
-				regEdges1.addAll(readRegsByLocustags(nm, reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+				regEdges1.addAll(readRegsByLocustags(reg_file, nodes_strict_DE, null, selfInteractions, includeUnknownReg)); // from our input to their targets
+				regEdges1.addAll(readRegsByLocustags(reg_file, null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}
 		}
 		if (kinase_file != null)
 		{
 			if (neighbours)
 			{
-				regEdges1.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, nodes_strict_DE, null, selfInteractions)); // from our input to their targets
-				regEdges1.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, null, nodes_strict_DE, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_strict_DE, null, selfInteractions)); // from our input to their targets
+				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, null, nodes_strict_DE, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}
 		}
-		InputNetwork regNetwork1 = new InputNetwork("Regulatory network", 666, null, nm);
+		InputNetwork regNetwork1 = new InputNetwork("Regulatory network", 666, null);
 		regNetwork1.setNodesAndEdges(regEdges1);
-		Set<String> expandedNodeIDs = nm.getNodeIDs(regNetwork1.getNodes());
+		Set<String> expandedNodeIDs = NodeMapper.getNodeIDs(regNetwork1.getNodes());
+
 		allNodeIDs.addAll(expandedNodeIDs);
 
 		/* 3. add all fuzzy DE nodes which connect to the strict DE nodes or the PPI/regulatory partners */
@@ -116,26 +116,26 @@ public class NetworkConstruction
 			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
 			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
 
-			Set<Edge> PPIedges = readPPIsByLocustags(nm, ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
-			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null, nm);
+			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
+			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null);
 			PPInetwork.setNodesAndEdges(PPIedges);
-			Set<String> expandedPPINodeIDs = nm.getNodeIDs(PPInetwork.getNodes());
+			Set<String> expandedPPINodeIDs = NodeMapper.getNodeIDs(PPInetwork.getNodes());
 
 			Set<Edge> regEdges2 = new HashSet<Edge>();
 			if (reg_file != null)
 			{
-				regEdges2.addAll(readRegsByLocustags(nm, reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg)); // from fuzzy DE to our combined set
-				regEdges2.addAll(readRegsByLocustags(nm, reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+				regEdges2.addAll(readRegsByLocustags(reg_file, nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg)); // from fuzzy DE to our combined set
+				regEdges2.addAll(readRegsByLocustags(reg_file, allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 			}
 			if (kinase_file != null)
 			{
-				regEdges2.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, nodes_fuzzy_DE, allNodes, selfInteractions)); // from fuzzy DE to our combined set
-				regEdges2.addAll(readKinaseInteractionsByLocustags(nm, kinase_file, allNodes, nodes_fuzzy_DE, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_fuzzy_DE, allNodes, selfInteractions)); // from fuzzy DE to our combined set
+				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, allNodes, nodes_fuzzy_DE, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 			}
 
-			InputNetwork regNetwork2 = new InputNetwork("Regulatory network", 666, null, nm);
+			InputNetwork regNetwork2 = new InputNetwork("Regulatory network", 666, null);
 			regNetwork2.setNodesAndEdges(regEdges2);
-			Set<String> expandedRegNodeIDs = nm.getNodeIDs(regNetwork2.getNodes());
+			Set<String> expandedRegNodeIDs = NodeMapper.getNodeIDs(regNetwork2.getNodes());
 
 			allNodeIDs.addAll(expandedPPINodeIDs);
 			allNodeIDs.addAll(expandedRegNodeIDs);
@@ -148,25 +148,27 @@ public class NetworkConstruction
 	 * Take a copy of the given set of edges and produce new ones that are weighted according to the fold changes of the DE genes.
 	 * 
 	 * @param eo the edge ontology which can tell which edge types are anti-correlated (e.g. inhibition)
+	 * @param nodes the set of nodes that should be used to construct the new edges
 	 * @param origEdges the original set of edges (will not be changed!)
 	 * @param all_de_nodes all overexpressed nodes (both stringent and less-stringent criteria)
 	 * @return a new set of edges, whose weights are changed according to the fold changes of the DE genes
 	 */
-	public Set<Edge> adjustEdgesByFoldChanges(EdgeOntology eo, Set<Edge> origEdges, Map<String, Double> all_de_nodes)
+	public Set<Edge> adjustEdgesByFoldChanges(EdgeOntology eo, Set<Node> nodes, Set<Edge> origEdges, Map<String, Double> all_de_nodes)
 	{
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
+		
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		for (Edge e : origEdges)
 		{
-			Edge newEdge = new Edge(e.getSource(), e.getTarget(), new EdgeDefinition(e.getDefinition()));
-
-			String sourceID = newEdge.getSource().getID();
+			String sourceID = e.getSource().getID();
+			String targetID = e.getTarget().getID();
+			
 			double sourceFC = 0;
 			if (all_de_nodes.containsKey(sourceID))
 			{
 				sourceFC = all_de_nodes.get(sourceID);
 			}
 
-			String targetID = newEdge.getTarget().getID();
 			double targetFC = 0;
 			if (all_de_nodes.containsKey(targetID))
 			{
@@ -235,8 +237,9 @@ public class NetworkConstruction
 				}
 			}
 
-			newEdge.getDefinition().setWeight(weight);
-			resultEdges.add(newEdge);
+			EdgeDefinition newEdge = new EdgeDefinition(e.getDefinition());
+			newEdge.setWeight(weight);
+			resultEdges.add(new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), newEdge));
 		}
 
 		return resultEdges;
@@ -248,13 +251,15 @@ public class NetworkConstruction
 	 * In that case, we revert the PPI connection to reference levels (1) because we assume it's not very meaningful, unless both nodes are DE.
 	 * 
 	 * @param hubs the PPI hubs denoted by their unique IDs
+	 * @param nodes the set of nodes that should be used to construct the new edges
 	 * @param origEdges the original set of edges (will not be changed!) - should not contain redundancy
 	 * @param type the type of connection we want to filter for
 	 * @param all_de_nodes the DE genes
 	 * @return a new set of edges, which will be a subset of the original set of edges
 	 */
-	public Set<Edge> filterForHubs(Set<String> hubs, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
+	public Set<Edge> filterForHubs(Set<String> hubs, Set<Node> nodes, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
 	{
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
 		Set<Edge> resultEdges = new HashSet<Edge>();
 
 		Map<String, Integer> diffEdgeCountByNode = new HashMap<String, Integer>();
@@ -283,11 +288,8 @@ public class NetworkConstruction
 
 		for (Edge e : origEdges)
 		{
-			Node source = e.getSource();
-			Node target = e.getTarget();
-
-			String sourceID = source.getID();
-			String targetID = target.getID();
+			String sourceID = e.getSource().getID();
+			String targetID = e.getTarget().getID();
 
 			int sourceEdgeDiffCount = diffEdgeCountByNode.get(sourceID);
 			int targetEdgeDiffCount = diffEdgeCountByNode.get(targetID);
@@ -319,13 +321,13 @@ public class NetworkConstruction
 			/* add a copy of the edge to the result set if we want to keep it */
 			if (keepEdge)
 			{
-				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
+				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
 				resultEdges.add(copyE);
 			}
 			/* otherwise, put the edge weight to 1 and keep that copy */
 			else
 			{
-				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
+				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
 				copyE.getDefinition().setWeight(1.0);
 				resultEdges.add(copyE);
 			}
@@ -334,61 +336,36 @@ public class NetworkConstruction
 	}
 
 	/**
-	 * Create virtual regulation edges for a collection of DE nodes, which are underexpressed (negative weight) or overexpressed.
+	 * Modify the differentially expressed status of a collection of DE nodes, using over/under expression data.
 	 * 
 	 * @param DEnodeIDs the map of target node IDs with their corresponding fold change values (negative weights refer to down-regulation)
-	 * @param nodes the set of existing nodes in the network - virtual edges will only be generated for this subset
-	 * @return the set of corresponding virtual edges
+	 * @param nodes the set of existing nodes in the network - they will acquire additional attributes after this method
 	 */
-	public Set<Edge> constructVirtualRegulations(Map<String, Double> DEnodeIDs, Set<Node> nodes)
+	public void modifyDEState(Map<String, Double> DEnodeIDs, Set<Node> nodes)
 	{
-		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> virtualNodes = new HashMap<String, Node>();
-		
-		Map<String, Node> normalNodes = new HashMap<String, Node>();
+		String de_attribute = Node.de_attribute;
 		for (Node n : nodes)
 		{
-			normalNodes.put(n.getID(), n);
-		}
-		
-
-		for (String id : DEnodeIDs.keySet())
-		{
-			Node n = normalNodes.get(id);
-			if (n != null)
+			String id = n.getID();
+			Double FC = DEnodeIDs.get(id);
+			if (FC == null || FC == 0)
 			{
-				double FC = DEnodeIDs.get(id);
-	
-				String type = "overexpression";
-				String regulator = "upregulator";
-				String prefix = "up";
-	
-				if (FC < 0)
-				{
-					type = "underexpression";
-					regulator = "downregulator";
-					prefix = "down";
-				}
-	
-				String virtualID = prefix + "_" + n.getID();
-				String fullname = regulator + "_of_" + n.getDisplayName();
-				if (!virtualNodes.containsKey(virtualID))
-				{
-					virtualNodes.put(virtualID, new Node(virtualID, fullname, true));
-				}
-				Node virtualRegulator = virtualNodes.get(virtualID);
-				Edge e = new Edge(type, virtualRegulator, n, false, Math.abs(FC), false);
-				edges.add(e);
+				n.setAttribute(de_attribute, Node.not_de);
+			}
+			else if (FC < 0)
+			{
+				n.setAttribute(de_attribute, Node.downregulated);
+			}
+			else if (FC > 0)
+			{
+				n.setAttribute(de_attribute, Node.upregulated);
 			}
 		}
-
-		return edges;
 	}
 
 	/**
 	 * Construct a set of PPI edges, reading input from a specified URI. This method imposes symmetry of the read edges.
 	 * 
-	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
 	 * 
@@ -396,9 +373,9 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readAllPPIs(NodeMapper nm, URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readAllPPIs(URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
-		return readPPIsByLocustags(nm, ppi_file, null, null, includeSelfInteractions);
+		return readPPIsByLocustags(ppi_file, null, null, includeSelfInteractions);
 	}
 
 	/**
@@ -406,7 +383,6 @@ public class NetworkConstruction
 	 * This method can either only include PPIs between the nodes themselves, or also include neighbours (if the second set is null).
 	 * This method imposes symmetry of the read edges.
 	 * 
-	 * @param nm the object that defines equality between nodes
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param nodes1 the first set of input nodes (can be null, in which case any node will qualify)
 	 * @param nodes2 the second set of input nodes (can be null, in which case any node will qualify)
@@ -416,13 +392,13 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readPPIsByLocustags(NodeMapper nm, URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = nm.getNodesByID(nodes1);
-		mappedNodes.putAll(nm.getNodesByID(nodes2));
-		Set<String> origLoci1 = nm.getNodeIDs(nodes1);
-		Set<String> origLoci2 = nm.getNodeIDs(nodes2);
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes1);
+		mappedNodes.putAll(NodeMapper.getNodesByID(nodes2));
+		Set<String> origLoci1 = NodeMapper.getNodeIDs(nodes1);
+		Set<String> origLoci2 = NodeMapper.getNodeIDs(nodes2);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(ppi_file)));
 
@@ -469,7 +445,7 @@ public class NetworkConstruction
 							{
 								symbol = locus1;
 							}
-							source = new Node(locus1, symbol, false);
+							source = new Node(locus1, symbol);
 							mappedNodes.put(locus1, source);
 						}
 
@@ -481,7 +457,7 @@ public class NetworkConstruction
 							{
 								symbol = locus2;
 							}
-							target = new Node(locus2, symbol, false);
+							target = new Node(locus2, symbol);
 							mappedNodes.put(locus2, target);
 						}
 						Edge ppi = new Edge(type, source, target, symmetrical);
@@ -502,7 +478,6 @@ public class NetworkConstruction
 	 * to avoid including outliers in the networks.
 	 * This method can further remove unspecified regulations, which are not known to be repressors or activators.
 	 * 
-	 * @param nm the object that defines equality between nodes
 	 * @param reg_file the location where to find the tab-delimited regulatory data
 	 * @param source_nodes the set of input source nodes (or null when any are allowed)
 	 * @param target_nodes the set of input target nodes (or null when any are allowed)
@@ -513,14 +488,14 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the regulation datafile can not be read properly
 	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readRegsByLocustags(NodeMapper nm, URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeUnknownPolarities) throws URISyntaxException, IOException
+	public Set<Edge> readRegsByLocustags(URI reg_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions, boolean includeUnknownPolarities) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = nm.getNodesByID(source_nodes);
-		mappedNodes.putAll(nm.getNodesByID(target_nodes));
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(source_nodes);
+		mappedNodes.putAll(NodeMapper.getNodesByID(target_nodes));
 
-		Set<String> origSourceLoci = nm.getNodeIDs(source_nodes);
-		Set<String> origTargetLoci = nm.getNodeIDs(target_nodes);
+		Set<String> origSourceLoci = NodeMapper.getNodeIDs(source_nodes);
+		Set<String> origTargetLoci = NodeMapper.getNodeIDs(target_nodes);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(reg_file)));
 
@@ -576,7 +551,7 @@ public class NetworkConstruction
 								{
 									symbol = source_locus;
 								}
-								source = new Node(source_locus, symbol, false);
+								source = new Node(source_locus, symbol);
 								mappedNodes.put(source_locus, source);
 							}
 							Node target = mappedNodes.get(target_locus);
@@ -587,7 +562,7 @@ public class NetworkConstruction
 								{
 									symbol = target_locus;
 								}
-								target = new Node(target_locus, symbol, false);
+								target = new Node(target_locus, symbol);
 								mappedNodes.put(target_locus, target);
 							}
 							mappedNodes.put(source_locus, source);
@@ -610,7 +585,6 @@ public class NetworkConstruction
 	 * This method can either only include regulations between the nodes themselves, or also include neighbours, 
 	 * or put a cutoff on minimal number of neighbours to avoid including outliers in the networks.
 	 * 
-	 * @param nm the object that defines equality between nodes
 	 * @param kinase_interactions_file the location where to find the tab-delimited regulatory data
 	 * @param source_nodes the set of input source nodes (or null when any are allowed)
 	 * @param target_nodes the set of input target nodes (or null when any are allowed)
@@ -620,14 +594,14 @@ public class NetworkConstruction
 	 * @throws URISyntaxException when the regulation datafile can not be read properly
 	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readKinaseInteractionsByLocustags(NodeMapper nm, URI kinase_interactions_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readKinaseInteractionsByLocustags(URI kinase_interactions_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = nm.getNodesByID(source_nodes);
-		mappedNodes.putAll(nm.getNodesByID(target_nodes));
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(source_nodes);
+		mappedNodes.putAll(NodeMapper.getNodesByID(target_nodes));
 
-		Set<String> origSourceLoci = nm.getNodeIDs(source_nodes);
-		Set<String> origTargetLoci = nm.getNodeIDs(target_nodes);
+		Set<String> origSourceLoci = NodeMapper.getNodeIDs(source_nodes);
+		Set<String> origTargetLoci = NodeMapper.getNodeIDs(target_nodes);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_interactions_file)));
 
@@ -692,7 +666,7 @@ public class NetworkConstruction
 								{
 									symbol = source_locus;
 								}
-								source = new Node(source_locus, symbol, false);
+								source = new Node(source_locus, symbol);
 								mappedNodes.put(source_locus, source);
 							}
 							Node target = mappedNodes.get(target_locus);
@@ -703,7 +677,7 @@ public class NetworkConstruction
 								{
 									symbol = target_locus;
 								}
-								target = new Node(target_locus, symbol, false);
+								target = new Node(target_locus, symbol);
 								mappedNodes.put(target_locus, target);
 							}
 							mappedNodes.put(source_locus, source);

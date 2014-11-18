@@ -2,8 +2,6 @@ package be.svlandeg.diffany.core.networks;
 
 import java.util.Set;
 
-import be.svlandeg.diffany.core.semantics.NodeMapper;
-
 
 /**
  * A consensus network is the counterpart of a differential network: containing everything but the differential edges 
@@ -26,13 +24,12 @@ public class ConsensusNetwork extends Network
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param originalNetworks the original networks (at least 2!)
-	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the list of original networks is null or contains less than 2 networks
 	 */
-	public ConsensusNetwork(String name, int ID, Set<Network> originalNetworks, NodeMapper nm) throws IllegalArgumentException
+	public ConsensusNetwork(String name, int ID, Set<Network> originalNetworks) throws IllegalArgumentException
 	{
-		super(name, ID, null, nm);
+		super(name, ID, null);
 		if (originalNetworks == null || originalNetworks.size() < 1)
 		{
 			String errormsg = "Please define at least 1 original network!";

@@ -16,7 +16,7 @@ import be.svlandeg.diffany.core.networks.Node;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class NodeMapper
+public class NodeMapper
 {
 
 	/**
@@ -26,7 +26,10 @@ public abstract class NodeMapper
 	 * @param node2 a node in the second network
 	 * @return whether or not they should considered to be equal
 	 */
-	public abstract boolean areEqual(Node node1, Node node2);
+	public static boolean areEqual(Node node1, Node node2)
+	{
+		return node1.getID().equals(node2.getID());
+	}
 
 	/**
 	 * Return a 'consensus' ID for a set of nodes that were previously determined to be equal. 
@@ -36,7 +39,33 @@ public abstract class NodeMapper
 	 * @return a consensus name of these nodes to be used in the differential network, or null when all nodes are null
 	 * @throws IllegalArgumentException when the nodes are not all equal (when not null)
 	 */
-	public abstract String getConsensusID(Set<Node> nodes) throws IllegalArgumentException;
+	public static String getConsensusID(Set<Node> nodes) throws IllegalArgumentException
+	{
+		Set<String> IDs = new HashSet<String>();
+		for (Node n : nodes)
+		{
+			if (n != null)
+			{
+				IDs.add(n.getID());
+			}
+		}
+		if (IDs.isEmpty())
+		{
+			return null;
+		}
+		if (IDs.size() > 1)
+		{
+			String found = "";
+			for (String s : IDs)
+			{
+				found += s + " / ";
+			}
+			String errormsg = "A consensus ID can only be defined for two equal nodes (same IDs), but found more than one ID: " + found;
+			throw new IllegalArgumentException(errormsg);
+		}
+		
+		return IDs.iterator().next();
+	}
 
 	/**
 	 * Define whether or not this node is already in the set.
@@ -45,7 +74,7 @@ public abstract class NodeMapper
 	 * @param nodeSet a set of non-redundant nodes
 	 * @return whether or not the set already includes (an equal of) the node
 	 */
-	public boolean isContained(Node node, Set<Node> nodeSet)
+	public static boolean isContained(Node node, Set<Node> nodeSet)
 	{
 		boolean contained = false;
 		for (Node n : nodeSet)
@@ -65,7 +94,7 @@ public abstract class NodeMapper
 	 * @param network2 the second network
 	 * @return all equal nodes, mapping network 1 to network 2
 	 */
-	public Map<Node, Set<Node>> getAllEquals(Network network1, Network network2)
+	public static Map<Node, Set<Node>> getAllEquals(Network network1, Network network2)
 	{
 		Map<Node, Set<Node>> allEquals = new HashMap<Node, Set<Node>>();
 		for (Node node1 : network1.getNodes())
@@ -89,7 +118,7 @@ public abstract class NodeMapper
 	 * @param networks all input networks
 	 * @return all equal nodes grouped in sets
 	 */
-	public List<Set<Node>> getAllEquals(Set<Network> networks)
+	public static List<Set<Node>> getAllEquals(Set<Network> networks)
 	{
 		List<Set<Node>> allEqualSets = new ArrayList<Set<Node>>();
 
@@ -129,7 +158,7 @@ public abstract class NodeMapper
 	 * @param networks the networks
 	 * @return the union of all nodes in all networks, removing duplicates using the areEqual method
 	 */
-	public Set<Node> getAllNodes(Set<Network> networks)
+	public static Set<Node> getAllNodes(Set<Network> networks)
 	{
 		Set<Node> allNodes = new HashSet<Node>();
 		for (Network network : networks)
@@ -158,7 +187,7 @@ public abstract class NodeMapper
 	 * @param nodes the original set of nodes
 	 * @return a mapping of these nodes, by their IDs, for easy querying and comparison
 	 */
-	public Map<String, Node> getNodesByID(Set<Node> nodes)
+	public static Map<String, Node> getNodesByID(Set<Node> nodes)
 	{
 		Map<String, Node> mappedNodes = new HashMap<String, Node>();
 		if (nodes != null)
@@ -176,7 +205,7 @@ public abstract class NodeMapper
 	 * @param nodes the original set of nodes
 	 * @return a set of the unique node IDs
 	 */
-	public Set<String> getNodeIDs(Set<Node> nodes)
+	public static Set<String> getNodeIDs(Set<Node> nodes)
 	{
 		Set<String> IDs = new HashSet<String>();
 		if (nodes != null)

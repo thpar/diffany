@@ -3,7 +3,6 @@ package be.svlandeg.diffany.core.networks;
 import java.util.HashSet;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 
 /**
  * A kind of network that is condition-specific. There can be an unlimited number of conditions specified, but there should be at least one.
@@ -22,14 +21,13 @@ public class ConditionNetwork extends InputNetwork
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
-	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 * 
 	 */
-	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Set<Condition> conditions, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Set<Condition> conditions) throws IllegalArgumentException
 	{
-		super(name, ID, nodeAttributes, nm);
+		super(name, ID, nodeAttributes);
 		if (conditions == null || conditions.isEmpty())
 		{
 			String errormsg = "Please define at least 1 condition!";
@@ -45,13 +43,12 @@ public class ConditionNetwork extends InputNetwork
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * @param condition one condition describing the experimental condition  (not null)
-	 * @param nm the {@link NodeMapper} object that defines equality between nodes for comparison purposes
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 */
-	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Condition condition, NodeMapper nm) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Condition condition) throws IllegalArgumentException
 	{
-		super(name, ID, nodeAttributes, nm);
+		super(name, ID, nodeAttributes);
 		if (condition == null)
 		{
 			String errormsg = "Please define a non-null condition!";

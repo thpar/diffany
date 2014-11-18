@@ -22,7 +22,6 @@ import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
 import be.svlandeg.diffany.cytoscape.internal.Services;
 
 
@@ -76,7 +75,7 @@ public class CyProject{
 	public CyProject(CyRootNetwork collection){
 		this.collection = collection;
 		String name = collection.getRow(collection).get(CyNetwork.NAME, String.class);
-		this.project = new Project(name, new DefaultEdgeOntology(), new DefaultNodeMapper());
+		this.project = new Project(name, new DefaultEdgeOntology());
 	}
 	
 	/**
@@ -170,11 +169,11 @@ public class CyProject{
 		if (model.isGenerateDiffNets()){
 			//"classic" ref/cond configuration
 			ReferenceNetwork refNet = CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), 
-					project.getEdgeOntology(), project.getNodeMapper());						
+					project.getEdgeOntology());						
 			Set<ConditionNetwork> condNets = new HashSet<ConditionNetwork>();
 			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
 				ConditionNetwork condNet = CyNetworkBridge.getConditionNetwork(cyCondNet, 
-						project.getEdgeOntology(), project.getNodeMapper());
+						project.getEdgeOntology());
 				condNets.add(condNet);			
 			}
 			runConfigID = project.addRunConfiguration(refNet, condNets, model.getOverlapSupportCutoff(), true, listener);
@@ -187,12 +186,12 @@ public class CyProject{
 			
 			//model might still mark one network as reference, if one was selected already. Treat it as input network in this configuration
 			if (this.getReferenceNetwork() != null){
-				inputNetworks.add(CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), project.getEdgeOntology(), project.getNodeMapper()));
+				inputNetworks.add(CyNetworkBridge.getReferenceNetwork(this.getReferenceNetwork(), project.getEdgeOntology()));
 			}
 			//then add all the conditional networks
 			for (CyNetwork cyCondNet : this.getConditionalNetworks()){
 				InputNetwork condNet = CyNetworkBridge.getInputNetwork(cyCondNet, 
-						project.getEdgeOntology(), project.getNodeMapper());
+						project.getEdgeOntology());
 				inputNetworks.add(condNet);			
 			}
 			runConfigID = project.addRunConfiguration(inputNetworks, model.getOverlapSupportCutoff(), model.isRefIncludedInOverlapSupportCutoff(), listener);
@@ -572,7 +571,7 @@ public class CyProject{
 	 * @param network the {@link CyNetwork} containing new information
 	 */
 	public void registerReferenceNetwork(CyNetwork network){
-		ReferenceNetwork net = CyNetworkBridge.getReferenceNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		ReferenceNetwork net = CyNetworkBridge.getReferenceNetwork(network, this.project.getEdgeOntology());
 		
 		// The logger object is needed as argument, but it's content will not be shown
 		this.project.registerSourceNetwork(net, new Logger());
@@ -584,7 +583,7 @@ public class CyProject{
 	 * @param network the {@link CyNetwork} containing new information
 	 */
 	public void registerConditionNetwork(CyNetwork network){
-		ConditionNetwork net = CyNetworkBridge.getConditionNetwork(network, this.project.getEdgeOntology(), this.project.getNodeMapper());
+		ConditionNetwork net = CyNetworkBridge.getConditionNetwork(network, this.project.getEdgeOntology());
 		
 		// The logger object is needed as argument, but it's content will not be shown
 		this.project.registerSourceNetwork(net, new Logger());

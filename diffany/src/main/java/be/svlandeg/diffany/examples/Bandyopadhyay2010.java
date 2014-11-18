@@ -15,8 +15,6 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
-import be.svlandeg.diffany.core.semantics.DefaultNodeMapper;
-import be.svlandeg.diffany.core.semantics.NodeMapper;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
@@ -28,25 +26,16 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class Bandyopadhyay2010 extends GenericExample
 {
 
-	private NodeMapper nm;
-	
-	/**
-	 * Constructor: generates a default {@link NodeMapper} object
-	 */
-	public Bandyopadhyay2010()
-	{
-		nm = new DefaultNodeMapper();
-	}
-	
+
 	/**
 	 * Get a custom project.
 	 * @return an example project illustrating figure 1C.
 	 */
-	public Project getProjectFigure1C()
+	public Project getDefaultProject()
 	{
 		String name = "Bandyopadhyay2010_fig1C";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
-		Project p = new Project(name, eo, nm);
+		Project p = new Project(name, eo);
 		return p;
 	}
 	
@@ -55,7 +44,7 @@ public class Bandyopadhyay2010 extends GenericExample
 	 * @param p the input project
 	 * @return the resulting configuration ID
 	 */
-	public int getTestConfiguration1C(Project p)
+	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
@@ -72,13 +61,13 @@ public class Bandyopadhyay2010 extends GenericExample
 	private ReferenceNetwork getReferenceFigure1C()
 	{
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
-		nodes.put("D", new Node("D"));
-		nodes.put("E", new Node("E"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
+		nodes.put("E", new Node("E", "E"));
 		
-		ReferenceNetwork network = new ReferenceNetwork("Untreated Network", 1, null, nm);
+		ReferenceNetwork network = new ReferenceNetwork("Untreated Network", 1, null);
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.3));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("E"), nodes.get("C"), true, 0.8));
@@ -98,13 +87,13 @@ public class Bandyopadhyay2010 extends GenericExample
 		Set<Condition> conditions = new HashSet<Condition>();
 		conditions.add(c);
 
-		ConditionNetwork network = new ConditionNetwork("Treated Network", 2, null, conditions, nm);
+		ConditionNetwork network = new ConditionNetwork("Treated Network", 2, null, conditions);
 
 		Map<String, Node> nodes = new HashMap<String, Node>();
-		nodes.put("A", new Node("A"));
-		nodes.put("B", new Node("B"));
-		nodes.put("C", new Node("C"));
-		nodes.put("D", new Node("D"));
+		nodes.put("A", new Node("A", "A"));
+		nodes.put("B", new Node("B", "B"));
+		nodes.put("C", new Node("C", "C"));
+		nodes.put("D", new Node("D", "D"));
 		
 		network.addEdge(new Edge("negative genetic interaction", nodes.get("A"), nodes.get("D"), true, 1.1));
 		network.addEdge(new Edge("positive genetic interaction", nodes.get("A"), nodes.get("B"), true, 0.4));
@@ -124,8 +113,8 @@ public class Bandyopadhyay2010 extends GenericExample
 		double cutoff = 0.0;
 		
 		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
-		Project p = ex.getProjectFigure1C();
-		int ID = ex.getTestConfiguration1C(p);
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);

@@ -327,6 +327,23 @@ public class CalculateDiff
 		RunOutput output = p.getOutput(runID);
 		output.clean();
 		
+		int tasks = 0;
+		int conditions = rc.getInputNetworks().size();
+		if (diffNetwork)
+		{
+			conditions = conditions - 1;
+			tasks += conditions ;			// as many pairwise comparisons as there are conditions
+			if (consensusNetwork)
+			{
+				tasks += conditions ;		// and equally many consensus networks
+			}
+		}
+		else if (consensusNetwork)
+		{
+			tasks = (conditions * (conditions-1)) / 2;		// all possible pairwise combinations of the conditions
+		}
+		System.out.println("pairwise comparisons: " + tasks);
+		
 		if (minOperator == null)
 		{
 			minOperator = default_MIN;

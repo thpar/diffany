@@ -30,7 +30,7 @@ import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
  * @author Thomas Van Parys
  *
  */
-public class RunProjectTask implements Task, ExecutionProgress {
+public class RunProjectTask extends ExecutionProgress implements Task  {
 
 	private Model model;
 	private CyProject cyProject;

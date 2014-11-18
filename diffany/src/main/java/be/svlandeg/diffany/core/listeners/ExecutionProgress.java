@@ -8,8 +8,12 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
  * 
  * @author Sofie Van Landeghem
  */
-public interface ExecutionProgress
+public abstract class ExecutionProgress
 {
+	
+	private int nrTasks;
+	private int ticksDone;
+
 	
 	/**
 	 * This method will be called by the differential algorithms in {@link CalculateDiff} every x clicks
@@ -20,6 +24,23 @@ public interface ExecutionProgress
 	 * @param progress the number of succesful ticks already conducted
 	 * @param total the total number of ticks that are envisioned to be needed for full execution
 	 */
-	public void setProgress(String message, int progress, int total);
+	public abstract void setProgress(String message, int progress, int total);
+	
+	/**
+	 * TODO
+	 */
+	public void reset()
+	{
+		nrTasks = 0;
+		ticksDone = 0;
+	}
+	
+	/**
+	 * TODO
+	 */
+	public void addTasks(int nr)
+	{
+		nrTasks += nr;
+	}
 	
 }

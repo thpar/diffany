@@ -9,10 +9,10 @@ import java.util.Date;
  * 
  * @author Sofie Van Landeghem
  */
-public class StandardProgressListener implements ExecutionProgress
+public class StandardProgressListener extends ExecutionProgress
 {
 	
-	@Override
+
 	public void setProgress(String message, int progress, int total)
 	{
 		System.out.println(new Date() + ": " + message + ": processed " + progress + " of " + total);

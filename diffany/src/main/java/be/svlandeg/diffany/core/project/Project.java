@@ -8,11 +8,12 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.algorithms.Unification;
 import be.svlandeg.diffany.core.io.ProjectIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -155,17 +156,34 @@ public class Project
 		
 		RunConfiguration rc = null;
 		
+		int tasks = conditions.size() + 1;
+		int ticksPerTask = 100;
+		if (progressListener != null)
+		{
+			progressListener.reset(tasks * ticksPerTask);
+		}
+		
 		if (cleanInput)
 		{
 			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */
+			ScheduledTask diffTask = null;
+			if (progressListener != null)
+			{
+				diffTask = new ScheduledTask(progressListener, ticksPerTask);
+			}
 			registerSourceNetwork(reference, logger);
-			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, edgeOntology, progressListener);
+			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, edgeOntology, diffTask);
 			
 			Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 			for (ConditionNetwork conNet : conditions)
 			{
+				ScheduledTask consTask = null;
+				if (progressListener != null)
+				{
+					consTask = new ScheduledTask(progressListener, ticksPerTask);
+				}
 				registerSourceNetwork(conNet, logger);
-				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, edgeOntology, progressListener);
+				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, edgeOntology, consTask);
 				cleanConditions.add(cleanCon);
 			}
 			rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
@@ -228,11 +246,24 @@ public class Project
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
 		
+		int tasks = inputNetworks.size();
+		int ticksPerTask = 100;
+		if (progressListener != null)
+		{
+			progressListener.reset(tasks * ticksPerTask);
+		}
+		
 		Set<InputNetwork> cleanNetworks = new HashSet<InputNetwork>();
 		for (InputNetwork inputNet : inputNetworks)
 		{
+			ScheduledTask task = null;
+			if (progressListener != null)
+			{
+				task = new ScheduledTask(progressListener, ticksPerTask);
+			}
+			
 			registerSourceNetwork(inputNet, logger);
-			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, edgeOntology, progressListener);
+			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, edgeOntology, task);
 			cleanNetworks.add(cleanNet);
 		}
 		

@@ -10,13 +10,13 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ExecutionProgress;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;

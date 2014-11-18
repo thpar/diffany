@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.io.EdgeIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
@@ -17,6 +15,7 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 
@@ -55,15 +54,16 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 */
-	private void fullCleaning(Network net, EdgeOntology eo, ExecutionProgress progressListener, boolean resolveConflictsByWeight)
+	private void fullCleaning(Network net, EdgeOntology eo, ScheduledTask task, boolean resolveConflictsByWeight)
 	{
 		// TODO: record more detailed progress for the listener!
 		String progressMessage = "Cleaning network " + net.getName();
-		if (progressListener != null)
+		if (task != null)
 		{
-			progressListener.setProgress(progressMessage, 0, 1);
+			task.setMessage(progressMessage);
+			task.ticksDone(1);
 		}
 		
 		logger.log(" Full cleaning of " + net.getName());
@@ -75,7 +75,7 @@ public class NetworkCleaning
 		net.setNodesAndEdges(nodes, edges);
 
 		// remove obvious conflicts / redundant edges
-		removeRedundantEdges(net, eo);
+		removeRedundantEdges(net, eo, task);
 		
 		// in case there are still conflicts, keep only the highest weight
 		if (resolveConflictsByWeight)
@@ -83,9 +83,9 @@ public class NetworkCleaning
 			resolveToOne(net, eo);
 		}
 		
-		if (progressListener != null)
+		if (task != null)
 		{
-			progressListener.setProgress(progressMessage, 1, 1);
+			task.done();
 		}
 	}
 
@@ -95,11 +95,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the consensus network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 */
-	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
-		fullCleaning(net, eo, progressListener, false);
+		fullCleaning(net, eo, task, false);
 	}
 
 	/**
@@ -109,11 +109,12 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param task TODO
 	 */
-	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo)
+	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo, ScheduledTask task)
 	{
 		// TODO: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX" (I think this is fixed, to check)
-		removeRedundantEdges(net, eo);
+		removeRedundantEdges(net, eo, task);
 	}
 
 	/**
@@ -124,9 +125,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param task TODO
 	 */
-	protected void removeRedundantEdges(Network net, EdgeOntology eo)
+	protected void removeRedundantEdges(Network net, EdgeOntology eo, ScheduledTask task)
 	{
+		// TODO: task!
 		logger.log(" Removing redundant edges from network " + net.getName());
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
@@ -262,15 +265,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned condition-specific network representing the same semantic information
 	 */
-	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, false);
+		fullCleaning(resultNet, eo, task, false);
 
 		return resultNet;
 	}
@@ -282,15 +285,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, true);
+		fullCleaning(resultNet, eo, task, true);
 		return resultNet;
 	}
 
@@ -301,15 +304,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, false);
+		fullCleaning(resultNet, eo, task, false);
 
 		return resultNet;
 	}

@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.listeners;
+package be.svlandeg.diffany.core.progress;
 
 import java.util.Date;
 
@@ -12,8 +12,8 @@ import java.util.Date;
 public class StandardProgressListener extends ExecutionProgress
 {
 	
-
-	public void setProgress(String message, int progress, int total)
+	@Override
+	protected void setProgress(String message, int progress, int total)
 	{
 		System.out.println(new Date() + ": " + message + ": processed " + progress + " of " + total);
 	}

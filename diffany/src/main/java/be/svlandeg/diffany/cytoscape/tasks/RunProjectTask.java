@@ -14,7 +14,7 @@ import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ExecutionProgress;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -147,7 +147,7 @@ public class RunProjectTask extends ExecutionProgress implements Task  {
 	}
 
 	@Override
-	public void setProgress(String message, int progress, int total) {
+	protected void setProgress(String message, int progress, int total) {
 		this.taskMonitor.setStatusMessage(message);
 		this.taskMonitor.setProgress((double)progress/(double)total);
 	}

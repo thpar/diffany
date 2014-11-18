@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -18,6 +17,7 @@ import be.svlandeg.diffany.core.networks.EdgeGenerator;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
@@ -61,11 +61,11 @@ public class EdgeByEdge
 	 * @param ID the ID of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
 	 * @param weightCutoff the minimal weight a differential edge should have to be included
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return the differential network between the two
 	 */
-	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, String diffName, int ID, int supportingCutoff, double weightCutoff, ExecutionProgress progressListener)
+	protected DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks, TreeEdgeOntology eo, String diffName, int ID, int supportingCutoff, double weightCutoff, ScheduledTask task)
 	{
 		DifferentialNetwork diff = new DifferentialNetwork(diffName, ID, reference, conditionNetworks);
 
@@ -146,15 +146,24 @@ public class EdgeByEdge
 		}
 		conditionNetworkNames = conditionNetworkNames.substring(0, conditionNetworkNames.length() - 1); // cutoff the last "/"
 
-		String progressMessage = "Calculating differential network between " + reference.getName() + " and " + conditionNetworkNames;
 		int totalPairs = 0;
 		for (String sourceID : source2targetIDs.keySet())
 		{
 			totalPairs += source2targetIDs.get(sourceID).size();
 		}
+		
+		int ticksPerReport = 1;
+		int pairsPerReport = 0;
+		
+		if (task != null)
+		{
+			String progressMessage = "Calculating differential network between " + reference.getName() + " and " + conditionNetworkNames;
+			task.setMessage(progressMessage);
+			task.ticksDone(ticksPerReport);
+			pairsPerReport = ticksPerReport * totalPairs / task.ticksToGo();
+		}
 
-		int progressed = 0;
-
+		int pairsProgressed = 0;
 		for (String sourceID : source2targetIDs.keySet())
 		{
 			// Determine the node with this source ID in the differential network
@@ -167,6 +176,7 @@ public class EdgeByEdge
 
 			for (String targetID : source2targetIDs.get(sourceID)) // all possible targets for this source
 			{
+				pairsProgressed++;
 				// Determine the node with this target ID in the differential network
 				Node diff_target = allDiffNodes.get(targetID);
 				if (diff_target == null)
@@ -176,9 +186,9 @@ public class EdgeByEdge
 				}
 
 				// notify the progress listener of our progress
-				if (progressListener != null && progressed % 1000 == 0)
+				if (task != null && pairsProgressed % pairsPerReport == 0)
 				{
-					progressListener.setProgress(progressMessage, progressed, totalPairs);
+					task.ticksDone(ticksPerReport);
 				}
 				
 				// get all edges from the input network
@@ -286,13 +296,12 @@ public class EdgeByEdge
 						}
 					}
 				}
-				progressed++;
 			}
 		}
 		// notify the progress listener of the fact that we're done (100%)
-		if (progressListener != null)
+		if (task != null)
 		{
-			progressListener.setProgress(progressMessage, totalPairs, totalPairs);
+			task.done();
 		}
 
 		return diff;
@@ -321,13 +330,13 @@ public class EdgeByEdge
 	 * @param supportingCutoff the minimal number of networks that need to support an edge in the consensus network
 	 * @param weightCutoff the minimal weight that the resulting consensus edges should have to be included
 	 * @param minOperator whether or not to take the minimum of the edge weights - if false, the maximum is taken
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return the consensus network between the input networks. 
 	 * 
 	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
-	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ExecutionProgress progressListener)
+	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ScheduledTask task)
 	{
 		ConsensusNetwork consensus = new ConsensusNetwork(consensusName, ID, networks);
 
@@ -403,16 +412,24 @@ public class EdgeByEdge
 			networkNames += n.getName() + "/";
 		}
 		networkNames = networkNames.substring(0, networkNames.length() - 1); // cutoff the last "/"
-
-		String progressMessage = "Calculating consensus network between " + networkNames;
+		
 		int totalPairs = 0;
 		for (String sourceID : source2targetIDs.keySet())
 		{
 			totalPairs += source2targetIDs.get(sourceID).size();
 		}
 		
-		int progressed = 0;
+		int ticksPerReport = 1;
+		int pairsPerReport = 0;
+		
+		if (task != null)
+		{
+			task.setMessage("Calculating consensus network between " + networkNames);
+			task.ticksDone(ticksPerReport);
+			pairsPerReport = ticksPerReport * totalPairs / task.ticksToGo();
+		}
 
+		int pairsProgressed = 0;
 		for (String sourceID : source2targetIDs.keySet()) // source node ID 
 		{
 			Node output_source = nc.getConsensusNode(null, nodesByID.get(sourceID), supportingCutoff);	
@@ -420,11 +437,12 @@ public class EdgeByEdge
 			for (String targetID : source2targetIDs.get(sourceID)) // target node ID 
 			{
 				Node output_target = nc.getConsensusNode(null, nodesByID.get(targetID), supportingCutoff);	
-
+				pairsProgressed++;
+				
 				// notify the progress listener of our progress
-				if (progressListener != null && progressed % 1000 == 0)
+				if (task != null && pairsProgressed % pairsPerReport == 0)
 				{
-					progressListener.setProgress(progressMessage, progressed, totalPairs);
+					task.ticksDone(ticksPerReport);
 				}
 				
 				// get all edges from the input network
@@ -544,13 +562,12 @@ public class EdgeByEdge
 						}
 					}
 				}
-				progressed++;
 			}
 		}
 		// notify the progress listener of the fact that we're done (100%)
-		if (progressListener != null)
+		if (task != null)
 		{
-			progressListener.setProgress(progressMessage, totalPairs, totalPairs);
+			task.done();
 		}
 
 		return consensus;

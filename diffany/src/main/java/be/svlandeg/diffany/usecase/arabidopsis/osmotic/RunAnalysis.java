@@ -13,8 +13,6 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
-import be.svlandeg.diffany.core.listeners.StandardProgressListener;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -23,6 +21,8 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
@@ -81,8 +81,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -140,7 +140,7 @@ public class RunAnalysis
 		boolean selfInteractions = false;
 		boolean neighbours = true;
 		boolean includeUnknownReg = false;
-		boolean cleanInputAfterIO = true; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
+		boolean cleanInputAfterIO = false; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
 
 		double weight_cutoff = 0;
 		int hubConnections = 10;
@@ -218,6 +218,8 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
+			
+			// TODO: progress bar, the reading step currently takes almost a minute
 
 			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
 			for (InputNetwork net : readNetworks)

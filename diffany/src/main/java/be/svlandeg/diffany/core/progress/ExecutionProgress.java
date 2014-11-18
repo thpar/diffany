@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.core.listeners;
+package be.svlandeg.diffany.core.progress;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 
@@ -11,9 +11,14 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 public abstract class ExecutionProgress
 {
 	
-	private int nrTasks;
-	private int ticksDone;
+	private int totalTicks;
+	private int doneTicks;
 
+	public ExecutionProgress()
+	{
+		doneTicks = 0;
+		totalTicks = 0;
+	}
 	
 	/**
 	 * This method will be called by the differential algorithms in {@link CalculateDiff} every x clicks
@@ -24,23 +29,40 @@ public abstract class ExecutionProgress
 	 * @param progress the number of succesful ticks already conducted
 	 * @param total the total number of ticks that are envisioned to be needed for full execution
 	 */
-	public abstract void setProgress(String message, int progress, int total);
+	protected abstract void setProgress(String message, int progress, int total);
 	
 	/**
 	 * TODO
+	 * @param totalTicks TODO
 	 */
-	public void reset()
+	public void reset(int totalTicks)
 	{
-		nrTasks = 0;
-		ticksDone = 0;
+		doneTicks = 0;
+		this.totalTicks = totalTicks;
 	}
 	
 	/**
-	 * TODO
+	 * @param message TODO
+	 * @param ticks TODO
+	 * 
 	 */
-	public void addTasks(int nr)
+	public void addTicks(String message, int ticks)
 	{
-		nrTasks += nr;
+		if (ticks > ticksToGo())
+		{
+			throw new IllegalArgumentException("Can not report more progress than what was scheduled!");
+		}
+		if (ticks < 1)
+		{
+			throw new IllegalArgumentException("Can not report " + ticks + " ticks!");
+		}
+		doneTicks += ticks;
+		setProgress(message, doneTicks, totalTicks);
+	}
+	
+	protected int ticksToGo()
+	{
+		return totalTicks - doneTicks;
 	}
 	
 }

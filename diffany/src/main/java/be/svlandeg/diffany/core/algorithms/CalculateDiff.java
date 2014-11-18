@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
@@ -13,6 +12,8 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -76,13 +77,13 @@ public class CalculateDiff
 	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param log the logger that records logging messages
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return the consensus network between all input networks
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensus_name, int ID, 
-			int supportingCutoff, boolean refRequired, double weightCutoff, Logger log, boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+			int supportingCutoff, boolean refRequired, double weightCutoff, Logger log, boolean minOperator, ScheduledTask task) throws IllegalArgumentException
 	{
 		if (networks == null || networks.isEmpty() || eo == null || consensus_name == null)
 		{
@@ -94,10 +95,21 @@ public class CalculateDiff
 			String errormsg = "The number of supportingCutoff (" + supportingCutoff + ") should be between 0 (excl) and the number of input networks (incl, " + networks.size() + ")";
 			throw new IllegalArgumentException(errormsg);
 		}
+		ScheduledTask cleaningTask = null;
+		ScheduledTask calculatingTask = null;
+		if (task != null)
+		{
+			int totalTicks = task.ticksToGo();
+			int calculationTicks = totalTicks / 2;
+			int cleanTicks = totalTicks - calculationTicks;
+			
+			cleaningTask = new ScheduledTask(task.getListener(), cleanTicks);
+			calculatingTask = new ScheduledTask(task.getListener(), calculationTicks);
+		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			ConsensusNetwork on = new EdgeByEdge(log).calculateConsensusNetwork(networks, eo, consensus_name, ID, supportingCutoff, refRequired, weightCutoff, minOperator, progressListener);
-			new NetworkCleaning(log).fullConsensusOutputCleaning(on, eo, progressListener);
+			ConsensusNetwork on = new EdgeByEdge(log).calculateConsensusNetwork(networks, eo, consensus_name, ID, supportingCutoff, refRequired, weightCutoff, minOperator, calculatingTask);
+			new NetworkCleaning(log).fullConsensusOutputCleaning(on, eo, cleaningTask);
 			return on;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -116,24 +128,34 @@ public class CalculateDiff
 	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
 	 * @param log the logger that records logging messages
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return the differential network between the two
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
-			String diff_name, int ID, int supportingCutoff, double weightCutoff, Logger log, ExecutionProgress progressListener) throws IllegalArgumentException
+			String diff_name, int ID, int supportingCutoff, double weightCutoff, Logger log, ScheduledTask task) throws IllegalArgumentException
 	{
 		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || diff_name == null)
 		{
 			String errormsg = "The edge weight should be positive!";
 			throw new IllegalArgumentException(errormsg);
 		}
-
+		ScheduledTask cleaningTask = null;
+		ScheduledTask calculatingTask = null;
+		if (task != null)
+		{
+			int totalTicks = task.ticksToGo();
+			int calculationTicks = totalTicks / 2;
+			int cleanTicks = totalTicks - calculationTicks;
+			
+			cleaningTask = new ScheduledTask(task.getListener(), cleanTicks);
+			calculatingTask = new ScheduledTask(task.getListener(), calculationTicks);
+		}
 		if (mode.equals(RunMode.EDGEBYEDGE))
 		{
-			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, diff_name, ID, supportingCutoff, weightCutoff, progressListener);
-			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn, eo);
+			DifferentialNetwork dn = new EdgeByEdge(log).calculateDiffNetwork(reference, conditions, eo, diff_name, ID, supportingCutoff, weightCutoff, calculatingTask);
+			new NetworkCleaning(log).fullDifferentialOutputCleaning(dn, eo, cleaningTask);
 			return dn;
 		}
 		System.out.println("Encountered unknown or unsupported mode: " + mode);
@@ -175,6 +197,29 @@ public class CalculateDiff
 			minOperator = default_MIN;
 		}
 		
+		int totalTicks = 100;
+		ScheduledTask diffTask = null;
+		ScheduledTask consensusTask = null;
+		if (progressListener != null)
+		{
+			progressListener.reset(totalTicks);
+			
+			int diffTicks = totalTicks;
+			int consensusTicks = totalTicks;
+			
+			if (diff_ID >= 0)
+			{
+				consensusTicks = consensusTicks / 2;
+			}
+			if (consensus_ID >= 0)
+			{
+				diffTicks = totalTicks - consensusTicks;
+			}
+			
+			diffTask = new ScheduledTask(progressListener, diffTicks);
+			consensusTask = new ScheduledTask(progressListener, consensusTicks);
+		}
+		
 		if (diff_ID >= 0)
 		{
 			if (! p.isDiffType(runID))
@@ -187,7 +232,7 @@ public class CalculateDiff
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
 			log.log("Calculating the differential and consensus network between " + r.getName() + " and "
 					+ cs.size() + " condition-dependent network(s)");
-			diff = calculateDiffNetwork(r, cs, eo, diff_name, diff_ID, rc.getSupportCutoff()-1, weight_cutoff, log, progressListener);
+			diff = calculateDiffNetwork(r, cs, eo, diff_name, diff_ID, rc.getSupportCutoff()-1, weight_cutoff, log, diffTask);
 		}
 		
 		if (consensus_ID >= 0)
@@ -196,7 +241,7 @@ public class CalculateDiff
 			inputs.addAll(rc.getInputNetworks());
 			String consensus_name = consensusnameprefix + diff_name;
 			log.log("Calculating the consensus network between " + inputs.size() + " input network(s)");
-			cn = calculateConsensusNetwork(inputs, eo, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator, progressListener);
+			cn = calculateConsensusNetwork(inputs, eo, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator, consensusTask);
 		}
 		
 		if (diff != null && cn != null)
@@ -342,7 +387,12 @@ public class CalculateDiff
 		{
 			tasks = (conditions * (conditions-1)) / 2;		// all possible pairwise combinations of the conditions
 		}
-		System.out.println("pairwise comparisons: " + tasks);
+		
+		int ticksPerTask = 100;
+		if (progressListener != null)
+		{
+			progressListener.reset(tasks * ticksPerTask);
+		}
 		
 		if (minOperator == null)
 		{
@@ -362,11 +412,17 @@ public class CalculateDiff
 			
 			for (ConditionNetwork c : cs)
 			{
+				ScheduledTask diffTask = null;
+				if (progressListener != null)
+				{
+					diffTask = new ScheduledTask(progressListener, ticksPerTask);
+				}
+				
 				String diff_name = diffnameprefix + c.getName();
 				log.log("Calculating the differential and consensus network between " + r.getName() + " and " + c.getName());
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
-				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, diff_name, firstID++, 1, weightCutoff, log, progressListener);
+				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, diff_name, firstID++, 1, weightCutoff, log, diffTask);
 				
 				ConsensusNetwork on = null;
 				
@@ -383,7 +439,13 @@ public class CalculateDiff
 					Set<Network> inputs = new HashSet<Network>();
 					inputs.add(r);
 					inputs.add(c);
-					on = calculateConsensusNetwork(inputs, eo, consensus_name, firstID++, 2, true, weightCutoff, log, minOperator, progressListener);
+					
+					ScheduledTask consTask = null;
+					if (progressListener != null)
+					{
+						consTask = new ScheduledTask(progressListener, ticksPerTask);
+					}
+					on = calculateConsensusNetwork(inputs, eo, consensus_name, firstID++, 2, true, weightCutoff, log, minOperator, consTask);
 				}
 				
 				if (on != null)
@@ -404,6 +466,12 @@ public class CalculateDiff
 				InputNetwork n1 = inputs.get(i);
 				for (int j = i+1; j < inputs.size(); j++)
 				{
+					ScheduledTask consTask = null;
+					if (progressListener != null)
+					{
+						consTask = new ScheduledTask(progressListener, ticksPerTask);
+					}
+					
 					InputNetwork n2 = inputs.get(j);
 					
 					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName());
@@ -418,7 +486,7 @@ public class CalculateDiff
 					Set<Network> twoInputs = new HashSet<Network>();
 					twoInputs.add(n1);
 					twoInputs.add(n2);
-					ConsensusNetwork cn = calculateConsensusNetwork(twoInputs, eo, consensus_name, firstID++, 2, false, weightCutoff, log, minOperator, progressListener);
+					ConsensusNetwork cn = calculateConsensusNetwork(twoInputs, eo, consensus_name, firstID++, 2, false, weightCutoff, log, minOperator, consTask);
 					
 					output.addConsensus(cn);
 				}

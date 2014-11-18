@@ -1,4 +1,4 @@
 ID	1
 Name	Reference network
 Type	ReferenceNetwork
-Attributes	kinase_function;phosphorylation_site;
+Attributes	differentially_expressed;kinase_function;phosphorylation_site;

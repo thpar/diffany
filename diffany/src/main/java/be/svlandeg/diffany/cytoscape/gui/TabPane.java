@@ -435,6 +435,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		for (CyNetworkView cyView : allViews){
 			CyNetwork cyNetwork = cyView.getModel();
 			CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
+			Set<View<CyEdge>> hideEdges = new HashSet<View<CyEdge>>();
+			Set<View<CyEdge>> showEdges = new HashSet<View<CyEdge>>();
 			
 			for (View<CyNode> nodeView : cyView.getNodeViews()){
 				CyNode node = nodeView.getModel();
@@ -447,32 +449,28 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 					boolean isHidden = hiddenInteractions.contains(interaction);
 					View<CyEdge> edgeView = cyView.getEdgeView(edge);
 					if (isHidden){
-						edgeView.setLockedValue(BasicVisualLexicon.EDGE_VISIBLE, false);						
+						hideEdges.add(edgeView);
 					} else {
-						edgeView.clearValueLock(BasicVisualLexicon.EDGE_VISIBLE);						
+						showEdges.add(edgeView);
 						visibleEdgeCount++;
 					}
 				}
 				if (visibleEdgeCount == 0){
 					nodeView.setLockedValue(BasicVisualLexicon.NODE_VISIBLE, false);					
 				} else {
-					nodeView.clearValueLock(BasicVisualLexicon.NODE_VISIBLE);					
+					nodeView.clearValueLock(BasicVisualLexicon.NODE_VISIBLE);						
 				}
 			}
-			
+			//only change edge properties after all nodes have been changed
+			for (View<CyEdge> edgeView : hideEdges){
+				edgeView.setLockedValue(BasicVisualLexicon.EDGE_VISIBLE, false);						
+			}
+			for (View<CyEdge> edgeView : showEdges){
+				edgeView.clearValueLock(BasicVisualLexicon.EDGE_VISIBLE);
+			}
 			cyView.updateView();		
 		}
 		
-		//check all views
-//		for (CyNetworkView cyView : allViews){
-//			for (View<CyEdge> edge : cyView.getEdgeViews()){
-//				System.out.println("Edge" + edge.getVisualProperty(BasicVisualLexicon.EDGE_VISIBLE));
-//			}
-//			for (View<CyNode> node : cyView.getNodeViews()){
-//				System.out.println("Node" + node.getVisualProperty(BasicVisualLexicon.NODE_VISIBLE));
-//			}
-//			System.out.println();
-//		}
 	}
 
 	/**

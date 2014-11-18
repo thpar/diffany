@@ -215,7 +215,6 @@ public class CalculateDiff
 			{
 				diffTicks = totalTicks - consensusTicks;
 			}
-			
 			diffTask = new ScheduledTask(progressListener, diffTicks);
 			consensusTask = new ScheduledTask(progressListener, consensusTicks);
 		}

@@ -129,7 +129,12 @@ public class NetworkCleaning
 	 */
 	protected void removeRedundantEdges(Network net, EdgeOntology eo, ScheduledTask task)
 	{
-		// TODO: task!
+		String progressMessage = "Cleaning network " + net.getName();
+		if (task != null)
+		{
+			task.setMessage(progressMessage);
+			task.ticksDone(1);
+		}
 		logger.log(" Removing redundant edges from network " + net.getName());
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
@@ -228,6 +233,10 @@ public class NetworkCleaning
 					}
 				}
 			}
+		}
+		if (task != null)
+		{
+			task.done();
 		}
 	}
 

@@ -81,8 +81,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -188,6 +188,7 @@ public class RunAnalysis
 			catch (IllegalArgumentException e)
 			{
 				System.out.println("Trouble parsing from " + overexpressionFile + ": " + e.getMessage());
+				e.printStackTrace();
 				return;
 			}
 			catch (IOException e)
@@ -346,6 +347,7 @@ public class RunAnalysis
 			boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
 	{
 		Set<String> nodeAttributes = new HashSet<String>();
+		nodeAttributes.add(Node.de_attribute);
 		if (includePhos)
 		{
 			nodeAttributes.add(Node.phos_attribute);
@@ -430,28 +432,8 @@ public class RunAnalysis
 		/* Add the appropriate attributes to the nodes */
 		for (Node n : ref_filtered_nodes)
 		{
-			if (includePhos)
-			{
-				if (phosNodes.contains(n.getID()))
-				{
-					n.setAttribute(Node.phos_attribute, "yes");
-				}
-				else
-				{
-					n.setAttribute(Node.phos_attribute, "no");
-				}
-			}
-			if (includeKinase)
-			{
-				if (kinaseNodes.contains(n.getID()))
-				{
-					n.setAttribute(Node.kinase_attribute, "yes");
-				}
-				else
-				{
-					n.setAttribute(Node.kinase_attribute, "no");
-				}
-			}
+			setFixedAttributes(n, phosNodes, kinaseNodes, includePhos, includeKinase);
+			n.setAttribute(Node.de_attribute, Node.not_de);
 		}
 
 		ReferenceNetwork refNet = new ReferenceNetwork("Reference network", firstID++, nodeAttributes);
@@ -484,26 +466,58 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("Constructing the condition-specific network for " + name);
 
-			// record the DE state as node attribute
-			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
-			constr.modifyDEState(all_de_genes, condition_nodes);
-
 			NetworkAnalysis na = new NetworkAnalysis();
 			String ppiType = "ppi";
 			
+			// record the DE state as node attribute
+			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
+			constr.modifyDEState(all_de_genes, condition_nodes);
+			
+			for (Node n : condition_nodes)
+			{
+				setFixedAttributes(n, phosNodes, kinaseNodes, includePhos, includeKinase);
+			}
+			
 			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), condition_nodes, ppiType, hubConnections, false, false);
 
-			Set<Edge> condition_edges = constr.adjustEdgesByFoldChanges(eo, cleanRefNet.getEdges(), all_de_genes);
-			Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_edges, ppiType, all_de_genes.keySet());
+			Set<Edge> condition_edges = constr.adjustEdgesByFoldChanges(eo, condition_nodes, cleanRefNet.getEdges(), all_de_genes);
+			Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_nodes, condition_edges, ppiType, all_de_genes.keySet());
 			condNet.setNodesAndEdges(filtered_edges);
 			
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, eo, null);
+			
 			networks.add(cleanCondNet);
 
 			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + " nodes");
 		}
 
 		return networks;
+	}
+	
+	private void setFixedAttributes(Node n, Set<String> phosNodes, Set<String> kinaseNodes, boolean includePhos, boolean includeKinase)
+	{
+		if (includePhos)
+		{
+			if (phosNodes.contains(n.getID()))
+			{
+				n.setAttribute(Node.phos_attribute, "yes");
+			}
+			else
+			{
+				n.setAttribute(Node.phos_attribute, "no");
+			}
+		}
+		if (includeKinase)
+		{
+			if (kinaseNodes.contains(n.getID()))
+			{
+				n.setAttribute(Node.kinase_attribute, "yes");
+			}
+			else
+			{
+				n.setAttribute(Node.kinase_attribute, "no");
+			}
+		}
 	}
 
 	/**

@@ -148,25 +148,27 @@ public class NetworkConstruction
 	 * Take a copy of the given set of edges and produce new ones that are weighted according to the fold changes of the DE genes.
 	 * 
 	 * @param eo the edge ontology which can tell which edge types are anti-correlated (e.g. inhibition)
+	 * @param nodes the set of nodes that should be used to construct the new edges
 	 * @param origEdges the original set of edges (will not be changed!)
 	 * @param all_de_nodes all overexpressed nodes (both stringent and less-stringent criteria)
 	 * @return a new set of edges, whose weights are changed according to the fold changes of the DE genes
 	 */
-	public Set<Edge> adjustEdgesByFoldChanges(EdgeOntology eo, Set<Edge> origEdges, Map<String, Double> all_de_nodes)
+	public Set<Edge> adjustEdgesByFoldChanges(EdgeOntology eo, Set<Node> nodes, Set<Edge> origEdges, Map<String, Double> all_de_nodes)
 	{
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
+		
 		Set<Edge> resultEdges = new HashSet<Edge>();
 		for (Edge e : origEdges)
 		{
-			Edge newEdge = new Edge(e.getSource(), e.getTarget(), new EdgeDefinition(e.getDefinition()));
-
-			String sourceID = newEdge.getSource().getID();
+			String sourceID = e.getSource().getID();
+			String targetID = e.getTarget().getID();
+			
 			double sourceFC = 0;
 			if (all_de_nodes.containsKey(sourceID))
 			{
 				sourceFC = all_de_nodes.get(sourceID);
 			}
 
-			String targetID = newEdge.getTarget().getID();
 			double targetFC = 0;
 			if (all_de_nodes.containsKey(targetID))
 			{
@@ -235,8 +237,9 @@ public class NetworkConstruction
 				}
 			}
 
-			newEdge.getDefinition().setWeight(weight);
-			resultEdges.add(newEdge);
+			EdgeDefinition newEdge = new EdgeDefinition(e.getDefinition());
+			newEdge.setWeight(weight);
+			resultEdges.add(new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), newEdge));
 		}
 
 		return resultEdges;
@@ -248,13 +251,15 @@ public class NetworkConstruction
 	 * In that case, we revert the PPI connection to reference levels (1) because we assume it's not very meaningful, unless both nodes are DE.
 	 * 
 	 * @param hubs the PPI hubs denoted by their unique IDs
+	 * @param nodes the set of nodes that should be used to construct the new edges
 	 * @param origEdges the original set of edges (will not be changed!) - should not contain redundancy
 	 * @param type the type of connection we want to filter for
 	 * @param all_de_nodes the DE genes
 	 * @return a new set of edges, which will be a subset of the original set of edges
 	 */
-	public Set<Edge> filterForHubs(Set<String> hubs, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
+	public Set<Edge> filterForHubs(Set<String> hubs, Set<Node> nodes, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
 	{
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
 		Set<Edge> resultEdges = new HashSet<Edge>();
 
 		Map<String, Integer> diffEdgeCountByNode = new HashMap<String, Integer>();
@@ -283,11 +288,8 @@ public class NetworkConstruction
 
 		for (Edge e : origEdges)
 		{
-			Node source = e.getSource();
-			Node target = e.getTarget();
-
-			String sourceID = source.getID();
-			String targetID = target.getID();
+			String sourceID = e.getSource().getID();
+			String targetID = e.getTarget().getID();
 
 			int sourceEdgeDiffCount = diffEdgeCountByNode.get(sourceID);
 			int targetEdgeDiffCount = diffEdgeCountByNode.get(targetID);
@@ -319,13 +321,13 @@ public class NetworkConstruction
 			/* add a copy of the edge to the result set if we want to keep it */
 			if (keepEdge)
 			{
-				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
+				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
 				resultEdges.add(copyE);
 			}
 			/* otherwise, put the edge weight to 1 and keep that copy */
 			else
 			{
-				Edge copyE = new Edge(source, target, new EdgeDefinition(e.getDefinition()));
+				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
 				copyE.getDefinition().setWeight(1.0);
 				resultEdges.add(copyE);
 			}

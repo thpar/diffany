@@ -355,7 +355,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private void updateSupportSlider(){
 		//enable extra options
-		this.supportSlider.setEnabled(model.getSelectedProject()!=null);
 		if (model.getSelectedProject()!=null 
 				&& !model.isGenerateDiffNets() 
 				&& model.getSelectedProject().getReferenceNetwork()!=null){
@@ -371,9 +370,10 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		int newNumberOfTicks = this.model.getSelectedProject().getNumberOfInputNetworks();
 		if (currentTicks != newNumberOfTicks){
 			this.supportSlider.setMaximum(newNumberOfTicks);
-			this.supportSlider.setMinimum(newNumberOfTicks/2);
-			this.supportSlider.setValue(newNumberOfTicks);			
+			this.supportSlider.setMinimum(Math.max(newNumberOfTicks/2, 2));
+			this.supportSlider.setValue(newNumberOfTicks);
 		}
+		this.supportSlider.setEnabled(model.getSelectedProject()!=null && newNumberOfTicks>2);
 	}
 
 	@Override

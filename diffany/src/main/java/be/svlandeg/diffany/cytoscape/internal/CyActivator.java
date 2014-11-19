@@ -113,7 +113,7 @@ public class CyActivator extends AbstractCyActivator
 				new Properties());
 	
 		OsmoticUseCase example4 = new OsmoticUseCase();
-		example4.setName("OsmoticUseCase");
+		example4.setName("Osmotic stress");
 		registerAllServices(context,new LoadExampleAction(services, example4), new Properties());
 
 		

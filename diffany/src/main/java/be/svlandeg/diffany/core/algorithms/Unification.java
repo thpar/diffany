@@ -106,6 +106,8 @@ public class Unification
 	 * Use the directionality of edge types as recorded in the edge ontology to 'fix' a set of edges.
 	 * Specifically, symmetrical edges that should be directed, will be split into 2.
 	 * 
+	 * This method only works for input/consensus networks as it uses the source categories of the edge ontology.
+	 * 
 	 * @param oldEdges the old set of edges
 	 * @param eo the edge ontology defining the semantics of edge types
 	 * @return the new, unified set of edges adhering to the edge ontology

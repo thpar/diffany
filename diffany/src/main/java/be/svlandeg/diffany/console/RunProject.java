@@ -7,13 +7,13 @@ import org.apache.commons.cli.CommandLine;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
-import be.svlandeg.diffany.core.listeners.StandardProgressListener;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
@@ -40,7 +40,7 @@ public class RunProject
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
-		ExecutionProgress listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener();
 		
 		// TODO v3.0: make ontologies adjustable
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());

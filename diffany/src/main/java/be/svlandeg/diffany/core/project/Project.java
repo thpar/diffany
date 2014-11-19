@@ -8,11 +8,12 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.algorithms.Unification;
 import be.svlandeg.diffany.core.io.ProjectIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -109,7 +110,7 @@ public class Project
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition, boolean cleanInput, ExecutionProgress progressListener)
+	public int addRunConfiguration(ReferenceNetwork reference, ConditionNetwork condition, boolean cleanInput, ProgressListener progressListener)
 	{
 		Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>();
 		cs.add(condition);
@@ -129,7 +130,7 @@ public class Project
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, boolean cleanInput, ExecutionProgress progressListener)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, boolean cleanInput, ProgressListener progressListener)
 	{
 		return addRunConfiguration(reference, conditions, conditions.size() + 1, cleanInput, progressListener);
 	}
@@ -148,7 +149,7 @@ public class Project
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 * @throws IllegalArgumentException when the IDs of the provided networks are not unique
 	 */
-	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff, boolean cleanInput, ExecutionProgress progressListener)
+	public int addRunConfiguration(ReferenceNetwork reference, Set<ConditionNetwork> conditions, int supportingCutoff, boolean cleanInput, ProgressListener progressListener)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the reference and condition-specific network(s) ");
@@ -158,14 +159,27 @@ public class Project
 		if (cleanInput)
 		{
 			/* It is necessary to first register before cleaning, otherwise some interaction types may be unknown by the NetworkCleaning object */
+			int tasks = conditions.size() + 1;
+			int ticksPerTask = 100;
+			ScheduledTask diffTask = null;
+			if (progressListener != null)
+			{
+				progressListener.reset(tasks * ticksPerTask);
+				diffTask = new ScheduledTask(progressListener, ticksPerTask);
+			}
 			registerSourceNetwork(reference, logger);
-			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, edgeOntology, progressListener);
+			ReferenceNetwork cleanRef = new NetworkCleaning(logger).fullInputRefCleaning(reference, edgeOntology, diffTask);
 			
 			Set<ConditionNetwork> cleanConditions = new HashSet<ConditionNetwork>();
 			for (ConditionNetwork conNet : conditions)
 			{
+				ScheduledTask consTask = null;
+				if (progressListener != null)
+				{
+					consTask = new ScheduledTask(progressListener, ticksPerTask);
+				}
 				registerSourceNetwork(conNet, logger);
-				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, edgeOntology, progressListener);
+				ConditionNetwork cleanCon = new NetworkCleaning(logger).fullInputConditionCleaning(conNet, edgeOntology, consTask);
 				cleanConditions.add(cleanCon);
 			}
 			rc = new RunDiffConfiguration(cleanRef, cleanConditions, supportingCutoff);
@@ -206,7 +220,7 @@ public class Project
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks, ExecutionProgress progressListener)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, ProgressListener progressListener)
 	{
 		return addRunConfiguration(inputNetworks, inputNetworks.size(), false, progressListener);
 	}
@@ -223,16 +237,29 @@ public class Project
 	 * 
 	 * @return the unique run ID assigned to the new RunConfiguration in this project
 	 */
-	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int supportingCutoff, boolean refRequired, ExecutionProgress progressListener)
+	public int addRunConfiguration(Set<InputNetwork> inputNetworks, int supportingCutoff, boolean refRequired, ProgressListener progressListener)
 	{
 		Logger logger = new Logger();
 		logger.log("Analysing the input networks ");
 		
+		int tasks = inputNetworks.size();
+		int ticksPerTask = 100;
+		if (progressListener != null)
+		{
+			progressListener.reset(tasks * ticksPerTask);
+		}
+		
 		Set<InputNetwork> cleanNetworks = new HashSet<InputNetwork>();
 		for (InputNetwork inputNet : inputNetworks)
 		{
+			ScheduledTask task = null;
+			if (progressListener != null)
+			{
+				task = new ScheduledTask(progressListener, ticksPerTask);
+			}
+			
 			registerSourceNetwork(inputNet, logger);
-			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, edgeOntology, progressListener);
+			InputNetwork cleanNet = new NetworkCleaning(logger).fullInputCleaning(inputNet, edgeOntology, task);
 			cleanNetworks.add(cleanNet);
 		}
 		

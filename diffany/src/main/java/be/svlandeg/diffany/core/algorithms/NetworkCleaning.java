@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import be.svlandeg.diffany.core.io.EdgeIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
@@ -17,6 +15,7 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 
@@ -50,32 +49,50 @@ public class NetworkCleaning
 	 * Clean an input network:
 	 * Per pair of nodes, group all input edges into subclasses per root category of the EdgeOntology, unify the directionality
 	 * (either all symmetric or all directed, as dicated by the edge ontology), and resolve conflicts within a root category.
+	 * Resolving conflicts by weight is only an option for input/consensus networks as it uses the source categories of the edge ontology.
 	 * 
 	 * Be aware: this function changes the input network object!
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
+	 * @param resolveConflictsByWeight if true, conflicts are resolved by selecting the edge with the highest weight - only possible for Input Networks!
 	 */
-	private void fullCleaning(Network net, EdgeOntology eo, ExecutionProgress progressListener, boolean resolveConflictsByWeight)
+	protected void fullCleaning(Network net, EdgeOntology eo, ScheduledTask task, boolean resolveConflictsByWeight, boolean unifyEdgeTypes)
 	{
-		// TODO: record more detailed progress for the listener!
-		String progressMessage = "Cleaning network " + net.getName();
-		if (progressListener != null)
+		boolean isSourceNetwork = net instanceof InputNetwork || net instanceof ConsensusNetwork;
+		if (resolveConflictsByWeight && ! isSourceNetwork)
 		{
-			progressListener.setProgress(progressMessage, 0, 1);
+			String errormsg = "Conflicts can not be resolved by weight for this type of network: " + net.getClass();
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (unifyEdgeTypes && ! isSourceNetwork)
+		{
+			String errormsg = "Edge types can not be unified for this type of network: " + net.getClass();
+			throw new IllegalArgumentException(errormsg);
+		}
+		String progressMessage = "Cleaning network " + net.getName();
+		if (task != null)
+		{
+			task.setMessage(progressMessage);
+			task.ticksDone(1);
 		}
 		
 		logger.log(" Full cleaning of " + net.getName());
 
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		Set<Edge> edges = net.getEdges();
+		
+		if (unifyEdgeTypes)
+		{
+			edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		}
 		
 		net.setNodesAndEdges(nodes, edges);
 
 		// remove obvious conflicts / redundant edges
-		removeRedundantEdges(net, eo);
+		removeRedundantEdges(net, eo, task);
 		
 		// in case there are still conflicts, keep only the highest weight
 		if (resolveConflictsByWeight)
@@ -83,9 +100,9 @@ public class NetworkCleaning
 			resolveToOne(net, eo);
 		}
 		
-		if (progressListener != null)
+		if (task != null)
 		{
-			progressListener.setProgress(progressMessage, 1, 1);
+			task.done();
 		}
 	}
 
@@ -95,11 +112,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the consensus network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 */
-	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
-		fullCleaning(net, eo, progressListener, false);
+		fullCleaning(net, eo, task, false, true);
 	}
 
 	/**
@@ -109,11 +126,11 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 */
-	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo)
+	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo, ScheduledTask task)
 	{
-		// TODO: the method fullCleaning can not be used because it will not recognise types like "decrease_XXX" (I think this is fixed, to check)
-		removeRedundantEdges(net, eo);
+		fullCleaning(net, eo, task, false, false);
 	}
 
 	/**
@@ -124,18 +141,40 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 */
-	protected void removeRedundantEdges(Network net, EdgeOntology eo)
+	protected void removeRedundantEdges(Network net, EdgeOntology eo, ScheduledTask task)
 	{
+		String progressMessage = "Cleaning network " + net.getName();
+		if (task != null)
+		{
+			task.setMessage(progressMessage);
+			task.ticksDone(1);
+		}
 		logger.log(" Removing redundant edges from network " + net.getName());
 
 		Set<Edge> removed_edges = new HashSet<Edge>();
 
 		Set<Edge> oldEdges = new HashSet<Edge>(net.getEdges());
-
+		int iterations = oldEdges.size();
+		int ticksPerReport = 10;
+		int iterationPerReport = 0;
+		
+		if (task != null)
+		{
+			iterationPerReport = (ticksPerReport * iterations) / task.ticksToGo();
+		}
+		
+		int iterationsDone = 0;
 		// remove duplicate symmetrical edges between source-target and target-source
 		for (Edge et : oldEdges)
 		{
+			iterationsDone++;
+			if (task != null && iterationsDone % iterationPerReport == 0)
+			{
+				task.ticksDone(ticksPerReport);
+			}
+			
 			Node n1 = et.getSource();
 			Node n2 = et.getTarget();
 
@@ -226,6 +265,10 @@ public class NetworkCleaning
 				}
 			}
 		}
+		if (task != null)
+		{
+			task.done();
+		}
 	}
 
 	/**
@@ -262,15 +305,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned condition-specific network representing the same semantic information
 	 */
-	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public ConditionNetwork fullInputConditionCleaning(ConditionNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, false);
+		fullCleaning(resultNet, eo, task, false, true);
 
 		return resultNet;
 	}
@@ -282,15 +325,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public ReferenceNetwork fullInputRefCleaning(ReferenceNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, true);
+		fullCleaning(resultNet, eo, task, true, true);
 		return resultNet;
 	}
 
@@ -301,15 +344,15 @@ public class NetworkCleaning
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
+	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return a cleaned reference network representing the same semantic information
 	 */
-	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ExecutionProgress progressListener)
+	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, progressListener, false);
+		fullCleaning(resultNet, eo, task, false, true);
 
 		return resultNet;
 	}
@@ -319,6 +362,7 @@ public class NetworkCleaning
 	 * {@link #resolveToOnePerRoot(Network, EdgeOntology, Set, Set, Node, Node)}.
 	 * 
 	 * This method is best run after {@link #removeRedundantEdges} as this already resolves some obvious conflicts.
+	 * Further, it only works for input/consensus networks as it uses the source categories of the edge ontology.
 	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
@@ -435,6 +479,8 @@ public class NetworkCleaning
 	 * Clean a network:
 	 * Group all input edges into subclasses per root category of the EdgeOntology, resolve conflicts within a root category.
 	 * 
+	 * This method only works for input/consensus networks as it uses the source categories of the edge ontology.
+	 * 
 	 * @param net the network that needs cleaning
 	 * @param eo the edge ontology
 	 * @param roots the root categories of the edge ontology
@@ -514,7 +560,7 @@ public class NetworkCleaning
 	 * It is assumed that getEdgesPerRoot was previously used to provide a set of edges which only contains edges for one root category,
 	 * and that all edges within this category are either symmetrical, or all directed.
 	 * 
-	 * This method currently only works for input networks as it uses the source categories of the edge ontology!
+	 * This method only works for input/consensus networks as it uses the source categories of the edge ontology.
 	 * 
 	 * @param edges the original set of input edges
 	 * @param eo the edge ontology

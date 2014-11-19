@@ -21,7 +21,7 @@ public class OsmoticUseCase extends GenericExample{
 	}
 	
 	public Project getTestProject(){
-		String name = "Osmotic Use Case";
+		String name = "Osmotic stress";
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo);
 		return p;

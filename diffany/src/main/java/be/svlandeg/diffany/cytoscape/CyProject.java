@@ -10,13 +10,13 @@ import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
@@ -159,7 +159,7 @@ public class CyProject{
 	 * @return the ID of the generated {@link RunConfiguration}
 	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
-	public int generateRunConfiguration(Model model, ExecutionProgress listener) throws InvalidRunConfigurationException{
+	public int generateRunConfiguration(Model model, ProgressListener listener) throws InvalidRunConfigurationException{
 		if (!canExecute(model)){
 			throw new InvalidRunConfigurationException();
 		}

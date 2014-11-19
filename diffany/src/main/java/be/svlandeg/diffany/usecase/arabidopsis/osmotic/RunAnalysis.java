@@ -13,8 +13,6 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
-import be.svlandeg.diffany.core.listeners.ExecutionProgress;
-import be.svlandeg.diffany.core.listeners.StandardProgressListener;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -23,6 +21,8 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunOutput;
@@ -97,7 +97,7 @@ public class RunAnalysis
 		boolean performStep4InputNetworksFromFile = true;
 		boolean performStep5OneagainstAll = true;
 		boolean performStep5AllPairwise = false;
-		boolean performStep6OutputNetworksToFile = true;
+		boolean performStep6OutputNetworksToFile = false;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
@@ -140,7 +140,9 @@ public class RunAnalysis
 		boolean selfInteractions = false;
 		boolean neighbours = true;
 		boolean includeUnknownReg = false;
-		boolean cleanInputAfterIO = true; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
+		
+		// the input should have been cleaned before IO in step 3 - but this can be set to true to test e.g. the progresslistener or cleaning speed
+		boolean cleanInputAfterIO = false; 
 
 		double weight_cutoff = 0;
 		int hubConnections = 10;
@@ -218,6 +220,8 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
+			
+			// TODO: progress bar, the reading step currently takes almost a minute
 
 			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
 			for (InputNetwork net : readNetworks)
@@ -528,7 +532,7 @@ public class RunAnalysis
 		String name = "Osmotic_usecase_" + support;
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo);
-		ExecutionProgress listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener();
 
 		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO, listener);
 

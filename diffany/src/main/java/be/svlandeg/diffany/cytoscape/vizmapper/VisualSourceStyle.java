@@ -50,8 +50,8 @@ public class VisualSourceStyle extends AbstractVisualDiffanyStyle {
 		//map weight to edge width
 		VisualMappingFunctionFactory vmffC = services.getVisualMappingFunctionFactory("continuous");
 		ContinuousMapping<Double, Double> edgeWidthMapping = (ContinuousMapping<Double, Double>)vmffC.createVisualMappingFunction(CyNetworkBridge.WEIGHT, Double.class, BasicVisualLexicon.EDGE_WIDTH);
-		edgeWidthMapping.addPoint(sourceDrawing.getMinWeight(), new BoundaryRangeValues<Double>(0.0d,0.0d,0.0d));
-		edgeWidthMapping.addPoint(sourceDrawing.getMaxWeight(), new BoundaryRangeValues<Double>(20d,20d,20d));
+		edgeWidthMapping.addPoint(sourceDrawing.getMinWeight(), new BoundaryRangeValues<Double>(1.0d,1.0d,1.0d));
+		edgeWidthMapping.addPoint(sourceDrawing.getMaxWeight(), new BoundaryRangeValues<Double>(25d,25d,25d));
 		vis.addVisualMappingFunction(edgeWidthMapping);
 		
 		for (String type : interactionTypes) {

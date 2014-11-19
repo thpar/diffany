@@ -65,10 +65,15 @@ public class ExtraDiffanyVisMappings implements ExtraVisMappings{
 		
 		DiscreteMapping<String, Paint> nodeColorMapping = 
 				(DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction(DE_COLUMN, String.class, BasicVisualLexicon.NODE_FILL_COLOR);
-		nodeBorderMapping.putMapValue(KINASE_YES, KINASE_BORDER_SIZE);
 		nodeColorMapping.putMapValue(DE_UP_VALUE, DE_UP_COLOR);
 		nodeColorMapping.putMapValue(DE_DOWN_VALUE, DE_DOWN_COLOR);
 		mappings.add(nodeColorMapping);
+		
+		DiscreteMapping<String, Paint> nodeSelectedColorMapping = 
+				(DiscreteMapping<String, Paint>)vmffD.createVisualMappingFunction(DE_COLUMN, String.class, BasicVisualLexicon.NODE_SELECTED_PAINT);
+		nodeSelectedColorMapping.putMapValue(DE_UP_VALUE, DE_UP_COLOR.darker().darker());
+		nodeSelectedColorMapping.putMapValue(DE_DOWN_VALUE, DE_DOWN_COLOR.darker().darker());
+		mappings.add(nodeSelectedColorMapping);
 		
 	}
 	

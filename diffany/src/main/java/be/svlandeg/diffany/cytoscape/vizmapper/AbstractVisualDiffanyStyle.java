@@ -91,6 +91,7 @@ public abstract class AbstractVisualDiffanyStyle {
 		//node default style
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ELLIPSE);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, NODE_COLOR);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_SELECTED_PAINT, NODE_COLOR.darker().darker());
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SIZE, 30d);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_BORDER_WIDTH, 0d);
 		
@@ -116,8 +117,9 @@ public abstract class AbstractVisualDiffanyStyle {
 		//edge default style
 		
 		//edge basic mappings
-		PassthroughMapping<String, ?> edgeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
-		vis.addVisualMappingFunction(edgeLabelMapping);
+		//not showing edge labels by default for now
+//		PassthroughMapping<String, ?> edgeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyEdge.INTERACTION, String.class, BasicVisualLexicon.EDGE_LABEL);
+//		vis.addVisualMappingFunction(edgeLabelMapping);
 		
 		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
 		DiscreteMapping<Boolean, LineType> edgeLineMapping = (DiscreteMapping<Boolean, LineType>)vmffD.createVisualMappingFunction(CyNetworkBridge.NEGATED, Boolean.class, BasicVisualLexicon.EDGE_LINE_TYPE);

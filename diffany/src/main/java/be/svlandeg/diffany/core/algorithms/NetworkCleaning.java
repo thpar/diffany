@@ -170,7 +170,7 @@ public class NetworkCleaning
 		for (Edge et : oldEdges)
 		{
 			iterationsDone++;
-			if (task != null && iterationsDone % iterationPerReport == 0)
+			if (task != null && iterationPerReport > 0 && iterationsDone % iterationPerReport == 0)
 			{
 				task.ticksDone(ticksPerReport);
 			}

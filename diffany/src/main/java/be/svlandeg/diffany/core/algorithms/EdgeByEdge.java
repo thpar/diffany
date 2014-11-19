@@ -186,7 +186,7 @@ public class EdgeByEdge
 				}
 
 				// notify the progress listener of our progress
-				if (task != null && pairsProgressed % pairsPerReport == 0)
+				if (task != null && pairsPerReport > 0 && pairsProgressed % pairsPerReport == 0)
 				{
 					task.ticksDone(ticksPerReport);
 				}
@@ -440,7 +440,7 @@ public class EdgeByEdge
 				pairsProgressed++;
 				
 				// notify the progress listener of our progress
-				if (task != null && pairsProgressed % pairsPerReport == 0)
+				if (task != null && pairsPerReport > 0 && pairsProgressed % pairsPerReport == 0)
 				{
 					task.ticksDone(ticksPerReport);
 				}

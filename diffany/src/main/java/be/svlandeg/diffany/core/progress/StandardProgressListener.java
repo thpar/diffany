@@ -4,12 +4,12 @@ import java.util.Date;
 
 
 /**
- * This class implements the {@link ExecutionProgress} interface and prints the progress to 
+ * This class implements the {@link ProgressListener} interface and prints the progress to 
  * the standard output stream, together with a time stamp.
  * 
  * @author Sofie Van Landeghem
  */
-public class StandardProgressListener extends ExecutionProgress
+public class StandardProgressListener extends ProgressListener
 {
 	
 	@Override

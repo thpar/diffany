@@ -140,10 +140,25 @@ public class NetworkCleaning
 		Set<Edge> removed_edges = new HashSet<Edge>();
 
 		Set<Edge> oldEdges = new HashSet<Edge>(net.getEdges());
-
+		int iterations = oldEdges.size();
+		int ticksPerReport = 10;
+		int iterationPerReport = 0;
+		
+		if (task != null)
+		{
+			iterationPerReport = (ticksPerReport * iterations) / task.ticksToGo();
+		}
+		
+		int iterationsDone = 0;
 		// remove duplicate symmetrical edges between source-target and target-source
 		for (Edge et : oldEdges)
 		{
+			iterationsDone++;
+			if (task != null && iterationsDone % iterationPerReport == 0)
+			{
+				task.ticksDone(ticksPerReport);
+			}
+			
 			Node n1 = et.getSource();
 			Node n2 = et.getTarget();
 

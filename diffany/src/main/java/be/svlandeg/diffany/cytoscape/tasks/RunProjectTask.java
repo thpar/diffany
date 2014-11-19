@@ -14,7 +14,7 @@ import org.cytoscape.work.Task;
 import org.cytoscape.work.TaskMonitor;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
-import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -30,7 +30,7 @@ import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
  * @author Thomas Van Parys
  *
  */
-public class RunProjectTask extends ExecutionProgress implements Task  {
+public class RunProjectTask extends ProgressListener implements Task  {
 
 	private Model model;
 	private CyProject cyProject;

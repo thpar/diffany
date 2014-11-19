@@ -21,7 +21,7 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -81,8 +81,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -140,7 +140,9 @@ public class RunAnalysis
 		boolean selfInteractions = false;
 		boolean neighbours = true;
 		boolean includeUnknownReg = false;
-		boolean cleanInputAfterIO = false; // TODO: input should be cleaned before IO in step 3 - but can be set to true to test progresslistener
+		
+		// the input should have been cleaned before IO in step 3 - but this can be set to true to test e.g. the progresslistener or cleaning speed
+		boolean cleanInputAfterIO = true; 
 
 		double weight_cutoff = 0;
 		int hubConnections = 10;
@@ -530,7 +532,7 @@ public class RunAnalysis
 		String name = "Osmotic_usecase_" + support;
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo);
-		ExecutionProgress listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener();
 
 		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO, listener);
 

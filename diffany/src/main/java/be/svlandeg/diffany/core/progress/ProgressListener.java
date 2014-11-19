@@ -8,13 +8,13 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
  * 
  * @author Sofie Van Landeghem
  */
-public abstract class ExecutionProgress
+public abstract class ProgressListener
 {
 	
 	private int totalTicks;
 	private int doneTicks;
 
-	public ExecutionProgress()
+	public ProgressListener()
 	{
 		doneTicks = 0;
 		totalTicks = 0;
@@ -25,7 +25,7 @@ public abstract class ExecutionProgress
 	 * to allow a listener to implement e.g. a progress bar or other feedback to the user about the 
 	 * duration of the differential algorithm.
 	 * 
-	 * @param message the message describes the current job that is being done - one ExecutionProgress can be used for multiple tasks!
+	 * @param message the message describes the current job that is being done - one ProgressListener can be used for multiple tasks!
 	 * @param progress the number of succesful ticks already conducted
 	 * @param total the total number of ticks that are envisioned to be needed for full execution
 	 */

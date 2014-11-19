@@ -12,7 +12,7 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
-import be.svlandeg.diffany.core.progress.ExecutionProgress;
+import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.progress.ScheduledTask;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -180,7 +180,7 @@ public class CalculateDiff
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
 	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int consensus_ID, double weight_cutoff, 
-			Boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+			Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		Logger log = p.getLogger(runID);
@@ -278,7 +278,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int consensus_ID, Boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
 		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, default_weight_cutoff, minOperator, progressListener);
@@ -305,7 +305,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, double weightCutoff, int diff_ID, int consensus_ID, Boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+	public void calculateOneDifferentialNetwork(Project p, int runID, double weightCutoff, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		String diff_name = diffnameprefix + "all_conditions_against_reference";
 		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, weightCutoff, minOperator, progressListener);
@@ -336,7 +336,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, consensusNetwork, firstID, minOperator, progressListener);
 	}
@@ -362,7 +362,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weightCutoff, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ExecutionProgress progressListener) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weightCutoff, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		Logger log = p.getLogger(runID);

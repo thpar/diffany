@@ -10,7 +10,7 @@ public class ScheduledTask
 	
 	private int totalTicks;
 	private String message;
-	private ExecutionProgress ep;
+	private ProgressListener ep;
 	private int doneTicks;
 
 	/**
@@ -18,7 +18,7 @@ public class ScheduledTask
 	 * @param ep TODO
 	 * @param totalTicks TODO
 	 */
-	public ScheduledTask(ExecutionProgress ep, int totalTicks)
+	public ScheduledTask(ProgressListener ep, int totalTicks)
 	{
 		this.ep = ep;
 		this.totalTicks = totalTicks;
@@ -64,7 +64,7 @@ public class ScheduledTask
 		return totalTicks;
 	}
 	
-	public ExecutionProgress getListener()
+	public ProgressListener getListener()
 	{
 		return ep;
 	}

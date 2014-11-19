@@ -101,6 +101,7 @@ public class RunProjectTask implements Task, ExecutionProgress {
 		}
 		
 		cyProject.update(model.getServices());
+		model.signalChange();
 		displayReport(cyProject.getProject().getLogger(runId));
 	}
 	

@@ -419,6 +419,16 @@ public class Model extends Observable implements NetworkAddedListener,
 	public OverlapOperator getOverlapOperator() {
 		return this.overlapOperator;
 	}
+
+
+	/**
+	 * Let the model know something has changed. Eg. changes in the CyProject don't actively
+	 * get advertised to observers, but still the model has to know something has been going on.
+	 */
+	public void signalChange() {
+		this.setChanged();
+		this.notifyObservers();
+	}
 	
 
 

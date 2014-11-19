@@ -6,13 +6,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,9 +35,16 @@ import javax.swing.event.TableModelListener;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyEdge.Type;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyRow;
+import org.cytoscape.model.CyTable;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.View;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -71,9 +79,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private JButton runButton;
 	private JButton updateVizButton;
-	private JTable table;
+	private JTable networkTable;
 	private JCheckBox requireRefNetCheckBox;
 	private JSlider supportSlider;
+	private JTable filterEdgesTable;
+	private EdgeFilterTableModel filterTableModel;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the model.
@@ -94,6 +104,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		this.add(createNetworkSelectionPanel());
 
+		this.add(createFilterPanel());
+		
 		this.add(createOptionPanel());
 
 		JPanel runPanel = new JPanel();
@@ -120,9 +132,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	
 	
+	
+
 	/**
 	 * Creates the panel containing the dropdown list with {@link CyProject}s and the table
-	 * containin the networks.
+	 * containing the networks.
 	 * 
 	 * @return {@link JPanel} containing the project and network lists.
 	 */
@@ -152,30 +166,57 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		if (model.getSelectedProject() !=null){
 			networkTableModel.refresh(model.getSelectedProject());			
 		}
-		table = new JTable(networkTableModel);
-		table.setPreferredScrollableViewportSize(new Dimension(300, 400));
+		networkTable = new JTable(networkTableModel);
+		networkTable.setPreferredScrollableViewportSize(new Dimension(300, 400));
 		
-		table.getColumnModel().getColumn(0).setPreferredWidth(20);
-		table.getColumnModel().getColumn(2).setPreferredWidth(20);
-		table.setFillsViewportHeight(true);
+		networkTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		networkTable.getColumnModel().getColumn(2).setPreferredWidth(20);
+		networkTable.setFillsViewportHeight(true);
 		
 		networkTableModel.addTableModelListener(this);
 		
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(this);
+		networkTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		networkTable.getSelectionModel().addListSelectionListener(this);
 		
 		CyNetwork focused = model.getNetworkInFocus();
 		if (focused !=null){
 			int focusRow = networkTableModel.getRowNumber(focused);
 			if (focusRow >=0){
-				table.setRowSelectionInterval(focusRow, focusRow);				
+				networkTable.setRowSelectionInterval(focusRow, focusRow);				
 			}
 		}
 		
-		JScrollPane scrollPane = new JScrollPane(table);
+		JScrollPane scrollPane = new JScrollPane(networkTable);
 		panel.add(scrollPane, BorderLayout.CENTER);
 		return panel;
 	}
+	
+	private Component createFilterPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.setBorder(BorderFactory.createTitledBorder("Interaction filter"));
+		panel.setAlignmentX(CENTER_ALIGNMENT);
+		
+		filterTableModel = new EdgeFilterTableModel();
+		if (model.getSelectedProject() != null){
+			filterTableModel.refresh(model.getSelectedProject());
+		}
+		
+		filterEdgesTable = new JTable(filterTableModel);
+		filterEdgesTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
+		filterEdgesTable.getColumnModel().getColumn(1).setPreferredWidth(20);
+		filterEdgesTable.setFillsViewportHeight(true);
+		
+		filterTableModel.addTableModelListener(this);
+		
+		filterEdgesTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//table.getSelectionModel().addListSelectionListener(this);
+		JScrollPane scrollPane = new JScrollPane(filterEdgesTable);
+		panel.add(scrollPane, BorderLayout.CENTER);
+				
+		return panel;
+	}
+	
 	
 	/**
 	 * Creates the panel containing extra project options like cut off and comparison mode
@@ -294,18 +335,20 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		
 		if (model.getSelectedProject() !=null){
 			this.networkTableModel.refresh(model.getSelectedProject());
+			this.filterTableModel.refresh(model.getSelectedProject());
 			
 			CyNetwork focused = model.getNetworkInFocus();
 			if (focused !=null){
 				int focusRow = networkTableModel.getRowNumber(focused);
 				if (focusRow >=0){
-					table.setRowSelectionInterval(focusRow, focusRow);					
+					networkTable.setRowSelectionInterval(focusRow, focusRow);					
 				}
 			}
 			
 			refreshCyProject();
 		} else {
 			this.networkTableModel.clear();
+			this.filterTableModel.clear();
 		}
 		updateSupportSlider();
 	}
@@ -367,10 +410,69 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		// triggered when the data of the network selection table has changed
-		this.refreshCyProject();
-		this.updateSupportSlider();
+		Object source = e.getSource();
+		if (source instanceof SelectionTableModel){
+			this.refreshCyProject();
+			this.updateSupportSlider();
+			this.filterTableModel.refresh(model.getSelectedProject());
+		} else if (source instanceof EdgeFilterTableModel){
+		}
+		applyEdgeFilters();			
 	}
 	
+	/**
+	 * Read the data from the {@link EdgeFilterTableModel} and apply those filters on 
+	 * all Views in the current project.
+	 * 
+	 */
+	private void applyEdgeFilters() {
+		Set<String> hiddenInteractions = filterTableModel.getHiddenInteractions();
+		Set<CyNetworkView> allViews = new HashSet<CyNetworkView>();
+		allViews.addAll(model.getSelectedProject().getAllSourceViews(model.getServices()));
+		allViews.addAll(model.getSelectedProject().getAllDifferentialViews(model.getServices()));
+		
+		
+		for (CyNetworkView cyView : allViews){
+			CyNetwork cyNetwork = cyView.getModel();
+			CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
+			Set<View<CyEdge>> hideEdges = new HashSet<View<CyEdge>>();
+			Set<View<CyEdge>> showEdges = new HashSet<View<CyEdge>>();
+			
+			for (View<CyNode> nodeView : cyView.getNodeViews()){
+				CyNode node = nodeView.getModel();
+				Iterable<CyEdge> edgesIt = cyNetwork.getAdjacentEdgeIterable(node, Type.ANY);
+				int visibleEdgeCount = 0;
+				for (CyEdge edge : edgesIt){
+					Long edgeSUID = edge.getSUID();
+					CyRow edgeRow = edgeTable.getRow(edgeSUID);
+					String interaction = edgeRow.get("interaction", String.class);
+					boolean isHidden = hiddenInteractions.contains(interaction);
+					View<CyEdge> edgeView = cyView.getEdgeView(edge);
+					if (isHidden){
+						hideEdges.add(edgeView);
+					} else {
+						showEdges.add(edgeView);
+						visibleEdgeCount++;
+					}
+				}
+				if (visibleEdgeCount == 0){
+					nodeView.setLockedValue(BasicVisualLexicon.NODE_VISIBLE, false);					
+				} else {
+					nodeView.clearValueLock(BasicVisualLexicon.NODE_VISIBLE);						
+				}
+			}
+			//only change edge properties after all nodes have been changed
+			for (View<CyEdge> edgeView : hideEdges){
+				edgeView.setLockedValue(BasicVisualLexicon.EDGE_VISIBLE, false);						
+			}
+			for (View<CyEdge> edgeView : showEdges){
+				edgeView.clearValueLock(BasicVisualLexicon.EDGE_VISIBLE);
+			}
+			cyView.updateView();		
+		}
+		
+	}
+
 	/**
 	 * Reads the selections in the GUI and reflects them in the current {@link CyProject} object.
 	 */
@@ -407,7 +509,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		//triggered when a row gets selected
-		int row = table.getSelectedRow();
+		int row = networkTable.getSelectedRow();
 		if (row>=0){
 			NetworkEntry selectedEntry = networkTableModel.getNetworkEntry(row);
 			CyNetwork selectedNetwork = selectedEntry.getNetwork();
@@ -416,7 +518,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			for (CyNetworkView cyView : cyViews){
 				model.getServices().getCyApplicationManager().setCurrentNetworkView(cyView);
 			}
-			table.setRowSelectionInterval(row, row);
+			networkTable.setRowSelectionInterval(row, row);
 		}
 		
 	}

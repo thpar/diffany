@@ -101,6 +101,7 @@ public class RunProjectTask extends ProgressListener implements Task  {
 		}
 		
 		cyProject.update(model.getServices());
+		model.signalChange();
 		displayReport(cyProject.getProject().getLogger(runId));
 	}
 	

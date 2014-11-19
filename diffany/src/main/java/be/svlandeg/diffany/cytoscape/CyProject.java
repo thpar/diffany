@@ -245,8 +245,6 @@ public class CyProject{
 	 * interactions, both from source as differential networks.
 	 * @return a Set of all used interactions in this project.
 	 * 
-	 * @deprecated There is no use case where you need all interactions. 
-	 * Use getAllSourceInteractions() or getAllDifferentialInteractions() instead.
 	 */
 	public Set<String> getAllInteractions(){
 		Set<String> interactions = new HashSet<String>();

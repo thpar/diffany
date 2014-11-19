@@ -100,8 +100,9 @@ public class CalculateDiff
 		if (task != null)
 		{
 			int totalTicks = task.ticksToGo();
-			int calculationTicks = totalTicks / 2;
-			int cleanTicks = totalTicks - calculationTicks;
+			
+			int cleanTicks = totalTicks / 10;
+			int calculationTicks = totalTicks - cleanTicks;
 			
 			cleaningTask = new ScheduledTask(task.getListener(), cleanTicks);
 			calculatingTask = new ScheduledTask(task.getListener(), calculationTicks);
@@ -146,8 +147,8 @@ public class CalculateDiff
 		if (task != null)
 		{
 			int totalTicks = task.ticksToGo();
-			int calculationTicks = totalTicks / 2;
-			int cleanTicks = totalTicks - calculationTicks;
+			int cleanTicks = totalTicks / 10;
+			int calculationTicks = totalTicks - cleanTicks;
 			
 			cleaningTask = new ScheduledTask(task.getListener(), cleanTicks);
 			calculatingTask = new ScheduledTask(task.getListener(), calculationTicks);

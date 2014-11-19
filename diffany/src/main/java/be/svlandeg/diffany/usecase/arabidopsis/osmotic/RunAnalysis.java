@@ -142,7 +142,7 @@ public class RunAnalysis
 		boolean includeUnknownReg = false;
 		
 		// the input should have been cleaned before IO in step 3 - but this can be set to true to test e.g. the progresslistener or cleaning speed
-		boolean cleanInputAfterIO = true; 
+		boolean cleanInputAfterIO = false; 
 
 		double weight_cutoff = 0;
 		int hubConnections = 10;

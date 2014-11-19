@@ -91,6 +91,7 @@ public abstract class AbstractVisualDiffanyStyle {
 		//node default style
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ELLIPSE);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_FILL_COLOR, NODE_COLOR);
+		vis.setDefaultValue(BasicVisualLexicon.NODE_SELECTED_PAINT, NODE_COLOR.darker().darker());
 		vis.setDefaultValue(BasicVisualLexicon.NODE_SIZE, 30d);
 		vis.setDefaultValue(BasicVisualLexicon.NODE_BORDER_WIDTH, 0d);
 		

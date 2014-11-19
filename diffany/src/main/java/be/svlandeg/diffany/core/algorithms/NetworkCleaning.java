@@ -86,7 +86,7 @@ public class NetworkCleaning
 		
 		if (unifyEdgeTypes)
 		{
-			new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+			edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
 		}
 		
 		net.setNodesAndEdges(nodes, edges);
@@ -116,7 +116,7 @@ public class NetworkCleaning
 	 */
 	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
-		fullCleaning(net, eo, task, false, false);
+		fullCleaning(net, eo, task, false, true);
 	}
 
 	/**

@@ -127,6 +127,7 @@ public class TestExamples extends TestGeneric
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
+		
 		assertEquals(7, dEdges.size());
 
 		assertAnEdge(dNetwork, "S", "T", false, "increases_regulation", false, 1);

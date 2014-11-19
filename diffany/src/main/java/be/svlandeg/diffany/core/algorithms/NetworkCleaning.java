@@ -58,12 +58,17 @@ public class NetworkCleaning
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * @param resolveConflictsByWeight if true, conflicts are resolved by selecting the edge with the highest weight - only possible for Input Networks!
 	 */
-	protected void fullCleaning(Network net, EdgeOntology eo, ScheduledTask task, boolean resolveConflictsByWeight)
+	protected void fullCleaning(Network net, EdgeOntology eo, ScheduledTask task, boolean resolveConflictsByWeight, boolean unifyEdgeTypes)
 	{
 		boolean isSourceNetwork = net instanceof InputNetwork || net instanceof ConsensusNetwork;
 		if (resolveConflictsByWeight && ! isSourceNetwork)
 		{
-			String errormsg = "Conflicts can not be resolved by weight for this type of input network: " + net.getClass();
+			String errormsg = "Conflicts can not be resolved by weight for this type of network: " + net.getClass();
+			throw new IllegalArgumentException(errormsg);
+		}
+		if (unifyEdgeTypes && ! isSourceNetwork)
+		{
+			String errormsg = "Edge types can not be unified for this type of network: " + net.getClass();
 			throw new IllegalArgumentException(errormsg);
 		}
 		String progressMessage = "Cleaning network " + net.getName();
@@ -77,7 +82,12 @@ public class NetworkCleaning
 
 		// make edges directed when defined as such by the edge ontology
 		Set<Node> nodes = net.getNodes();
-		Set<Edge> edges = new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		Set<Edge> edges = net.getEdges();
+		
+		if (unifyEdgeTypes)
+		{
+			new Unification(logger).unifyEdgeDirection(net.getEdges(), eo);
+		}
 		
 		net.setNodesAndEdges(nodes, edges);
 
@@ -106,7 +116,7 @@ public class NetworkCleaning
 	 */
 	public void fullConsensusOutputCleaning(ConsensusNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
-		fullCleaning(net, eo, task, false);
+		fullCleaning(net, eo, task, false, false);
 	}
 
 	/**
@@ -120,7 +130,7 @@ public class NetworkCleaning
 	 */
 	public void fullDifferentialOutputCleaning(Network net, EdgeOntology eo, ScheduledTask task)
 	{
-		fullCleaning(net, eo, task, false);
+		fullCleaning(net, eo, task, false, false);
 	}
 
 	/**
@@ -303,7 +313,7 @@ public class NetworkCleaning
 	{
 		ConditionNetwork resultNet = new ConditionNetwork(net.getName(), net.getID(), net.getAllNodeAttributes(), net.getConditions());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, task, false);
+		fullCleaning(resultNet, eo, task, false, true);
 
 		return resultNet;
 	}
@@ -323,7 +333,7 @@ public class NetworkCleaning
 	{
 		ReferenceNetwork resultNet = new ReferenceNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, task, true);
+		fullCleaning(resultNet, eo, task, true, true);
 		return resultNet;
 	}
 
@@ -342,7 +352,7 @@ public class NetworkCleaning
 	{
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
-		fullCleaning(resultNet, eo, task, false);
+		fullCleaning(resultNet, eo, task, false, true);
 
 		return resultNet;
 	}

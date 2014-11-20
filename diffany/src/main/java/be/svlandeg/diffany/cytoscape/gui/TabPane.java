@@ -355,9 +355,25 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	private void updateSupportSlider(){
 		//enable extra options
+		int currentTicks = supportSlider.getMaximum();
+		
+		int newNumberOfTicks;
+		if (model.getMode() == ComparisonMode.REF_TO_ALL){
+			newNumberOfTicks = this.model.getSelectedProject().getNumberOfInputNetworks();			
+		} else {
+			newNumberOfTicks = 2;
+		}
+		if (currentTicks != newNumberOfTicks){
+			this.supportSlider.setMaximum(newNumberOfTicks);
+			this.supportSlider.setMinimum(Math.max(newNumberOfTicks/2, 2));
+			this.supportSlider.setValue(newNumberOfTicks);
+		}
+		this.supportSlider.setEnabled(model.getSelectedProject()!=null && newNumberOfTicks>2);
+		
 		if (model.getSelectedProject()!=null 
 				&& !model.isGenerateDiffNets() 
-				&& model.getSelectedProject().getReferenceNetwork()!=null){
+				&& model.getSelectedProject().getReferenceNetwork()!=null
+				&& newNumberOfTicks>2){
 			this.requireRefNetCheckBox.setEnabled(true);
 			this.requireRefNetCheckBox.setSelected(true);
 		} else {
@@ -366,14 +382,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		}
 		
 		this.requireRefNetCheckBox.setSelected(model.getSelectedProject().getReferenceNetwork() != null);
-		int currentTicks = supportSlider.getMaximum();
-		int newNumberOfTicks = this.model.getSelectedProject().getNumberOfInputNetworks();
-		if (currentTicks != newNumberOfTicks){
-			this.supportSlider.setMaximum(newNumberOfTicks);
-			this.supportSlider.setMinimum(Math.max(newNumberOfTicks/2, 2));
-			this.supportSlider.setValue(newNumberOfTicks);
-		}
-		this.supportSlider.setEnabled(model.getSelectedProject()!=null && newNumberOfTicks>2);
 	}
 
 	@Override

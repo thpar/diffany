@@ -95,7 +95,7 @@ public class Model extends Observable implements NetworkAddedListener,
 			}
 		}
 	}
-	private ComparisonMode mode = ComparisonMode.REF_PAIRWISE;
+	private ComparisonMode mode = ComparisonMode.REF_TO_ALL;
 	
 	private boolean generateDiffNets = true;
 	private boolean generateConsensusNets = true;
@@ -288,6 +288,8 @@ public class Model extends Observable implements NetworkAddedListener,
 	 */
 	public void setMode(ComparisonMode mode) {
 		this.mode = mode;
+		setChanged();
+		notifyObservers();
 	}
 
 

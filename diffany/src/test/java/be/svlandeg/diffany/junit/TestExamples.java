@@ -9,12 +9,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.OutputNetworkPair;
-import be.svlandeg.diffany.core.networks.ConsensusNetwork;
-import be.svlandeg.diffany.core.project.RunOutput;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.Project;
+import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.examples.ActivityFlowTest;
 import be.svlandeg.diffany.examples.Bandyopadhyay2010;
 import be.svlandeg.diffany.examples.ConflictingEdgesTest;
@@ -47,7 +49,7 @@ public class TestExamples extends TestGeneric
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
 		assertNrPairs(output, 1);
-		
+
 		// Testing the edges in the differential network
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
@@ -78,7 +80,8 @@ public class TestExamples extends TestGeneric
 		double weight_cutoff = 0.0;
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
+		ProgressListener listener = new StandardProgressListener();
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, listener);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -127,7 +130,7 @@ public class TestExamples extends TestGeneric
 		DifferentialNetwork dNetwork = pair.getDifferentialNetwork();
 
 		Set<Edge> dEdges = dNetwork.getEdges();
-		
+
 		assertEquals(7, dEdges.size());
 
 		assertAnEdge(dNetwork, "S", "T", false, "increases_regulation", false, 1);
@@ -256,7 +259,7 @@ public class TestExamples extends TestGeneric
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
 
 		// Testing that there are exactly two differential networks created (1 for each condition)
-		
+
 		RunOutput output = p.getOutput(ID);
 		assertNrPairs(output, 2);
 
@@ -380,11 +383,11 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(draughtConsensus, "A", "C", true, "ppi", false, 0.8);
 
 		assertAnEdge(draughtConsensus, "M", "N", false, "phosphorylation", false, 2);
-		
+
 		// Draught vs. reference
 		ConsensusNetwork draughtStressConsensus = networks.get("consensus_Draughty_Salty");
 		Set<Edge> sEdgesDS = draughtStressConsensus.getEdges();
-		assertEquals(5, sEdgesDS.size());	
+		assertEquals(5, sEdgesDS.size());
 
 		assertAnEdge(draughtStressConsensus, "A", "B", true, "ppi", false, 0.3);
 		assertAnEdge(draughtStressConsensus, "A", "C", true, "ppi", false, 0.6);
@@ -393,7 +396,6 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(draughtStressConsensus, "M", "N", false, "phosphorylation", false, 6);
 		assertAnEdge(draughtStressConsensus, "P", "M", false, "ptm", false, 2);
 	}
-	
 
 	/**
 	 * JUNIT Test: check whether the example network with edge conflicts produces correct results.
@@ -422,10 +424,10 @@ public class TestExamples extends TestGeneric
 		assertAnEdge(dNetwork, "A", "B", false, "increases_regulation", false, 6);
 		assertAnEdge(dNetwork, "A", "B", false, "decreases_ptm", false, 5);
 		assertAnEdge(dNetwork, "A", "B", false, "decreases_somerandomInteraction", false, 4);
-		
+
 		assertAnEdge(dNetwork, "G", "H", false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "G", "H", false, "decreases_ptm", false, 1);
-		
+
 		assertAnEdge(dNetwork, "J", "K", false, "decreases_unspecified_regulation", false, 3);
 		assertAnEdge(dNetwork, "K", "J", false, "decreases_regulation", false, 4);
 		assertAnEdge(dNetwork, "J", "K", false, "increases_ptm", false, 4);
@@ -437,10 +439,10 @@ public class TestExamples extends TestGeneric
 		assertEquals(7, sEdges.size());
 
 		assertAnEdge(sNetwork, "A", "B", false, "positive_regulation", false, 2);
-		
+
 		assertAnEdge(sNetwork, "G", "H", false, "regulation", false, 4);
 		assertAnEdge(sNetwork, "G", "H", false, "ptm", false, 2);
-		
+
 		assertAnEdge(sNetwork, "J", "K", false, "regulation", false, 4);
 		assertAnEdge(sNetwork, "J", "K", false, "positive_regulation", true, 3);
 		assertAnEdge(sNetwork, "K", "J", false, "ptm", false, 2);

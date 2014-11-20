@@ -11,6 +11,8 @@ import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
@@ -49,7 +51,8 @@ public class Bandyopadhyay2010 extends GenericExample
 		ReferenceNetwork r = getReferenceFigure1C();
 		Set<ConditionNetwork> c = getConditionFigure1C();
 		boolean cleanInput = true;
-		int ID = p.addRunConfiguration(r, c, cleanInput, null);
+		ProgressListener listener = new StandardProgressListener(false);
+		int ID = p.addRunConfiguration(r, c, cleanInput, listener);
 		return ID;
 	}
 
@@ -115,9 +118,10 @@ public class Bandyopadhyay2010 extends GenericExample
 		System.out.println("Defining network for Bandyopadhyay2010 figure 1c");
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
+		ProgressListener listener = new StandardProgressListener(true);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, listener);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false, false);

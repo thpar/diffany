@@ -532,7 +532,7 @@ public class RunAnalysis
 		String name = "Osmotic_usecase_" + support;
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project(name, eo);
-		ProgressListener listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener(true);
 
 		int runID = p.addRunConfiguration(refNet, conditionNets, support, cleanInputAfterIO, listener);
 

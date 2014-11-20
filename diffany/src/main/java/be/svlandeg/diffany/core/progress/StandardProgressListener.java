@@ -12,10 +12,26 @@ import java.util.Date;
 public class StandardProgressListener extends ProgressListener
 {
 	
+	private boolean print;
+	
+	/**
+	 * Constructor which specifies whether or not to print the progress messages.
+	 * Usually, this value will be true, except for the JUnit usage of this class.
+	 * @param print whether or not to print the progress messages
+	 */
+	public StandardProgressListener(boolean print)
+	{
+		super();
+		this.print = print;
+	}
+	
 	@Override
 	protected void setProgress(String message, int progress, int total)
 	{
-		System.out.println(new Date() + ": " + message + ": processed " + progress + " of " + total);
+		if (print)
+		{
+			System.out.println(new Date() + ": " + message + ": processed " + progress + " of " + total);
+		}
 	}
 	
 }

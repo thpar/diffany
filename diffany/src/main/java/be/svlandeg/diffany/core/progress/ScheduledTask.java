@@ -35,14 +35,13 @@ public class ScheduledTask
 	{
 		if (ticks > ticksToGo())
 		{
-			throw new IllegalArgumentException("Can not report more progress than what was scheduled!");
+			ticks = ticksToGo();
 		}
-		if (ticks < 1)
+		if (ticks > 0)
 		{
-			throw new IllegalArgumentException("Can not report " + ticks + " ticks!");
+			doneTicks += ticks;
+			ep.addTicks(message, ticks);
 		}
-		doneTicks += ticks;
-		ep.addTicks(message, ticks);
 	}
 	
 	public void done()

@@ -58,7 +58,7 @@ public class Ideker2011 extends GenericExample
 	public int getDefaultRunConfigurationID(Project p)
 	{
 		ReferenceNetwork r = getReferenceFigure3A();
-		ProgressListener listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener(false);
 		
 		Set<ConditionNetwork> c = getConditionFigure3A();
 		boolean cleanInput = false;
@@ -133,7 +133,7 @@ public class Ideker2011 extends GenericExample
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
 		
-		ProgressListener listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener(true);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, listener);

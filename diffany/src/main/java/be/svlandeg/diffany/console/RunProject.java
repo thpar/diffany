@@ -40,7 +40,7 @@ public class RunProject
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
-		ProgressListener listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener(true);
 		
 		// TODO v3.0: make ontologies adjustable
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());

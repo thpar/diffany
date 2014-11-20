@@ -44,7 +44,8 @@ public class TestExamples extends TestGeneric
 		double weight_cutoff = 0.0;
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, null);
+		ProgressListener listener = new StandardProgressListener(false);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, listener);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -80,7 +81,7 @@ public class TestExamples extends TestGeneric
 		double weight_cutoff = 0.0;
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		ProgressListener listener = new StandardProgressListener();
+		ProgressListener listener = new StandardProgressListener(false);
 		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, weight_cutoff, true, true, 10, true, listener);
 
 		// Testing that there is exactly one differential network created

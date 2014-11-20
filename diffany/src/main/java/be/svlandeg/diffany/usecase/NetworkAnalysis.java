@@ -46,18 +46,18 @@ public class NetworkAnalysis
 	
 	/**
 	 * Print information about hubs in the network. This method disregards symmetry/directionality information, but simply counts all edges, once for source, and one for the target.
-	 * This method is always applied for one specific type of interactions, e.g. 'ppi', in order not to mix different types of connections.
+	 * This method is typically applied for one specific type of interactions, but in principle the given set of edges can also be mixed.
 	 * Further, this method returns a set of edges which has min_connections or more.
 	 * 
 	 * @param edges the edges in the input network 
 	 * @param nodes the nodes in the input network 
-	 * @param type the type of interactions we want to count hubs for
 	 * @param min_connections the number of connections a 'hub' needs to have to be defined as such (inclusive)
 	 * @param printDetails whether or not to print a detailed account of the hub analysis
-	 * @param divideByTwo put this parameter to true if symmetrical edges are represented twice in the data (i.e. the edges are not cleaned)
+	 * @param countIncoming whether or not to count outgoing edges (when dealing with symmetrical edges, incoming and outgoing should both be true)
+	 * @param countOutgoing whether or not to count incoming edges (when dealing with symmetrical edges, incoming and outgoing should both be true)
 	 * @return the set of node IDs which are considered to be hubs at the specified percentage cutoff
 	 */
-	public Set<String> retrieveHubs(Set<Edge> edges, Set<Node> nodes, String type, int min_connections, boolean printDetails, boolean divideByTwo)
+	public Set<String> retrieveHubs(Set<Edge> edges, Set<Node> nodes, int min_connections, boolean printDetails, boolean countIncoming, boolean countOutgoing)
 	{
 		if (printDetails)
 		{
@@ -74,14 +74,16 @@ public class NetworkAnalysis
 		
 		for (Edge e : edges)
 		{
-			// only count this edge if it is of the correct type
-			if (e.getType().equals(type))
+			if (countOutgoing)
 			{
 				String sourceID = e.getSource().getID();
 				Integer count1 = edgeCountByNodeID.get(sourceID);
 				edgeCountByNodeID.put(sourceID, count1+1);
-				
-				String targetID = e.getSource().getID();
+			}
+			
+			if (countIncoming)
+			{
+				String targetID = e.getTarget().getID();
 				Integer count2 = edgeCountByNodeID.get(targetID);
 				edgeCountByNodeID.put(targetID, count2+1);
 			}
@@ -92,10 +94,6 @@ public class NetworkAnalysis
 		{
 			String id = node.getID();
 			Integer edgeCount = edgeCountByNodeID.get(id);
-			if (divideByTwo)
-			{
-				edgeCount = edgeCount / 2;
-			}
 			Set<String> occurrences = occurrenceByEdgeCount.get(edgeCount);
 			if (occurrences == null)
 			{
@@ -125,17 +123,9 @@ public class NetworkAnalysis
 			accumulOccEdges += edgeCount * occurrences.size();
 			accumulOccNodes += occurrences.size();
 			
-			int percEdges = 0;
-			//if (totalOccEdges == 0)
-			{
-				percEdges = 100 * accumulOccEdges / totalOccEdges;
-			}
+			int percEdges = 100 * accumulOccEdges / totalOccEdges;
 			
-			int percNodes = 0;
-			//if (totalOccNodes != 0)
-			{
-				percNodes = 100 * accumulOccNodes / totalOccNodes;
-			}
+			int percNodes = 100 * accumulOccNodes / totalOccNodes;
 			
 			if (edgeCount >= min_connections)
 			{
@@ -167,9 +157,9 @@ public class NetworkAnalysis
 		
 		System.out.println("Reading: " + file + " - " + "includeSelfInteractions=" + includeSelfInteractions);
 		
-		Set<Edge> edges = constr.readAllPPIs(file, includeSelfInteractions);
+		Set<Edge> PPIedges = constr.readAllPPIs(file, includeSelfInteractions);
 		Network network = new InputNetwork("Test network", 342, null);
-		network.setNodesAndEdges(edges);
+		network.setNodesAndEdges(PPIedges);
 		
 		System.out.println(" ");
 		na.printNetworkStats(network);
@@ -178,7 +168,7 @@ public class NetworkAnalysis
 		System.out.println("HUB ANALYSIS");
 		boolean printDetails = true;
 		int connections = 10;
-		Set<String> PPIhubs = na.retrieveHubs(network.getEdges(), network.getNodes(), "validated_ppi", connections, printDetails, true);
+		Set<String> PPIhubs = na.retrieveHubs(PPIedges, network.getNodes(), connections, printDetails, true, true);
 		System.out.println(" Found " + PPIhubs.size() + " PPI hubs:");
 		for (String hub : PPIhubs)
 		{

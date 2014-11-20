@@ -14,7 +14,7 @@ public class EdgeStyle
 	private final Color color;
 	private final ArrowHead ah;
 	
-	// These types correspond directly to Cytoscape types, but can also be used in other visualisation tools
+	/* These types correspond directly to Cytoscape types, but can also be used in other visualisation tools */
 	public enum ArrowHead{ARROW, T, NONE, DIAMOND};
 	
 	

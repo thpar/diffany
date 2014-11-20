@@ -32,7 +32,6 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.r.ExecuteR;
 import be.svlandeg.diffany.r.RBridge;
 import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
-import be.svlandeg.diffany.usecase.NetworkAnalysis;
 import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -81,8 +80,8 @@ public class RunAnalysis
 		System.out.println("Performing osmotic data analysis - " + new Date());
 		System.out.println("");
 
-		String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		//String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
+		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
+		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
 
 		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
 		String outputDir = osmoticStressDir + File.separator + "output";
@@ -95,9 +94,9 @@ public class RunAnalysis
 		boolean performStep3InputNetworksToFile = false;
 
 		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = true;
-		boolean performStep5AllPairwise = false;
-		boolean performStep6OutputNetworksToFile = false;
+		boolean performStep5OneagainstAll = false;
+		boolean performStep5AllPairwise = true;
+		boolean performStep6OutputNetworksToFile = true;
 
 		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
 		{
@@ -145,7 +144,6 @@ public class RunAnalysis
 		boolean cleanInputAfterIO = false; 
 
 		double weight_cutoff = 0;
-		int hubConnections = 10;
 		
 		// 5 means that all conditions need to match (4 conditions+reference). 4 means that only 3 time-points (+reference) need to match ("more fuzzy")
 		int support = 5;		
@@ -185,7 +183,7 @@ public class RunAnalysis
 			try
 			{
 				networks = ra.fromOverexpressionToNetworks(new File(overexpressionFile), 1, threshold_strict, threshold_fuzzy, selfInteractions, neighbours,
-						includeUnknownReg, includePhos, includeKinase, includePredictedPhos, hubConnections);
+						includeUnknownReg, includePhos, includeKinase, includePredictedPhos);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -348,7 +346,7 @@ public class RunAnalysis
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
-			boolean includePredictedPhos, int hubConnections) throws IOException, URISyntaxException
+			boolean includePredictedPhos) throws IOException, URISyntaxException
 	{
 		Set<String> nodeAttributes = new HashSet<String>();
 		nodeAttributes.add(Node.de_attribute);
@@ -408,9 +406,9 @@ public class RunAnalysis
 		/* Read all the PPI and regulatory interactions between all the nodes in our expanded network
 		 * Without modifying edge strenghts, this becomes our reference network */
 		Set<Node> ref_nodes = gp.getNodesByLocusID(expanded_ID_set);
-
+		
 		System.out.println("Constructing the reference network");
-		Set<Edge> ref_edges = constr.readPPIsByLocustags(ppi_file, ref_nodes, ref_nodes, selfInteractions);
+		Set<Edge> ref_edges = constr.readPPIsByLocustags(ppi_file, ref_nodes, null, ref_nodes, null, selfInteractions);
 		System.out.println(" Found " + ref_edges.size() + " PPI edges between them");
 
 		Set<Edge> ref_reg_Edges = constr.readRegsByLocustags(reg_file, ref_nodes, ref_nodes, selfInteractions, includeUnknownReg);
@@ -470,9 +468,6 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("Constructing the condition-specific network for " + name);
 
-			NetworkAnalysis na = new NetworkAnalysis();
-			String ppiType = "ppi";
-			
 			// record the DE state as node attribute
 			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
 			constr.modifyDEState(all_de_genes, condition_nodes);
@@ -481,12 +476,12 @@ public class RunAnalysis
 			{
 				setFixedAttributes(n, phosNodes, kinaseNodes, includePhos, includeKinase);
 			}
-			
-			Set<String> PPIhubs = na.retrieveHubs(cleanRefNet.getEdges(), condition_nodes, ppiType, hubConnections, false, false);
 
 			Set<Edge> condition_edges = constr.adjustEdgesByFoldChanges(eo, condition_nodes, cleanRefNet.getEdges(), all_de_genes);
-			Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_nodes, condition_edges, ppiType, all_de_genes.keySet());
-			condNet.setNodesAndEdges(filtered_edges);
+			
+			//Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_nodes, condition_edges, ppiType, all_de_genes.keySet());
+			
+			condNet.setNodesAndEdges(condition_edges);
 			
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, eo, null);
 			

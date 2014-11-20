@@ -26,7 +26,7 @@ public class TestOsmoticSample extends TestGeneric
 	 * JUNIT Test: check whether the example fuzzy network produces correct results with the min operator and cutoff 4 out of 4
 	 */
 	@Test
-	public void testFuzzy_4_min()
+	public void testSample()
 	{
 		OsmoticSampleTest ex = new OsmoticSampleTest();
 		double weight_cutoff = 0.0;

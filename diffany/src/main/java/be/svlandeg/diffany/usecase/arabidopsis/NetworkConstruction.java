@@ -15,9 +15,11 @@ import java.util.StringTokenizer;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.InputNetwork;
+import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.usecase.NetworkAnalysis;
 
 /**
  * This class allows to construct networks out of overexpression/coexpression values.
@@ -30,6 +32,7 @@ public class NetworkConstruction
 	// TODO v2.1 make this class more generic / generalizable
 
 	private GenePrinter gp;
+	private static int hubPPI = 10;
 
 	/**
 	 * Constructor: defines the gene printer that can deal with gene synonymy etc.
@@ -60,12 +63,20 @@ public class NetworkConstruction
 	 */
 	public Set<String> expandNetwork(Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, URI ppi_file, URI reg_file, URI kinase_file, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
-		// TODO: this method unnecessarily generates Network objects?
-
+		NetworkAnalysis na = new NetworkAnalysis();
+		// TODO v2.1: this method unnecessarily generates Network objects?
+		
+		Set<Edge> allAthPPIedges = readAllPPIs(ppi_file, selfInteractions);
+		Network ppiAthNetwork = new InputNetwork("Test network", 342, null);
+		ppiAthNetwork.setNodesAndEdges(allAthPPIedges);
+		
+		Set<String> PPIhubs = na.retrieveHubs(allAthPPIedges, ppiAthNetwork.getNodes(), hubPPI, false, true, true);
+		Set<Node> nodes_PPI_hubs = gp.getNodesByLocusID(PPIhubs);
+		
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
-
 		Set<Node> nodes_strict_DE = gp.getNodesByLocusID(nodeIDs_strict_DE);
+		
 
 		/* 1. expand the (strict) DE node set with PPI neighbours */
 		if (ppi_file != null)
@@ -73,11 +84,12 @@ public class NetworkConstruction
 			Set<Edge> PPIedges = null;
 			if (neighbours)
 			{
-				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, null, selfInteractions);
+				/* Here, we exclude PPI hubs as non-DE neighbours and also exclude them as DE partners that extend the network */
+				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, nodes_PPI_hubs, null, nodes_PPI_hubs, selfInteractions);
 			}
 			else
 			{
-				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, nodes_strict_DE, selfInteractions);
+				PPIedges = readPPIsByLocustags(ppi_file, nodes_strict_DE, null, nodes_strict_DE, null, selfInteractions);
 			}
 
 			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null);
@@ -116,7 +128,7 @@ public class NetworkConstruction
 			Set<Node> allNodes = gp.getNodesByLocusID(allNodeIDs);
 			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
 
-			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, allNodes, nodes_fuzzy_DE, selfInteractions);
+			Set<Edge> PPIedges = readPPIsByLocustags(ppi_file, allNodes, null, nodes_fuzzy_DE, null, selfInteractions);
 			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null);
 			PPInetwork.setNodesAndEdges(PPIedges);
 			Set<String> expandedPPINodeIDs = NodeMapper.getNodeIDs(PPInetwork.getNodes());
@@ -257,7 +269,7 @@ public class NetworkConstruction
 	 * @param all_de_nodes the DE genes
 	 * @return a new set of edges, which will be a subset of the original set of edges
 	 */
-	public Set<Edge> filterForHubs(Set<String> hubs, Set<Node> nodes, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
+	public Set<Edge> filterForHubs_deprecated(Set<String> hubs, Set<Node> nodes, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
 	{
 		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
 		Set<Edge> resultEdges = new HashSet<Edge>();
@@ -375,7 +387,7 @@ public class NetworkConstruction
 	 */
 	public Set<Edge> readAllPPIs(URI ppi_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
-		return readPPIsByLocustags(ppi_file, null, null, includeSelfInteractions);
+		return readPPIsByLocustags(ppi_file, null, null, null, null, includeSelfInteractions);
 	}
 
 	/**
@@ -384,21 +396,27 @@ public class NetworkConstruction
 	 * This method imposes symmetry of the read edges.
 	 * 
 	 * @param ppi_file the location where to find the tab-delimited PPI data
-	 * @param nodes1 the first set of input nodes (can be null, in which case any node will qualify)
-	 * @param nodes2 the second set of input nodes (can be null, in which case any node will qualify)
+	 * @param nodes1_incl the first set of input nodes (can be null, in which case any node will qualify, except those in nodes1_excl)
+	 * @param nodes1_excl the nodes that are excluded from the first set of input nodes (can be null, in which case any node in nodes1_excl will qualify)
+	 * @param nodes2_incl the second set of input nodes (can be null, in which case any node will qualify, except those in nodes2_excl)
+	 * @param nodes2_excl the nodes that are excluded from the second set of input nodes (can be null, in which case any node in nodes2_excl will qualify)
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
 	 * 
 	 * @return the corresponding set of PPI edges
 	 * @throws URISyntaxException when the PPI datafile can not be read properly
 	 * @throws IOException when the PPI datafile can not be read properly
 	 */
-	public Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes1, Set<Node> nodes2, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readPPIsByLocustags(URI ppi_file, Set<Node> nodes1_incl, Set<Node> nodes1_excl, Set<Node> nodes2_incl, Set<Node> nodes2_excl,  boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes1);
-		mappedNodes.putAll(NodeMapper.getNodesByID(nodes2));
-		Set<String> origLoci1 = NodeMapper.getNodeIDs(nodes1);
-		Set<String> origLoci2 = NodeMapper.getNodeIDs(nodes2);
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes1_incl);
+		mappedNodes.putAll(NodeMapper.getNodesByID(nodes2_incl));
+		mappedNodes.putAll(NodeMapper.getNodesByID(nodes1_excl));
+		mappedNodes.putAll(NodeMapper.getNodesByID(nodes2_excl));
+		Set<String> origLociIncl1 = NodeMapper.getNodeIDs(nodes1_incl);
+		Set<String> origLociIncl2 = NodeMapper.getNodeIDs(nodes2_incl);
+		Set<String> origLociExcl1 = NodeMapper.getNodeIDs(nodes1_excl);
+		Set<String> origLociExcl2 = NodeMapper.getNodeIDs(nodes2_excl);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(ppi_file)));
 
@@ -426,12 +444,12 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 
-				boolean foundFirstIn1 = (nodes1 == null || origLoci1.contains(locus1));
-				boolean foundFirstIn2 = (nodes2 == null || origLoci2.contains(locus1));
-				boolean foundSecondIn1 = (nodes1 == null || origLoci1.contains(locus2));
-				boolean foundSecondIn2 = (nodes2 == null || origLoci2.contains(locus2));
+				boolean foundFirstIn1 = ((nodes1_incl == null || origLociIncl1.contains(locus1)) && (nodes1_excl == null || ! origLociExcl1.contains(locus1)));
+				boolean foundFirstIn2 = ((nodes2_incl == null || origLociIncl2.contains(locus1)) && (nodes2_excl == null || ! origLociExcl2.contains(locus1)));
+				boolean foundSecondIn1 = ((nodes1_incl == null || origLociIncl1.contains(locus2)) && (nodes1_excl == null || ! origLociExcl1.contains(locus2)));
+				boolean foundSecondIn2 = ((nodes2_incl == null || origLociIncl2.contains(locus2)) && (nodes2_excl == null || ! origLociExcl2.contains(locus2)));
 
-				/* include the interaction when both are in one of the nodesets (this is automatically true for a nodeset which is null) */
+				/* include the interaction when both are in one of the nodesets */
 				if ((foundFirstIn1 && foundSecondIn2) || (foundSecondIn1 && foundFirstIn2))
 				{
 					/* include when the loci are different, or when self interactions are allowed */

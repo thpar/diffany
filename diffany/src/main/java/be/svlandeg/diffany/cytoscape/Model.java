@@ -2,6 +2,7 @@ package be.svlandeg.diffany.cytoscape;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedEvent;
@@ -20,6 +22,7 @@ import org.cytoscape.model.events.RowsSetEvent;
 import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
@@ -183,7 +186,31 @@ public class Model extends Observable implements NetworkAddedListener,
 	@Override
 	public void handleEvent(NetworkDestroyedEvent e) {
 		//triggered on network destroyed
-		//TODO: destroyed networks should be removed from their projects
+		//TODO: should destroyed networks be removed from their projects?
+		
+		//remove empty projects (collections) without valid subnetworks
+		Set<CyRootNetwork> toRemove = new HashSet<CyRootNetwork>();
+		for (CyRootNetwork collection : this.projects.keySet()){
+			int numberOfSubNetworks = 0;
+			
+			for (CySubNetwork sub : collection.getSubNetworkList()){
+				//ignore base network. To detect this, abuse the NullPointerException that's thrown
+				//when trying to find the network's Table (Might be Cytoscape version dependent!)
+				try{
+					sub.getRow(sub);
+					numberOfSubNetworks++;					
+				} catch(NullPointerException npe){
+					//not interested
+				}
+			}
+			if (numberOfSubNetworks == 0){
+				toRemove.add(collection);
+			}
+		}
+		for (CyRootNetwork oldNet : toRemove){
+			this.projects.remove(oldNet);
+		}
+		
 		setChanged();
 		notifyObservers();
 	}

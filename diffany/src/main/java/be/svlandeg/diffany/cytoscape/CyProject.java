@@ -2,11 +2,13 @@ package be.svlandeg.diffany.cytoscape;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
@@ -460,10 +462,11 @@ public class CyProject{
 	/**
 	 * Iterates the {@link CyNetwork}s in the project and removes those that 
 	 * have been destroyed in the Cytoscape session.
+	 * 
+	 *   ** Does nothing yet **
 	 */
 	public void removeDestroyedNetworks() {
 		// TODO delete networks from the project when destroyed
-		
 	}
 
 	/**

@@ -199,7 +199,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	}
 	
 	/**
-	 * Allows to ignore the ghost network that is often created when importing a network or loading a session.
+	 * Allows to ignore the ghost network (hidden base network?) that is often created when importing a network or loading a session.
 	 * 
 	 * @param subNet
 	 * @return

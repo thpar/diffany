@@ -105,7 +105,7 @@ public class TestVisual
 		// ****** DIFFERENTIAL NETWORK ****** //
 		
 		// process types
-		assertColorInDifferential("increase_ppi", Color.GREEN, eo);
+		assertColorInDifferential("increase_ppi", new Color(51,255,0), eo); // cf. DefaultEdgeOntology.addDefaultPaintedParents
 		assertColorInDifferential("increase_whatever", Color.GREEN, eo);
 		assertColorInDifferential("decrease_ptm", Color.RED, eo);
 		assertColorInDifferential("decreases_ptm", Color.RED, eo);
@@ -117,9 +117,9 @@ public class TestVisual
 		
 		// activity flow types
 		
-		assertColorInDifferential("decreases_regulation", Color.RED, eo);
+		assertColorInDifferential("decreases_regulation",  new Color(204,0,0), eo);	// cf. DefaultEdgeOntology.addDefaultPaintedParents
 		assertColorInDifferential("decrease_regulation", Color.RED, eo);
-		assertColorInDifferential("increases_regulation", Color.GREEN, eo);
+		assertColorInDifferential("increases_regulation", new Color(0,153,0), eo);	// cf. DefaultEdgeOntology.addDefaultPaintedParents
 		assertColorInDifferential("increase_regulation", Color.GREEN, eo);
 		
 		assertArrowHeadInDifferential("decreases_regulation", ArrowHead.ARROW, eo);

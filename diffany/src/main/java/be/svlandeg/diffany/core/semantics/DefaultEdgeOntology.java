@@ -166,24 +166,40 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 	 */
 	protected void addDefaultPaintedParents()
 	{
-		sourceDraw.addColor("ptm", Color.BLUE);
-		sourceDraw.addColor("colocalization", Color.YELLOW);
-		sourceDraw.addColor("protein-dna_binding", Color.CYAN);
-		sourceDraw.addColor("positive_regulation", Color.GREEN);
-		sourceDraw.addColor("negative_regulation", Color.RED);
-		sourceDraw.addColor("positive_genetic_interaction", Color.GREEN);
-		sourceDraw.addColor("negative_genetic_interaction", Color.RED);
+		/* SOURCE & CONSENSUS TYPES */
+		
+		sourceDraw.addColor("ptm", Color.BLUE, true);
+		sourceDraw.addColor("colocalization", Color.YELLOW, true);
+		sourceDraw.addColor("protein-dna_binding", Color.CYAN, true);
+		sourceDraw.addColor("positive_regulation", Color.GREEN, true);
+		sourceDraw.addColor("negative_regulation", Color.RED, true);
+		sourceDraw.addColor("positive_genetic_interaction", Color.GREEN, true);
+		sourceDraw.addColor("negative_genetic_interaction", Color.RED, true);
 
-		sourceDraw.addArrowHead("regulation", ArrowHead.ARROW);
-		sourceDraw.addArrowHead("positive_regulation", ArrowHead.ARROW);
-		sourceDraw.addArrowHead("negative_regulation", ArrowHead.T);
-		sourceDraw.addArrowHead("genetic_interaction", ArrowHead.NONE);
+		sourceDraw.addArrowHead("regulation", ArrowHead.ARROW, true);
+		sourceDraw.addArrowHead("positive_regulation", ArrowHead.ARROW, true);
+		sourceDraw.addArrowHead("negative_regulation", ArrowHead.T, true);
+		sourceDraw.addArrowHead("genetic_interaction", ArrowHead.NONE, true);
 
-		sourceDraw.addArrowHead("ptm", ArrowHead.DIAMOND);
-		sourceDraw.addArrowHead("protein-dna_binding", ArrowHead.ARROW);
+		sourceDraw.addArrowHead("ptm", ArrowHead.DIAMOND, true);
+		sourceDraw.addArrowHead("protein-dna_binding", ArrowHead.ARROW, true);
 
-		sourceDraw.addArrowHead("colocalization", ArrowHead.NONE);
-		sourceDraw.addArrowHead("coexpression", ArrowHead.NONE);
+		sourceDraw.addArrowHead("colocalization", ArrowHead.NONE, true);
+		sourceDraw.addArrowHead("coexpression", ArrowHead.NONE, true);
+		
+		/* DIFFERENTIAL TYPES */
+		
+		diffDraw.addColor("increase_ppi", new Color(51,255,0), false);
+		diffDraw.addColor("decrease_ppi", new Color(255,153,51), false);
+		
+		diffDraw.addColor("increases_regulation", new Color(0,153,0), false);
+		diffDraw.addColor("decreases_regulation", new Color(204,0,0), false);
+		
+		diffDraw.addColor("increases_phosphorylation", new Color(0,153,255), false);
+		diffDraw.addColor("decreases_phosphorylation", new Color(153,0,204), false);
+		
+		diffDraw.addColor("increases_dephosphorylation", new Color(255,0,204), false);
+		diffDraw.addColor("decreases_dephosphorylation", new Color(0,51,255), false);
 	}
 
 	/**

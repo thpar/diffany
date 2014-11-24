@@ -415,7 +415,7 @@ public class RunAnalysis
 		System.out.println(" Found " + ref_reg_Edges.size() + " regulatory edges between them");
 		ref_edges.addAll(ref_reg_Edges);
 		
-		Set<Edge> ref_kinase_edges = constr.readKinaseInteractionsByLocustags(kinase_interaction_file, ref_nodes, ref_nodes, selfInteractions);
+		Set<Edge> ref_kinase_edges = constr.readKinaseInteractionsByLocustags(kinase_interaction_file, ref_nodes, null, ref_nodes, null, selfInteractions);
 		System.out.println(" Found " + ref_kinase_edges.size() + " kinase interactions between them");
 		ref_edges.addAll(ref_kinase_edges);
 

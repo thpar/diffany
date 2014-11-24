@@ -33,6 +33,7 @@ public class NetworkConstruction
 
 	private GenePrinter gp;
 	private static int hubPPI = 10;
+	private static int hubPhos = 30;
 
 	/**
 	 * Constructor: defines the gene printer that can deal with gene synonymy etc.
@@ -66,21 +67,20 @@ public class NetworkConstruction
 		NetworkAnalysis na = new NetworkAnalysis();
 		// TODO v2.1: this method unnecessarily generates Network objects?
 		
-		Set<Edge> allAthPPIedges = readAllPPIs(ppi_file, selfInteractions);
-		Network ppiAthNetwork = new InputNetwork("Test network", 342, null);
-		ppiAthNetwork.setNodesAndEdges(allAthPPIedges);
-		
-		Set<String> PPIhubs = na.retrieveHubs(allAthPPIedges, ppiAthNetwork.getNodes(), hubPPI, false, true, true);
-		Set<Node> nodes_PPI_hubs = gp.getNodesByLocusID(PPIhubs);
-		
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
 		Set<Node> nodes_strict_DE = gp.getNodesByLocusID(nodeIDs_strict_DE);
 		
-
 		/* 1. expand the (strict) DE node set with PPI neighbours */
 		if (ppi_file != null)
 		{
+			/* First define the PPI hubs */
+			Set<Edge> allAthPPIedges = readAllPPIs(ppi_file, selfInteractions);
+			Network ppiAthNetwork = new InputNetwork("Test network PPI", 341, null);
+			ppiAthNetwork.setNodesAndEdges(allAthPPIedges);
+			Set<String> PPIhubs = na.retrieveHubs(allAthPPIedges, ppiAthNetwork.getNodes(), hubPPI, false, true, true);
+			Set<Node> nodes_PPI_hubs = gp.getNodesByLocusID(PPIhubs);
+			
 			Set<Edge> PPIedges = null;
 			if (neighbours)
 			{
@@ -112,8 +112,28 @@ public class NetworkConstruction
 		{
 			if (neighbours)
 			{
-				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_strict_DE, null, selfInteractions)); // from our input to their targets
-				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, null, nodes_strict_DE, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+				/* First define the hubs */
+				Set<Edge> allAthKinaseEdges = readAllKinaseInteractions(kinase_file, selfInteractions);
+				Network kinaseAthNetwork = new InputNetwork("Test network kinase", 343, null);
+				kinaseAthNetwork.setNodesAndEdges(allAthKinaseEdges);
+				Set<String> kinaseTargetHubs = na.retrieveHubs(allAthKinaseEdges, kinaseAthNetwork.getNodes(), hubPhos, false, true, false);
+				Set<String> kinaseSourceHubs = na.retrieveHubs(allAthKinaseEdges, kinaseAthNetwork.getNodes(), hubPhos, false, false, true);
+				Set<Node> nodes_kinase_source_hubs = gp.getNodesByLocusID(kinaseSourceHubs);
+				Set<Node> nodes_kinase_target_hubs = gp.getNodesByLocusID(kinaseTargetHubs);
+				
+				System.out.println("nodes_kinase_source_hubs ");
+				for (Node n : nodes_kinase_source_hubs)
+				{
+					System.out.println("n " + n);
+				}
+				System.out.println("nodes_kinase_target_hubs ");
+				for (Node n : nodes_kinase_target_hubs)
+				{
+					System.out.println("n " + n);
+				}
+				
+				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_strict_DE, nodes_kinase_source_hubs, null, nodes_kinase_target_hubs, selfInteractions)); // from our input to their targets
+				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, null, nodes_kinase_source_hubs, nodes_strict_DE, nodes_kinase_target_hubs, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}
 		}
 		InputNetwork regNetwork1 = new InputNetwork("Regulatory network", 666, null);
@@ -141,8 +161,8 @@ public class NetworkConstruction
 			}
 			if (kinase_file != null)
 			{
-				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_fuzzy_DE, allNodes, selfInteractions)); // from fuzzy DE to our combined set
-				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, allNodes, nodes_fuzzy_DE, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_fuzzy_DE, null, allNodes, null, selfInteractions)); // from fuzzy DE to our combined set
+				regEdges2.addAll(readKinaseInteractionsByLocustags(kinase_file, allNodes, null, nodes_fuzzy_DE, null, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 			}
 
 			InputNetwork regNetwork2 = new InputNetwork("Regulatory network", 666, null);
@@ -257,95 +277,6 @@ public class NetworkConstruction
 		return resultEdges;
 	}
 
-	/**
-	 * Remove the PPI hub biases from a given set of edges. 
-	 * To this end, we look for nodes that are only differently connected to one other interaction partner, which is a PPI hub.
-	 * In that case, we revert the PPI connection to reference levels (1) because we assume it's not very meaningful, unless both nodes are DE.
-	 * 
-	 * @param hubs the PPI hubs denoted by their unique IDs
-	 * @param nodes the set of nodes that should be used to construct the new edges
-	 * @param origEdges the original set of edges (will not be changed!) - should not contain redundancy
-	 * @param type the type of connection we want to filter for
-	 * @param all_de_nodes the DE genes
-	 * @return a new set of edges, which will be a subset of the original set of edges
-	 */
-	public Set<Edge> filterForHubs_deprecated(Set<String> hubs, Set<Node> nodes, Set<Edge> origEdges, String type, Set<String> all_de_nodes)
-	{
-		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(nodes);
-		Set<Edge> resultEdges = new HashSet<Edge>();
-
-		Map<String, Integer> diffEdgeCountByNode = new HashMap<String, Integer>();
-
-		/* Count, per node, the number of differentially expressed edges (weights not equal to 1) - of all types */
-		for (Edge e : origEdges)
-		{
-			String sourceID = e.getSource().getID();
-			String targetID = e.getTarget().getID();
-
-			if (!diffEdgeCountByNode.containsKey(sourceID))
-			{
-				diffEdgeCountByNode.put(sourceID, 0);
-			}
-			if (!diffEdgeCountByNode.containsKey(targetID))
-			{
-				diffEdgeCountByNode.put(targetID, 0);
-			}
-
-			if (e.getWeight() != 1.0)
-			{
-				diffEdgeCountByNode.put(sourceID, diffEdgeCountByNode.get(sourceID) + 1);
-				diffEdgeCountByNode.put(targetID, diffEdgeCountByNode.get(targetID) + 1);
-			}
-		}
-
-		for (Edge e : origEdges)
-		{
-			String sourceID = e.getSource().getID();
-			String targetID = e.getTarget().getID();
-
-			int sourceEdgeDiffCount = diffEdgeCountByNode.get(sourceID);
-			int targetEdgeDiffCount = diffEdgeCountByNode.get(targetID);
-
-			boolean keepEdge = true;
-
-			/* we only attempt to remove the differential edge when the type is the one we want to filter */
-			if (e.getType().equals(type))
-			{
-				/* the source is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1) */
-				if (sourceEdgeDiffCount == 1)
-				{
-					// if target is a hub and the source is not DE
-					if (hubs.contains(targetID) && !(all_de_nodes.contains(sourceID)))
-					{
-						keepEdge = false;
-					}
-				}
-				/* the target is only connected by this one differential edge -> candidate for removal (removal means reverting the weight to 1) */
-				if (targetEdgeDiffCount == 1)
-				{
-					// if source is a hub and the target is not DE
-					if (hubs.contains(sourceID) && !(all_de_nodes.contains(targetID)))
-					{
-						keepEdge = false;
-					}
-				}
-			}
-			/* add a copy of the edge to the result set if we want to keep it */
-			if (keepEdge)
-			{
-				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
-				resultEdges.add(copyE);
-			}
-			/* otherwise, put the edge weight to 1 and keep that copy */
-			else
-			{
-				Edge copyE = new Edge(mappedNodes.get(sourceID), mappedNodes.get(targetID), new EdgeDefinition(e.getDefinition()));
-				copyE.getDefinition().setWeight(1.0);
-				resultEdges.add(copyE);
-			}
-		}
-		return resultEdges;
-	}
 
 	/**
 	 * Modify the differentially expressed status of a collection of DE nodes, using over/under expression data.
@@ -397,9 +328,9 @@ public class NetworkConstruction
 	 * 
 	 * @param ppi_file the location where to find the tab-delimited PPI data
 	 * @param nodes1_incl the first set of input nodes (can be null, in which case any node will qualify, except those in nodes1_excl)
-	 * @param nodes1_excl the nodes that are excluded from the first set of input nodes (can be null, in which case any node in nodes1_excl will qualify)
+	 * @param nodes1_excl the nodes that are excluded from the first set of input nodes (can be null, in which case any node in nodes1_incl will qualify)
 	 * @param nodes2_incl the second set of input nodes (can be null, in which case any node will qualify, except those in nodes2_excl)
-	 * @param nodes2_excl the nodes that are excluded from the second set of input nodes (can be null, in which case any node in nodes2_excl will qualify)
+	 * @param nodes2_excl the nodes that are excluded from the second set of input nodes (can be null, in which case any node in nodes2_incl will qualify)
 	 * @param includeSelfInteractions whether or not to include self interactions (e.g. homodimers)
 	 * 
 	 * @return the corresponding set of PPI edges
@@ -444,10 +375,10 @@ public class NetworkConstruction
 				ppisRead.add(ppiRead);
 				ppisRead.add(ppiReverseRead);
 
-				boolean foundFirstIn1 = ((nodes1_incl == null || origLociIncl1.contains(locus1)) && (nodes1_excl == null || ! origLociExcl1.contains(locus1)));
-				boolean foundFirstIn2 = ((nodes2_incl == null || origLociIncl2.contains(locus1)) && (nodes2_excl == null || ! origLociExcl2.contains(locus1)));
-				boolean foundSecondIn1 = ((nodes1_incl == null || origLociIncl1.contains(locus2)) && (nodes1_excl == null || ! origLociExcl1.contains(locus2)));
-				boolean foundSecondIn2 = ((nodes2_incl == null || origLociIncl2.contains(locus2)) && (nodes2_excl == null || ! origLociExcl2.contains(locus2)));
+				boolean foundFirstIn1 = (nodes1_incl == null || origLociIncl1.contains(locus1)) && (nodes1_excl == null || ! origLociExcl1.contains(locus1));
+				boolean foundFirstIn2 = (nodes2_incl == null || origLociIncl2.contains(locus1)) && (nodes2_excl == null || ! origLociExcl2.contains(locus1));
+				boolean foundSecondIn1 = (nodes1_incl == null || origLociIncl1.contains(locus2)) && (nodes1_excl == null || ! origLociExcl1.contains(locus2));
+				boolean foundSecondIn2 = (nodes2_incl == null || origLociIncl2.contains(locus2)) && (nodes2_excl == null || ! origLociExcl2.contains(locus2));
 
 				/* include the interaction when both are in one of the nodesets */
 				if ((foundFirstIn1 && foundSecondIn2) || (foundSecondIn1 && foundFirstIn2))
@@ -597,6 +528,21 @@ public class NetworkConstruction
 
 		return edges;
 	}
+	
+	/**
+	 * Construct a set of kinase-target edges, reading input from a specified URI. This method imposes asymmetry of the read edges.
+	 * 
+	 * @param kinase_interactions_file the location where to find the tab-delimited regulatory data
+	 * @param includeSelfInteractions whether or not to include self interactions
+	 * 
+	 * @return the set of PPI edges read from the input file
+	 * @throws URISyntaxException when the regulation datafile can not be read properly
+	 * @throws IOException when the regulation datafile can not be read properly
+	 */
+	public Set<Edge> readAllKinaseInteractions(URI kinase_interactions_file, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	{
+		return readKinaseInteractionsByLocustags(kinase_interactions_file, null, null, null, null, includeSelfInteractions);
+	}
 
 	/**
 	 * Construct a set of kinase interaction edges from a certain input set of nodes, and reading input from a specified URI.
@@ -604,22 +550,28 @@ public class NetworkConstruction
 	 * or put a cutoff on minimal number of neighbours to avoid including outliers in the networks.
 	 * 
 	 * @param kinase_interactions_file the location where to find the tab-delimited regulatory data
-	 * @param source_nodes the set of input source nodes (or null when any are allowed)
-	 * @param target_nodes the set of input target nodes (or null when any are allowed)
+	 * @param source_incl the source nodes (can be null, in which case any node will qualify, except those in source_excl)
+	 * @param source_excl the source nodes that are excluded (can be null, in which case any node in source_incl will qualify)
+	 * @param target_incl the target nodes (can be null, in which case any node will qualify, except those in target_excl)
+	 * @param target_excl the target nodes that are excluded (can be null, in which case any node in target_incl will qualify)
 	 * @param includeSelfInteractions whether or not to include self interactions
 	 * 
 	 * @return the corresponding set of regulation edges
 	 * @throws URISyntaxException when the regulation datafile can not be read properly
 	 * @throws IOException when the regulation datafile can not be read properly
 	 */
-	public Set<Edge> readKinaseInteractionsByLocustags(URI kinase_interactions_file, Set<Node> source_nodes, Set<Node> target_nodes, boolean includeSelfInteractions) throws URISyntaxException, IOException
+	public Set<Edge> readKinaseInteractionsByLocustags(URI kinase_interactions_file, Set<Node> source_incl, Set<Node> source_excl, Set<Node> target_incl, Set<Node> target_excl, boolean includeSelfInteractions) throws URISyntaxException, IOException
 	{
 		Set<Edge> edges = new HashSet<Edge>();
-		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(source_nodes);
-		mappedNodes.putAll(NodeMapper.getNodesByID(target_nodes));
+		Map<String, Node> mappedNodes = NodeMapper.getNodesByID(source_incl);
+		mappedNodes.putAll(NodeMapper.getNodesByID(source_excl));
+		mappedNodes.putAll(NodeMapper.getNodesByID(target_incl));
+		mappedNodes.putAll(NodeMapper.getNodesByID(target_excl));
 
-		Set<String> origSourceLoci = NodeMapper.getNodeIDs(source_nodes);
-		Set<String> origTargetLoci = NodeMapper.getNodeIDs(target_nodes);
+		Set<String> origSourceInclLoci = NodeMapper.getNodeIDs(source_incl);
+		Set<String> origSourceExclLoci = NodeMapper.getNodeIDs(source_excl);
+		Set<String> origTargetInclLoci = NodeMapper.getNodeIDs(target_incl);
+		Set<String> origTargetExclLoci = NodeMapper.getNodeIDs(target_excl);
 
 		BufferedReader reader = new BufferedReader(new FileReader(new File(kinase_interactions_file)));
 
@@ -667,8 +619,8 @@ public class NetworkConstruction
 				{
 					interactionsRead.add(interactionRead);
 
-					boolean foundSource = (source_nodes == null || origSourceLoci.contains(source_locus));
-					boolean foundTarget = (target_nodes == null || origTargetLoci.contains(target_locus));
+					boolean foundSource = (source_incl == null || origSourceInclLoci.contains(source_locus)) && (source_excl == null || ! origSourceExclLoci.contains(source_locus));
+					boolean foundTarget = (target_incl == null || origTargetInclLoci.contains(target_locus)) && (target_excl == null || ! origTargetExclLoci.contains(target_locus));
 
 					/* include the interaction when both are in the nodeset */
 					if (foundSource && foundTarget)

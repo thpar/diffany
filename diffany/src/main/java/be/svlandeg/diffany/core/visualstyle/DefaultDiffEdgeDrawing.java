@@ -37,22 +37,31 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	}
 
 	@Override
-	public ArrowHead getEdgeArrowHead(String category)
+	public ArrowHead getEdgeArrowHead(String type)
 	{
-		if (category == null)
+		if (type == null)
 		{
-			String errormsg = "The provided differential type ('" + category + "') should not be null!";
+			String errormsg = "The provided differential type ('" + type + "') should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
-		if (teo.isPosDirected(category))
+		
+		// TODO v.3.0 allow tree-like traversal of differential edge types (cf. DefaultSourceEdgeDrawing.getEdgeColor)
+		ArrowHead foundArrowHead = parentCatToArrowHead.get(type);
+		
+		if (foundArrowHead != null)
+		{
+			return foundArrowHead;
+		}
+		
+		if (teo.isPosDirected(type))
 		{
 			return pos_ah;
 		}
-		if (teo.isNegDirected(category))
+		if (teo.isNegDirected(type))
 		{
 			return neg_ah;
 		}
-		if (teo.isNegSymm(category) || teo.isPosSymm(category))
+		if (teo.isNegSymm(type) || teo.isPosSymm(type))
 		{
 			return symm_ah;
 		}

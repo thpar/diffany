@@ -200,6 +200,18 @@ public class DefaultEdgeOntology extends TreeEdgeOntology
 		
 		diffDraw.addColor("increases_dephosphorylation", new Color(255,0,204), false);
 		diffDraw.addColor("decreases_dephosphorylation", new Color(0,51,255), false);
+		
+		diffDraw.addArrowHead("increase_ppi", ArrowHead.NONE, false);
+		diffDraw.addArrowHead("decrease_ppi", ArrowHead.NONE, false);
+		
+		diffDraw.addArrowHead("increases_regulation", ArrowHead.ARROW, false);
+		diffDraw.addArrowHead("decreases_regulation", ArrowHead.ARROW, false);
+		
+		diffDraw.addArrowHead("increases_phosphorylation", ArrowHead.DIAMOND, false);
+		diffDraw.addArrowHead("decreases_phosphorylation", ArrowHead.DIAMOND, false);
+		
+		diffDraw.addArrowHead("increases_dephosphorylation", ArrowHead.DIAMOND, false);
+		diffDraw.addArrowHead("decreases_dephosphorylation", ArrowHead.DIAMOND, false);
 	}
 
 	/**

@@ -36,8 +36,6 @@ import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.ExtraOptionsMenu;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
 import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
-import be.svlandeg.diffany.examples.Bandyopadhyay2010;
-import be.svlandeg.diffany.examples.FuzzyNetworks2;
 import be.svlandeg.diffany.examples.Ideker2011;
 import be.svlandeg.diffany.examples.OsmoticUseCase;
 
@@ -91,30 +89,16 @@ public class CyActivator extends AbstractCyActivator
 		registerAllServices(context, runProjectAction, new Properties());
 		
 		//register actions to import the projects defined in the examples package
-		Bandyopadhyay2010 example1 = new Bandyopadhyay2010();
-		example1.setName("Bandyopadhyay2010");
-		Project exampleProject1 = example1.getDefaultProject();
+		Ideker2011 example1 = new Ideker2011();
+		example1.setName("Ideker2011");
+		Project exampleProject2 = example1.getDefaultProject();
 		registerAllServices(context, new LoadExampleAction(services,example1.getName(), 
-				exampleProject1, example1.getDefaultRunConfigurationID(exampleProject1)), 
-				new Properties());
-		
-		Ideker2011 example2 = new Ideker2011();
-		example2.setName("Ideker2011");
-		Project exampleProject2 = example2.getDefaultProject();
-		registerAllServices(context, new LoadExampleAction(services,example2.getName(), 
-				exampleProject2, example2.getDefaultRunConfigurationID(exampleProject2)), 
-				new Properties());
-		
-		FuzzyNetworks2 example3 = new FuzzyNetworks2();
-		example3.setName("FuzzyNetworks2");
-		Project exampleProject3 = example3.getDefaultProject();
-		registerAllServices(context, new LoadExampleAction(services,example3.getName(), 
-				exampleProject3, example3.getDefaultRunConfigurationID(exampleProject3, 4)), 
+				exampleProject2, example1.getDefaultRunConfigurationID(exampleProject2)), 
 				new Properties());
 	
-		OsmoticUseCase example4 = new OsmoticUseCase();
-		example4.setName("Osmotic stress");
-		registerAllServices(context,new LoadExampleAction(services, example4), new Properties());
+		OsmoticUseCase example2 = new OsmoticUseCase();
+		example2.setName("Osmotic stress");
+		registerAllServices(context,new LoadExampleAction(services, example2), new Properties());
 
 		
 		//add custom menu items

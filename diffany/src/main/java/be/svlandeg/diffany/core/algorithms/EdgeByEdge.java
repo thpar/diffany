@@ -353,7 +353,7 @@ public class EdgeByEdge
 
 		if (refRequired && refNetworks.size() != 1)
 		{
-			String errormsg = "Please define exactly 1 reference network (" + refNetworks.size() + "found) or change the refRequired parameter to false!";
+			String errormsg = "Please define exactly 1 reference network (" + refNetworks.size() + " found) or change the refRequired parameter to false!";
 			throw new IllegalArgumentException(errormsg);
 		}
 

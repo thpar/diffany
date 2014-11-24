@@ -230,8 +230,8 @@ public class CalculateDiff
 			RunDiffConfiguration drc = (RunDiffConfiguration) rc;
 			ReferenceNetwork r = drc.getReferenceNetwork();
 			Set<ConditionNetwork> cs = new HashSet<ConditionNetwork>(drc.getConditionNetworks());
-			log.log("Calculating the differential and consensus network between " + r.getName() + " and "
-					+ cs.size() + " condition-dependent network(s)");
+			log.log("Calculating the 1-all differential network between " + r.getName() + " and "
+					+ cs.size() + " condition-dependent network(s) - settings: support cutoff = " + rc.getSupportCutoff() + ", weight cutoff = " + weight_cutoff);
 			diff = calculateDiffNetwork(r, cs, eo, diff_name, diff_ID, rc.getSupportCutoff()-1, weight_cutoff, log, diffTask);
 		}
 		
@@ -240,7 +240,7 @@ public class CalculateDiff
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
 			String consensus_name = consensusnameprefix + diff_name;
-			log.log("Calculating the consensus network between " + inputs.size() + " input network(s)");
+			log.log("Calculating the 1-all consensus network between " + inputs.size() + " input network(s) - settings: support cutoff = " + rc.getSupportCutoff() + ", weight cutoff = " + weight_cutoff + ", reference required = " + rc.getRefRequired() + ", minOperator = " + minOperator);
 			cn = calculateConsensusNetwork(inputs, eo, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator, consensusTask);
 		}
 		
@@ -419,7 +419,7 @@ public class CalculateDiff
 				}
 				
 				String diff_name = diffnameprefix + c.getName();
-				log.log("Calculating the differential and consensus network between " + r.getName() + " and " + c.getName());
+				log.log("Calculating the pairwise differential network between " + r.getName() + " and " + c.getName() + " - settings: weight cutoff = " + weightCutoff);
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
 				DifferentialNetwork diff = calculateDiffNetwork(r, oneCs, eo, diff_name, firstID++, 1, weightCutoff, log, diffTask);
@@ -445,6 +445,8 @@ public class CalculateDiff
 					{
 						consTask = new ScheduledTask(progressListener, ticksPerTask);
 					}
+					log.log("Calculating the pairwise consensus network between " + r.getName() + " and " + c.getName() + " - settings: weight cutoff = " + weightCutoff + ", minOperator = " + minOperator);
+					
 					on = calculateConsensusNetwork(inputs, eo, consensus_name, firstID++, 2, true, weightCutoff, log, minOperator, consTask);
 				}
 				
@@ -474,7 +476,7 @@ public class CalculateDiff
 					
 					InputNetwork n2 = inputs.get(j);
 					
-					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName());
+					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName() + " - settings: weight cutoff = " + weightCutoff + ", minOperator = " + minOperator);
 					
 					// create a consensus name with consistent alphabetical ordering of the network names
 					String consensus_name = consensusnameprefix + n1.getName() + "_" + n2.getName();

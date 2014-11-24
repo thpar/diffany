@@ -364,17 +364,27 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		}
 		this.supportSlider.setEnabled(model.getSelectedProject()!=null && newNumberOfTicks>2);
 		
+		//enable reference network inclusion option
+		//only when there is a project and a reference network selected
+		//also a differential network should not be requested and the consensus edge number should be more than 2
+		//preset the actual reference network inclusion option when disabled
 		if (model.getSelectedProject()!=null 
-				&& !model.isGenerateDiffNets() 
 				&& model.getSelectedProject().getReferenceNetwork()!=null
+				&& !model.isGenerateDiffNets() 
 				&& newNumberOfTicks>2){
 			this.requireRefNetCheckBox.setEnabled(true);
-			this.requireRefNetCheckBox.setSelected(true);
-			this.model.setRefIncludedInOverlapSupportCutoff(true);
 		} else {
 			this.requireRefNetCheckBox.setEnabled(false);
+		}
+
+		//turn off the option when no reference network is available
+		if (model.getSelectedProject()==null
+				|| model.getSelectedProject().getReferenceNetwork() == null){
 			this.requireRefNetCheckBox.setSelected(false);
 			this.model.setRefIncludedInOverlapSupportCutoff(false);
+		} else {
+			this.requireRefNetCheckBox.setSelected(true);
+			this.model.setRefIncludedInOverlapSupportCutoff(true);			
 		}
 		
 	}

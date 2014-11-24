@@ -52,7 +52,6 @@ import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.Model.ComparisonMode;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
-import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 import be.svlandeg.diffany.cytoscape.tasks.UpdateVisualStyleTaskFactory;
 
 /**
@@ -371,12 +370,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 				&& newNumberOfTicks>2){
 			this.requireRefNetCheckBox.setEnabled(true);
 			this.requireRefNetCheckBox.setSelected(true);
+			this.model.setRefIncludedInOverlapSupportCutoff(true);
 		} else {
 			this.requireRefNetCheckBox.setEnabled(false);
 			this.requireRefNetCheckBox.setSelected(false);
+			this.model.setRefIncludedInOverlapSupportCutoff(false);
 		}
 		
-		this.requireRefNetCheckBox.setSelected(model.getSelectedProject().getReferenceNetwork() != null);
 	}
 
 	@Override

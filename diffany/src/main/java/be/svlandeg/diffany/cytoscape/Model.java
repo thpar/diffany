@@ -183,6 +183,13 @@ public class Model extends Observable implements NetworkAddedListener,
 		notifyObservers();
 	}
 	
+	/**
+	 * Scans initially loaded networks and create a {@link CyProject} for each {@link CyRootNetwork}
+	 */
+	private void initialiseProjects(){
+		
+	}
+	
 	@Override
 	public void handleEvent(NetworkDestroyedEvent e) {
 		//triggered on network destroyed

@@ -101,7 +101,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	private ComparisonMode mode = ComparisonMode.REF_TO_ALL;
 	
 	private boolean generateDiffNets = true;
-	private boolean generateConsensusNets = true;
+	private boolean generateConsensusNets = false;
 
 	private double cutoff = 0;
 

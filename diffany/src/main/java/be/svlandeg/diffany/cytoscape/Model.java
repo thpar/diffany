@@ -128,8 +128,11 @@ public class Model extends Observable implements NetworkAddedListener,
 	public Model(Services services){
 		this.services = services;
 	
+		initialiseProjects();
+		
 		sourceStyle = new VisualSourceStyle(services);
 		diffStyle = new VisualDiffStyle(services);
+		
 	}
 	
 
@@ -187,7 +190,22 @@ public class Model extends Observable implements NetworkAddedListener,
 	 * Scans initially loaded networks and create a {@link CyProject} for each {@link CyRootNetwork}
 	 */
 	private void initialiseProjects(){
-		
+		CyRootNetworkManager rootNetManager = services.getCyRootNetworkManager();
+		Set<CyNetwork> networkSet = services.getCyNetworkManager().getNetworkSet();
+		Set<CyRootNetwork> collections = projects.keySet();
+		CyRootNetwork firstAdded = null;
+		for (CyNetwork network : networkSet){
+			CyRootNetwork rootNet = rootNetManager.getRootNetwork(network);
+			if (!collections.contains(rootNet)){
+				this.addProject(new CyProject(rootNet));
+				if (firstAdded == null){
+					firstAdded = rootNet;
+				}
+			}
+		}
+		if (firstAdded != null){
+			this.setSelectedProject(projects.get(firstAdded));
+		}
 	}
 	
 	@Override

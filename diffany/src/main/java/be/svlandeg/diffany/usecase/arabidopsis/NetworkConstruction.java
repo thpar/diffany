@@ -121,17 +121,6 @@ public class NetworkConstruction
 				Set<Node> nodes_kinase_source_hubs = gp.getNodesByLocusID(kinaseSourceHubs);
 				Set<Node> nodes_kinase_target_hubs = gp.getNodesByLocusID(kinaseTargetHubs);
 				
-				System.out.println("nodes_kinase_source_hubs ");
-				for (Node n : nodes_kinase_source_hubs)
-				{
-					System.out.println("n " + n);
-				}
-				System.out.println("nodes_kinase_target_hubs ");
-				for (Node n : nodes_kinase_target_hubs)
-				{
-					System.out.println("n " + n);
-				}
-				
 				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, nodes_strict_DE, nodes_kinase_source_hubs, null, nodes_kinase_target_hubs, selfInteractions)); // from our input to their targets
 				regEdges1.addAll(readKinaseInteractionsByLocustags(kinase_file, null, nodes_kinase_source_hubs, nodes_strict_DE, nodes_kinase_target_hubs, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 			}

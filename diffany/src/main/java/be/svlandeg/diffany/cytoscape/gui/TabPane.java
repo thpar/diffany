@@ -78,7 +78,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	private static final String REQUIRE_REF_NET_ACTION = "require reference network";
 	
 	private JButton runButton;
-	private JButton updateVizButton;
 	private JTable networkTable;
 	private JCheckBox requireRefNetCheckBox;
 	private JSlider supportSlider;
@@ -112,18 +111,14 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		runPanel.setBorder(BorderFactory.createTitledBorder("Run Diffany"));
 		runPanel.setAlignmentX(CENTER_ALIGNMENT);
 		runButton = new JButton(new RunProjectAction(model));
-		updateVizButton = new JButton(new UpdateVisualStyleAction(model));
-		
-		runPanel.add(updateVizButton);
+
 		runPanel.add(runButton);
 		
 		CyProject selectedProject = model.getSelectedProject();
 		if (selectedProject!=null){
 			runButton.setEnabled(model.getSelectedProject().canExecute(model));
-			updateVizButton.setEnabled(true);
 		} else {
 			runButton.setEnabled(false);
-			updateVizButton.setEnabled(false);
 		}
 		
 		this.add(runPanel);
@@ -394,10 +389,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			if (selected instanceof CyProject){
 				CyProject entry = (CyProject)selected;
 				model.setSelectedProject(entry);
-				this.updateVizButton.setEnabled(true);
 			} else {
 				model.setSelectedProject(null);
-				this.updateVizButton.setEnabled(false);
 			}
 		} else if (action.equals(MODE_ACTION)){
 			JComboBox source = (JComboBox)e.getSource();

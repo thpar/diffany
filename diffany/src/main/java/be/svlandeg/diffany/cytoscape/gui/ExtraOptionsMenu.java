@@ -2,15 +2,20 @@ package be.svlandeg.diffany.cytoscape.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
+import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
+import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 
-public class ExtraOptionsMenu extends JMenu implements ActionListener {
+public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 
 
 	private static final long serialVersionUID = 1L;
@@ -18,10 +23,12 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener {
 	private JRadioButtonMenuItem minOperator;
 	private JRadioButtonMenuItem maxOperator;
 	private Model appModel;
+	private JMenuItem updateVizItem;
 	
 	public ExtraOptionsMenu(Model model){
 		super("Extra options");
 		this.appModel = model;
+		this.appModel.addObserver(this);
 		
 		//Overlap operator
 		JMenu overlapMenu = new JMenu("Overlap operator");
@@ -43,6 +50,12 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener {
 		overlapMenu.add(maxOperator);
 		this.add(overlapMenu);
 		
+		this.addSeparator();
+		
+		updateVizItem = new JMenuItem(new UpdateVisualStyleAction(model));
+		this.add(updateVizItem);
+		updateUpdateVizMenuItem();
+		
 	}
 	
 	private void updateOverlapOperatorMenu(){
@@ -55,6 +68,11 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener {
 			break;
 		}
 	}
+	
+	private void updateUpdateVizMenuItem(){
+		CyProject selectedProject = this.appModel.getSelectedProject();
+		this.updateVizItem.setEnabled(selectedProject != null);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -66,6 +84,12 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener {
 			appModel.setOverlapOperator(OverlapOperator.MAX);
 		}
 		
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		//triggers on model update
+		this.updateUpdateVizMenuItem();
 	}
 
 }

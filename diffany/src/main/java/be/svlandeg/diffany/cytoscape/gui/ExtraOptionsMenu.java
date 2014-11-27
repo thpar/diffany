@@ -31,7 +31,7 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 		this.appModel.addObserver(this);
 		
 		//Overlap operator
-		JMenu overlapMenu = new JMenu("Overlap operator");
+		JMenu overlapMenu = new JMenu("Score operator");
 		overlapOperatorGroup = new ButtonGroup();
 		minOperator = new JRadioButtonMenuItem("MIN");
 		minOperator.setActionCommand("MIN");

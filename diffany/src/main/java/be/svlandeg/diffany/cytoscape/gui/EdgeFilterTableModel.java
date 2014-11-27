@@ -27,7 +27,7 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 	public int getRowCount() {
 		int total = sourceInteractions.size();
 		if (diffInteractions.size() !=0){
-			total = total + diffInteractions.size()+1;
+			total = total + diffInteractions.size();
 		}
 		return total;
 	}
@@ -63,15 +63,12 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 			List<String> interactionNames = new ArrayList<String>(sourceInteractions.keySet());
 			Collections.sort(interactionNames);			
 			return interactionNames.get(rowIndex);
-		} else if (rowIndex>sourceInteractions.size()){
+		} else{
 			//return value from Diff list
 			List<String> interactionNames = new ArrayList<String>(diffInteractions.keySet());
 			Collections.sort(interactionNames);			
-			return interactionNames.get(rowIndex-sourceInteractions.size()-1);
-		} else {
-			//return separator row
-			return new String();
-		}
+			return interactionNames.get(rowIndex-sourceInteractions.size());
+		} 
 	}
 	/**
 	 * The interactions are sorted alphabetically in the table. Get value of the one 
@@ -83,11 +80,8 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 	private boolean getValueInRow(int rowIndex){
 		if (rowIndex<sourceInteractions.size()){
 			return sourceInteractions.get(getInteractionInRow(rowIndex));
-		} else if (rowIndex>sourceInteractions.size()){
-			return diffInteractions.get(getInteractionInRow(rowIndex));
 		} else {
-			//return separator row
-			return false;
+			return diffInteractions.get(getInteractionInRow(rowIndex));
 		}
 	}
 	
@@ -109,10 +103,6 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (rowIndex==sourceInteractions.size()){
-			return false;
-		}
-		
 		switch(columnIndex){
 		case 1:
 			return true;
@@ -134,7 +124,7 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 					sourceInteractions.put(interaction, value);
 					this.fireTableDataChanged();
 				}				
-			} else if (rowIndex > sourceInteractions.size()){
+			} else {
 				boolean currentValue = diffInteractions.get(interaction);
 				if (currentValue != value){
 					diffInteractions.put(interaction, value);

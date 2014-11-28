@@ -277,8 +277,8 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		JPanel supportPanel = new JPanel();
 		supportPanel.setLayout(new BoxLayout(supportPanel, BoxLayout.PAGE_AXIS));
 		supportPanel.setAlignmentX(LEFT_ALIGNMENT);
-		JLabel supportLabel = new JLabel("Consensus edges cutoff:");
-		supportSlider = new JSlider(JSlider.HORIZONTAL, 0,4,4);
+		JLabel supportLabel = new JLabel("Minimal number of required supporting networks (incl. reference):");
+		supportSlider = new JSlider(JSlider.HORIZONTAL, 2,4,4);
 		supportSlider.addChangeListener(this);
 		supportSlider.setMajorTickSpacing(1);
 		supportSlider.setMinorTickSpacing(1);

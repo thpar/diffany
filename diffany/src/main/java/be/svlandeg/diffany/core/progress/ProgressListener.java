@@ -14,6 +14,9 @@ public abstract class ProgressListener
 	private int totalTicks;
 	private int doneTicks;
 
+	/**
+	 * Iniate a progress listener at a total of 0 ticks.
+	 */
 	public ProgressListener()
 	{
 		doneTicks = 0;
@@ -32,8 +35,8 @@ public abstract class ProgressListener
 	protected abstract void setProgress(String message, int progress, int total);
 	
 	/**
-	 * TODO
-	 * @param totalTicks TODO
+	 * Reset the progress listener to start recording a new task.
+	 * @param totalTicks the total number of ticks the new task will take
 	 */
 	public void reset(int totalTicks)
 	{
@@ -42,8 +45,10 @@ public abstract class ProgressListener
 	}
 	
 	/**
-	 * @param message TODO
-	 * @param ticks TODO
+	 * Report the fact that there has been some progress, expressed by a number of ticks that were performed
+	 * 
+	 * @param message the message that should be displayed to the user at this point, i.e. the task that is now being done
+	 * @param ticks the number of ticks that have passed since the last 'progress update'
 	 * 
 	 */
 	public void addTicks(String message, int ticks)
@@ -60,6 +65,10 @@ public abstract class ProgressListener
 		setProgress(message, doneTicks, totalTicks);
 	}
 	
+	/**
+	 * Obtain the number of ticks that are still to be done for this task to complete
+	 * @return the number of ticks that still need to be done
+	 */
 	protected int ticksToGo()
 	{
 		return totalTicks - doneTicks;

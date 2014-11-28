@@ -1,7 +1,7 @@
 # Diffany Cytoscape plugin ####
 ## Installation ####
  - If not installed yet, Cytoscape 3 can be downloaded at the [Cytoscape homepage][1]
- - Download the Diffany app file (diffany-0.0.1-RC.jar) at the bottom of the [supplementary data][2]
+ - Download the Diffany app file (diffany-1.0.0-RC.jar) at the bottom of the [supplementary data][2]
  - Launch Cytoscape 3
  - In the Cytoscape menu: Apps -> App Manager
  - In the App Manager: Install from File... 

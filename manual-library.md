@@ -1,4 +1,7 @@
 # Diffany library ####
+
+This readme file explains the basics for installation and usage of the Diffany library code. Not all packages and functionality is explained, but much more information can be found in the javadoc annotations of the original source files.
+
 ## Installation ####
  - If not installed yet, java 6 or higher should be installed 
  - Download the Diffany library jar file and add it to your classpath
@@ -31,46 +34,48 @@
  
 ## Example code ####
 
-Parameters: String refLocation, String condLocation, String diffLocation, String overlapLocation
+Parameters: String refLocation, String condLocation, String diffLocation, String consensusLocation
 	
 	
 		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
-		EdgeOntology eo = new DefaultEdgeOntology();
-		NodeMapper nm = new DefaultNodeMapper();
-		Project p = new Project("testProject", eo, nm);
+		TreeEdgeOntology eo = new DefaultEdgeOntology();
+		Project p = new Project("testProject", eo);
 
 		/** READ THE INPUT NETWORKS **/
+		boolean skipHeader = true;
 		File refDir = new File(refLocation);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, nm);
-		p.registerSourceNetwork(refNet);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
 		File condDir = new File(condLocation);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, nm);
-		p.registerSourceNetwork(condNet);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
-		RunConfiguration rc = new RunConfiguration(refNet, condNet);
-		int rcID = p.addRunConfiguration(rc);
+		boolean cleanInput = true;
+		int runID = p.addRunConfiguration(refNet, condNet, cleanInput, null);
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, rcID, cutoff);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, 342, 666, true, null);
 
 		// In this case, there will be exactly one DifferentialNetwork
-		DifferentialNetwork diffNet = rc.getDifferentialNetworks().iterator().next();
-		OverlappingNetwork overlapNet = diffNet.getOverlappingNetwork();
+		RunOutput output = p.getOutput(runID);
+		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
+		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
+		ConsensusNetwork consensusNet = pair.getConsensusNetwork();
 
 		/** WRITE NETWORK OUTPUT **/
+		boolean writeHeaders = true;
+		
 		File diffDir = new File(diffLocation);
-		NetworkIO.writeDifferentialNetworkToDir(diffNet, nm, diffDir);
+		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 
-		File overlapDir = new File(overlapLocation);
-		NetworkIO.writeOverlappingNetworkToDir(overlapNet, nm, overlapDir);
+		File consensusDir = new File(consensusLocation);
+		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
 
 		/** WRITE LOG OUTPUT **/
-		Logger logger = p.getLogger(rcID);
-		for (String msg : logger.getAllLogMessages())
+		Logger logger = p.getLogger(runID);
+		for (LogEntry msg : logger.getAllLogMessages())
 		{
 			System.out.println(msg);
 		}

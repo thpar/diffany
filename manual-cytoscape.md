@@ -11,28 +11,29 @@
 [1]: http://cytoscape.org/
 [2]: http://bioinformatics.psb.ugent.be/supplementary_data/solan/diffany/
 
-## Example networks ####
-There are two **small examples** included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples. 
-Clicking one of the examples will create a new Cytoscape collection with the example networks in it.
+## Overview of the functionality ####
+The **Diffany tab** in the side panel allows you to select a network collection which you want to use for the inference of differential networks. Once a specific collection is selected from the drop-down list, you need to configure the exact settings of the Diffany run. A network can be included in the project by selecting the checkbox next to its name. Upon inclusion, the visual style "Diffany - Source" is immediately applied on its view. The correct Reference network can further be specified as well, and the user can chose to generate only differential networks, only consensus networks, or both simultaneously.
 
-The **Diffany tab** in the side panel will now show the newly added collection(s). Select one of the collections to get a list of its networks.
-A network gets included in the project by clicking the checkbox next to it. Upon inclusion, the visual style "Diffany - Source" is immediately applied on its view.
-One of the networks needs to be selected as reference network (in the examples resp. "Untreated Network" and "Reference Netwerk"). 
-Neither of the examples need further options: they both use a cutoff of 0 and the pairwise comparison mode.
+Using the pairwise **comparison mode**, the reference network will be compared to all other input networks seperately (1 or more), generating condition-specific differential and consensus networks. By contrast, the one-to-all mode further allows the simultaneous comparison of a reference network against many different conditions, generating an overview of the shared stress response across all these conditions. When there are more than two input networks, the minimum number of required supporting networks can further be defined through a **required networks slider**: selecting the number of all input networks (as by default) will result in the most strict comparison, requiring all conditions to agree on a certain response for it to be included in the differential network. By lowering this threshold, it becomes possible to generate differential networks in which for instance 3 out of 4 conditions share a response, thus generating a more general overview while also allowing for some noise in the input data. Finally, 
+
 
 Clicking the **"Start" button** at the bottom of the tab runs the algorithm.
 Two new networks should show up: a differential network (with the "Diffany - Differential" style applied) and its counterpart overlap network.
 A popup shows the log file of this run.
 
-## User created networks ####
+
 The Diffany algorithms should work on a plethora of networks, taking into account a few caveats:
  - The networks to be compared should be created within the **same network collection**.
  - Weights should be floating point values in the **column "weight"**
  - Explicitly negating edges ("does NOT bind") can be done by adding a **column "negated"**, containing boolean values
  - **Equivalent nodes** should have the same name accross the different networks in order to compare their edges.
- - Cytoscape sees two edges with the same id as the exact same edge, which causes attributes (like weight) to be synced accross networks. 
-Take this into account if this is not the intended behaviour.
- - When there is more than 1 condition-dependent network created, the **comparison mode** can be set either to pairwise (1-against-1) or 1-against-all.
+ - Cytoscape sees two edges with the same id as the exact same edge, which causes attributes (like weight) to be synced accross networks. Take this into account if this is not the intended behaviour.
  - Interaction types are defined by the default **column "interaction"**. When an interaction type not available in the default edge ontology is chosen, it will be transparently added to the ontology.
 However, if you want to exploit the existing edge ontology hierarchy, use any of these **built-in AF types**:  genetic\_interaction, positive\_genetic\_interaction, negative\_genetic\_interaction, synthetic\_lethality, regulation, positive\_regulation, catalysis, negative_regulation, inhibition
  or **PR types**: ppi, colocalization, coexpression, protein\_dna\_binding, transcription, ptm, phosphorylation, dephosphorylation, glycosylation, deglycosylation, acetylation, deacetylation, hydroxylation, dehydroxylation, ubiquitination, deubiquitination, methylation, demethylation
+
+## Example networks ####
+There are two **examples** included in the app. These can be loaded from the menu: Apps -> Diffany -> Examples. The first one contains two small artificial input networks inspired by the review of Ideker et al., 2012. The second example illustrates the application of Diffany to the study on plant abiotic stress, depicting the reference network (no stress) as well as osmotic stress which was induced 1.5h, 3h, 12h and 24h after transfer to a mannitol-containing medium. Selecting one of the examples will create a new Cytoscape collection with the example networks in it.
+
+
+

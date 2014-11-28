@@ -350,6 +350,15 @@ public class NetworkCleaning
 	 */
 	public InputNetwork fullInputCleaning(InputNetwork net, EdgeOntology eo, ScheduledTask task)
 	{
+		if (net instanceof ReferenceNetwork)
+		{
+			return fullInputRefCleaning((ReferenceNetwork) net, eo, task);
+		}
+		if (net instanceof ConditionNetwork)
+		{
+			return fullInputConditionCleaning((ConditionNetwork) net, eo, task);
+		}
+		
 		InputNetwork resultNet = new InputNetwork(net.getName(), net.getID(), net.getAllNodeAttributes());
 		resultNet.setNodesAndEdges(net.getNodes(), net.getEdges());
 		fullCleaning(resultNet, eo, task, false, true);

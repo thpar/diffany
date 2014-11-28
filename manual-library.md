@@ -5,28 +5,28 @@
  - The library jar is intented to be used as an external library to other custom projects
 
 ## Networks ####
- 
- - cf. package *be.svlandeg.diffany.concepts*
- - Within Diffany, there are 4 types of networks, each inheriting from the Network class. They are defined by a name, set of Edges and a set of Nodes. Additionally, a NodeMapper object is required to define when two Nodes within the network can be considered to be equal
-    + **ReferenceNetwork**: a 'static' input network that is used as a reference, i.e. the interactome under unspecified/unknown/wild-type conditions
+ - cf. package *be.svlandeg.diffany.core.networks*
+ - Within Diffany, there are 4 types of networks, each inheriting from the Network class. They are defined by a name, set of Edges and a set of Nodes. 
+    + **ReferenceNetwork**: a 'static' input network that is used as a reference, i.e. the interactome under unspecified/unknown/wild-type conditions.
     + **ConditionNetwork**: a 'static' input network that represents an interactome under a specific (set of) Condition(s). A Condition is defined by a description and (optionally) a set of ontology terms.
     + **DifferentialNetwork**: the 'output' network that summarizes the rewiring events from the reference network to the condition-specific network(s)
-    + **OverlappingNetwork**: the 'output' network that summarizes the overlap between a set of original networks, such as the reference network and the condition-specific network(s). Can be accessed as a field of DifferentialNetwork, and can be seen as its logical counterpart.
+    + **OverlappingNetwork**: the 'output' network that summarizes the overlap between a set of original networks, such as the reference network and the condition-specific network(s). Can be intuitively seen as the logical counterpart of a differential network, though their inference of done independently.
     
 
 ## Semantics ####
- - cf. package *be.svlandeg.diffany.semantics*
- - A **NodeMapper** needs to be defined to define when two Nodes across networks are equal. By default, this is determined by comparing the canonical node names through Node.getName(true) in DefaultNodeMapper. This can be customized by making a custom implementation of NodeMapper.
+ - cf. package *be.svlandeg.diffany.core.semantics*
+ - A **NodeMapper** facilitates the comparison of two Nodes across networks to determine equality. Currently, nodes with the same unique ID are considered equal, but in the future more complex N-M mappings could be implemented.
  - An **EdgeOntology** provides the semantic interpretation of the interaction (edge) types. Through this ontology, it becomes possible to define synonyms/abbreviations (e.g. 'post-translational modification' and 'ptm') as well as sub- and superclasses (e.g. 'phosphorylation' and 'ptm'). The EdgeOntology heavily defines the output of the differential algorithms. A comprehensive set of interaction types is already defined in DefaultEdgeOntolgy and can be further extended.
 
 ## Project ####
- - a **Project** keeps track of all ontologies as well as a set of RunConfigurations, i.e. meaningful combinations of reference and condition-specific networks that can be used as input for the Diffany algorithms
- - Each **RunConfiguration** should be added to the project, and the unique ID assigned to it can be used to run the configuration and retrieve the log file afterwards
+ - cf. package *be.svlandeg.diffany.core.project*
+ - a **Project** keeps track of all ontologies as well as a set of RunConfigurations, i.e. meaningful combinations of reference and condition-specific networks that can be used as input for the Diffany algorithms.
+ - Each **RunConfiguration** should be added to the project, and the unique ID assigned to it can be used to run the configuration and retrieve the log file afterwards.
+ - A **Logger** object records all relevant messages during the execution of the network algorithms.
 
 ## Algorithm ####
-
- - cf. package *be.svlandeg.diffany.algorithms*
- - The class **CalculateDiff** provides the methods to generate the differential networks from the input networks. Optional arguments are the minimal weight threshold (default 0.0) and the name of the output networks (by default 'diff\_XXX' and 'overlap\_XXX'
+ - cf. package *be.svlandeg.diffany.core.algorithms*
+ - The class **CalculateDiff** provides the methods to generate the differential networks from the input networks. Optional arguments are for instance the minimal weight threshold (default 0.0) and the name of the output networks (by default 'diff\_XXX' and 'consensus\_XXX'
  - As part of the CalculateDiff algorithms, the methods from **NetworkCleaning** and **Unification** will be called.
  
 ## Example code ####

@@ -125,10 +125,15 @@ public class ProcessTest extends GenericExample
 		int ID = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);
+		//new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 3, true, null);
+		//ex.printAllNetworks(p, ID, true, false, false);
+		
+		/* Test for bug issue #233 */
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, 5, 3, true, null);
+		ex.printAllNetworks(p, ID, false, true, false);
 		
 		System.out.println("");
-		ex.printAllNetworks(p, ID, true, false, false);
+		
 	}
 
 }

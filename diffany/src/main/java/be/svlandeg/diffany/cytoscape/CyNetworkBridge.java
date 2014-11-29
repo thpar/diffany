@@ -264,7 +264,7 @@ public class CyNetworkBridge {
 			network = new ReferenceNetwork(netName, nextID++, nodeAttrs);
 			break;
 		case CONDITION:
-			//TODO get conditions from gui
+			//TODO v3.0: get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
 			network = new ConditionNetwork(netName, nextID++, nodeAttrs, conditions);

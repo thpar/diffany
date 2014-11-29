@@ -108,7 +108,7 @@ public class EdgeComparison
 		// zero-weight (non-existing) edges give support 0 to all categories. Zero weight edges are supposedly 'affirmative'.
 		if (e.getWeight() == 0)
 		{
-			// TODO v.2.1: this should be limited to the relevant subtree!
+			// TODO v2.2: this should be limited to the relevant subtree!
 			Set<String> categories = teo.getAllSourceCategories(true);
 			for (String category : categories)
 			{
@@ -450,7 +450,7 @@ public class EdgeComparison
 		}
 
 		// keep only the consensus condition edge with the highest weight
-		// TODO v2.1: why is this step actually necessary? Shouldn't this have been dealt with by 'createAllEdges'?
+		// TODO v2.2: why is this step actually necessary? Shouldn't this have been dealt with by 'createAllEdges'?
 		double max = Double.NEGATIVE_INFINITY;
 		for (EdgeDefinition consensusEedge : consensusAll)
 		{
@@ -475,8 +475,7 @@ public class EdgeComparison
 		// if there are still several consensus condition edges, take the most specific condition category
 		while (consensusClean.size() > 1)
 		{
-			// TODO v2.1: this may generate an infinite loop?
-
+			// we will decide between these two - one of the two, or possibly both, will be kept for the next iteration
 			Iterator<EdgeDefinition> it = consensusClean.iterator();
 			EdgeDefinition consensusEdge0 = it.next();
 			EdgeDefinition consensusEdge1 = it.next();
@@ -500,6 +499,7 @@ public class EdgeComparison
 			}
 			else
 			{
+				// TODO v2.2: can't this generate an infinite loop?
 				newEdges.add(consensusEdge0);
 				newEdges.add(consensusEdge1);
 			}

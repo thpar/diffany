@@ -218,8 +218,6 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
-			
-			// TODO: progress bar, the reading step currently takes almost a minute
 
 			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
 			for (InputNetwork net : readNetworks)

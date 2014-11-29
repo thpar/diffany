@@ -116,7 +116,7 @@ public class RunConsole
 	private boolean displayMetaData(CommandLine cmd, Options diffanyOptions)
 	{
 		// TODO: keep version number updated
-		String version = "0.0.1";
+		String version = "1.0.0";
 
 		boolean metaPrinted = false;
 

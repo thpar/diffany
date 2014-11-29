@@ -574,7 +574,7 @@ public class NetworkConstruction
 		Set<String> excludedTypes = new HashSet<String>();
 		excludedTypes.add("interaction");
 		excludedTypes.add("pathway");
-		excludedTypes.add("regulation");		// TODO: exclude only when excluding generic regulations
+		excludedTypes.add("regulation");
 		
 		String line = reader.readLine();
 		line = reader.readLine(); 		// skip header

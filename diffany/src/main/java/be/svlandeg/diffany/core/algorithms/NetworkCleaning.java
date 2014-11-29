@@ -206,8 +206,8 @@ public class NetworkCleaning
 
 					// they need to be both symmetrical or both directed
 					
-					// TODO: currently this thus does not filter for A -> B which is redundant because of A <-> B
-					// but this shouldn't happen because of the edge ontology definitions
+					/* Currently this thus does not filter for A -> B which is redundant because of A <-> B
+					   but this should never happen because of the edge ontology definitions */
 					
 					if (et.isSymmetrical() != eb.isSymmetrical())
 					{
@@ -716,8 +716,8 @@ public class NetworkCleaning
 		}
 		if (affirmativeConsensus == null && nr_aff > 0)
 		{
-			// TODO: this should never happen - throw error?
-			System.out.println("Could not resolve the set of affirmative edges to one !");
+			String errorMsg = "Could not resolve the set of affirmative edges to one !";
+			throw new IllegalArgumentException(errorMsg);
 		}
 
 		if (negatedConsensus != null)
@@ -732,8 +732,8 @@ public class NetworkCleaning
 		}
 		if (negatedConsensus == null && nr_neg > 0)
 		{
-			// TODO: this should never happen - throw error?
-			System.out.println("Could not resolve the set of negated edges to one !");
+			String errorMsg = "Could not resolve the set of negated edges to one !";
+			throw new IllegalArgumentException(errorMsg);
 		}
 
 		return results;

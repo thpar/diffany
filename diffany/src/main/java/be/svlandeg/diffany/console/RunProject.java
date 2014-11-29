@@ -42,7 +42,6 @@ public class RunProject
 		CalculateDiff diffAlgo = new CalculateDiff();
 		ProgressListener listener = new StandardProgressListener(true);
 		
-		// TODO v3.0: make ontologies adjustable
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());
 
 		/** PARSE INPUT **/
@@ -76,10 +75,10 @@ public class RunProject
 		
 		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 		
-		// TODO v2.0: allow to change mode
+		// TODO v2.1: allow to change mode pairwise vs. differential
 		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
 		
-		// TODO v2.0: check number of differential networks generated
+		// TODO v2.1: check number of differential networks generated
 		RunOutput output = p.getOutput(runID);
 		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
 		DifferentialNetwork diffNet = pair.getDifferentialNetwork();

@@ -1,6 +1,7 @@
 package be.svlandeg.diffany.core.networks;
 
 import be.svlandeg.diffany.core.io.EdgeIO;
+import be.svlandeg.diffany.core.project.Logger;
 
 
 /**
@@ -32,7 +33,7 @@ public class EdgeDefinition
 	 * 
 	 * @param type the interaction type of this edge
 	 * @param symmetrical defines whether the edge is symmetrical or directed
-	 * @param weight the weight or confidence of this edge (should be positive)
+	 * @param weight the weight or confidence of this edge (should be a positive integer or 0, otherwise the default value of 1.0 will be used)
 	 * @param negated defines whether or not the edge is negated (e.g. does NOT bind)
 	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 */
@@ -135,18 +136,11 @@ public class EdgeDefinition
 	
 	/**
 	 * Internal method to check whether the weight value is appropriate.
-	 * @throws IllegalArgumentException when the specified weight is a negative number
 	 * @return whether or not the weight is valid
 	 */
-	private boolean checkWeight(double weight) throws IllegalArgumentException
+	private boolean checkWeight(double weight)
 	{
-		// TODO v2.1 log this event and continue instead of throwing an exception?
-		if (weight < 0.0)
-		{
-			String errormsg = "The edge weight should be positive!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		return true;
+		return weight >= 0.0;
 	}
 	
 	

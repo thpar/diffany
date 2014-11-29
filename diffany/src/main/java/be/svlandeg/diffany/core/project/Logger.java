@@ -12,9 +12,6 @@ import java.util.List;
  */
 public class Logger
 {
-	//TODO v2.0: use the Logger to contain Exceptions inheriting from SolvableException.
-
-
 	private List<LogEntry> logs;
 
 	/**

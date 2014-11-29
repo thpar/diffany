@@ -26,7 +26,6 @@ public class AnalyseDiffExpression
 	 * 'osmoticStressDir' root directory.
 	 * 
 	 * Currently, the needed R script is loaded from the context, and is defined in the 'resources' folder of the Maven project.
-	 * TODO v2.1: will this code work when packaged inside a jar or will we need to create a tmp file?
 	 * 
 	 * @param exeR the environment to execute R scripts
 	 * @param outputValues the location to which to write the results (if null, no results will be written)

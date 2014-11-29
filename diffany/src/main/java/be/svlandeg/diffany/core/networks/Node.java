@@ -18,7 +18,7 @@ public class Node
 	protected String name;
 	protected Map<String, String> attributes;
 	
-	// TODO - record this information somewhere else?
+	// TODO v2.2: record this information somewhere else
 	public static final String de_attribute = "differentially_expressed";
 	public static final String phos_attribute = "phosphorylation_site";
 	public static final String kinase_attribute = "kinase_function";

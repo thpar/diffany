@@ -71,7 +71,6 @@ public class ConditionNetwork extends InputNetwork
 	@Override
 	public String getStringRepresentation()
 	{
-		// TODO: check length of resulting string, define cut-off?
 		String result = name + ": ";
 		if (conditions != null && !conditions.isEmpty())
 		{

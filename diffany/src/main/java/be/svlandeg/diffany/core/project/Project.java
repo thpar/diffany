@@ -7,7 +7,6 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.algorithms.Unification;
-import be.svlandeg.diffany.core.io.ProjectIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
@@ -22,8 +21,6 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
  * A project consists of a number of Diffany runs and the ontology settings within one user session.
  * 
  * Additionally, a project links to an {@link EdgeOntology} that defines the semantics of edge types.
- * 
- * Project data can be saved and loaded through the {@link ProjectIO} class.
  * 
  * @author Sofie Van Landeghem
  */

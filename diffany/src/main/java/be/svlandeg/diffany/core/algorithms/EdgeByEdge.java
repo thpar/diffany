@@ -333,8 +333,6 @@ public class EdgeByEdge
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
 	 * @return the consensus network between the input networks. 
-	 * 
-	 * TODO v3.0: expand this algorithm to be able to deal with n-m node mappings
 	 */
 	protected ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensusName, int ID, int supportingCutoff, boolean refRequired, double weightCutoff, boolean minOperator, ScheduledTask task)
 	{

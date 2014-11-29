@@ -118,7 +118,7 @@ public class NetworkIO
 		nodeWriter.close();
 
 		// DEFINITION: NAME, ID and TYPE (CLASS)
-		// TODO create DefinitionIO to read and write the network definition
+		// TODO v2.2: create DefinitionIO to read and write the network definition
 		definitionFile.getParentFile().mkdirs();
 		BufferedWriter defWriter = new BufferedWriter(new FileWriter(definitionFile));
 

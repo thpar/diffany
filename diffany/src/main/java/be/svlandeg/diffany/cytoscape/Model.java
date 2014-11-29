@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.events.NetworkAddedEvent;
 import org.cytoscape.model.events.NetworkAddedListener;
 import org.cytoscape.model.events.NetworkDestroyedEvent;
@@ -140,7 +139,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	/**
 	 * Gives access to a subset of the services offered in this context, as loaded in the {@link CyActivator}
 	 * 
-	 * @return
+	 * @return the subset of the services offered in this context
 	 */
 	public Services getServices() {
 		return services;
@@ -158,10 +157,9 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	/**
 	 * Set the current {@link CyProject}. 
-	 * 
 	 * This change will trigger an update with all observers.
 	 * 
-	 * @param selectedProject 
+	 * @param selectedProject the project which is currently selected
 	 */
 	public void setSelectedProject(CyProject selectedProject) {
 		this.selectedProject = selectedProject;
@@ -318,7 +316,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	 * Add a new {@link CyProject}. This happens only when a new network is added
 	 * to the Cytoscape session as a new collection.
 	 * 
-	 * @param project
+	 * @param project the new project
 	 */
 	public void addProject(CyProject project){
 		this.projects.put(project.getCollection(), project);

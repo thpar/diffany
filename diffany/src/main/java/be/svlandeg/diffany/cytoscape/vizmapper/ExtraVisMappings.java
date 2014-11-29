@@ -16,8 +16,7 @@ public interface ExtraVisMappings {
 	 * Get all the extra visual mappings. These mappings will be loaded at the end of every VizMapper refresh,
 	 * so they will be overriding any previous defined mappings that might have been defined.
 	 * 
-	 * 
-	 * @return
+	 * @return the extra visual mappings
 	 */
 	public List<VisualMappingFunction<?,?>> getMappings();
 	

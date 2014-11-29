@@ -162,6 +162,7 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 	
 	/**
 	 * Get a set of edge types (interactions) that should be hidden.
+	 * @return the set of hidden edge types 
 	 */
 	public Set<String> getHiddenInteractions(){
 		Set<String> hidden = new HashSet<String>();

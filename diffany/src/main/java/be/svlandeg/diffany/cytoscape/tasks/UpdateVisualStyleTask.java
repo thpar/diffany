@@ -14,7 +14,7 @@ import be.svlandeg.diffany.cytoscape.Model;
 
 /**
  * This task gathers all used interactions in a given {@link CyProject}, updates
- * this {@link VisualStyle}s and applies them to all {@link CyView}s in the {@link CyProject}.
+ * this {@link VisualStyle}s and applies them to all {@link CyNetworkView}s in the {@link CyProject}.
  * 
  * @author Thomas Van Parys
  *

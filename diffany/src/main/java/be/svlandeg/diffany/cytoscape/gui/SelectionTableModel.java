@@ -156,7 +156,7 @@ public class SelectionTableModel extends AbstractTableModel{
 	 * Reload the {@link NetworkEntry}s based on the subnetworks from the selected network collections.
 	 * Compare with the previous list to maintain selections.
 	 * 
-	 * @param list of {@link CySubNetwork}s to be displayed.
+	 * @param project the project which contains a list of {@link CySubNetwork}s to be displayed.
 	 */
 	public void refresh(CyProject project) {
 		List<CySubNetwork> subNets = project.getCollection().getSubNetworkList();
@@ -251,8 +251,8 @@ public class SelectionTableModel extends AbstractTableModel{
 	/**
 	 * Get the entry at given row
 	 * 
-	 * @param row
-	 * @return 
+	 * @param row the row number
+	 * @return the corresponding entry
 	 */
 	public NetworkEntry getNetworkEntry(int row){
 		return this.networkEntries.get(row);		

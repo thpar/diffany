@@ -190,9 +190,9 @@ public abstract class AbstractVisualDiffanyStyle {
 	}
 	
 	/**
-	 * Convenience method to apply this VisualStyle to a CyView
+	 * Convenience method to apply this VisualStyle to a CyNetworkView
 	 * 
-	 * @param view
+	 * @param view the CyNetworkView
 	 */
 	public void apply(CyNetworkView view){
 		this.vis.apply(view);

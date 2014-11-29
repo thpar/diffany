@@ -85,7 +85,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the model.
-	 * @param model
+	 * @param model the corresponding model
 	 */
 	public TabPane(Model model){
 		this.model = model;

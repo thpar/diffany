@@ -1,8 +1,6 @@
 package be.svlandeg.diffany.core.visualstyle;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
 
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 import be.svlandeg.diffany.core.visualstyle.EdgeStyle.ArrowHead;

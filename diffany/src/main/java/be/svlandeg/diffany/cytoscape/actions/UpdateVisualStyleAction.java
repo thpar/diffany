@@ -26,9 +26,9 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 	private CyProject cyProject;
 	
 	/**
+	 * TODO documentation
 	 * 
 	 * @param model the Diffany {@link Model}
-	 * @param cyProject {@link CyProject} containing the {@link CyNetwork}s to update.
 	 */
 	public UpdateVisualStyleAction(Model model){
 		super(BUTTON_TITLE);

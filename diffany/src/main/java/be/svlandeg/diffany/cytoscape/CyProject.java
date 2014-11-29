@@ -2,13 +2,11 @@ package be.svlandeg.diffany.cytoscape;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
-import org.cytoscape.model.subnetwork.CySubNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 
@@ -73,6 +71,7 @@ public class CyProject{
 	
 	/**
 	 * Construct empty project, named after the collection
+	 * @param collection the original collection
 	 */
 	public CyProject(CyRootNetwork collection){
 		this.collection = collection;
@@ -158,6 +157,8 @@ public class CyProject{
 	/**
 	 * Generates a {@link RunConfiguration} and adds it to the {@link Project}
 	 * 
+	 * @param model the model	
+	 * @param listener the progress listener which will report the progress of the run
 	 * @return the ID of the generated {@link RunConfiguration}
 	 * @throws InvalidRunConfigurationException is thrown when not all necessary parameters are there to construct the {@link RunConfiguration}
 	 */
@@ -210,12 +211,10 @@ public class CyProject{
 	}
 
 	
-
-	
-
 	/**
 	 * Checks if all necessary parameters are set to execute the algorithm.
 	 * 
+	 * @param model the model
 	 * @return true when minimal input parameters are set
 	 */
 	public boolean canExecute(Model model){
@@ -395,6 +394,7 @@ public class CyProject{
 	/**
 	 * Checks the default edge and node tables of the networks in this project for a given SUID.
 	 * 
+	 * @param suid the SUID
 	 * @return true if one of the tables in use has the given SUID
 	 */
 	public boolean containsTableId(long suid){
@@ -487,7 +487,7 @@ public class CyProject{
 	
 	/**
 	 * Returns the name of this project. Delegated to the name of the {@link Project}.
-	 * @return
+	 * @return the name of this project
 	 */
 	public String getName(){
 		return this.project.getName();
@@ -502,6 +502,7 @@ public class CyProject{
 	 * Updates this {@link CyProject} after a run.
 	 * After running a {@link RunConfiguration}, the newly generated differential and consensus networks
 	 * should be transformed into {@link CyNetwork}s and added to this {@link CyProject}
+	 * @param services the corresponding services
 	 */
 	public void update(Services services) {
 		RunOutput runOutput = project.getOutput(latestRunConfigID);

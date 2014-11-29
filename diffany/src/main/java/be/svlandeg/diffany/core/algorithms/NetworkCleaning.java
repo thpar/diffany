@@ -57,6 +57,7 @@ public class NetworkCleaning
 	 * @param eo the edge ontology
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * @param resolveConflictsByWeight if true, conflicts are resolved by selecting the edge with the highest weight - only possible for Input Networks!
+	 * @param unifyEdgeTypes whether or not to unify the edge types - should only be true for input and consensus networks!
 	 */
 	protected void fullCleaning(Network net, EdgeOntology eo, ScheduledTask task, boolean resolveConflictsByWeight, boolean unifyEdgeTypes)
 	{

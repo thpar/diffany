@@ -21,7 +21,7 @@ public class NetworkEntry {
 	
 	/**
 	 * Returns a new entry, based on given {@link CyNetwork}
-	 * @param network
+	 * @param network the given network
 	 */
 	public NetworkEntry(CyNetwork network) {
 		this.network = network;
@@ -60,7 +60,7 @@ public class NetworkEntry {
 	}
 	/**
 	 * Toggle whether or not the network should be used with the next execution of the algorithm.
-	 * @param isSelected
+	 * @param isSelected whether or not this network is selected
 	 */
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
@@ -74,7 +74,7 @@ public class NetworkEntry {
 	}
 	/**
 	 * Toggles this network as the reference network on the next execution of the algorithm.
-	 * @param isReference
+	 * @param isReference whether or not this network is the reference network
 	 */
 	public void setReference(boolean isReference) {
 		this.isReference = isReference;

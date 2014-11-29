@@ -47,9 +47,8 @@ public class LoadExampleAction extends AbstractCyAction{
 	 * Set up the action, but don't load the example just yet. The project will only be constructed upon
 	 * runtime.
 	 * 
-	 * @param services
-	 * @param name
-	 * @param example
+	 * @param services the services
+	 * @param example the example
 	 */
 	public LoadExampleAction(Services services, GenericExample example) {
 		super(example.getName(), services.getCyApplicationManager(), null, null);

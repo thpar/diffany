@@ -9,8 +9,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-import org.cytoscape.model.subnetwork.CyRootNetwork;
-
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.Model;
 
@@ -41,6 +39,7 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and populates (refreshes) the 
 	 * list of network collections (which on creation will probably be empty).
 	 * 
+	 * @param model the general model
 	 */
 	public ProjectDropDownModel(Model model) {
 		this.model = model;
@@ -121,7 +120,7 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 	
 	/**
 	 * Checks if there are any collections in the list
-	 * @return
+	 * @return whether or not there are any collections in the liest
 	 */
 	public boolean hasEntries(){
 		return !empty;

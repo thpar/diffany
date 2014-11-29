@@ -1,5 +1,6 @@
 package be.svlandeg.diffany.cytoscape.tasks;
 
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 

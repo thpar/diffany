@@ -398,9 +398,9 @@ public class CyNetworkBridge {
 	 * Converts a {@link Network} to a {@link CyNetwork} and registers it
 	 * with Cytoscape as a {@link CySubNetwork} of the given Collection.
 	 * 
-	 * 
 	 * @param network the {@link Network} to be added
 	 * @param collection the {@link CyRootNetwork} the new network should belong to.
+	 * @param services the {@link Services} from the context
 	 * @return the created and added {@link CyNetwork}
 	 */
 	public static CyNetwork addCyNetwork(Network network, CyRootNetwork collection, Services services){

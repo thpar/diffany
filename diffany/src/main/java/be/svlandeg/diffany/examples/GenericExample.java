@@ -57,6 +57,7 @@ public abstract class GenericExample
 
 	/**
 	 * Print a differential run configuration 
+	 * @param rc the run configuration
 	 */
 	protected void printAllNetworks(RunDiffConfiguration rc)
 	{
@@ -74,6 +75,7 @@ public abstract class GenericExample
 
 	/**
 	 * Print a run configuration
+	 * @param rc the run configuration
 	 */
 	protected void printAllNetworks(RunConfiguration rc)
 	{

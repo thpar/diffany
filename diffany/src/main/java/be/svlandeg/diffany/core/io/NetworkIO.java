@@ -246,7 +246,7 @@ public class NetworkIO
 		}
 		catch (Exception e)
 		{
-			// maybe there is no condition file. we don't care.
+			// it might be that there is no condition file
 		}
 		try
 		{
@@ -643,10 +643,6 @@ public class NetworkIO
 
 	/**
 	 * Read and parse a definition file from an input stream and store the key value pairs in a Map.
-	 * 
-	 * @param definitionStream
-	 * @return
-	 * @throws IOException
 	 */
 	private static Map<String, String> cacheDefinitionStream(InputStream definitionStream) throws IOException
 	{
@@ -679,7 +675,6 @@ public class NetworkIO
 	 * 
 	 * @param definitionMap key value pairs read from a definition file
 	 * @return the ID of the network, as read from the file, or -1 if no ID was found or it could not be parsed as Integer
-	 * 
 	 */
 	public static int readIDFromMap(Map<String, String> definitionMap)
 	{

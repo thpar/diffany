@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.MapID;
 
 /**
  * This class allows printing gene information in a human-readable format, by taking the original array ID,

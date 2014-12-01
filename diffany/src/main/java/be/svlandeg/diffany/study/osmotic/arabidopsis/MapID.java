@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.study.osmotic;
+package be.svlandeg.diffany.study.osmotic.arabidopsis;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

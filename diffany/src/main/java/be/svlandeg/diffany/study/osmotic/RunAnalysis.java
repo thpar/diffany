@@ -2,7 +2,6 @@ package be.svlandeg.diffany.study.osmotic;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,6 +28,9 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.KinaseData;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
 
 /**
  * This class provides the analysis pipeline and calls our procedures necessary
@@ -39,25 +41,11 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class RunAnalysis
 {
 
-	/* Location of all external data. Set to null when you want to exclude either type */
-	private URI ppi_file;
-	private URI reg_file;
-	private URI phos_file;
-	private URI kinase_function_file;
-	private URI kinase_interaction_file;
-
-	
-
 	/**
 	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
 	 */
 	public RunAnalysis()
 	{
-		ppi_file = new ArabidopsisData().getCornetPPI();
-		reg_file = new ArabidopsisData().getAtReg();
-		phos_file = new ArabidopsisData().getPhosphat();
-		kinase_function_file = new ArabidopsisData().getKinases();
-		kinase_interaction_file = new ArabidopsisData().getKinaseInteractions();
 	}
 
 	/**
@@ -78,12 +66,12 @@ public class RunAnalysis
 		String outputDir = inputLocation + "output";
 		String resultDir = inputLocation + "result";
 		
-		boolean performStep1FromSupplemental = false;
-		boolean performStep2ToNetwork = false;
+		boolean performStep1FromSupplemental = true;
+		boolean performStep2ToNetwork = true;
 		boolean performStep3InputNetworksToFile = false;
 
-		boolean performStep4InputNetworksFromFile = true;
-		boolean performStep5OneagainstAll = true;
+		boolean performStep4InputNetworksFromFile = false;
+		boolean performStep5OneagainstAll = false;
 		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = false;
 
@@ -296,6 +284,10 @@ public class RunAnalysis
 
 		OverexpressionIO io = new OverexpressionIO();
 		NetworkConstruction constr = new NetworkConstruction(gp);
+		
+		PPIdata ppi = new PPIdata(gp);
+		KinaseData kinase = new KinaseData(gp);
+		RegData reg = new RegData(gp);
 
 		EdgeOntology eo = new DefaultEdgeOntology();
 		Logger logger = new Logger();
@@ -332,26 +324,26 @@ public class RunAnalysis
 		System.out.println("Expanding the network of DE genes to also include important neighbours");
 
 		/* Expand the network to include regulatory and PPI partners, and all the connecting fuzzy DE nodes */
-		Set<String> expanded_ID_set = constr.expandNetwork(all_nodeIDs_strict, all_nodeIDs_fuzzy, ppi_file, reg_file, kinase_interaction_file, selfInteractions, neighbours, includeUnknownReg);
+		Set<String> expanded_ID_set = constr.expandNetwork(all_nodeIDs_strict, all_nodeIDs_fuzzy, selfInteractions, neighbours, includeUnknownReg);
 
 		/* Read all the PPI and regulatory interactions between all the nodes in our expanded network
 		 * Without modifying edge strenghts, this becomes our reference network */
 		Set<Node> ref_nodes = gp.getNodesByLocusID(expanded_ID_set);
 		
 		System.out.println("Constructing the reference network");
-		Set<Edge> ref_edges = constr.readPPIsByLocustags(ppi_file, ref_nodes, null, ref_nodes, null, selfInteractions);
+		Set<Edge> ref_edges = ppi.readPPIsByLocustags(ref_nodes, null, ref_nodes, null, selfInteractions);
 		System.out.println(" Found " + ref_edges.size() + " PPI edges between them");
 
-		Set<Edge> ref_reg_Edges = constr.readRegsByLocustags(reg_file, ref_nodes, ref_nodes, selfInteractions, includeUnknownReg);
+		Set<Edge> ref_reg_Edges = reg.readRegsByLocustags(ref_nodes, ref_nodes, selfInteractions, includeUnknownReg);
 		System.out.println(" Found " + ref_reg_Edges.size() + " regulatory edges between them");
 		ref_edges.addAll(ref_reg_Edges);
 		
-		Set<Edge> ref_kinase_edges = constr.readKinaseInteractionsByLocustags(kinase_interaction_file, ref_nodes, null, ref_nodes, null, selfInteractions);
+		Set<Edge> ref_kinase_edges = kinase.readKinaseInteractionsByLocustags(ref_nodes, null, ref_nodes, null, selfInteractions);
 		System.out.println(" Found " + ref_kinase_edges.size() + " kinase interactions between them");
 		ref_edges.addAll(ref_kinase_edges);
 
-		Set<String> phosNodes = constr.readPhosphorylationLocusTags(phos_file, includePredictedPhos);
-		Set<String> kinaseNodes = constr.readKinaseLocusTags(kinase_function_file);
+		Set<String> phosNodes = kinase.readPhosphorylationLocusTags(includePredictedPhos);
+		Set<String> kinaseNodes = kinase.readKinaseLocusTags();
 
 		Set<Node> ref_filtered_nodes = new HashSet<Node>();
 		for (Edge e : ref_edges)

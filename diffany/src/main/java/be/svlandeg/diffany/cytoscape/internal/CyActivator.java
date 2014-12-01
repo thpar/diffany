@@ -17,7 +17,6 @@ import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.session.events.SessionAboutToBeSavedListener;
 import org.cytoscape.session.events.SessionLoadedListener;
-import org.cytoscape.view.layout.CyLayoutAlgorithm;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
@@ -35,7 +34,6 @@ import be.svlandeg.diffany.cytoscape.actions.LoadExampleAction;
 import be.svlandeg.diffany.cytoscape.actions.RunProjectAction;
 import be.svlandeg.diffany.cytoscape.gui.ExtraOptionsMenu;
 import be.svlandeg.diffany.cytoscape.gui.TabPane;
-import be.svlandeg.diffany.cytoscape.layout.CopyLayout;
 import be.svlandeg.diffany.examples.Ideker2011;
 import be.svlandeg.diffany.examples.OsmoticUseCase;
 
@@ -116,10 +114,6 @@ public class CyActivator extends AbstractCyActivator
 		registerService(context, new SessionListener(model),SessionLoadedListener.class, new Properties() );
 		registerService(context, new SessionListener(model),SessionAboutToBeSavedListener.class, new Properties() );
 		
-		//Register layouting algorithm
-		CopyLayout copyLayout = new CopyLayout(model);
-		Properties myLayoutProps = new Properties();
-		registerService(context,copyLayout,CyLayoutAlgorithm.class, myLayoutProps);
 		
 	}
 

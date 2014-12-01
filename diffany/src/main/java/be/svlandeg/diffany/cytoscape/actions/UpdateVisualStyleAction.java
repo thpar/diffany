@@ -26,7 +26,8 @@ public class UpdateVisualStyleAction extends AbstractCyAction {
 	private CyProject cyProject;
 	
 	/**
-	 * TODO documentation
+	 * Action that refreshes the registered visual styles and reapplies them on the
+	 * Views, executing the {@link UpdateVisualStyleTask}
 	 * 
 	 * @param model the Diffany {@link Model}
 	 */

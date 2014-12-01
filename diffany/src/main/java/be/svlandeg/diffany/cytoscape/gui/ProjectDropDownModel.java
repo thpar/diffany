@@ -34,10 +34,9 @@ public class ProjectDropDownModel extends AbstractListModel implements ComboBoxM
 	private Model model;
 	
 	/**
-	 * TODO: update documentation
 	 * 
 	 * Create a new {@link ComboBoxModel} based on the general {@link Model} of this app and populates (refreshes) the 
-	 * list of network collections (which on creation will probably be empty).
+	 * list of network collections.
 	 * 
 	 * @param model the general model
 	 */

@@ -59,7 +59,7 @@ public class UpdateVisualStyleTask implements Task {
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
+		// no cancel feature
 
 	}
 

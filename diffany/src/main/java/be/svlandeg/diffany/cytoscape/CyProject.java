@@ -467,6 +467,8 @@ public class CyProject{
 	 */
 	public void removeDestroyedNetworks() {
 		// TODO delete networks from the project when destroyed
+		//(this currently happens through the GUI: network is destroyed, GUI updates, network can't be selected anymore,
+		//gets removed from the CyProject
 	}
 
 	/**

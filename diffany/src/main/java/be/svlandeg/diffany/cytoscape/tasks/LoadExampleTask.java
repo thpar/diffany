@@ -104,8 +104,7 @@ public class LoadExampleTask implements Task{
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
-		
+		//No cancel feature		
 	}
 
 }

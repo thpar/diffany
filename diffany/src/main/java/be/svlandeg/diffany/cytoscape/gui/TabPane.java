@@ -317,7 +317,6 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	@Override
 	public Icon getIcon() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

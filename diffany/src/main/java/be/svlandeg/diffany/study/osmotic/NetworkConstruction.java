@@ -24,17 +24,21 @@ import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
 public class NetworkConstruction
 {
 
-	// TODO v2.1 make this class more generic / generalizable
-
 	private GenePrinter gp;
 
 	/**
 	 * Constructor: defines the gene printer that can deal with gene synonymy etc.
 	 * 
-	 * @param gp the gene printer object
+	 * @param gp the gene printer object (should not be null!)
+	 * @throws IllegalArgumentException when the geneprinter is null
 	 */
-	public NetworkConstruction(GenePrinter gp)
+	public NetworkConstruction(GenePrinter gp) throws IllegalArgumentException
 	{
+		if (gp == null)
+		{
+			String errormsg = "The GenePrinter should not be null!";
+			throw new IllegalArgumentException(errormsg);
+		}
 		this.gp = gp;
 	}
 	

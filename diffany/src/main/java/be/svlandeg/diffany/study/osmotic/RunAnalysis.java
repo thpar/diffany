@@ -117,7 +117,7 @@ public class RunAnalysis
 
 		double weight_cutoff = 0;
 		
-		// 5 means that all conditions need to match (4 conditions+reference). 4 means that only 3 time-points (+reference) need to match ("more fuzzy")
+		// e.g. 5 means that all conditions need to match (4 conditions+reference). 4 means that only 3 time-points (+reference) need to match ("more fuzzy")
 		int support = 5;		
 
 		boolean includePhos = true;
@@ -261,7 +261,7 @@ public class RunAnalysis
 
 
 	/**
-	 * Use the overexpression values to generate networks: 1 reference network + 1 condition-dependent network for each overexpression dataset that can be read from overExpressionFile
+	 * Use the overexpression values to generate input networks: 1 reference network + 1 condition-dependent network for each overexpression dataset that can be read from overExpressionFile
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
@@ -400,13 +400,8 @@ public class RunAnalysis
 			}
 
 			Set<Edge> condition_edges = constr.adjustEdgesByFoldChanges(eo, condition_nodes, cleanRefNet.getEdges(), all_de_genes);
-			
-			//Set<Edge> filtered_edges = constr.filterForHubs(PPIhubs, condition_nodes, condition_edges, ppiType, all_de_genes.keySet());
-			
 			condNet.setNodesAndEdges(condition_edges);
-			
 			ConditionNetwork cleanCondNet = cleaning.fullInputConditionCleaning(condNet, eo, null);
-			
 			networks.add(cleanCondNet);
 
 			System.out.println(" Final, cleaned network " + name + ": " + cleanCondNet.getEdges().size() + " non-redundant edges between " + cleanCondNet.getNodes().size() + " nodes");

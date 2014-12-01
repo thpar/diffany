@@ -193,18 +193,6 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
 		</dependency>
-		
-		<!--  java-R bridge -->
-		<dependency>
-      		<groupId>org.nuiton.thirdparty</groupId>
-      		<artifactId>JRI</artifactId>
-      		<version>0.8-4</version>
-    	</dependency> 
-    	<!-- <dependency>
-			<groupId>org.nuiton.thirdparty</groupId>
-			<artifactId>REngine</artifactId>
-			<version>0.6-1</version>
-		</dependency>-->
   
 	</dependencies>
 

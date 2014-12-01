@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.usecase.arabidopsis;
+package be.svlandeg.diffany.study.osmotic;
 
 import java.io.File;
 import java.io.IOException;

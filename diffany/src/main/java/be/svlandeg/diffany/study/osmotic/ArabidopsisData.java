@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.usecase.arabidopsis;
+package be.svlandeg.diffany.study.osmotic;
 
 import java.net.URI;
 import java.net.URISyntaxException;

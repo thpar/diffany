@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.usecase.arabidopsis.osmotic;
+package be.svlandeg.diffany.study.osmotic;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,11 +29,6 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
-import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
-import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
-import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
-import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionData;
-import be.svlandeg.diffany.usecase.arabidopsis.OverexpressionIO;
 
 /**
  * This class provides the analysis pipeline and calls our procedures necessary
@@ -78,12 +73,11 @@ public class RunAnalysis
 		System.out.println("");
 
 		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputRoot = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic"; // Sofie @ home
-
-		File osmoticStressDir = new DataIO(inputRoot).getRootOsmoticStressDir();
-		String outputDir = osmoticStressDir + File.separator + "output";
-		String resultDir = osmoticStressDir + File.separator + "result";
-
+		String inputLocation = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic/data-marieke/short-term-osmotic-stress/"; // Sofie @ home
+		
+		String outputDir = inputLocation + "output";
+		String resultDir = inputLocation + "result";
+		
 		boolean performStep1FromSupplemental = false;
 		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
@@ -152,7 +146,7 @@ public class RunAnalysis
 		{
 			System.out.println("1. Reading published overexpression values - " + new Date());
 			System.out.println("");
-			overexpressionFile = osmoticStressDir + File.separator + "clean_Inze_Supplemental_Dataset_1.tab";
+			overexpressionFile = inputLocation + "clean_Inze_Supplemental_Dataset_1.tab";
 		}
 
 		/* STEP 2: USE OVEREXPRESSION VALUES TO CREATE NETWORKS */

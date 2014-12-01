@@ -1,7 +1,6 @@
 package be.svlandeg.diffany.core.networks;
 
 import be.svlandeg.diffany.core.io.EdgeIO;
-import be.svlandeg.diffany.core.project.Logger;
 
 
 /**

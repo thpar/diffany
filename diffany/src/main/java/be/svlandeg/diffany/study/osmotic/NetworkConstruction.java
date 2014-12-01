@@ -8,8 +8,6 @@ import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.EdgeDefinition;
-import be.svlandeg.diffany.core.networks.InputNetwork;
-import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
@@ -38,6 +36,40 @@ public class NetworkConstruction
 	{
 		this.gp = gp;
 	}
+	
+	/**
+	 * Retrieve a set of unique nodes pertaining the given set of edges.
+	 */
+	private Set<Node> getNodes(Set<Edge> edges)
+	{
+		Set<String> nodeIDs = new HashSet<String>();
+		Set<Node> nodes = new HashSet<Node>();
+		
+		if (edges == null)
+		{
+			return null;
+		}
+		
+		for (Edge e : edges)
+		{
+			Node source = e.getSource();
+			String sourceID = source.getID();
+			if (! nodeIDs.contains(sourceID))
+			{
+				nodeIDs.add(sourceID);
+				nodes.add(source);
+			}
+			
+			Node target = e.getTarget();
+			String targetID = target.getID();
+			if (! nodeIDs.contains(targetID))
+			{
+				nodeIDs.add(targetID);
+				nodes.add(target);
+			}
+		}
+		return nodes;
+	}
 
 	/**
 	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
@@ -56,7 +88,6 @@ public class NetworkConstruction
 	public Set<String> expandNetwork(Set<String> nodeIDs_strict_DE, Set<String> nodeIDs_fuzzy_DE, boolean selfInteractions, boolean neighbours, boolean includeUnknownReg) throws URISyntaxException, IOException
 	{
 		NetworkAnalysis na = new NetworkAnalysis();
-		// TODO v2.1: this method unnecessarily generates Network objects?
 
 		Set<String> allNodeIDs = new HashSet<String>();
 		allNodeIDs.addAll(nodeIDs_strict_DE);
@@ -68,11 +99,10 @@ public class NetworkConstruction
 
 		/* 1. expand the (strict) DE node set with PPI neighbours */
 
-		/* First define the PPI hubs */
 		Set<Edge> allAthPPIedges = ppi.readAllPPIs(selfInteractions);
-		Network ppiAthNetwork_all = new InputNetwork("Test network PPI", 341, null);
-		ppiAthNetwork_all.setNodesAndEdges(allAthPPIedges);
-		Set<String> PPIhubs = na.retrieveHubs(allAthPPIedges, ppiAthNetwork_all.getNodes(), PPIdata.hubPPI, false, true, true);
+		Set<Node> allAthPPInodes = getNodes(allAthPPIedges);
+		
+		Set<String> PPIhubs = na.retrieveHubs(allAthPPIedges, allAthPPInodes, PPIdata.hubPPI, false, true, true);
 		Set<Node> nodes_PPI_hubs = gp.getNodesByLocusID(PPIhubs);
 
 		Set<Edge> PPIedges_strict = null;
@@ -86,36 +116,33 @@ public class NetworkConstruction
 			PPIedges_strict = ppi.readPPIsByLocustags(nodes_strict_DE, null, nodes_strict_DE, null, selfInteractions);
 		}
 
-		InputNetwork PPInetwork_strict = new InputNetwork("PPI network", 342, null);
-		PPInetwork_strict.setNodesAndEdges(PPIedges_strict);
-		allNodeIDs.addAll(NodeMapper.getNodeIDs(PPInetwork_strict.getNodes()));
+		allNodeIDs.addAll(NodeMapper.getNodeIDs(getNodes(PPIedges_strict)));
 
 		/* 2. expand the original (strict) DE node set with regulatory and kinase neighbours */
-		Set<Edge> regEdges1 = new HashSet<Edge>();
+		Set<Edge> regEdges_strict = new HashSet<Edge>();
 		if (neighbours)
 		{
-			regEdges1.addAll(reg.readRegsByLocustags(nodes_strict_DE, null, selfInteractions, includeUnknownReg)); // from our input to their targets
-			regEdges1.addAll(reg.readRegsByLocustags(null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+			regEdges_strict.addAll(reg.readRegsByLocustags(nodes_strict_DE, null, selfInteractions, includeUnknownReg)); // from our input to their targets
+			regEdges_strict.addAll(reg.readRegsByLocustags(null, nodes_strict_DE, selfInteractions, includeUnknownReg)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 		}
 
 		if (neighbours)
 		{
 			/* First define the hubs */
 			Set<Edge> allAthKinaseEdges = kinase.readAllKinaseInteractions(selfInteractions);
-			Network kinaseAthNetwork = new InputNetwork("Test network kinase", 343, null);
-			kinaseAthNetwork.setNodesAndEdges(allAthKinaseEdges);
-			Set<String> kinaseTargetHubs = na.retrieveHubs(allAthKinaseEdges, kinaseAthNetwork.getNodes(), KinaseData.hubPhos, false, true, false);
-			Set<String> kinaseSourceHubs = na.retrieveHubs(allAthKinaseEdges, kinaseAthNetwork.getNodes(), KinaseData.hubPhos, false, false, true);
+			Set<Node> allAthKinaseNodes = getNodes(allAthKinaseEdges);
+			
+			Set<String> kinaseTargetHubs = na.retrieveHubs(allAthKinaseEdges, allAthKinaseNodes, KinaseData.hubPhos, false, true, false);
+			Set<String> kinaseSourceHubs = na.retrieveHubs(allAthKinaseEdges, allAthKinaseNodes, KinaseData.hubPhos, false, false, true);
 			Set<Node> nodes_kinase_source_hubs = gp.getNodesByLocusID(kinaseSourceHubs);
 			Set<Node> nodes_kinase_target_hubs = gp.getNodesByLocusID(kinaseTargetHubs);
 
-			regEdges1.addAll(kinase.readKinaseInteractionsByLocustags(nodes_strict_DE, nodes_kinase_source_hubs, null, nodes_kinase_target_hubs, selfInteractions)); // from our input to their targets
-			regEdges1.addAll(kinase.readKinaseInteractionsByLocustags(null, nodes_kinase_source_hubs, nodes_strict_DE, nodes_kinase_target_hubs, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
+			regEdges_strict.addAll(kinase.readKinaseInteractionsByLocustags(nodes_strict_DE, nodes_kinase_source_hubs, null, nodes_kinase_target_hubs, selfInteractions)); // from our input to their targets
+			regEdges_strict.addAll(kinase.readKinaseInteractionsByLocustags(null, nodes_kinase_source_hubs, nodes_strict_DE, nodes_kinase_target_hubs, selfInteractions)); // from our input to their sources (may result in redundant nodes but these will be cleaned out later)
 		}
 
-		InputNetwork regNetwork1 = new InputNetwork("Regulatory network", 666, null);
-		regNetwork1.setNodesAndEdges(regEdges1);
-		Set<String> expandedNodeIDs2 = NodeMapper.getNodeIDs(regNetwork1.getNodes());
+
+		Set<String> expandedNodeIDs2 = NodeMapper.getNodeIDsFromEdges(regEdges_strict);
 
 		allNodeIDs.addAll(expandedNodeIDs2);
 
@@ -126,21 +153,17 @@ public class NetworkConstruction
 			Set<Node> nodes_fuzzy_DE = gp.getNodesByLocusID(nodeIDs_fuzzy_DE);
 
 			Set<Edge> PPIedges_fuzzy = ppi.readPPIsByLocustags(allNodes, null, nodes_fuzzy_DE, null, selfInteractions);
-			InputNetwork PPInetwork = new InputNetwork("PPI network", 342, null);
-			PPInetwork.setNodesAndEdges(PPIedges_fuzzy);
-			Set<String> expandedPPINodeIDs = NodeMapper.getNodeIDs(PPInetwork.getNodes());
+			Set<String> expandedPPINodeIDs = NodeMapper.getNodeIDsFromEdges(PPIedges_fuzzy);
 
-			Set<Edge> regEdges2 = new HashSet<Edge>();
+			Set<Edge> regEdges_fuzzy = new HashSet<Edge>();
 			
-			regEdges2.addAll(reg.readRegsByLocustags(nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg)); // from fuzzy DE to our combined set
-			regEdges2.addAll(reg.readRegsByLocustags(allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			regEdges_fuzzy.addAll(reg.readRegsByLocustags(nodes_fuzzy_DE, allNodes, selfInteractions, includeUnknownReg)); // from fuzzy DE to our combined set
+			regEdges_fuzzy.addAll(reg.readRegsByLocustags(allNodes, nodes_fuzzy_DE, selfInteractions, includeUnknownReg)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 
-			regEdges2.addAll(kinase.readKinaseInteractionsByLocustags(nodes_fuzzy_DE, null, allNodes, null, selfInteractions)); // from fuzzy DE to our combined set
-			regEdges2.addAll(kinase.readKinaseInteractionsByLocustags(allNodes, null, nodes_fuzzy_DE, null, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
+			regEdges_fuzzy.addAll(kinase.readKinaseInteractionsByLocustags(nodes_fuzzy_DE, null, allNodes, null, selfInteractions)); // from fuzzy DE to our combined set
+			regEdges_fuzzy.addAll(kinase.readKinaseInteractionsByLocustags(allNodes, null, nodes_fuzzy_DE, null, selfInteractions)); // from our combined set to fuzzy DE (may result in redundant nodes but these will be cleaned out later)
 
-			InputNetwork regNetwork2 = new InputNetwork("Regulatory network", 666, null);
-			regNetwork2.setNodesAndEdges(regEdges2);
-			Set<String> expandedRegNodeIDs = NodeMapper.getNodeIDs(regNetwork2.getNodes());
+			Set<String> expandedRegNodeIDs = NodeMapper.getNodeIDsFromEdges(regEdges_fuzzy);
 
 			allNodeIDs.addAll(expandedPPINodeIDs);
 			allNodeIDs.addAll(expandedRegNodeIDs);

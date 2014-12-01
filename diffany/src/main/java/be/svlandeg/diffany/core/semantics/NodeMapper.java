@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 
@@ -213,6 +214,25 @@ public class NodeMapper
 			for (Node n : nodes)
 			{
 				IDs.add(n.getID());
+			}
+		}
+		return IDs;
+	}
+	
+	/**
+	 * Retrieve a unique set of node IDs pertaining a set of edges
+	 * @param edges the original set of edges
+	 * @return a set of the unique node IDs
+	 */
+	public static Set<String> getNodeIDsFromEdges(Set<Edge> edges)
+	{
+		Set<String> IDs = new HashSet<String>();
+		if (edges != null)
+		{
+			for (Edge e : edges)
+			{
+				IDs.add(e.getSource().getID());
+				IDs.add(e.getTarget().getID());
 			}
 		}
 		return IDs;

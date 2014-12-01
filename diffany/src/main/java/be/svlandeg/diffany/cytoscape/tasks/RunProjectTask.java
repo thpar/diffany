@@ -19,6 +19,7 @@ import be.svlandeg.diffany.core.project.LogEntry;
 import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.project.RunConfiguration;
+import be.svlandeg.diffany.cytoscape.CyNetworkBridge;
 import be.svlandeg.diffany.cytoscape.CyProject;
 import be.svlandeg.diffany.cytoscape.InvalidRunConfigurationException;
 import be.svlandeg.diffany.cytoscape.Model;
@@ -73,28 +74,21 @@ public class RunProjectTask extends ProgressListener implements Task  {
 	private void runAlgorithm() throws InvalidRunConfigurationException{
 		int runId = cyProject.generateRunConfiguration(model, this);
 		
-		int nextID = 666;
-		int generateDiff = -1;
-		if (model.isGenerateDiffNets())
-		{
-			generateDiff = nextID;
-			nextID++;
-		}
-		int generateConsensus = -1;
-		if (model.isGenerateConsensusNets())
-		{
-			generateConsensus = nextID;
-			nextID++;
-		}
-		
-		
 		switch(model.getMode()){
 		case REF_PAIRWISE:
 			new CalculateDiff().calculateAllPairwiseDifferentialNetworks(cyProject.getProject(), runId, 
 					model.getCutoff(), model.isGenerateDiffNets(), model.isGenerateConsensusNets(), 
-					nextID, model.getOverlapOperator() == OverlapOperator.MIN, this);
+					CyNetworkBridge.getNextID(), model.getOverlapOperator() == OverlapOperator.MIN, this);
 			break;
 		case REF_TO_ALL:	
+			int generateDiff = -1;
+			if (model.isGenerateDiffNets()){
+				generateDiff = CyNetworkBridge.getNextID();
+			}
+			int generateConsensus = -1;
+			if (model.isGenerateConsensusNets()){
+				generateConsensus = CyNetworkBridge.getNextID();
+			}
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
 					model.getCutoff(), generateDiff, generateConsensus, model.getOverlapOperator() == OverlapOperator.MIN, this);
 			break;

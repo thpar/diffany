@@ -61,8 +61,7 @@ public class CyNetworkBridge {
 	public static final String NEGATED = "negated";
 	
 	/**
-	 * Unique ID for the next network (TODO this is a hack by Sofie!)
-	 * This will not work like this, because output networks should have unique IDs as well ...
+	 * Unique ID for the next network
 	 */
 	private static int nextID = 0;
 	
@@ -261,16 +260,16 @@ public class CyNetworkBridge {
 		
 		switch(type){
 		case REFERENCE: 
-			network = new ReferenceNetwork(netName, nextID++, nodeAttrs);
+			network = new ReferenceNetwork(netName, getNextID(), nodeAttrs);
 			break;
 		case CONDITION:
 			//TODO v3.0: get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
 			conditions.add(new Condition("temp_condition"));
-			network = new ConditionNetwork(netName, nextID++, nodeAttrs, conditions);
+			network = new ConditionNetwork(netName, getNextID(), nodeAttrs, conditions);
 			break;
 		case GENERIC:
-			network = new InputNetwork(netName, nextID++, nodeAttrs);
+			network = new InputNetwork(netName, getNextID(), nodeAttrs);
 			break;
 		}
 				
@@ -405,6 +404,7 @@ public class CyNetworkBridge {
 	 */
 	public static CyNetwork addCyNetwork(Network network, CyRootNetwork collection, Services services){
 		CyNetwork cyNet = createCyNetwork(network, collection);
+		nextID++; //keep track of ID's handed out when adding new networks
 		
 		services.getCyNetworkManager().addNetwork(cyNet);
 		
@@ -419,6 +419,12 @@ public class CyNetworkBridge {
 		return cyNet;
 	}
 	
-	
+	/**
+	 * 
+	 * @return an ID unique for this session
+	 */
+	public static int getNextID(){
+		return nextID++;
+	}
 	
 }

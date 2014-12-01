@@ -50,18 +50,24 @@ public class RunAnalysis
 
 	/**
 	 * Run the full analysis pipeline.
-	 * Currently, the data directory is hard coded to point to Sofie's D drive (TODO v2.1).
+	 * The input directory should be given as argument. 
+	 * This is where the files 'input' and 'result' will be written/read, and where a file 'clean_Inze_Supplemental_Dataset_1.tab' should be located.
 	 * 
-	 * @param args these requirede CL arguments are currently not parsed
+	 * @param args CL arguments - the first should contain the input directory
 	 * @throws Exception whenever something goes wrong
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println("Performing osmotic data analysis - " + new Date());
-		System.out.println("");
+		if (args.length < 1)
+		{
+			System.out.println("The first argument should point to the input directory!");
+			return;
+		}
 
-		//String inputRoot = "D:" + File.separator + "diffany-osmotic"; // Sofie @ PSB
-		String inputLocation = "C:/Users/Sloffie/Documents/phd/diffany_data/osmotic/data-marieke/short-term-osmotic-stress/"; // Sofie @ home
+		String inputLocation = args[0]; 
+		
+		System.out.println("Performing osmotic data analysis from " + inputLocation + " - " + new Date());
+		System.out.println("");
 		
 		String outputDir = inputLocation + "output";
 		String resultDir = inputLocation + "result";

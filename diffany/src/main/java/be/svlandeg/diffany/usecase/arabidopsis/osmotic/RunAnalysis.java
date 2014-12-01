@@ -29,9 +29,6 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
-import be.svlandeg.diffany.r.ExecuteR;
-import be.svlandeg.diffany.r.RBridge;
-import be.svlandeg.diffany.usecase.ExpressionDataAnalysis;
 import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
 import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
@@ -87,8 +84,6 @@ public class RunAnalysis
 		String outputDir = osmoticStressDir + File.separator + "output";
 		String resultDir = osmoticStressDir + File.separator + "result";
 
-		boolean performStep1FromRaw = false;
-
 		boolean performStep1FromSupplemental = false;
 		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
@@ -98,11 +93,6 @@ public class RunAnalysis
 		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = false;
 
-		if (performStep1FromRaw == performStep1FromSupplemental && performStep2ToNetwork)
-		{
-			System.out.println("Select exactly one option to perform the first step of the analysis!");
-			return;
-		}
 		if (performStep5OneagainstAll && performStep5AllPairwise)
 		{
 			System.out.println("Select exactly one option to perform the fifth step of the analysis!");
@@ -156,17 +146,8 @@ public class RunAnalysis
 		Set<InputNetwork> networks = null;
 		RunAnalysis ra = new RunAnalysis();
 
-		/* STEP 1 - OPTION 1: PROCESS RAW CELL DATA TO PRODUCE OVEREXPRESSION VALUES WITH DIFFANY */
-		if (performStep1FromRaw)
-		{
-			System.out.println("1. Transforming CELL data into overexpression values - " + new Date());
-			System.out.println("");
-			String fileName = "differential_values.txt";
-			overexpressionFile = ra.fromRawToOverexpression(osmoticStressDir, fileName);
-			System.out.println(" written to " + overexpressionFile);
-		}
 
-		/* STEP 1 - OPTION 2: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER */
+		/* STEP 1: GET PUBLISHED OVEREXPRESSION VALUES FROM THE OSMOTIC PAPER */
 		if (performStep1FromSupplemental)
 		{
 			System.out.println("1. Reading published overexpression values - " + new Date());
@@ -296,47 +277,6 @@ public class RunAnalysis
 		System.out.println("Done! - " + new Date());
 	}
 
-	/**
-	 * This first step in the pipeline processes raw .CELL files and produces a .tab file of the calculated p-values etc.
-	 */
-	private String fromRawToOverexpression(File osmoticStressDir, String overExpressionFile)
-	{
-		InputProcessing input = new InputProcessing();
-		AnalyseDiffExpression deAnalysis = new AnalyseDiffExpression();
-
-		String outputLog = osmoticStressDir + File.separator + "R_log.txt"; // can also be null
-		String outputFile = osmoticStressDir + File.separator + overExpressionFile;
-
-		RBridge bridge = new RBridge(outputLog);
-		try
-		{
-			ExecuteR exeR = new ExecuteR(bridge);
-			input.processOsmoticCELLData(exeR, osmoticStressDir);
-			deAnalysis.findDEGenes(exeR, outputFile);
-		}
-		catch (IOException e)
-		{
-			String errorMsg = "Error reading input data from " + osmoticStressDir + ": " + e.getMessage();
-			System.out.println(errorMsg);
-		}
-		catch (URISyntaxException e)
-		{
-			System.out.println("Couldn't read R script : " + e.getMessage());
-		}
-		System.out.println("");
-		List<String> errors = bridge.getErrorsFromLogfile();
-
-		if (!errors.isEmpty())
-		{
-			System.out.println(" Errors occurred during R execution:");
-			for (String error : errors)
-			{
-				System.out.println("  ! " + error);
-			}
-		}
-		bridge.close();
-		return outputFile;
-	}
 
 	/**
 	 * Second step in the pipeline: use the overexpression values to generate networks:
@@ -361,7 +301,6 @@ public class RunAnalysis
 		GenePrinter gp = new GenePrinter();
 
 		OverexpressionIO io = new OverexpressionIO();
-		ExpressionDataAnalysis dataAn = new ExpressionDataAnalysis();
 		NetworkConstruction constr = new NetworkConstruction(gp);
 
 		EdgeOntology eo = new DefaultEdgeOntology();
@@ -379,10 +318,10 @@ public class RunAnalysis
 			System.out.println("");
 			System.out.println(data.getName() + ": " + data.getArrayIDs().size() + " IDs analysed");
 
-			Set<String> ids_strict = dataAn.getSignificantGenes(data, threshold_strict).keySet();
+			Set<String> ids_strict = data.getSignificantGenes(threshold_strict).keySet();
 			all_nodeIDs_strict.addAll(ids_strict);
 
-			Set<String> ids_fuzzy = dataAn.getSignificantGenes(data, threshold_fuzzy).keySet();
+			Set<String> ids_fuzzy = data.getSignificantGenes(threshold_fuzzy).keySet();
 			ids_fuzzy.removeAll(ids_strict);
 			all_nodeIDs_fuzzy.addAll(ids_fuzzy);
 
@@ -467,7 +406,7 @@ public class RunAnalysis
 			System.out.println("Constructing the condition-specific network for " + name);
 
 			// record the DE state as node attribute
-			Map<String, Double> all_de_genes = dataAn.getSignificantGenes(data, threshold_fuzzy);
+			Map<String, Double> all_de_genes = data.getSignificantGenes(threshold_fuzzy);
 			constr.modifyDEState(all_de_genes, condition_nodes);
 			
 			for (Node n : condition_nodes)

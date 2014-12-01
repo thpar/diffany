@@ -19,7 +19,6 @@ import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
-import be.svlandeg.diffany.usecase.NetworkAnalysis;
 
 /**
  * This class allows to construct networks out of overexpression/coexpression values.

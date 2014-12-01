@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.usecase;
+package be.svlandeg.diffany.usecase.arabidopsis;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -12,9 +12,6 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.usecase.arabidopsis.ArabidopsisData;
-import be.svlandeg.diffany.usecase.arabidopsis.GenePrinter;
-import be.svlandeg.diffany.usecase.arabidopsis.NetworkConstruction;
 
 
 /**

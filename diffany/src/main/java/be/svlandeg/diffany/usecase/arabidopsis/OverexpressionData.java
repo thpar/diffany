@@ -116,5 +116,27 @@ public class OverexpressionData
 		return FDRs.get(arrayID);
 	}
 	
+	/**
+	 * Retrieve all the significant gene IDs in this overexpression dataset, by using the threshold as a minimal cutoff of the FDR values.
+	 *
+	 * @param threshold the FDR cutoff
+	 * @return all node IDs above the threshold, mapped to their corresponding fold change
+	 */
+	public Map<String, Double> getSignificantGenes(double threshold)
+	{
+		Map<String, Double> nodes = new HashMap<String, Double>();
+
+		for (String id : getArrayIDs())
+		{
+			double FDR = getFDR(id);
+			if (FDR <= threshold)
+			{
+				double FC = getFoldchange(id);
+				nodes.put(id.toLowerCase(),  FC);
+			}
+		}
+		return nodes;
+	}
+	
 
 }

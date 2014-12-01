@@ -11,6 +11,7 @@ import be.svlandeg.diffany.core.networks.EdgeDefinition;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.KinaseData;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
@@ -37,39 +38,6 @@ public class NetworkConstruction
 		this.gp = gp;
 	}
 	
-	/**
-	 * Retrieve a set of unique nodes pertaining the given set of edges.
-	 */
-	private Set<Node> getNodes(Set<Edge> edges)
-	{
-		Set<String> nodeIDs = new HashSet<String>();
-		Set<Node> nodes = new HashSet<Node>();
-		
-		if (edges == null)
-		{
-			return null;
-		}
-		
-		for (Edge e : edges)
-		{
-			Node source = e.getSource();
-			String sourceID = source.getID();
-			if (! nodeIDs.contains(sourceID))
-			{
-				nodeIDs.add(sourceID);
-				nodes.add(source);
-			}
-			
-			Node target = e.getTarget();
-			String targetID = target.getID();
-			if (! nodeIDs.contains(targetID))
-			{
-				nodeIDs.add(targetID);
-				nodes.add(target);
-			}
-		}
-		return nodes;
-	}
 
 	/**
 	 * This method defines all the nodes that will be in the Diffany networks to analyse a given set of overexpressed genes.
@@ -170,6 +138,40 @@ public class NetworkConstruction
 		}
 
 		return allNodeIDs;
+	}
+	
+	/**
+	 * Retrieve a set of unique nodes pertaining the given set of edges.
+	 */
+	private Set<Node> getNodes(Set<Edge> edges)
+	{
+		Set<String> nodeIDs = new HashSet<String>();
+		Set<Node> nodes = new HashSet<Node>();
+		
+		if (edges == null)
+		{
+			return null;
+		}
+		
+		for (Edge e : edges)
+		{
+			Node source = e.getSource();
+			String sourceID = source.getID();
+			if (! nodeIDs.contains(sourceID))
+			{
+				nodeIDs.add(sourceID);
+				nodes.add(source);
+			}
+			
+			Node target = e.getTarget();
+			String targetID = target.getID();
+			if (! nodeIDs.contains(targetID))
+			{
+				nodeIDs.add(targetID);
+				nodes.add(target);
+			}
+		}
+		return nodes;
 	}
 
 	/**

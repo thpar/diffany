@@ -1,4 +1,4 @@
-package be.svlandeg.diffany.study.osmotic;
+package be.svlandeg.diffany.study.osmotic.arabidopsis;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 import be.svlandeg.diffany.core.networks.Node;
-import be.svlandeg.diffany.study.osmotic.arabidopsis.MapID;
 
 /**
- * This class allows printing gene information in a human-readable format, by taking the original array ID,
+ * This class allows printing Arabidopsis thaliana gene information in a human-readable format, by taking the original array ID,
  * fetching its corresponding locus tags and Entrez Gene IDs, and gene symbols.
  * All data is compared in a case independent fashion.
  * 

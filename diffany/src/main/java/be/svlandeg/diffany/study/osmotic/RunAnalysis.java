@@ -28,6 +28,7 @@ import be.svlandeg.diffany.core.project.RunOutput;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.EdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.KinaseData;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
@@ -42,11 +43,10 @@ public class RunAnalysis
 {
 
 	/**
-	 * The constructor defines a few properties of this analysis, such as where to fetch the PPI/regulatory data.
+	 * Empty constructor.
 	 */
 	public RunAnalysis()
-	{
-	}
+	{}
 
 	/**
 	 * Run the full analysis pipeline.
@@ -261,8 +261,7 @@ public class RunAnalysis
 
 
 	/**
-	 * Second step in the pipeline: use the overexpression values to generate networks:
-	 * 1 reference network + 1 condition-dependent network for each overexpression dataset that is read from the input
+	 * Use the overexpression values to generate networks: 1 reference network + 1 condition-dependent network for each overexpression dataset that can be read from overExpressionFile
 	 */
 	private Set<InputNetwork> fromOverexpressionToNetworks(File overExpressionFile, int firstID, double threshold_strict, double threshold_fuzzy,
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
@@ -416,6 +415,9 @@ public class RunAnalysis
 		return networks;
 	}
 	
+	/**
+	 * Set the node attributes for phosphorylation site and kinase function.
+	 */
 	private void setFixedAttributes(Node n, Set<String> phosNodes, Set<String> kinaseNodes, boolean includePhos, boolean includeKinase)
 	{
 		if (includePhos)
@@ -462,10 +464,7 @@ public class RunAnalysis
 		{
 			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
 		}
-
-		/* Testing that there is exactly one differential network created */
 		RunOutput output = p.getOutput(runID);
-
 		return output;
 	}
 }

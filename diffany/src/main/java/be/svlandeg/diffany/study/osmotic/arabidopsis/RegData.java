@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.Node;
 import be.svlandeg.diffany.core.semantics.NodeMapper;
-import be.svlandeg.diffany.study.osmotic.GenePrinter;
 
 /**
  * This class defines and analyses the regulatory data retrieved for Arabidopsis thaliana.

@@ -11,11 +11,12 @@ import be.svlandeg.diffany.core.networks.Edge;
 import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.Network;
 import be.svlandeg.diffany.core.networks.Node;
+import be.svlandeg.diffany.study.osmotic.arabidopsis.GenePrinter;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
 
 
 /**
- * This class is useful for generating general statistics about Diffany networks.
+ * This class is useful for general network analyses, for instance to determine the hubs in an input network.
  * 
  * @author Sofie Van Landeghem
  */
@@ -26,9 +27,7 @@ public class NetworkAnalysis
 	 * Currently empty constructor
 	 */
 	public NetworkAnalysis()
-	{
-		
-	}
+	{}
 	
 	/**
 	 * Print a few generic network stats

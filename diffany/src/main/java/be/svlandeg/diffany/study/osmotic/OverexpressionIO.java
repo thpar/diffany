@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import be.svlandeg.diffany.study.osmotic.arabidopsis.GenePrinter;
+
 /**
  * This class is used to print all calculated overexpression values to one big file
  * 
@@ -116,7 +118,6 @@ public class OverexpressionIO
 
 		// READ AND CHECK HEADER
 		String header = reader.readLine();
-		//System.out.println("Read header: " + header);
 		StringTokenizer header_stok = new StringTokenizer(header, "\t");
 
 		boolean formatOK = true;
@@ -161,15 +162,6 @@ public class OverexpressionIO
 			}
 		}
 
-		// TODO. Currently no check on synonyms column because it's not strictly necessary
-		/*
-		next_token = header_stok.nextToken();
-		if (! synonyms_column.equals(next_token))
-		{
-			formatOK = false;
-		}
-		*/
-
 		if (!formatOK || datasets.isEmpty())
 		{
 			reader.close();
@@ -179,11 +171,11 @@ public class OverexpressionIO
 
 		// READ ALL OTHER DATA
 		String line = reader.readLine();
-		//System.out.println("Read line: " + line);
 		while (line != null)
 		{
-			// TODO v2.1: this is a quick hack to work around the european locale
+			/* quick hack to work around the european locale */
 			line = line.replace(',', '.');
+			
 			StringTokenizer stok = new StringTokenizer(line, "\t");
 			String arrayID = stok.nextToken().trim();
 

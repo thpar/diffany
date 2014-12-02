@@ -64,7 +64,7 @@ public class RunAnalysis
 			return;
 		}
 
-		String inputLocation = args[0]; 
+		String inputLocation = args[0] + File.separator; 
 		
 		System.out.println("Performing osmotic data analysis from " + inputLocation + " - " + new Date());
 		System.out.println("");

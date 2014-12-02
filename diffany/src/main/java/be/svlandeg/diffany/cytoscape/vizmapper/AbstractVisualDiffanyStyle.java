@@ -111,7 +111,7 @@ public abstract class AbstractVisualDiffanyStyle {
 		
 		//node basic mappings
 		VisualMappingFunctionFactory vmffP = services.getVisualMappingFunctionFactory("passthrough");
-		PassthroughMapping<String, ?> nodeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyNetwork.NAME, String.class, BasicVisualLexicon.NODE_LABEL);
+		PassthroughMapping<String, ?> nodeLabelMapping = (PassthroughMapping<String, ?>)vmffP.createVisualMappingFunction(CyNetworkBridge.SYMBOLIC_NAME, String.class, BasicVisualLexicon.NODE_LABEL);
 		vis.addVisualMappingFunction(nodeLabelMapping);	
 		
 		//edge default style

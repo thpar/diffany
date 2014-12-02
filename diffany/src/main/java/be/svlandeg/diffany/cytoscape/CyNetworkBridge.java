@@ -47,9 +47,9 @@ public class CyNetworkBridge {
 	
 	
 	/**
-	 * Column name of an extra field to be used to map nodes from different networks onto each other.
+	 * Column name of an extra field to be used as preferred node label (probably the symbolic gene name)
 	 */
-	public static final String DIFFANY_UID = "diffany.SUID";
+	public static final String SYMBOLIC_NAME = "official_symbol";
 	
 	/**
 	 * Column name for edge weight (double)
@@ -73,7 +73,7 @@ public class CyNetworkBridge {
 		defaultNodeAttrs.add("SUID");
 		defaultNodeAttrs.add("selected");
 		defaultNodeAttrs.add("shared name");
-		defaultNodeAttrs.add(DIFFANY_UID);
+		defaultNodeAttrs.add(SYMBOLIC_NAME);
 		defaultNodeAttrs.add("name");
 	}
 	
@@ -115,8 +115,8 @@ public class CyNetworkBridge {
 		CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
 
 		
-		if (nodeTable.getColumn(DIFFANY_UID)==null){
-			nodeTable.createColumn(DIFFANY_UID, String.class, false);			
+		if (nodeTable.getColumn(SYMBOLIC_NAME)==null){
+			nodeTable.createColumn(SYMBOLIC_NAME, String.class, false);			
 		}
 
 		if (edgeTable.getColumn(WEIGHT)==null){
@@ -136,8 +136,8 @@ public class CyNetworkBridge {
 		
 		for (Node node: network.getNodes()){
 			CyNode cyNode = cyNetwork.addNode();
-			cyNetwork.getRow(cyNode).set(DIFFANY_UID, node.getID());
-			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getDisplayName());
+			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getID());
+			cyNetwork.getRow(cyNode).set(SYMBOLIC_NAME, node.getDisplayName());
 			
 			for (String attr : network.getAllNodeAttributes()){
 				cyNetwork.getRow(cyNode).set(attr, node.getAttribute(attr));
@@ -176,7 +176,7 @@ public class CyNetworkBridge {
 		
 		CyNode cyNode = null;
 		
-		Collection<CyRow> matches = table.getMatchingRows(DIFFANY_UID, node.getID());
+		Collection<CyRow> matches = table.getMatchingRows(CyNetwork.NAME, node.getID());
 		
 		for (final CyRow row : matches){
 			Long suid = row.get(pk, Long.class);
@@ -276,12 +276,12 @@ public class CyNetworkBridge {
 		List<CyNode> cyNodes = cyNetwork.getNodeList();
 		Map<Long, Node> nodeMap = new HashMap<Long, Node>();
 		for (CyNode cyNode : cyNodes){
-			String nodeName = getName(cyNetwork, cyNode);
-			String nodeID = getDiffanyID(cyNetwork, cyNode);
-			if (nodeID==null || nodeID.isEmpty()){
-				nodeID = nodeName;
+			String nodeID = getName(cyNetwork, cyNode);
+			String symbolicName = getSymbolicName(cyNetwork, cyNode);
+			if (symbolicName==null || symbolicName.isEmpty()){
+				nodeID = symbolicName;
 			}
-			Node node = new Node(nodeID, nodeName);
+			Node node = new Node(nodeID, symbolicName);
 			
 			//transfer node attributes
 			for (String attr : nodeAttrs){
@@ -342,14 +342,15 @@ public class CyNetworkBridge {
 	}
 	
 	/**
-	 * Get the value of the Diffany ID column.
+	 * Get the symbolic name of the node
 	 * 
 	 * @param cyNetwork the network containing the node
 	 * @param cyNode the node
-	 * @return a string representing the unique ID used by Diffany
+	 * @return a string representing the symbolic name of the node (used for labeling)
+	 * 
 	 */
-	private static String getDiffanyID(CyNetwork cyNetwork, CyNode cyNode) {
-		return cyNetwork.getRow(cyNode).get(DIFFANY_UID, String.class);
+	private static String getSymbolicName(CyNetwork cyNetwork, CyNode cyNode) {
+		return cyNetwork.getRow(cyNode).get(SYMBOLIC_NAME, String.class);
 	}
 	
 	/**

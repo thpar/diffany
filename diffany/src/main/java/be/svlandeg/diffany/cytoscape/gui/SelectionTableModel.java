@@ -146,6 +146,11 @@ public class SelectionTableModel extends AbstractTableModel{
 		
 	}
 	
+	/**
+	 * Uncheck the reference checkbox on a certain row
+	 *  
+	 * @param row number of row
+	 */
 	private void unselectReference(int row) {
 		this.referenceRow = -1;
 		this.networkEntries.get(row).setReference(false);

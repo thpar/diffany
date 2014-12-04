@@ -185,6 +185,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		return panel;
 	}
 	
+	/**
+	 * Create the panel containing the table with edge (interaction) filter
+	 * 
+	 * @return the {@JPanel} containing the table with interactions
+	 */
 	private Component createFilterPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -346,6 +351,11 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		updateSupportSlider();
 	}
 	
+	/**
+	 * Change number of ticks and enable/disable the support slider according to the number of networks loaded
+	 * and selected options.
+	 * 
+	 */
 	private void updateSupportSlider(){
 		//enable extra options
 		int currentTicks = supportSlider.getMaximum();

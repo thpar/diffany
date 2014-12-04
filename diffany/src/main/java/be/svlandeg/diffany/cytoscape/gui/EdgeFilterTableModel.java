@@ -13,6 +13,12 @@ import javax.swing.table.AbstractTableModel;
 
 import be.svlandeg.diffany.cytoscape.CyProject;
 
+/**
+ * Model that controls the content of the edge (interaction) filter {@link JTable}
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class EdgeFilterTableModel extends AbstractTableModel {
 
 
@@ -134,6 +140,12 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 		}
 	}
 
+	
+	/**
+	 * Repopulate the model with all interactions found in the currently selected {@link CyProject} 
+	 * 
+	 * @param selectedProject
+	 */
 	public void refresh(CyProject selectedProject) {
 		Set<String> projectSourceInteractions = selectedProject.getAllSourceInteractions();		
 		Map<String, Boolean> newSourceInteractions = new HashMap<String, Boolean>();
@@ -179,6 +191,9 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 		return hidden;
 	}
 
+	/**
+	 * Empty the table and the complete table model
+	 */
 	public void clear() {
 		this.sourceInteractions = new HashMap<String, Boolean>();
 		this.diffInteractions = new HashMap<String, Boolean>();

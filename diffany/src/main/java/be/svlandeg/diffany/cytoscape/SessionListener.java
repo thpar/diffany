@@ -8,6 +8,9 @@ import org.cytoscape.session.events.SessionLoadedListener;
 /**
  * A listener that catches session load and save events from Cytoscape.
  * 
+ * At this point, this only makes sure the Diffany visual styles are preserved
+ * when the user loads a new session.
+ * 
  * @author Thomas Van Parys
  *
  */

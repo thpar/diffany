@@ -15,6 +15,12 @@ import be.svlandeg.diffany.cytoscape.Model;
 import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 
+/**
+ * Menu to be placed under Apps > Diffany > Extra options
+ * 
+ * @author Thomas Van Parys
+ *
+ */
 public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 
 
@@ -22,9 +28,18 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 	private ButtonGroup overlapOperatorGroup;
 	private JRadioButtonMenuItem minOperator;
 	private JRadioButtonMenuItem maxOperator;
+	
+	/**
+	 * The model of the Diffany App
+	 */
 	private Model appModel;
 	private JMenuItem updateVizItem;
 	
+	/**
+	 * Create menu and menu items
+	 * 
+	 * @param model
+	 */
 	public ExtraOptionsMenu(Model model){
 		super("Extra options");
 		this.appModel = model;
@@ -58,6 +73,9 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 		
 	}
 	
+	/**
+	 * Update states of overlap option checkboxes depending on model
+	 */
 	private void updateOverlapOperatorMenu(){
 		switch(appModel.getOverlapOperator()){
 		case MIN:
@@ -69,6 +87,9 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 		}
 	}
 	
+	/**
+	 * Update state of Update Vizualisation menu item
+	 */
 	private void updateUpdateVizMenuItem(){
 		CyProject selectedProject = this.appModel.getSelectedProject();
 		this.updateVizItem.setEnabled(selectedProject != null);

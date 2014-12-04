@@ -64,17 +64,21 @@
 			</plugin>
 			<!--  Add licenses -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.7</version>
-					<executions>
-						<execution>
-							<id>download-licenses</id>
-							<goals>
-								<goal>download-licenses</goal>
-							</goals>	
-						</execution>
-        			</executions>
+			    <groupId>org.codehaus.mojo</groupId>
+    			<artifactId>license-maven-plugin</artifactId>
+    			<version>1.7</version>
+    			<configuration>
+        			<licenseName>diffany_license</licenseName>
+        			<licenseResolver>${project.baseUri}/license</licenseResolver>
+    			</configuration>
+    			<executions>
+        			<execution>
+            			<goals>
+                			<goal>update-project-license</goal>
+            			</goals>
+            			<phase>build</phase>
+        			</execution>
+    			</executions>
 			</plugin>
 			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
 			<plugin>

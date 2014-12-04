@@ -34,8 +34,8 @@ import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
 
 /**
- * This class provides the analysis pipeline and calls our procedures necessary
- * to perform the full analysis, from data input to result output.
+ * This class provides the analysis pipeline for the osmotic stress application on Arabidopsis. 
+ * The main method calls all procedures necessary to perform the full analysis, from data input to result output.
  * 
  * @author Sofie Van Landeghem
  */

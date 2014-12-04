@@ -72,12 +72,12 @@ public class RunAnalysis
 		String outputDir = inputLocation + "output";
 		String resultDir = inputLocation + "result";
 		
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
 
-		boolean performStep4InputNetworksFromFile = false;
-		boolean performStep5OneagainstAll = false;
+		boolean performStep4InputNetworksFromFile = true;
+		boolean performStep5OneagainstAll = true;
 		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = false;
 

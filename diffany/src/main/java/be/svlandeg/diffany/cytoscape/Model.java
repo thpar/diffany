@@ -372,7 +372,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	/**
 	 * Enable generation of differential networks upon run
 	 * 
-	 * @param generateDiffNets
+	 * @param generateDiffNets whether or not to enable differential networks
 	 */
 	public void setGenerateDiffNets(boolean generateDiffNets) {
 		this.generateDiffNets = generateDiffNets;
@@ -393,7 +393,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	/**
 	 * Enable generation of consensus networks upon run
 	 * 
-	 * @param generateConsensusNets
+	 * @param generateConsensusNets whether or not to enable consensus networks
 	 */
 	public void setGenerateConsensusNets(boolean generateConsensusNets) {
 		this.generateConsensusNets = generateConsensusNets;

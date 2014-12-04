@@ -236,9 +236,8 @@ public class CyNetworkBridge {
 	 * and creates a {@link Network} out of it.
 	 * 
 	 * @param cyNetwork the "name" of the network in the network table.
-	 * @param type a switch to determine with role this network plays in the {@link Project}
+	 * @param type a switch to determine which role this network plays in the {@link Project}
 	 * @param edgeOntology will determine which edge types are considered symmetrical
-	 * @param nodeMapper will determine which nodes are considered identical
 	 * 
 	 * @return the equivalent {@link Network} object
 	 */
@@ -265,7 +264,7 @@ public class CyNetworkBridge {
 		case CONDITION:
 			//TODO v3.0: get conditions from gui
 			Set<Condition> conditions = new HashSet<Condition>();
-			conditions.add(new Condition("temp_condition"));
+			conditions.add(new Condition("undefined_condition"));
 			network = new ConditionNetwork(netName, getNextID(), nodeAttrs, conditions);
 			break;
 		case GENERIC:
@@ -279,7 +278,7 @@ public class CyNetworkBridge {
 			String nodeID = getName(cyNetwork, cyNode);
 			String symbolicName = getSymbolicName(cyNetwork, cyNode);
 			if (symbolicName==null || symbolicName.isEmpty()){
-				nodeID = symbolicName;
+				symbolicName = nodeID;
 			}
 			Node node = new Node(nodeID, symbolicName);
 			

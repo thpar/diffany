@@ -12,7 +12,6 @@ import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
-import be.svlandeg.diffany.core.networks.OutputNetworkPair;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.progress.ProgressListener;
@@ -81,20 +80,21 @@ public class RunProject
 		// TODO v2.1: allow to change mode pairwise vs. differential
 		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
 
-		// TODO v2.1: check number of differential networks generated
-		RunOutput output = p.getOutput(runID);
-		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
-		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		ConsensusNetwork consensusNet = pair.getConsensusNetwork();
-
 		/** WRITE NETWORK OUTPUT **/
+		RunOutput output = p.getOutput(runID);
 		boolean writeHeaders = true;
-
-		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
-
-		File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
-		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
+		
+		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
+		{			
+			File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
+			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
+		}
+		
+		for (ConsensusNetwork consensusNet : output.getConsensusNetworks())
+		{
+			File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
+			NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
+		}
 	}
 
 	/**

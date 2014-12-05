@@ -40,10 +40,10 @@ public class RunConsole
 	{
 		try
 		{
+			Options diffOpt = new DiffanyOptions().getDiffanyOptions();
 			Options metaOpt = new MetaOptions().getMetaOptions();
 			CommandLine meta_cmd = parseOptions(args, parser, metaOpt, true);
 
-			Options diffOpt = new DiffanyOptions().getDiffanyOptions();
 			boolean metaPrinted = displayMetaData(meta_cmd, diffOpt);
 			
 			if (!metaPrinted)

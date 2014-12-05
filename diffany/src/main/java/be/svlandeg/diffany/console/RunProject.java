@@ -18,8 +18,6 @@ import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.RunOutput;
-import be.svlandeg.diffany.core.project.LogEntry;
-import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 
@@ -43,16 +41,15 @@ public class RunProject
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
 		CalculateDiff diffAlgo = new CalculateDiff();
-		ProgressListener listener = new StandardProgressListener(true);
+		ProgressListener listener = null;
 
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());
 
 		/** PARSE INPUT **/
-		boolean toLog = false;
 		boolean skipHeader = true;
 		if (cmd.hasOption(DiffanyOptions.logShort))
 		{
-			toLog = true;
+			listener = new StandardProgressListener(true);
 		}
 		
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
@@ -65,7 +62,9 @@ public class RunProject
 		inputnetworks.add(refNet);
 		inputnetworks.add(condNet);
 
-		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
+		/* it's no problem if this is null, CalculateDiff will then resort to a default option */
+		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);	
+		
 		int diffID = inferDiffID(cmd, inputnetworks);
 		int consensusID = inferConsID(cmd, diffID);
 
@@ -78,9 +77,6 @@ public class RunProject
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
-		Logger l = p.getLogger(runID);
-
-		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
 
 		// TODO v2.1: allow to change mode pairwise vs. differential
 		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
@@ -96,22 +92,9 @@ public class RunProject
 
 		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
 		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
-		l.log("Writing the differential network to " + diffDir);
 
 		File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
 		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
-		l.log("Writing the consensus network to " + consensusDir);
-
-		l.log("Done !");
-
-		/** WRITE LOG OUTPUT **/
-		if (toLog)
-		{
-			for (LogEntry msg : l.getAllLogMessages())
-			{
-				System.out.println(msg);
-			}
-		}
 	}
 
 	/**
@@ -152,7 +135,7 @@ public class RunProject
 		}
 		return consID;
 	}
-
+	
 	/**
 	 * Retrieve a File object representing a directory given by a value on the command line
 	 * 

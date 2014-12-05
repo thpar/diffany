@@ -72,7 +72,7 @@ public class DiffanyOptions
 		boolean hasArgument = false;
 		Set<Option> allFlags = new HashSet<Option>();
 		
-		allFlags.add(new Option(logShort, "log", hasArgument, "display a log file after running the algorithm"));
+		allFlags.add(new Option(logShort, "log", hasArgument, "display a progress/log file during the run"));
 		
 		return allFlags;
 	}

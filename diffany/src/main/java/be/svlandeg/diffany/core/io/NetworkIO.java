@@ -239,7 +239,6 @@ public class NetworkIO
 		InputStream nodeStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_node_file));
 		InputStream definitionStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_definition_file));
 		InputStream conditionsStream = null;
-		Network inputNetwork = null;
 		try
 		{
 			conditionsStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_conditions_file));
@@ -248,7 +247,7 @@ public class NetworkIO
 		{
 			// it might be that there is no condition file
 		}
-		inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
+		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
 		edgeStream.close();
 		nodeStream.close();
 		definitionStream.close();

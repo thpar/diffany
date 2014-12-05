@@ -1,7 +1,5 @@
 package be.svlandeg.diffany.console;
 
-import java.io.IOException;
-
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,6 +14,8 @@ import org.apache.commons.cli.ParseException;
  */
 public class RunConsole
 {
+	
+	private static boolean printStacktrace = true;
 
 	/**
 	 * Main method that allows running the Diffany algorithms through the console.
@@ -38,25 +38,26 @@ public class RunConsole
 	 */
 	public void runFromConsole(String[] args, CommandLineParser parser)
 	{
-		Options metaOpt = new MetaOptions().getMetaOptions();
-		CommandLine meta_cmd = parseOptions(args, parser, metaOpt, true);
-
-		Options diffOpt = new DiffanyOptions().getDiffanyOptions();
-		boolean metaPrinted = displayMetaData(meta_cmd, diffOpt);
-		if (!metaPrinted)
+		try
 		{
-			CommandLine diff_cmd = parseOptions(args, parser, diffOpt, false);
-			if (diff_cmd != null)
+			Options metaOpt = new MetaOptions().getMetaOptions();
+			CommandLine meta_cmd = parseOptions(args, parser, metaOpt, true);
+
+			Options diffOpt = new DiffanyOptions().getDiffanyOptions();
+			boolean metaPrinted = displayMetaData(meta_cmd, diffOpt);
+			
+			if (!metaPrinted)
 			{
-				try
+				CommandLine diff_cmd = parseOptions(args, parser, diffOpt, false);
+				if (diff_cmd != null)
 				{
 					new RunProject().runAnalysis(diff_cmd);
 				}
-				catch (IOException ex)
-				{
-					printError(ex);
-				}
 			}
+		}
+		catch (Exception ex)
+		{
+			printError(ex);
 		}
 	}
 
@@ -79,7 +80,7 @@ public class RunConsole
 		}
 		catch (ParseException ex)
 		{
-			if (! silent)
+			if (!silent)
 			{
 				printError(ex);
 			}
@@ -97,10 +98,13 @@ public class RunConsole
 		if (ex != null)
 		{
 			customError = ": " + ex.getMessage();
+			if (printStacktrace)
+			{
+				ex.printStackTrace();
+			}
 		}
 		System.err.println(" Problem running Diffany" + customError);
 		System.err.println(" Run the program with -h or --help (only) to get the help information.");
-		System.err.println(" Do not add undefined options.");
 	}
 
 	/**

@@ -3,8 +3,9 @@ package be.svlandeg.diffany.core.project;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.networks.ConsensusNetwork;
+import be.svlandeg.diffany.core.networks.DifferentialNetwork;
 import be.svlandeg.diffany.core.networks.InputNetwork;
-
 
 /**
  * A run consists of a {@link RunConfiguration} which defines the networks that can be used as input for the Diffany algorithms. 
@@ -15,15 +16,15 @@ import be.svlandeg.diffany.core.networks.InputNetwork;
  */
 public class Run
 {
-	
+
 	protected Project p;
 	protected int runID;
-	
+
 	protected RunConfiguration configuration;
 	protected RunOutput output;
-	protected Boolean type;	// if true: can do differential
+	protected Boolean type; // if true: can do differential
 	protected Logger logger;
-	
+
 	/**
 	 * Create a new run, belonging to a specific project.
 	 * 
@@ -42,7 +43,7 @@ public class Run
 		this.logger = logger;
 		output = new RunOutput(p, runID);
 	}
-	
+
 	/**
 	 * Private method that checks whether there are no conflicting network IDs in this run.
 	 * @return whether or not all IDs of the input and output networks in this run are unique
@@ -50,7 +51,7 @@ public class Run
 	protected boolean checkInputIDs()
 	{
 		boolean allOK = true;
-		
+
 		Set<Integer> readIDs = new HashSet<Integer>();
 		for (InputNetwork input : configuration.inputNetworks)
 		{
@@ -63,7 +64,7 @@ public class Run
 		}
 		return allOK;
 	}
-	
+
 	/**
 	 * Private method that checks whether a specific ID of an output network can be used in this run
 	 * @param outputID the proposed output network ID
@@ -77,7 +78,17 @@ public class Run
 			int ID = input.getID();
 			readIDs.add(ID);
 		}
-		return (! readIDs.contains(outputID));
+		for (ConsensusNetwork cons : output.getConsensusNetworks())
+		{
+			int ID = cons.getID();
+			readIDs.add(ID);
+		}
+		for (DifferentialNetwork input : output.getDifferentialNetworks())
+		{
+			int ID = input.getID();
+			readIDs.add(ID);
+		}
+		return (!readIDs.contains(outputID));
 	}
 
 }

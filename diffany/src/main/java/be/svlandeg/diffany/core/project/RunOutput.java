@@ -76,7 +76,7 @@ public class RunOutput
 	{
 		if (dn == null)
 		{
-			String errormsg = "The specified output differential network(s) can not be null!";
+			String errormsg = "The specified output differential network can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		
@@ -97,7 +97,7 @@ public class RunOutput
 	{
 		if (cn == null)
 		{
-			String errormsg = "The specified output consensus network(s) can not be null!";
+			String errormsg = "The specified output consensus network can not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		

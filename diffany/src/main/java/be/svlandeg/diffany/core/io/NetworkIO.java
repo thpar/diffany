@@ -239,38 +239,28 @@ public class NetworkIO
 		InputStream nodeStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_node_file));
 		InputStream definitionStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_definition_file));
 		InputStream conditionsStream = null;
+		Network inputNetwork = null;
 		try
 		{
-			conditionsStream = new FileInputStream(new File(
-					dir.getAbsolutePath() + "/" + default_conditions_file));
+			conditionsStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_conditions_file));
 		}
 		catch (Exception e)
 		{
 			// it might be that there is no condition file
 		}
-		try
+		inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
+		edgeStream.close();
+		nodeStream.close();
+		definitionStream.close();
+		if (conditionsStream != null)
 		{
-			Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
-			return inputNetwork;
+			conditionsStream.close();
 		}
-		catch (IOException ioe)
-		{
-			throw ioe;
-		}
-		finally
-		{
-			edgeStream.close();
-			nodeStream.close();
-			definitionStream.close();
-			if (conditionsStream != null)
-			{
-				conditionsStream.close();
-			}
-		}
+
+		return inputNetwork;
 	}
 
-	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream,
-			InputStream definitionStream, InputStream conditionsStream, boolean skipHeader) throws IOException
+	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream, InputStream definitionStream, InputStream conditionsStream, boolean skipHeader) throws IOException
 	{
 
 		Map<String, String> definitionMap = cacheDefinitionStream(definitionStream);
@@ -612,7 +602,7 @@ public class NetworkIO
 		{
 			Node n = NodeIO.readFromTab(line.trim(), nodeAttributes);
 			String ID = n.getID();
-			if (! read_IDs.contains(ID))
+			if (!read_IDs.contains(ID))
 			{
 				read_IDs.add(ID);
 				nodes.add(n);

@@ -38,7 +38,7 @@ public class ExtraOptionsMenu extends JMenu implements ActionListener, Observer{
 	/**
 	 * Create menu and menu items
 	 * 
-	 * @param model
+	 * @param model the model
 	 */
 	public ExtraOptionsMenu(Model model){
 		super("Extra options");

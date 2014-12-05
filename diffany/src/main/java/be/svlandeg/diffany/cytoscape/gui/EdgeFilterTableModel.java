@@ -144,7 +144,7 @@ public class EdgeFilterTableModel extends AbstractTableModel {
 	/**
 	 * Repopulate the model with all interactions found in the currently selected {@link CyProject} 
 	 * 
-	 * @param selectedProject
+	 * @param selectedProject the currently selected project
 	 */
 	public void refresh(CyProject selectedProject) {
 		Set<String> projectSourceInteractions = selectedProject.getAllSourceInteractions();		

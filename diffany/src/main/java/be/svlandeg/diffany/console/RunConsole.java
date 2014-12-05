@@ -98,9 +98,9 @@ public class RunConsole
 		{
 			customError = ": " + ex.getMessage();
 		}
-		System.err.println("Problem running Diffany" + customError);
-		System.err.println("Run the program with -h or --help (only) to get the help information.");
-		System.err.println("Do not add undefined options.");
+		System.err.println(" Problem running Diffany" + customError);
+		System.err.println(" Run the program with -h or --help (only) to get the help information.");
+		System.err.println(" Do not add undefined options.");
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class RunConsole
 				HelpFormatter formatter = new HelpFormatter();
 				String header = "";
 				int consoleSize = getSensibleLength();
-				formatter.printHelp(consoleSize, "java -jar Diffany_" + version + ".jar", header, diffanyOptions, header, true);
+				formatter.printHelp(consoleSize, "java -jar Diffany_CL_" + version + ".jar", header, diffanyOptions, header, true);
 				metaPrinted = true;
 			}
 			else if (cmd.hasOption(MetaOptions.versionShort))

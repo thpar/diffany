@@ -23,13 +23,13 @@ public class DiffanyOptions
 	protected static String refShort = "ref";
 	protected static String conShort = "cond";
 	protected static String diffShort = "diff";
-	protected static String consensusShort = "consensus";
+	protected static String consensusShort = "cons";
 
-	protected static String diffnameShort = "name";
+	protected static String diffnameShort = "diffName";
 	protected static String cutoffShort = "conf";
 	
 	protected static String diffID = "diffID";
-	protected static String consensusID = "consensusID";
+	protected static String consensusID = "consID";
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -87,14 +87,14 @@ public class DiffanyOptions
 		//allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("referenceDirectory");
+		OptionBuilder.withLongOpt("referenceDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired();
 		OptionBuilder.withDescription("the input directory containing the reference network");
 		allParameters.add(OptionBuilder.create(refShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("conditionsDirectory");
+		OptionBuilder.withLongOpt("conditionsDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
 		//OptionBuilder.withValueSeparator('|');
@@ -102,25 +102,25 @@ public class DiffanyOptions
 		allParameters.add(OptionBuilder.create(conShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("differentialDirectory");
+		OptionBuilder.withLongOpt("differentialDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
 		OptionBuilder.withDescription("the output directory which will contain the generated differential network");
 		allParameters.add(OptionBuilder.create(diffShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("consensusDirectory");
+		OptionBuilder.withLongOpt("consensusDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
 		OptionBuilder.withDescription("the output directory which will contain the generated consensus network");
 		allParameters.add(OptionBuilder.create(consensusShort));
 
-		OptionBuilder.withLongOpt("networkOutputName");
+		OptionBuilder.withLongOpt("differentialName");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the name of the generated differential network");
 		allParameters.add(OptionBuilder.create(diffnameShort));
 		
-		OptionBuilder.withLongOpt("diffID");
+		OptionBuilder.withLongOpt("differentialID");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the ID of the generated differential network");
 		allParameters.add(OptionBuilder.create(diffID));

@@ -117,6 +117,8 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	private OverlapOperator overlapOperator = OverlapOperator.MIN;
 
+	private boolean hideUnconnectedNodes = false;
+
 
 	
 	/**
@@ -498,8 +500,31 @@ public class Model extends Observable implements NetworkAddedListener,
 		this.setChanged();
 		this.notifyObservers();
 	}
-	
 
+
+	/**
+	 * 
+	 * @return should nodes with degree zero be hidden? Hidden edges are not counted. 
+	 */
+	public boolean getHideUnconnectedNodes() {
+		return hideUnconnectedNodes ;
+	}
+
+	/**
+	 * Should nodes with degree zero be hidden? Hidden edges are not counted. 
+	 * 
+	 * @param hideUnconnectedNodes
+	 */
+	public void setHideUnconnectedNodes(boolean hideUnconnectedNodes) {
+		if (this.hideUnconnectedNodes != hideUnconnectedNodes){
+			this.hideUnconnectedNodes = hideUnconnectedNodes;
+			setChanged();
+			notifyObservers();
+		}
+		
+	}
+	
+	
 
 }
 

@@ -76,12 +76,15 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 
 	private static final String REQUIRE_REF_NET_ACTION = "require reference network";
 	
+	private static final String HIDE_UNCONNECTED_NODES_ACTION = "hide unconnected nodes";
+	
 	private JButton runButton;
 	private JTable networkTable;
 	private JCheckBox requireRefNetCheckBox;
 	private JSlider supportSlider;
 	private JTable filterEdgesTable;
 	private EdgeFilterTableModel filterTableModel;
+	private JCheckBox hideNodesToggle;
 	
 	/**
 	 * Create {@link JPanel} and register as {@link Observer} for the model.
@@ -212,7 +215,13 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		//table.getSelectionModel().addListSelectionListener(this);
 		JScrollPane scrollPane = new JScrollPane(filterEdgesTable);
 		panel.add(scrollPane, BorderLayout.CENTER);
-				
+		
+		hideNodesToggle = new JCheckBox("Hide unconnected nodes");
+		hideNodesToggle.setSelected(model.getHideUnconnectedNodes());
+		hideNodesToggle.setActionCommand(HIDE_UNCONNECTED_NODES_ACTION);
+		hideNodesToggle.addActionListener(this);
+		panel.add(hideNodesToggle, BorderLayout.SOUTH);
+		
 		return panel;
 	}
 	
@@ -349,6 +358,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 			this.filterTableModel.clear();
 		}
 		updateSupportSlider();
+		
+		this.hideNodesToggle.setSelected(model.getHideUnconnectedNodes());
+		
 	}
 	
 	/**
@@ -424,6 +436,9 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 		} else if (action.equals(REQUIRE_REF_NET_ACTION)){
 			JCheckBox refCb = (JCheckBox)e.getSource();
 			model.setRefIncludedInOverlapSupportCutoff(refCb.isSelected());
+		} else if (action.equals(HIDE_UNCONNECTED_NODES_ACTION)){
+			JCheckBox cb = (JCheckBox)e.getSource();
+			model.setHideUnconnectedNodes(cb.isSelected());
 		}
 	}
 
@@ -475,7 +490,7 @@ public class TabPane extends JPanel implements CytoPanelComponent, Observer, Act
 						visibleEdgeCount++;
 					}
 				}
-				if (visibleEdgeCount == 0){
+				if (visibleEdgeCount == 0 && model.getHideUnconnectedNodes()){
 					nodeView.setLockedValue(BasicVisualLexicon.NODE_VISIBLE, false);					
 				} else {
 					nodeView.clearValueLock(BasicVisualLexicon.NODE_VISIBLE);						

@@ -35,7 +35,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 4;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -68,7 +68,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 4;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, false, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -101,7 +101,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -136,7 +136,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 3;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, false, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -171,7 +171,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 2;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -205,7 +205,7 @@ public class TestFuzzyBoth extends TestGeneric
 		int supportingCutoff = 2;
 		int ID = ex.getDefaultRunConfigurationID(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, false, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, false, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

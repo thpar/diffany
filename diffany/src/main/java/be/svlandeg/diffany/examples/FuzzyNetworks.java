@@ -271,7 +271,7 @@ public class FuzzyNetworks extends GenericExample
 		
 		// consensus, no diff
 		int ID = ex.getTestConfigurationWithoutReference(p, supportingCutoff, true);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, -1, 20, true, null);			
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, -1, 20, true, null);			
 		ex.printAllNetworks(p, ID, false, true, false);	
 		
 		System.out.println("Log:");

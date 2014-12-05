@@ -463,7 +463,7 @@ public class RunAnalysis
 		}
 		else
 		{
-			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
+			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, null, null, 11, -1, true, listener);
 		}
 		RunOutput output = p.getOutput(runID);
 		return output;

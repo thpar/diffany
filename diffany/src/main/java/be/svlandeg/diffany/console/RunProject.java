@@ -68,7 +68,7 @@ public class RunProject
 		int diffID = inferDiffID(cmd, inputnetworks);
 		int consensusID = inferConsID(cmd, diffID);
 
-		double cutoff = diffAlgo.default_weight_cutoff;
+		Double cutoff = null;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
@@ -79,7 +79,7 @@ public class RunProject
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 
 		// TODO v2.1: allow to change mode pairwise vs. differential
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, diffname, consensusname, diffID, consensusID, cutoff, true, listener);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, true, listener);
 
 		/** WRITE NETWORK OUTPUT **/
 		RunOutput output = p.getOutput(runID);
@@ -88,7 +88,7 @@ public class RunProject
 		
 		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
 		{			
-			File diffDir = new File (outputDir, "Reference_network");
+			File diffDir = new File (outputDir, "Reference_network_" + diffNet.getID());
 			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 		}
 		

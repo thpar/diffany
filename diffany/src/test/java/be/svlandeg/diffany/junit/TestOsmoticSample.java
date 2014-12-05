@@ -34,7 +34,7 @@ public class TestOsmoticSample extends TestGeneric
 		int supportingCutoff = 5;
 		int ID = ex.getTestDiffConfiguration(p, supportingCutoff);
 
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 70, 80, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 70, 80, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

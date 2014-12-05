@@ -190,7 +190,7 @@ public class FuzzyNetworks2 extends GenericExample
 		System.out.println(" and supporting cutoff " + supportingCutoff);
 		
 		boolean minOperator = true;
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weightCutoff, 70, 80, minOperator, null);	
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weightCutoff, null, null, 70, 80, minOperator, null);	
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID, true, false, false);	

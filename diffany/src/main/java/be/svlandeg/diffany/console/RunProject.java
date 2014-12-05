@@ -54,15 +54,16 @@ public class RunProject
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
-		File condDir = getRequiredDir(cmd, DiffanyOptions.conShort);
+		File condDir = getRequiredDir(cmd, DiffanyOptions.condShort);
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
 		
 		Set<InputNetwork> inputnetworks = new HashSet<InputNetwork>();
 		inputnetworks.add(refNet);
 		inputnetworks.add(condNet);
 
-		/* it's no problem if this is null, CalculateDiff will then resort to a default option */
-		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);	
+		/* it's no problem if these are null, CalculateDiff will then resort to a default option */
+		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);	
+		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);	
 		
 		int diffID = inferDiffID(cmd, inputnetworks);
 		int consensusID = inferConsID(cmd, diffID);
@@ -78,21 +79,22 @@ public class RunProject
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 
 		// TODO v2.1: allow to change mode pairwise vs. differential
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, diffname, consensusname, diffID, consensusID, cutoff, true, listener);
 
 		/** WRITE NETWORK OUTPUT **/
 		RunOutput output = p.getOutput(runID);
 		boolean writeHeaders = true;
+		File outputDir = getRequiredDir(cmd, DiffanyOptions.outputShort);
 		
 		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
 		{			
-			File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
+			File diffDir = new File (outputDir, "Reference_network");
 			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 		}
 		
 		for (ConsensusNetwork consensusNet : output.getConsensusNetworks())
 		{
-			File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
+			File consensusDir = new File (outputDir, "Consensus_network_" + consensusNet.getID());
 			NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
 		}
 	}
@@ -125,9 +127,9 @@ public class RunProject
 	private int inferConsID(CommandLine cmd, Integer diffID)
 	{
 		int consID = -1;
-		if (cmd.hasOption(DiffanyOptions.consensusID))
+		if (cmd.hasOption(DiffanyOptions.consID))
 		{
-			consID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.consensusID));
+			consID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.consID));
 		}
 		else
 		{

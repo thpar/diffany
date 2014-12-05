@@ -34,9 +34,17 @@ public class CalculateDiff
 	protected boolean default_MIN = true;
 
 	public double default_weight_cutoff = 0.0;
-	protected static String diffnameprefix = "diff_";
-	protected static String consensusnameprefix = "consensus_";
+	
+	protected static final String diffname_default_all = "diff_all_conditions_against_reference";
+	protected static String consensusname_default_all = "consensus_all_input_networks";
+	
+	protected static final String diffname_pairwise_prefix = "diff_";
+	protected static final String consensusname_pairwise_prefix = "consensus_";
 
+	/**
+	 * A run mode determines how differential networks will be calculated.
+	 * Currently, only the edge by edge option is supported, but this may be extended in the future.
+	 */
 	public enum RunMode
 	{
 		EDGEBYEDGE, MACHINELEARNING
@@ -85,12 +93,16 @@ public class CalculateDiff
 	private ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensus_name, int ID, 
 			int supportingCutoff, boolean refRequired, double weightCutoff, Logger log, boolean minOperator, ScheduledTask task) throws IllegalArgumentException
 	{
-		if (networks == null || networks.isEmpty() || eo == null || consensus_name == null)
+		if (networks == null || networks.isEmpty() || eo == null)
 		{
 			String errormsg = "Found null parameter in calculateConsensusNetwork!";
 			errormsg += " (null values: networks=" + (networks == null) + " / eo=" + (eo == null) 
 					+ " / consensus_name="  + (consensus_name == null) + " / networks empty="  + (networks.isEmpty());
 			throw new IllegalArgumentException(errormsg);
+		}
+		if (consensus_name == null)
+		{
+			consensus_name = consensusname_default_all;
 		}
 		if (supportingCutoff <= 0 || supportingCutoff > networks.size())
 		{
@@ -148,7 +160,7 @@ public class CalculateDiff
 		}
 		if (diff_name == null)
 		{
-			diff_name = diffnameprefix + "all_conditions_against_reference";
+			diff_name = diffname_default_all;
 		}
 		ScheduledTask cleaningTask = null;
 		ScheduledTask calculatingTask = null;
@@ -179,7 +191,8 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diff_name the name to give to the differential network. The consensus network will get this name + the prefix 'consensus_'
+	 * @param diff_name the name to give to the differential network (can be null). 
+	 * @param consensus_name the name to give to the differential network (can be null).
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
 	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
 	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the consensus network
@@ -188,7 +201,7 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int consensus_ID, double weight_cutoff, 
+	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, String consensus_name, int diff_ID, int consensus_ID, double weight_cutoff, 
 			Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
 		TreeEdgeOntology eo = p.getEdgeOntology();
@@ -247,12 +260,6 @@ public class CalculateDiff
 		{
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
-			String consensus_name = consensusnameprefix + diff_name;
-			if (diff_name == null && diff != null)
-			{
-				consensus_name = consensusnameprefix + diff.getName();
-			}
-			
 			log.log("Calculating the 1-all consensus network between " + inputs.size() + " input network(s) - settings: support cutoff = " + rc.getSupportCutoff() + ", weight cutoff = " + weight_cutoff + ", reference required = " + rc.getRefRequired() + ", minOperator = " + minOperator);
 			cn = calculateConsensusNetwork(inputs, eo, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator, consensusTask);
 		}
@@ -294,8 +301,7 @@ public class CalculateDiff
 	 */
 	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
-		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, default_weight_cutoff, minOperator, progressListener);
+		calculateOneDifferentialNetwork(p, runID, diffname_default_all, consensusname_default_all, diff_ID, consensus_ID, default_weight_cutoff, minOperator, progressListener);
 	}
 
 	/**
@@ -321,8 +327,7 @@ public class CalculateDiff
 	 */
 	public void calculateOneDifferentialNetwork(Project p, int runID, double weightCutoff, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
-		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, weightCutoff, minOperator, progressListener);
+		calculateOneDifferentialNetwork(p, runID, diffname_default_all, consensusname_default_all, diff_ID, consensus_ID, weightCutoff, minOperator, progressListener);
 	}
 
 	
@@ -431,7 +436,7 @@ public class CalculateDiff
 					diffTask = new ScheduledTask(progressListener, ticksPerTask);
 				}
 				
-				String diff_name = diffnameprefix + c.getName();
+				String diff_name = diffname_pairwise_prefix + c.getName();
 				log.log("Calculating the pairwise differential network between " + r.getName() + " and " + c.getName() + " - settings: weight cutoff = " + weightCutoff);
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
@@ -442,11 +447,11 @@ public class CalculateDiff
 				if (consensusNetwork)
 				{
 					// create a consensus name with consistent alphabetical ordering of the network names
-					String consensus_name = consensusnameprefix + r.getName() + "_" + c.getName();
+					String consensus_name = consensusname_pairwise_prefix + r.getName() + "_" + c.getName();
 					
 					if (c.getName().compareTo(r.getName()) < 0)
 					{
-						consensus_name = consensusnameprefix + c.getName() + "_" + r.getName();
+						consensus_name = consensusname_pairwise_prefix + c.getName() + "_" + r.getName();
 					}
 					
 					Set<Network> inputs = new HashSet<Network>();
@@ -492,10 +497,10 @@ public class CalculateDiff
 					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName() + " - settings: weight cutoff = " + weightCutoff + ", minOperator = " + minOperator);
 					
 					// create a consensus name with consistent alphabetical ordering of the network names
-					String consensus_name = consensusnameprefix + n1.getName() + "_" + n2.getName();
+					String consensus_name = consensusname_pairwise_prefix + n1.getName() + "_" + n2.getName();
 					if (n2.getName().compareTo(n1.getName()) < 0)
 					{
-						consensus_name = consensusnameprefix + n2.getName() + "_" + n1.getName();
+						consensus_name = consensusname_pairwise_prefix + n2.getName() + "_" + n1.getName();
 					}
 					
 					Set<Network> twoInputs = new HashSet<Network>();

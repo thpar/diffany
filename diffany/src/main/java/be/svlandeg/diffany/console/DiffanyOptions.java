@@ -21,15 +21,16 @@ public class DiffanyOptions
 	protected static String logShort = "l";
 	
 	protected static String refShort = "ref";
-	protected static String conShort = "cond";
-	protected static String diffShort = "diff";
-	protected static String consensusShort = "cons";
-
-	protected static String diffnameShort = "diffName";
+	protected static String condShort = "cond";
+	protected static String outputShort = "output";
+	
 	protected static String cutoffShort = "conf";
+
+	protected static String diffNameShort = "diffName";
+	protected static String consNameShort = "consName";
 	
 	protected static String diffID = "diffID";
-	protected static String consensusID = "consID";
+	protected static String consID = "consID";
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -99,36 +100,34 @@ public class DiffanyOptions
 		OptionBuilder.isRequired(true);
 		//OptionBuilder.withValueSeparator('|');
 		OptionBuilder.withDescription("the input directory containing the condition-specific network");
-		allParameters.add(OptionBuilder.create(conShort));
+		allParameters.add(OptionBuilder.create(condShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("differentialDir");
+		OptionBuilder.withLongOpt("outputDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired(true);
-		OptionBuilder.withDescription("the output directory which will contain the generated differential network");
-		allParameters.add(OptionBuilder.create(diffShort));
-		
-		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("consensusDir");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
-		OptionBuilder.withDescription("the output directory which will contain the generated consensus network");
-		allParameters.add(OptionBuilder.create(consensusShort));
+		OptionBuilder.withDescription("the output directory which will contain the generated differential/consensus networks");
+		allParameters.add(OptionBuilder.create(outputShort));
 
 		OptionBuilder.withLongOpt("differentialName");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the name of the generated differential network");
-		allParameters.add(OptionBuilder.create(diffnameShort));
+		allParameters.add(OptionBuilder.create(diffNameShort));
+		
+		OptionBuilder.withLongOpt("consensusName");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the name of the generated consensus network");
+		allParameters.add(OptionBuilder.create(consNameShort));
 		
 		OptionBuilder.withLongOpt("differentialID");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the generated differential network");
+		OptionBuilder.withDescription("the ID of the differential network - it will not be generated if this is a negative value");
 		allParameters.add(OptionBuilder.create(diffID));
 		
 		OptionBuilder.withLongOpt("consensusID");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the generated consensus network");
-		allParameters.add(OptionBuilder.create(consensusID));
+		OptionBuilder.withDescription("the ID of the consensus network - it will not be generated if this is a negative value");
+		allParameters.add(OptionBuilder.create(consID));
 		
 		OptionBuilder.withLongOpt("confidenceMin");
 		OptionBuilder.hasArgs(1);

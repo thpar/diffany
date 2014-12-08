@@ -25,6 +25,7 @@ public class DiffanyOptions
 	protected static String outputShort = "output";
 	
 	protected static String cutoffShort = "conf";
+	protected static String operatorShort = "oper";
 
 	protected static String diffNameShort = "diffName";
 	protected static String consNameShort = "consName";
@@ -133,6 +134,11 @@ public class DiffanyOptions
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges");
 		allParameters.add(OptionBuilder.create(cutoffShort));
+		
+		OptionBuilder.withLongOpt("operator");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the operator used to create consensus edges: min or max");
+		allParameters.add(OptionBuilder.create(operatorShort));
 		
 		return allParameters;
 	}

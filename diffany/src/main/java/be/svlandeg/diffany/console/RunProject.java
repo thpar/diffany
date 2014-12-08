@@ -73,13 +73,23 @@ public class RunProject
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
+		
+		boolean minOperator = true;
+		if (cmd.hasOption(DiffanyOptions.operatorShort))
+		{
+			String operator = cmd.getOptionValue(DiffanyOptions.operatorShort);
+			if (operator != null && operator.trim().equals("max"))
+			{
+				minOperator = false;
+			}
+		}
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 
 		// TODO v2.1: allow to change mode pairwise vs. differential
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, true, listener);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, minOperator, listener);
 
 		/** WRITE NETWORK OUTPUT **/
 		RunOutput output = p.getOutput(runID);

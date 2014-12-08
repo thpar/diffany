@@ -37,7 +37,7 @@ This readme file explains the basics for installation and usage of the Diffany l
 Parameters: String refLocation, String condLocation, String diffLocation, String consensusLocation
 	
 	
-		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
+	/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project("testProject", eo);
 
@@ -56,7 +56,7 @@ Parameters: String refLocation, String condLocation, String diffLocation, String
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, 342, 666, true, null);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, null, null, 342, 666, true, null);
 
 		// In this case, there will be exactly one DifferentialNetwork
 		RunOutput output = p.getOutput(runID);

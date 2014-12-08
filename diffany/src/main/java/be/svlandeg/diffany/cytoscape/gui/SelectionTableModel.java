@@ -108,6 +108,10 @@ public class SelectionTableModel extends AbstractTableModel{
 		switch(columnIndex){
 		case 0:
 			entry.setSelected(check);
+			if (!check && entry.isReference()){
+				//when refernce is deselected, also remove as reference 
+				this.unselectReference(rowIndex);
+			}
 			this.fireTableDataChanged();
 			break;
 		case 2:
@@ -121,6 +125,7 @@ public class SelectionTableModel extends AbstractTableModel{
 			} else {
 				this.unselectReference(rowIndex);
 			}
+			this.fireTableDataChanged();
 			break;
 		}
 	}
@@ -142,8 +147,6 @@ public class SelectionTableModel extends AbstractTableModel{
 		newRefEntry.setReference(true);
 		this.referenceRow = row;
 		
-		this.fireTableDataChanged();
-		
 	}
 	
 	/**
@@ -154,7 +157,6 @@ public class SelectionTableModel extends AbstractTableModel{
 	private void unselectReference(int row) {
 		this.referenceRow = -1;
 		this.networkEntries.get(row).setReference(false);
-		this.fireTableDataChanged();
 	}
 
 	/**

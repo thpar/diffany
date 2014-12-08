@@ -37,7 +37,7 @@ This readme file explains the basics for installation and usage of the Diffany l
 Parameters: String refLocation, String condLocation, String diffLocation, String consensusLocation
 	
 	
-	/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
+		/** DEFINE THE ONTOLOGIES AND THE PROJECT **/
 		TreeEdgeOntology eo = new DefaultEdgeOntology();
 		Project p = new Project("testProject", eo);
 

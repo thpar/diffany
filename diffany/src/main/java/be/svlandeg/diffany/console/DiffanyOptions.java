@@ -24,14 +24,19 @@ public class DiffanyOptions
 	protected static String condShort = "cond";
 	protected static String outputShort = "output";
 	
-	protected static String cutoffShort = "conf";
-	protected static String operatorShort = "oper";
-
 	protected static String diffNameShort = "diffName";
 	protected static String consNameShort = "consName";
 	
 	protected static String diffID = "diffID";
 	protected static String consID = "consID";
+	
+	protected static String cutoffShort = "conf";
+	protected static String operatorShort = "oper";
+	protected static String modeShort = "mode";
+	
+	protected static boolean defaultMinOperator = true;
+	protected static boolean defaultModePairwise = false;
+	
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -132,13 +137,30 @@ public class DiffanyOptions
 		
 		OptionBuilder.withLongOpt("confidenceMin");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges");
+		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges, as an integer or double (default=0.0)");
 		allParameters.add(OptionBuilder.create(cutoffShort));
+		
+		String defaultMinOperatorString = "min";
+		if (! defaultMinOperator)
+		{
+			defaultMinOperatorString = "max";
+		}
 		
 		OptionBuilder.withLongOpt("operator");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the operator used to create consensus edges: min or max");
+		OptionBuilder.withDescription("the operator used to create consensus edges: min or max (default=" + defaultMinOperatorString + ")");
 		allParameters.add(OptionBuilder.create(operatorShort));
+		
+		String defaultModeString = "pairwise";
+		if (! defaultModePairwise)
+		{
+			defaultMinOperatorString = "all";
+		}
+		
+		OptionBuilder.withLongOpt("comparisonMode");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the mode of comparison: pairwise or all (default=" + defaultModeString + ")");
+		allParameters.add(OptionBuilder.create(modeShort));
 		
 		return allParameters;
 	}

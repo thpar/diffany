@@ -28,7 +28,7 @@ import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
  */
 public class RunProject
 {
-
+	
 	/**
 	 * Run a Diffany analysis, depending on the parameters provided on the commandline.
 	 * 
@@ -74,7 +74,7 @@ public class RunProject
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
 		
-		boolean minOperator = true;
+		boolean minOperator = DiffanyOptions.defaultMinOperator;
 		if (cmd.hasOption(DiffanyOptions.operatorShort))
 		{
 			String operator = cmd.getOptionValue(DiffanyOptions.operatorShort);
@@ -82,6 +82,26 @@ public class RunProject
 			{
 				minOperator = false;
 			}
+			if (operator != null && operator.trim().equals("min"))
+			{
+				minOperator = true;
+			}
+			// TODO v.3.0: check inappropriate argument value or silently ignore and use default (as now)?
+		}
+		
+		boolean modePairwise = DiffanyOptions.defaultModePairwise;
+		if (cmd.hasOption(DiffanyOptions.modeShort))
+		{
+			String mode = cmd.getOptionValue(DiffanyOptions.modeShort);
+			if (mode != null && mode.trim().equals("pairwise"))
+			{
+				modePairwise = true;
+			}
+			if (mode != null && mode.trim().equals("all"))
+			{
+				modePairwise = false;
+			}
+			// TODO v.3.0: check inappropriate argument value or silently ignore and use default (as now)?
 		}
 
 		/** THE ACTUAL ALGORITHM **/
@@ -89,7 +109,14 @@ public class RunProject
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 
 		// TODO v2.1: allow to change mode pairwise vs. differential
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, minOperator, listener);
+		if (modePairwise)
+		{
+			// TODO
+		}
+		else
+		{
+			diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, minOperator, listener);
+		}
 
 		/** WRITE NETWORK OUTPUT **/
 		RunOutput output = p.getOutput(runID);

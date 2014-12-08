@@ -112,6 +112,7 @@ public class RunProject
 		if (modePairwise)
 		{
 			// TODO
+			// diffAlgo.calculateAllPairwiseDifferentialNetworks(p, runID, cutoff, diffNetwork, consensusNetwork, firstID, minOperator, listener);
 		}
 		else
 		{

@@ -43,11 +43,12 @@ Parameters: String refLocation, String condLocation, String diffLocation, String
 
 		/** READ THE INPUT NETWORKS **/
 		boolean skipHeader = true;
+		boolean throwInvalidDirException = true;
 		File refDir = new File(refLocation);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader, throwInvalidDirException);
 
 		File condDir = new File(condLocation);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader, throwInvalidDirException);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;

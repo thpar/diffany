@@ -6,14 +6,14 @@
  - The cli jar is intented for generating text-readable differential networks
 
 ## Input data ####
- - The reference network and condition-dependent network both need to be defined in a separate directory with .tab files:
-   + **network.tab**: contains a line "Name \t XXX" with XXX the name of the network, and a similar line for the Type: ReferenceNetwork of ConditionNetwork
-   + **nodes.tab**: contains one node per line, specifying the node name
-   + **edges.tab**: contains one edge per line, in a tab-delimited format: *source\_name* \t *target\_name* \t *interaction\_type* \t *symmetrical/directed* \t *weight* \t *negated/not negated*
-   + **conditions.tab**: only needed for the ConditionNetwork. Specifies one condition per line, consisting of its description and a list of tab-delimited ontology terms
+ - Within one root input directory, the reference network and condition-dependent network(s) need to be defined in separate subdirectories each, containing these .txt files:
+   + **network.txt**: contains the ID, name and type of the network, as well as its pre-defined node attributes
+   + **nodes.txt**: contains one node per line, specifying the node ID and symbol, as well as the values for the node attributes
+   + **edges.txt**: contains one edge per line, in a tab-delimited format: *source\_ID* \t *target\_ID* \t *interaction\_type* \t *symmetrical/directed* \t *weight* \t *negated/affirmative*
+   + **conditions.txt**: only needed for the ConditionNetwork. Specifies one condition per line, consisting of its description and an (optional) list of tab-delimited ontology terms
    
 ## Output data ####
- - In a similar format as described above, the differential and the overlapping networks will each be written to a separate output directory with the same .tab files.
+ - In a similar format as described above, the differential and the overlapping networks will each be written to a separate output directory with the same .txt files.
 
 ## Usage parameters ####
  - Run the jar with **-v** or **--version** (only!) to obtain the version number of the Diffany tool

@@ -186,14 +186,14 @@ public class NetworkIO
 	 */
 	public static void writeNetworkToDir(Network network, File dir, boolean writeHeaders) throws IOException
 	{
-		File edgeFile = new File(dir.getAbsolutePath() + "/" + default_edge_file);
-		File nodeFile = new File(dir.getAbsolutePath() + "/" + default_node_file);
-		File definitionFile = new File(dir.getAbsolutePath() + "/" + default_definition_file);
+		File edgeFile = new File(dir.getAbsolutePath(), default_edge_file);
+		File nodeFile = new File(dir.getAbsolutePath(), default_node_file);
+		File definitionFile = new File(dir.getAbsolutePath(), default_definition_file);
 		writeNetworkToFiles(network, edgeFile, nodeFile, definitionFile, writeHeaders);
 
 		if (network instanceof ConditionNetwork)
 		{
-			File default_conditions_File = new File(dir.getAbsolutePath() + "/" + default_conditions_file);
+			File default_conditions_File = new File(dir.getAbsolutePath(), default_conditions_file);
 			writeConditionsToFiles((ConditionNetwork) network, default_conditions_File);
 		}
 	}
@@ -209,10 +209,10 @@ public class NetworkIO
 	 */
 	private static Network readInputNetworkFromResource(String dir, boolean skipHeader) throws IOException
 	{
-		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_edge_file);
-		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_node_file);
-		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_definition_file);
-		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);
+		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_edge_file);
+		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_node_file);
+		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_definition_file);
+		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_conditions_file);
 		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
 		edgeStream.close();
 		nodeStream.close();
@@ -223,25 +223,62 @@ public class NetworkIO
 		}
 		return inputNetwork;
 	}
+	
+	/**
+	 * Check whether this directory contains the necessary files to read a network from
+	 * 
+	 * @param dir the output dir in which the tab files were previously written
+	 * @param throwError whether or not to throw an error if the directory is invalid
+	 * @return whether or not this directory contains the correct files
+	 * 
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
+	 */
+	public static boolean isValidNetworkDir(File dir, boolean throwError)
+	{
+		boolean valid = true;
+		String path = dir.getAbsolutePath();
+		if (! new File(path, default_edge_file).exists())
+		{
+			valid = false;
+		}
+		if (! new File(path, default_node_file).exists())
+		{
+			valid = false;
+		}
+		if (! new File(path, default_definition_file).exists())
+		{
+			valid = false;
+		}
+		if (! valid && throwError)
+		{
+			String msg = "Could not find the necessary .tab files at " + path;
+			throw new IllegalArgumentException(msg);
+		}
+		return valid;
+	}
 
 	/**
 	 * Read a network from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a Network representation of the nodes and edges in the files
 	 * 
 	 * @throws IOException when an error occurs during reading
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
 	 */
 	private static Network readInputNetworkFromDir(File dir, boolean skipHeader) throws IOException
 	{
-		InputStream edgeStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_edge_file));
-		InputStream nodeStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_node_file));
-		InputStream definitionStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_definition_file));
+		// throw an error if the directory is invalid
+		isValidNetworkDir(dir, true);
+		
+		InputStream edgeStream = new FileInputStream(new File(dir.getAbsolutePath(), default_edge_file));
+		InputStream nodeStream = new FileInputStream(new File(dir.getAbsolutePath(), default_node_file));
+		InputStream definitionStream = new FileInputStream(new File(dir.getAbsolutePath(), default_definition_file));
 		InputStream conditionsStream = null;
 		try
 		{
-			conditionsStream = new FileInputStream(new File(dir.getAbsolutePath() + "/" + default_conditions_file));
+			conditionsStream = new FileInputStream(new File(dir.getAbsolutePath(), default_conditions_file));
 		}
 		catch (Exception e)
 		{
@@ -259,9 +296,11 @@ public class NetworkIO
 		return inputNetwork;
 	}
 
+	/**
+	 * Read an input network from the appropriate input streams.
+	 */
 	private static Network readInputNetworkFromStreams(InputStream edgeStream, InputStream nodeStream, InputStream definitionStream, InputStream conditionsStream, boolean skipHeader) throws IOException
 	{
-
 		Map<String, String> definitionMap = cacheDefinitionStream(definitionStream);
 		int ID = readIDFromMap(definitionMap);
 		String name = readNameFromMap(definitionMap);
@@ -299,7 +338,7 @@ public class NetworkIO
 	/**
 	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a ReferenceNetwork representation of the nodes and edges in the files
 	 * 
@@ -313,11 +352,12 @@ public class NetworkIO
 	/**
 	 * Read a {@link ReferenceNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a ReferenceNetwork representation of the nodes and edges in the files
 	 * 
 	 * @throws IOException when an error occurs during reading
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
 	 */
 	public static ReferenceNetwork readReferenceNetworkFromDir(File dir, boolean skipHeader) throws IOException
 	{
@@ -327,7 +367,7 @@ public class NetworkIO
 	/**
 	 * Read a {@link ConditionNetwork} from a resource: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a ConditionNetwork representation of the nodes and edges in the files
 	 * 
@@ -341,11 +381,12 @@ public class NetworkIO
 	/**
 	 * Read a {@link ConditionNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a ConditionNetwork representation of the nodes and edges in the files
 	 * 
 	 * @throws IOException when an error occurs during reading
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
 	 */
 	public static ConditionNetwork readConditionNetworkFromDir(File dir, boolean skipHeader) throws IOException
 	{
@@ -355,11 +396,12 @@ public class NetworkIO
 	/**
 	 * Read an {@link InputNetwork} from a directory: all edges from one File (edges.tab), and all nodes from another (nodes.tab).
 	 * 
-	 * @param dir the output dir in which the tab files were previously written
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return an InputNetwork representation of the nodes and edges in the files
 	 * 
 	 * @throws IOException when an error occurs during reading
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
 	 */
 	public static InputNetwork readGenericInputNetworkFromDir(File dir, boolean skipHeader) throws IOException
 	{
@@ -369,11 +411,12 @@ public class NetworkIO
 	/**
 	 * Read a set of {@link InputNetwork} from a directory, one network per subdirectory.
 	 * 
-	 * @param dir the output dir in which the subdirectories contain previously written tab files defining the different networks
+	 * @param dir the directory containing the tab files with the network data
 	 * @param skipHeader whether or not the nodes and edges file contain a header
 	 * @return a set of InputNetwork representations of the nodes and edges in the files
 	 * 
 	 * @throws IOException when an error occurs during reading
+	 * @throws IllegalArgumentException when the directory does not contain the correct .tab files
 	 */
 	public static Set<InputNetwork> readGenericInputNetworksFromSubdirs(File dir, boolean skipHeader) throws IOException
 	{

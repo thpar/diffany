@@ -53,16 +53,40 @@ public class RunProject
 			listener = new StandardProgressListener(true);
 		}
 
-		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
-
-		File condDir = getRequiredDir(cmd, DiffanyOptions.condShort);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
-
-		Set<InputNetwork> inputnetworks = new HashSet<InputNetwork>();
-		inputnetworks.add(refNet);
-		inputnetworks.add(condNet);
-
+		File inputDir = getRequiredDir(cmd, DiffanyOptions.inputShort);
+		ReferenceNetwork refNet = null;
+		Set<ConditionNetwork> conditionNets = new HashSet<ConditionNetwork>();
+		 
+		Set<InputNetwork> inputnetworks = NetworkIO.readGenericInputNetworksFromSubdirs(inputDir, skipHeader);
+		
+		if (inputnetworks == null || inputnetworks.size() < 2)
+		{
+			String msg = "Could not read all required input networks from " + inputDir;
+			throw new IllegalArgumentException(msg);
+		}
+		
+		for (InputNetwork net : inputnetworks)
+		{
+			if (net instanceof ReferenceNetwork)
+			{
+				if (refNet != null)
+				{
+					String msg = "Found more than 1 reference network at " + inputDir;
+					throw new IllegalArgumentException(msg);
+				}
+				refNet = (ReferenceNetwork) net;
+			}
+			else if (net instanceof ConditionNetwork)
+			{
+				conditionNets.add((ConditionNetwork) net);
+			}
+			else
+			{
+				String msg = "Found a strange input network: " + net;
+				throw new IllegalArgumentException(msg);
+			}
+		}
+		
 		/* it's no problem if these are null, CalculateDiff will then resort to a default option */
 		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);
 		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);
@@ -79,6 +103,12 @@ public class RunProject
 			{
 				runDiff = false;
 			}
+		}
+		
+		if (runDiff && refNet == null)
+		{
+			String msg = "Could not read the reference network at " + inputDir;
+			throw new IllegalArgumentException(msg);
 		}
 
 		boolean runCons = DiffanyOptions.defaultRunCons;
@@ -133,7 +163,7 @@ public class RunProject
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
-		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
+		Integer runID = p.addRunConfiguration(refNet, conditionNets, cleanInput, listener);
 
 		if (modePairwise)
 		{
@@ -205,12 +235,12 @@ public class RunProject
 	 */
 	private File getRequiredDir(CommandLine cmd, String key) throws IllegalArgumentException
 	{
-		String refDir = cmd.getOptionValue(key);
-		if (refDir == null)
+		String inputDir = cmd.getOptionValue(key);
+		if (inputDir == null)
 		{
-			throw new IllegalArgumentException("Fatal error: please provide a valid " + DiffanyOptions.refShort + " directory pointer!");
+			throw new IllegalArgumentException("Fatal error: please provide a valid directory pointer for " + key);
 		}
-		return new File(refDir);
+		return new File(inputDir);
 	}
 
 }

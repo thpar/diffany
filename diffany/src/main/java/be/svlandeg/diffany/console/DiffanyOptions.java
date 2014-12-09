@@ -23,8 +23,7 @@ public class DiffanyOptions
 	protected static String operatorShort = "o";
 	protected static String modeShort = "m";
 	
-	protected static String refShort = "ref";
-	protected static String condShort = "cond";
+	protected static String inputShort = "input";
 	protected static String outputShort = "output";
 	
 	protected static String diffNameShort = "diffName";
@@ -94,27 +93,17 @@ public class DiffanyOptions
 	{
 		Set<Option> allParameters = new HashSet<Option>();
 		
-		//allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
-		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("referenceDir");
+		OptionBuilder.withLongOpt("inputDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired();
-		OptionBuilder.withDescription("the input directory containing the reference network");
-		allParameters.add(OptionBuilder.create(refShort));
-		
-		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("conditionsDir");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
-		//OptionBuilder.withValueSeparator('|');
-		OptionBuilder.withDescription("the input directory containing the condition-specific network");
-		allParameters.add(OptionBuilder.create(condShort));
+		OptionBuilder.withDescription("the input directory containing the reference network and the condition-specific network(s)");
+		allParameters.add(OptionBuilder.create(inputShort));
 		
 		OptionBuilder.withArgName("dir");
 		OptionBuilder.withLongOpt("outputDir");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
+		OptionBuilder.isRequired();
 		OptionBuilder.withDescription("the output directory which will contain the generated differential/consensus networks");
 		allParameters.add(OptionBuilder.create(outputShort));
 
@@ -138,7 +127,7 @@ public class DiffanyOptions
 		OptionBuilder.withLongOpt("consensusNetworks");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("whether or not to calculate consensus networks: yes or no (default=" + defaultRunConsString + ")");
-		allParameters.add(OptionBuilder.create(nextID));
+		allParameters.add(OptionBuilder.create(runCons));
 		
 		OptionBuilder.withLongOpt("outputID");
 		OptionBuilder.hasArgs(1);

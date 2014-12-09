@@ -62,20 +62,6 @@
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
-			<!--  Add licenses -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.7</version>
-					<executions>
-						<execution>
-							<id>download-licenses</id>
-							<goals>
-								<goal>download-licenses</goal>
-							</goals>	
-						</execution>
-        			</executions>
-			</plugin>
 			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

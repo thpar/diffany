@@ -21,12 +21,10 @@
  - Run the jar with **-v** or **--version** (only!) to obtain the version number of the Diffany tool
  - Run the jar with **-h** or **--help** (only!) to obtain the help file with more detailed instructions:
  
- - usage: java -jar Diffany_CL_1.0.0.jar [-c \<arg\>] [-consName \<arg\>] [-consNet \<arg\>] [-diffName \<arg\>] [-diffNet \<arg\>] [-h \<arg\>] -i \<dir\> [-ID \<arg\>] [-l] [-m \<arg\>] -o \<dir\> [-oper \<arg\>]
+ - usage: java -jar Diffany_CL_1.0.0.jar [-c \<arg\>] [-cons \<arg\>] [-diff \<arg\>] [-h \<arg\>] -i \<dir\> [-ID \<arg\>] [-l] [-m \<arg\>] -o \<dir\> [-oper \<arg\>]
  + **-c**,--confidence \<arg\>                   the minimum confidence threshold for output edges, as an integer or double (default=0.0)
- + -**consName**,--consensusName \<arg\>         the name of the generated consensus network
- + -**consNet**,--consensusNetworks \<arg\>      whether or not to calculate consensus networks: yes or no (default=yes)
- + -**diffName**,--differentialName \<arg\>      the name of the generated differential network
- + -**diffNet**,--differentialNetworks \<arg\>   whether or not to calculate differential networks: yes or no (default=yes)
+ + -**cons**,--consensus \<arg\>      whether or not to calculate consensus networks: yes or no (default=yes)
+ + -**diff**,--differential \<arg\>   whether or not to calculate differential networks: yes or no (default=yes)
  + -**h**,--skipHeader \<arg\>                   whether or not to skip the first line (header) in the network .txt files (default=yes)
  + -**i**,--inputDir \<dir\>                     the input directory containing the reference and condition-specific networks
  + -**ID**,--outputID \<arg\>                    the first ID that will be used for the generated networks

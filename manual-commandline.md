@@ -18,6 +18,22 @@
 ## Usage parameters ####
  - Run the jar with **-v** or **--version** (only!) to obtain the version number of the Diffany tool
  - Run the jar with **-h** or **--help** (only!) to obtain this help file:
+ 
+ - usage: java -jar Diffany_CL_1.0.0.jar [-c \<arg\>] [-consName \<arg\>] [-consNet \<arg\>] [-diffName \<arg\>] [-diffNet \<arg\>] [-h \<arg\>] -i \<dir\> [-ID \<arg\>] [-l] [-m \<arg\>] -o \<dir\> [-oper \<arg\>]
+ + **-c**,--confidence \<arg\>                   the minimum confidence threshold for output edges, as an integer or double (default=0.0)
+ + -**consName**,--consensusName \<arg\>         the name of the generated consensus network
+ + -**consNet**,--consensusNetworks \<arg\>      whether or not to calculate consensus networks: yes or no (default=yes)
+ + -**diffName**,--differentialName \<arg\>      the name of the generated differential network
+ + -**diffNet**,--differentialNetworks \<arg\>   whether or not to calculate differential networks: yes or no (default=yes)
+ + -**h**,--skipHeader \<arg\>                   whether or not to skip the first line (header) in the network .txt files (default=yes)
+ + -**i**,--inputDir \<dir\>                     the input directory containing the reference and condition-specific networks
+ + -**ID**,--outputID \<arg\>                    the first ID that will be used for the generated networks
+ + -**l**,--log                                display a progress/log file during the run
+ + -**m**,--mode \<arg\>                         the mode of comparison: pairwise or all (default=all)
+ + -**o**,--outputDir \<dir\>                    the output directory which will contain the generated differential/consensus networks
+ + -**oper**,--operator \<arg\>                  the operator used to create consensus edges: min or max (default=min)
+
+ 
 
  - Usage: java -jar Diffany_0.0.1.jar -cond \<dir\> [-conf <arg>] -diff \<dir\> [-l] [-name <arg>] -overlap \<dir\> -ref \<dir\>
    + **-cond**,--conditionsDirectory \<dir\> : the input directory containing the condition-specific network

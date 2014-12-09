@@ -87,10 +87,6 @@ public class RunProject
 				throw new IllegalArgumentException(msg);
 			}
 		}
-		
-		/* it's no problem if these are null, CalculateDiff will then resort to a default option */
-		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);
-		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);
 
 		boolean runDiff = readBooleanValue(cmd, DiffanyOptions.runDiff, DiffanyOptions.defaultRunDiff, "yes", "no");
 		boolean runCons = readBooleanValue(cmd, DiffanyOptions.runCons, DiffanyOptions.defaultRunCons, "yes", "no");
@@ -133,7 +129,8 @@ public class RunProject
 				consensusID = nextID++;
 			}
 
-			diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, minOperator, listener);
+			// default names for the output networks will be generated
+			diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, null, null, diffID, consensusID, minOperator, listener);
 		}
 
 		/** WRITE NETWORK OUTPUT **/

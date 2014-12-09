@@ -28,11 +28,8 @@ public class DiffanyOptions
 	protected static String inputShort = "i";
 	protected static String outputShort = "o";
 	
-	protected static String diffNameShort = "diffName";
-	protected static String consNameShort = "consName";
-	
-	protected static String runDiff = "diffNet";
-	protected static String runCons = "consNet";
+	protected static String runDiff = "diff";
+	protected static String runCons = "cons";
 	protected static String nextID = "ID";
 	
 	protected static boolean defaultRunDiff = true;
@@ -110,25 +107,15 @@ public class DiffanyOptions
 		OptionBuilder.isRequired();
 		OptionBuilder.withDescription("the output directory which will contain the generated differential/consensus networks");
 		allParameters.add(OptionBuilder.create(outputShort));
-
-		OptionBuilder.withLongOpt("differentialName");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the name of the generated differential network");
-		allParameters.add(OptionBuilder.create(diffNameShort));
-		
-		OptionBuilder.withLongOpt("consensusName");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the name of the generated consensus network");
-		allParameters.add(OptionBuilder.create(consNameShort));
 		
 		String defaultRunDiffString = defaultRunDiff? "yes" : "no";
-		OptionBuilder.withLongOpt("differentialNetworks");
+		OptionBuilder.withLongOpt("differential");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("whether or not to calculate differential networks: yes or no (default=" + defaultRunDiffString + ")");
 		allParameters.add(OptionBuilder.create(runDiff));
 		
 		String defaultRunConsString = defaultRunCons? "yes" : "no"; ;
-		OptionBuilder.withLongOpt("consensusNetworks");
+		OptionBuilder.withLongOpt("consensus");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("whether or not to calculate consensus networks: yes or no (default=" + defaultRunConsString + ")");
 		allParameters.add(OptionBuilder.create(runCons));

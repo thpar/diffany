@@ -16,8 +16,10 @@
  - In a similar format as described above, the differential and the overlapping networks will each be written to a separate output directory with the same .txt files.
 
 ## Usage parameters ####
+ - Basic functionality: java -jar Diffany_CL_1.0.0.jar -i \<inputdir\> -o \<outputdir\>
+
  - Run the jar with **-v** or **--version** (only!) to obtain the version number of the Diffany tool
- - Run the jar with **-h** or **--help** (only!) to obtain this help file:
+ - Run the jar with **-h** or **--help** (only!) to obtain the help file with more detailed instructions:
  
  - usage: java -jar Diffany_CL_1.0.0.jar [-c \<arg\>] [-consName \<arg\>] [-consNet \<arg\>] [-diffName \<arg\>] [-diffNet \<arg\>] [-h \<arg\>] -i \<dir\> [-ID \<arg\>] [-l] [-m \<arg\>] -o \<dir\> [-oper \<arg\>]
  + **-c**,--confidence \<arg\>                   the minimum confidence threshold for output edges, as an integer or double (default=0.0)

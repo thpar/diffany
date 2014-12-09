@@ -17,8 +17,11 @@ public class DiffanyOptions
 	
 	private Options options;
 	
-	//protected static String modeShort = "m";
 	protected static String logShort = "l";
+	
+	protected static String cutoffShort = "c";
+	protected static String operatorShort = "o";
+	protected static String modeShort = "m";
 	
 	protected static String refShort = "ref";
 	protected static String condShort = "cond";
@@ -27,12 +30,12 @@ public class DiffanyOptions
 	protected static String diffNameShort = "diffName";
 	protected static String consNameShort = "consName";
 	
-	protected static String diffID = "diffID";
-	protected static String consID = "consID";
+	protected static String runDiff = "diffNet";
+	protected static String runCons = "consNet";
+	protected static String nextID = "ID";
 	
-	protected static String cutoffShort = "conf";
-	protected static String operatorShort = "oper";
-	protected static String modeShort = "mode";
+	protected static boolean defaultRunDiff = true;
+	protected static boolean defaultRunCons = true;
 	
 	protected static boolean defaultMinOperator = true;
 	protected static boolean defaultModePairwise = false;
@@ -125,39 +128,36 @@ public class DiffanyOptions
 		OptionBuilder.withDescription("the name of the generated consensus network");
 		allParameters.add(OptionBuilder.create(consNameShort));
 		
-		OptionBuilder.withLongOpt("differentialID");
+		String defaultRunDiffString = defaultRunDiff? "yes" : "no";
+		OptionBuilder.withLongOpt("differentialNetworks");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the differential network - it will not be generated if this is a negative value");
-		allParameters.add(OptionBuilder.create(diffID));
+		OptionBuilder.withDescription("whether or not to calculate differential networks: yes or no (default=" + defaultRunDiffString + ")");
+		allParameters.add(OptionBuilder.create(runDiff));
 		
-		OptionBuilder.withLongOpt("consensusID");
+		String defaultRunConsString = defaultRunCons? "yes" : "no"; ;
+		OptionBuilder.withLongOpt("consensusNetworks");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the consensus network - it will not be generated if this is a negative value");
-		allParameters.add(OptionBuilder.create(consID));
+		OptionBuilder.withDescription("whether or not to calculate consensus networks: yes or no (default=" + defaultRunConsString + ")");
+		allParameters.add(OptionBuilder.create(nextID));
 		
-		OptionBuilder.withLongOpt("confidenceMin");
+		OptionBuilder.withLongOpt("outputID");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the first ID that will be used for the generated networks");
+		allParameters.add(OptionBuilder.create(nextID));
+		
+		OptionBuilder.withLongOpt("confidence");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges, as an integer or double (default=0.0)");
 		allParameters.add(OptionBuilder.create(cutoffShort));
 		
-		String defaultMinOperatorString = "min";
-		if (! defaultMinOperator)
-		{
-			defaultMinOperatorString = "max";
-		}
-		
+		String defaultMinOperatorString = defaultMinOperator? "min" : "max";
 		OptionBuilder.withLongOpt("operator");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the operator used to create consensus edges: min or max (default=" + defaultMinOperatorString + ")");
 		allParameters.add(OptionBuilder.create(operatorShort));
 		
-		String defaultModeString = "pairwise";
-		if (! defaultModePairwise)
-		{
-			defaultMinOperatorString = "all";
-		}
-		
-		OptionBuilder.withLongOpt("comparisonMode");
+		String defaultModeString = defaultModePairwise? "pairwise" : "all";
+		OptionBuilder.withLongOpt("mode");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the mode of comparison: pairwise or all (default=" + defaultModeString + ")");
 		allParameters.add(OptionBuilder.create(modeShort));

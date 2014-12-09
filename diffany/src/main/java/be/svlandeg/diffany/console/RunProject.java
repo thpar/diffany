@@ -28,7 +28,7 @@ import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
  */
 public class RunProject
 {
-	
+
 	/**
 	 * Run a Diffany analysis, depending on the parameters provided on the commandline.
 	 * 
@@ -39,6 +39,8 @@ public class RunProject
 	 */
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
+		// TODO v.3.0: check inappropriate argument values or silently ignore and use default (as now)?
+
 		CalculateDiff diffAlgo = new CalculateDiff();
 		ProgressListener listener = null;
 
@@ -50,30 +52,57 @@ public class RunProject
 		{
 			listener = new StandardProgressListener(true);
 		}
-		
+
 		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
 		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
 		File condDir = getRequiredDir(cmd, DiffanyOptions.condShort);
 		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
-		
+
 		Set<InputNetwork> inputnetworks = new HashSet<InputNetwork>();
 		inputnetworks.add(refNet);
 		inputnetworks.add(condNet);
 
 		/* it's no problem if these are null, CalculateDiff will then resort to a default option */
-		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);	
-		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);	
-		
-		int diffID = inferDiffID(cmd, inputnetworks);
-		int consensusID = inferConsID(cmd, diffID);
+		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);
+		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);
+
+		boolean runDiff = DiffanyOptions.defaultRunDiff;
+		if (cmd.hasOption(DiffanyOptions.runDiff))
+		{
+			String value = cmd.getOptionValue(DiffanyOptions.runDiff);
+			if (value != null && value.trim().equals("yes"))
+			{
+				runDiff = true;
+			}
+			if (value != null && value.trim().equals("no"))
+			{
+				runDiff = false;
+			}
+		}
+
+		boolean runCons = DiffanyOptions.defaultRunCons;
+		if (cmd.hasOption(DiffanyOptions.runCons))
+		{
+			String value = cmd.getOptionValue(DiffanyOptions.runCons);
+			if (value != null && value.trim().equals("yes"))
+			{
+				runCons = true;
+			}
+			if (value != null && value.trim().equals("no"))
+			{
+				runCons = false;
+			}
+		}
+
+		int nextID = inferNextID(cmd, inputnetworks);
 
 		Double cutoff = null;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
-		
+
 		boolean minOperator = DiffanyOptions.defaultMinOperator;
 		if (cmd.hasOption(DiffanyOptions.operatorShort))
 		{
@@ -86,9 +115,8 @@ public class RunProject
 			{
 				minOperator = true;
 			}
-			// TODO v.3.0: check inappropriate argument value or silently ignore and use default (as now)?
 		}
-		
+
 		boolean modePairwise = DiffanyOptions.defaultModePairwise;
 		if (cmd.hasOption(DiffanyOptions.modeShort))
 		{
@@ -101,21 +129,29 @@ public class RunProject
 			{
 				modePairwise = false;
 			}
-			// TODO v.3.0: check inappropriate argument value or silently ignore and use default (as now)?
 		}
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
 		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
 
-		// TODO v2.1: allow to change mode pairwise vs. differential
 		if (modePairwise)
 		{
-			// TODO
-			// diffAlgo.calculateAllPairwiseDifferentialNetworks(p, runID, cutoff, diffNetwork, consensusNetwork, firstID, minOperator, listener);
+			diffAlgo.calculateAllPairwiseDifferentialNetworks(p, runID, cutoff, runDiff, runCons, nextID, minOperator, listener);
 		}
 		else
 		{
+			int diffID = -1;
+			if (runDiff)
+			{
+				diffID = nextID++;
+			}
+			int consensusID = -1;
+			if (runCons)
+			{
+				consensusID = nextID++;
+			}
+
 			diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, diffname, consensusname, diffID, consensusID, minOperator, listener);
 		}
 
@@ -123,59 +159,41 @@ public class RunProject
 		RunOutput output = p.getOutput(runID);
 		boolean writeHeaders = true;
 		File outputDir = getRequiredDir(cmd, DiffanyOptions.outputShort);
-		
+
 		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
-		{			
-			File diffDir = new File (outputDir, "Reference_network_" + diffNet.getID());
+		{
+			File diffDir = new File(outputDir, "Reference_network_" + diffNet.getID());
 			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 		}
-		
+
 		for (ConsensusNetwork consensusNet : output.getConsensusNetworks())
 		{
-			File consensusDir = new File (outputDir, "Consensus_network_" + consensusNet.getID());
+			File consensusDir = new File(outputDir, "Consensus_network_" + consensusNet.getID());
 			NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
 		}
 	}
 
 	/**
-	 * Parse the required ID for the differential network from the optional arguments,
+	 * Parse the required first ID for the output network from the optional arguments,
 	 * or determine it from the given input networks.
 	 */
-	private int inferDiffID(CommandLine cmd, Set<InputNetwork> inputNetworks)
+	private int inferNextID(CommandLine cmd, Set<InputNetwork> inputNetworks)
 	{
-		int diffID = -1;
-		if (cmd.hasOption(DiffanyOptions.diffID))
+		int nextID = -1;
+		if (cmd.hasOption(DiffanyOptions.nextID))
 		{
-			diffID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.diffID));
+			nextID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.nextID));
 		}
 		else
 		{
 			for (InputNetwork input : inputNetworks)
 			{
-				diffID = Math.max(diffID, input.getID()+1);
+				nextID = Math.max(nextID, input.getID() + 1);
 			}
 		}
-		return diffID;
+		return nextID;
 	}
-	
-	/**
-	 * Parse the required ID for the consensus network from the optional arguments,
-	 * or determine it from the given ID for the differential network.
-	 */
-	private int inferConsID(CommandLine cmd, Integer diffID)
-	{
-		int consID = -1;
-		if (cmd.hasOption(DiffanyOptions.consID))
-		{
-			consID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.consID));
-		}
-		else
-		{
-			consID = diffID+1;
-		}
-		return consID;
-	}
-	
+
 	/**
 	 * Retrieve a File object representing a directory given by a value on the command line
 	 * 

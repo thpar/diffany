@@ -14,7 +14,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class OsmoticUseCase extends GenericExample{
 
 
-	private final String JAR_DIR = "/data/osmotic/";
+	private final String JAR_DIR = "/data/examples/osmotic_study/input/";
 	
 	public OsmoticUseCase() 
 	{

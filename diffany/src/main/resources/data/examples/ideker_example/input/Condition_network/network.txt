@@ -1,0 +1,4 @@
+ID	2
+Name	Condition Network Ideker2011
+Type	ConditionNetwork
+Attributes	

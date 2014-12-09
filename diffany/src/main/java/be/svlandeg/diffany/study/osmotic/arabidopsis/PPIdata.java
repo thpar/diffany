@@ -48,7 +48,7 @@ public class PPIdata
 	{
 		try
 		{
-			return Thread.currentThread().getContextClassLoader().getResource("data/" + cornetPPIName).toURI();
+			return Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/" + cornetPPIName).toURI();
 		}
 		catch (URISyntaxException e)
 		{

@@ -48,7 +48,7 @@ public class RegData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + atRegName).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/" + atRegName).toURI();
         }
         catch (URISyntaxException e)
         {

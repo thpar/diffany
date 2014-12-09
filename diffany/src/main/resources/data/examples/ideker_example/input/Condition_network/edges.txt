@@ -1,0 +1,5 @@
+source	target	interaction	symmetry	weight	negation
+C	A	negative genetic interaction	symmetrical	1.2	affirmative
+D	A	negative genetic interaction	symmetrical	0.7	affirmative
+F	A	negative genetic interaction	symmetrical	1.0	affirmative
+B	A	positive genetic interaction	symmetrical	0.4	affirmative

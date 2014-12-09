@@ -1,0 +1,6 @@
+ID	official_symbol
+A	A
+B	B
+C	C
+D	D
+F	F

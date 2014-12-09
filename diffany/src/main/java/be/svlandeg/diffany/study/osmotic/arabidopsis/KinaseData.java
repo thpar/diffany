@@ -57,7 +57,7 @@ public class KinaseData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + phosphatName).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/" + phosphatName).toURI();
         }
         catch (URISyntaxException e)
         {
@@ -74,7 +74,7 @@ public class KinaseData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseFunctionName).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/" + kinaseFunctionName).toURI();
         }
         catch (URISyntaxException e)
         {
@@ -91,7 +91,7 @@ public class KinaseData
 	{
 		try
         {
-	        return Thread.currentThread().getContextClassLoader().getResource("data/" + kinaseInteractionName).toURI();
+	        return Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/" + kinaseInteractionName).toURI();
         }
         catch (URISyntaxException e)
         {

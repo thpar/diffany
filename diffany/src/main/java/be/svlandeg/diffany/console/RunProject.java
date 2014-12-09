@@ -58,7 +58,7 @@ public class RunProject
 		ReferenceNetwork refNet = null;
 		Set<ConditionNetwork> conditionNets = new HashSet<ConditionNetwork>();
 		 
-		Set<InputNetwork> inputnetworks = NetworkIO.readGenericInputNetworksFromSubdirs(inputDir, skipHeader);
+		Set<InputNetwork> inputnetworks = NetworkIO.readGenericInputNetworksFromSubdirs(inputDir, skipHeader, false);
 		
 		if (inputnetworks == null || inputnetworks.size() < 2)
 		{
@@ -143,7 +143,7 @@ public class RunProject
 
 		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
 		{
-			File diffDir = new File(outputDir, "Reference_network_" + diffNet.getID());
+			File diffDir = new File(outputDir, "Differential_network_" + diffNet.getID());
 			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
 		}
 

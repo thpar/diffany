@@ -82,7 +82,7 @@ public class EdgeIO
 	
 	/**
 	 * Write the header line, i.e. a tab-delimited summary of the information that is printed with writeToTab.
-	 * @return a tab-delimited string respresentation of edge data, useful as header in .tab files
+	 * @return a tab-delimited string respresentation of edge data, useful as header in text files
 	 */
 	public static String getHeader()
     {

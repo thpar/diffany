@@ -188,7 +188,7 @@ public class RunAnalysis
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
 
-			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
+			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders, true);
 			for (InputNetwork net : readNetworks)
 			{
 				if (net instanceof ReferenceNetwork)

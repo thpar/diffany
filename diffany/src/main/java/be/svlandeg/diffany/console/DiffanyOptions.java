@@ -101,7 +101,7 @@ public class DiffanyOptions
 		OptionBuilder.withLongOpt("inputDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired();
-		OptionBuilder.withDescription("the input directory containing the reference network and the condition-specific network(s)");
+		OptionBuilder.withDescription("the input directory containing the reference and condition-specific networks");
 		allParameters.add(OptionBuilder.create(inputShort));
 		
 		OptionBuilder.withArgName("dir");
@@ -140,7 +140,7 @@ public class DiffanyOptions
 		
 		OptionBuilder.withLongOpt("confidence");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges, as an integer or double (default=0.0)");
+		OptionBuilder.withDescription("the minimum confidence threshold for output edges, as an integer or double (default=0.0)");
 		allParameters.add(OptionBuilder.create(cutoffShort));
 		
 		String defaultMinOperatorString = defaultMinOperator? "min" : "max";
@@ -158,7 +158,7 @@ public class DiffanyOptions
 		String defaultHeaderString = defaultReadHeader? "yes" : "no";
 		OptionBuilder.withLongOpt("skipHeader");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("whether or not to skip the first line (header) in the network .tab files (default=" + defaultHeaderString + ")");
+		OptionBuilder.withDescription("whether or not to skip the first line (header) in the network .txt files (default=" + defaultHeaderString + ")");
 		allParameters.add(OptionBuilder.create(headerShort));
 		
 		return allParameters;

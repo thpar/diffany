@@ -32,15 +32,4 @@
  + -**m**,--mode \<arg\>                         the mode of comparison: pairwise or all (default=all)
  + -**o**,--outputDir \<dir\>                    the output directory which will contain the generated differential/consensus networks
  + -**oper**,--operator \<arg\>                  the operator used to create consensus edges: min or max (default=min)
-
- 
-
- - Usage: java -jar Diffany_0.0.1.jar -cond \<dir\> [-conf <arg>] -diff \<dir\> [-l] [-name <arg>] -overlap \<dir\> -ref \<dir\>
-   + **-cond**,--conditionsDirectory \<dir\> : the input directory containing the condition-specific network
-   + **-conf**,--confidenceMin \<arg\> : the minimum confidence threshold for differential and overlap edges
-   + **-diff**,--differentialDirectory \<dir\> : the output directory which will contain the generated differential network
-   + **-l**,--log : display a log file after running the algorithm
-   + **-name**,--networkOutputName \<arg\> : the name of the generated differential network
-   + **-overlap**,--overlappingDirectory \<dir\> : the output directory which will contain the generated overlap network
-   + **-ref**,--referenceDirectory \<dir\> : the input directory containing the reference network
  

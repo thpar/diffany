@@ -102,7 +102,7 @@ public class OsmoticUseCase extends GenericExample{
 		OsmoticUseCase ex = new OsmoticUseCase();
 		double cutoff = 0.0;
 		
-		System.out.println("Defining network for OsmoticUseCase");
+		System.out.println("Defining network for Osmotic UseCase");
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
 		

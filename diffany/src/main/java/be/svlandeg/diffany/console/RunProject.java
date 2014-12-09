@@ -47,7 +47,8 @@ public class RunProject
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());
 
 		/** PARSE INPUT **/
-		boolean skipHeader = true;
+		boolean skipHeader = readBooleanValue(cmd, DiffanyOptions.headerShort, DiffanyOptions.defaultReadHeader, "yes", "no");
+		
 		if (cmd.hasOption(DiffanyOptions.logShort))
 		{
 			listener = new StandardProgressListener(true);
@@ -91,38 +92,13 @@ public class RunProject
 		String diffname = cmd.getOptionValue(DiffanyOptions.diffNameShort);
 		String consensusname = cmd.getOptionValue(DiffanyOptions.consNameShort);
 
-		boolean runDiff = DiffanyOptions.defaultRunDiff;
-		if (cmd.hasOption(DiffanyOptions.runDiff))
-		{
-			String value = cmd.getOptionValue(DiffanyOptions.runDiff);
-			if (value != null && value.trim().equals("yes"))
-			{
-				runDiff = true;
-			}
-			if (value != null && value.trim().equals("no"))
-			{
-				runDiff = false;
-			}
-		}
+		boolean runDiff = readBooleanValue(cmd, DiffanyOptions.runDiff, DiffanyOptions.defaultRunDiff, "yes", "no");
+		boolean runCons = readBooleanValue(cmd, DiffanyOptions.runCons, DiffanyOptions.defaultRunCons, "yes", "no");
 		
 		if (runDiff && refNet == null)
 		{
 			String msg = "Could not read the reference network at " + inputDir;
 			throw new IllegalArgumentException(msg);
-		}
-
-		boolean runCons = DiffanyOptions.defaultRunCons;
-		if (cmd.hasOption(DiffanyOptions.runCons))
-		{
-			String value = cmd.getOptionValue(DiffanyOptions.runCons);
-			if (value != null && value.trim().equals("yes"))
-			{
-				runCons = true;
-			}
-			if (value != null && value.trim().equals("no"))
-			{
-				runCons = false;
-			}
 		}
 
 		int nextID = inferNextID(cmd, inputnetworks);
@@ -133,33 +109,8 @@ public class RunProject
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
 
-		boolean minOperator = DiffanyOptions.defaultMinOperator;
-		if (cmd.hasOption(DiffanyOptions.operatorShort))
-		{
-			String operator = cmd.getOptionValue(DiffanyOptions.operatorShort);
-			if (operator != null && operator.trim().equals("max"))
-			{
-				minOperator = false;
-			}
-			if (operator != null && operator.trim().equals("min"))
-			{
-				minOperator = true;
-			}
-		}
-
-		boolean modePairwise = DiffanyOptions.defaultModePairwise;
-		if (cmd.hasOption(DiffanyOptions.modeShort))
-		{
-			String mode = cmd.getOptionValue(DiffanyOptions.modeShort);
-			if (mode != null && mode.trim().equals("pairwise"))
-			{
-				modePairwise = true;
-			}
-			if (mode != null && mode.trim().equals("all"))
-			{
-				modePairwise = false;
-			}
-		}
+		boolean minOperator = readBooleanValue(cmd, DiffanyOptions.operatorShort, DiffanyOptions.defaultMinOperator, "min", "max");
+		boolean modePairwise = readBooleanValue(cmd, DiffanyOptions.modeShort, DiffanyOptions.defaultModePairwise, "pairwise", "all");
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
@@ -241,6 +192,32 @@ public class RunProject
 			throw new IllegalArgumentException("Fatal error: please provide a valid directory pointer for " + key);
 		}
 		return new File(inputDir);
+	}
+	
+	/**
+	 * Retrieve a boolean value for a given key 
+	 * 
+	 * @param cmd the parsed command line arguments
+	 * @param key the key used to specify the boolean value
+	 * 
+	 * @return the value of the key, represented as a boolean
+	 */
+	private Boolean readBooleanValue(CommandLine cmd, String key, boolean defaultValue, String trueValue, String falseValue)
+	{
+		boolean result = defaultValue;
+		if (cmd.hasOption(key))
+		{
+			String value = cmd.getOptionValue(key);
+			if (value != null && value.trim().equals(trueValue))
+			{
+				result = true;
+			}
+			if (value != null && value.trim().equals(falseValue))
+			{
+				result = false;
+			}
+		}
+		return result;
 	}
 
 }

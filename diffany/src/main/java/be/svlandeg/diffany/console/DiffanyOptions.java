@@ -20,11 +20,13 @@ public class DiffanyOptions
 	protected static String logShort = "l";
 	
 	protected static String cutoffShort = "c";
-	protected static String operatorShort = "o";
+	protected static String operatorShort = "oper";
 	protected static String modeShort = "m";
 	
-	protected static String inputShort = "input";
-	protected static String outputShort = "output";
+	protected static String headerShort = "h";
+	
+	protected static String inputShort = "i";
+	protected static String outputShort = "o";
 	
 	protected static String diffNameShort = "diffName";
 	protected static String consNameShort = "consName";
@@ -38,6 +40,8 @@ public class DiffanyOptions
 	
 	protected static boolean defaultMinOperator = true;
 	protected static boolean defaultModePairwise = false;
+	
+	protected static boolean defaultReadHeader = true;
 	
 
 	/**
@@ -150,6 +154,12 @@ public class DiffanyOptions
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.withDescription("the mode of comparison: pairwise or all (default=" + defaultModeString + ")");
 		allParameters.add(OptionBuilder.create(modeShort));
+		
+		String defaultHeaderString = defaultReadHeader? "yes" : "no";
+		OptionBuilder.withLongOpt("skipHeader");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("whether or not to skip the first line (header) in the network .tab files (default=" + defaultHeaderString + ")");
+		allParameters.add(OptionBuilder.create(headerShort));
 		
 		return allParameters;
 	}

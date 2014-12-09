@@ -47,15 +47,15 @@ public class GenePrinter
 	 */
 	private void ini() throws IOException, URISyntaxException
 	{
-		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/affy_ATH1_ID_mapping.tab");
+		URL arrayMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/affy_ATH1_ID_mapping.tab");
 		System.out.println(" Fetching array ID mapping data: " + arrayMappingURL);
 		arrayidmapping = new MapID().getAllArrayMappings(new File(arrayMappingURL.toURI()));
 
-		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/TAIR10_NCBI_GENEID_mapping.tab");
+		URL locusMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/TAIR10_NCBI_GENEID_mapping.tab");
 		System.out.println(" Fetching Locus ID mapping data: " + locusMappingURL);
 		locusidmapping = new MapID().getLocusGIDMappings(new File(locusMappingURL.toURI()));
 
-		URL symbolMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/EVEX_synonyms_3702.tab");
+		URL symbolMappingURL = Thread.currentThread().getContextClassLoader().getResource("data/arabidopsis/EVEX_synonyms_3702.tab");
 		System.out.println(" Fetching gene symbol mapping data: " + symbolMappingURL);
 		symbolmapping = new MapID().getSymbolMappings(new File(symbolMappingURL.toURI()));
 		synonymmapping = new MapID().getSynonymMappings(new File(symbolMappingURL.toURI()));

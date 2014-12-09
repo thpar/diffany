@@ -89,11 +89,11 @@ public class TestIO
 		// READING
 		try
 		{
-			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, writeHeader);
+			ReferenceNetwork rReadNetwork = NetworkIO.readReferenceNetworkFromDir(rDir, writeHeader, true);
 			assertEquals(3, rReadNetwork.getEdges().size());
 			assertEquals(5, rReadNetwork.getNodes().size());
 			
-			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, writeHeader);
+			ConditionNetwork cReadNetwork = NetworkIO.readConditionNetworkFromDir(cDir, writeHeader, true);
 			assertEquals(3, cReadNetwork.getEdges().size());
 			assertEquals(4, cReadNetwork.getNodes().size());
 			

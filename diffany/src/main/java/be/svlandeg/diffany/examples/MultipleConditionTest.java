@@ -215,7 +215,7 @@ public class MultipleConditionTest extends GenericExample
 		int ID_diff = ex.getDefaultRunConfigurationID(p);
 		
 		System.out.println("Calculating 1-all differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, 10, 11, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID_diff, cutoff, null, null, 10, 11, true, null);
 		
 		System.out.println("");
 		ex.printAllNetworks(p, ID_diff, true, false, false);
@@ -227,28 +227,6 @@ public class MultipleConditionTest extends GenericExample
 		{
 			System.out.println(e);
 		}
-		
-		/*
-		System.out.println(" ");
-		System.out.println(" **************************************************************** ");
-		System.out.println(" ");
-		
-		System.out.println("Calculating pairwise differential networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, true, true);
-		
-		System.out.println("");
-		ex.printAllNetworks(p, ID_diff);
-		
-		System.out.println(" ");
-		System.out.println(" **************************************************************** ");
-		System.out.println(" ");
-		
-		System.out.println("Calculating pairwise consensus networks at cutoff " + cutoff);
-		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID_diff, cutoff, false, true);
-		
-		System.out.println("");
-		ex.printAllConsensusNetworks(p, ID_diff);
-		*/
 		
 	}
 }

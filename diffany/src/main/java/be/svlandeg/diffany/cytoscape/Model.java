@@ -117,6 +117,8 @@ public class Model extends Observable implements NetworkAddedListener,
 
 	private OverlapOperator overlapOperator = OverlapOperator.MIN;
 
+	private boolean hideUnconnectedNodes = false;
+
 
 	
 	/**
@@ -360,24 +362,41 @@ public class Model extends Observable implements NetworkAddedListener,
 	}
 	
 
+	/**
+	 * Are differential networks to be generated?
+	 * 
+	 * @return Are differential networks to be generated?
+	 */
 	public boolean isGenerateDiffNets() {
 		return generateDiffNets;
 	}
 
+	/**
+	 * Enable generation of differential networks upon run
+	 * 
+	 * @param generateDiffNets whether or not to enable differential networks
+	 */
 	public void setGenerateDiffNets(boolean generateDiffNets) {
 		this.generateDiffNets = generateDiffNets;
 		setChanged();
 		notifyObservers();
 	}
 
-
-
+	/**
+	 * Are consensus networks to be generated?
+	 * 
+	 * @return Are consensus networks to be generated?
+	 */
 	public boolean isGenerateConsensusNets() {
 		return generateConsensusNets;
 	}
 
 
-
+	/**
+	 * Enable generation of consensus networks upon run
+	 * 
+	 * @param generateConsensusNets whether or not to enable consensus networks
+	 */
 	public void setGenerateConsensusNets(boolean generateConsensusNets) {
 		this.generateConsensusNets = generateConsensusNets;
 		setChanged();
@@ -481,8 +500,31 @@ public class Model extends Observable implements NetworkAddedListener,
 		this.setChanged();
 		this.notifyObservers();
 	}
-	
 
+
+	/**
+	 * 
+	 * @return should nodes with degree zero be hidden? Hidden edges are not counted. 
+	 */
+	public boolean getHideUnconnectedNodes() {
+		return hideUnconnectedNodes ;
+	}
+
+	/**
+	 * Should nodes with degree zero be hidden? Hidden edges are not counted. 
+	 * 
+	 * @param hideUnconnectedNodes
+	 */
+	public void setHideUnconnectedNodes(boolean hideUnconnectedNodes) {
+		if (this.hideUnconnectedNodes != hideUnconnectedNodes){
+			this.hideUnconnectedNodes = hideUnconnectedNodes;
+			setChanged();
+			notifyObservers();
+		}
+		
+	}
+	
+	
 
 }
 

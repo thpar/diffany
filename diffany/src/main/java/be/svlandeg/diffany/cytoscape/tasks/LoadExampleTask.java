@@ -39,7 +39,7 @@ public class LoadExampleTask implements Task{
 	private String exampleName = "";
 	
 	/**
-	 * Construct a new task from to load networks from a {@link Project}. The resulting networks and 
+	 * Construct a new task to load networks from a {@link Project}. The resulting networks and 
 	 * project settings will be ignored. Only the source networks are loaded and constructed. 
 	 * 
 	 * @param services the app {@link Services}
@@ -52,6 +52,13 @@ public class LoadExampleTask implements Task{
 		this.runConfigurationID = runConfigurationID;
 	}
 	
+	/**
+	 * Construct a new task to load networks from a {@link Project}. The resulting networks and 
+	 * project settings will be ignored. Only the source networks are loaded and constructed. 
+	 * 
+	 * @param services the app {@link Services}
+	 * @param exampleProject {@link Project} to be used as example input.
+	 */
 	public LoadExampleTask(Services services, GenericExample example) {
 		this.services = services;
 		this.example = example;

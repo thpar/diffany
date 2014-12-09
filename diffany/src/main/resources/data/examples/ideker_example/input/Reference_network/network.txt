@@ -1,0 +1,4 @@
+ID	1
+Name	Reference Network Ideker2011
+Type	ReferenceNetwork
+Attributes	

@@ -45,7 +45,11 @@ public class ExtraDiffanyVisMappings implements ExtraVisMappings{
 	private final String DE_DOWN_VALUE = "down-regulated"; 
 	private final String DE_NEUTRAL_VALUE = "no"; 
 	
-	
+	/**
+	 * Define the extra VizMapper settings
+	 * 
+	 * @param services App services to supply the mapping factories
+	 */
 	public ExtraDiffanyVisMappings(Services services) {
 		VisualMappingFunctionFactory vmffD = services.getVisualMappingFunctionFactory("discrete");
 		DiscreteMapping<String, NodeShape> nodeShapeMapping = 

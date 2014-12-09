@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.GenePrinter;
 
 /**
- * This class is used to print all calculated overexpression values to one big file
+ * This class is used to print all calculated overexpression values to one big file.
  * 
  * @author Sofie Van Landeghem
  */

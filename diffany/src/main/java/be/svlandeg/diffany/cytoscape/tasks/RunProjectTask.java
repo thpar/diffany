@@ -90,7 +90,7 @@ public class RunProjectTask extends ProgressListener implements Task  {
 				generateConsensus = CyNetworkBridge.getNextID();
 			}
 			new CalculateDiff().calculateOneDifferentialNetwork(cyProject.getProject(), runId, 
-					model.getCutoff(), generateDiff, generateConsensus, model.getOverlapOperator() == OverlapOperator.MIN, this);
+					model.getCutoff(), null, null, generateDiff, generateConsensus, model.getOverlapOperator() == OverlapOperator.MIN, this);
 			break;
 		}
 		

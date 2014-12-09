@@ -33,10 +33,18 @@ public class CalculateDiff
 
 	protected boolean default_MIN = true;
 
-	public double default_weight_cutoff = 0.0;
-	protected static String diffnameprefix = "diff_";
-	protected static String consensusnameprefix = "consensus_";
+	protected double default_weight_cutoff = 0.0;
+	
+	protected static final String diffname_default_all = "diff_all_conditions_against_reference";
+	protected static String consensusname_default_all = "consensus_all_input_networks";
+	
+	protected static final String diffname_pairwise_prefix = "diff_";
+	protected static final String consensusname_pairwise_prefix = "consensus_";
 
+	/**
+	 * A run mode determines how differential networks will be calculated.
+	 * Currently, only the edge by edge option is supported, but this may be extended in the future.
+	 */
 	public enum RunMode
 	{
 		EDGEBYEDGE, MACHINELEARNING
@@ -70,11 +78,11 @@ public class CalculateDiff
 	 * @param networks a set of networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
 	 * @param nm the node mapper that allows to map nodes from the one network to the other
-	 * @param consensus_name the name to give to the consensus network
+	 * @param consensus_name the name to give to the consensus network (can be null)
 	 * @param ID the unique identifier of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network 
 	 * @param log the logger that records logging messages
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
@@ -85,10 +93,16 @@ public class CalculateDiff
 	private ConsensusNetwork calculateConsensusNetwork(Set<Network> networks, TreeEdgeOntology eo, String consensus_name, int ID, 
 			int supportingCutoff, boolean refRequired, double weightCutoff, Logger log, boolean minOperator, ScheduledTask task) throws IllegalArgumentException
 	{
-		if (networks == null || networks.isEmpty() || eo == null || consensus_name == null)
+		if (networks == null || networks.isEmpty() || eo == null)
 		{
 			String errormsg = "Found null parameter in calculateConsensusNetwork!";
+			errormsg += " (null values: networks=" + (networks == null) + " / eo=" + (eo == null) 
+					+ " / consensus_name="  + (consensus_name == null) + " / networks empty="  + (networks.isEmpty());
 			throw new IllegalArgumentException(errormsg);
+		}
+		if (consensus_name == null)
+		{
+			consensus_name = consensusname_default_all;
 		}
 		if (supportingCutoff <= 0 || supportingCutoff > networks.size())
 		{
@@ -124,7 +138,7 @@ public class CalculateDiff
 	 * @param reference the reference network
 	 * @param conditions a set of condition-specific networks (at least 1)
 	 * @param eo the edge ontology that provides meaning to the edge types
-	 * @param diff_name the name to give to the differential network
+	 * @param diff_name the name to give to the differential network (can be null)
 	 * @param ID the unique identifier of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
@@ -137,10 +151,16 @@ public class CalculateDiff
 	private DifferentialNetwork calculateDiffNetwork(ReferenceNetwork reference, Set<ConditionNetwork> conditions, TreeEdgeOntology eo,
 			String diff_name, int ID, int supportingCutoff, double weightCutoff, Logger log, ScheduledTask task) throws IllegalArgumentException
 	{
-		if (reference == null || conditions == null || conditions.isEmpty() || eo == null || diff_name == null)
+		if (reference == null || conditions == null || conditions.isEmpty() || eo == null)
 		{
-			String errormsg = "The edge weight should be positive!";
+			String errormsg = "Found null parameter in calculateDiffNetwork!";
+			errormsg += " (null values: reference=" + (reference == null) + " / conditions="  + (conditions == null) 
+					+ " / eo=" + (eo == null) + " / conditions empty="  + (conditions.isEmpty());
 			throw new IllegalArgumentException(errormsg);
+		}
+		if (diff_name == null)
+		{
+			diff_name = diffname_default_all;
 		}
 		ScheduledTask cleaningTask = null;
 		ScheduledTask calculatingTask = null;
@@ -165,24 +185,30 @@ public class CalculateDiff
 	
 
 	/**
-	 * Calculate the differential network and/or the consensus interactions, starting from a predefined runconfiguration in a project.
+	 * Calculate the differential network and/or the consensus network, starting from a predefined runconfiguration in a project.
 	 * 
 	 * The calculated differential networks are added to the project directly, after cleaning previous output first.
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param diff_name the name to give to the differential network. The consensus network will get this name + the prefix 'consensus_'
+	 * @param diff_name the name to give to the differential network (can be null, then a default name will be constructed)
+	 * @param consensus_name the name to give to the differential network (can be null, then a default name will be constructed)
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
 	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the consensus network
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the consensus network (can be null, then a default value will be used)
+	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum (can be null, then 'min' will be used by default)
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, String diff_name, int diff_ID, int consensus_ID, double weight_cutoff, 
+	public void calculateOneDifferentialNetwork(Project p, int runID, Double weight_cutoff, String diff_name, String consensus_name, int diff_ID, int consensus_ID, 
 			Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
+		if (weight_cutoff == null)
+		{
+			weight_cutoff = default_weight_cutoff;
+		}
+		
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		Logger log = p.getLogger(runID);
 
@@ -239,7 +265,6 @@ public class CalculateDiff
 		{
 			Set<Network> inputs = new HashSet<Network>();
 			inputs.addAll(rc.getInputNetworks());
-			String consensus_name = consensusnameprefix + diff_name;
 			log.log("Calculating the 1-all consensus network between " + inputs.size() + " input network(s) - settings: support cutoff = " + rc.getSupportCutoff() + ", weight cutoff = " + weight_cutoff + ", reference required = " + rc.getRefRequired() + ", minOperator = " + minOperator);
 			cn = calculateConsensusNetwork(inputs, eo, consensus_name, consensus_ID, rc.getSupportCutoff(), rc.getRefRequired(), weight_cutoff, log, minOperator, consensusTask);
 		}
@@ -259,88 +284,9 @@ public class CalculateDiff
 		log.log("Done!");
 	}
 
-	/**
-	 * Calculate the differential network between the reference and a set of condition-specific networks, 
-	 * as well as the counterpart consensus interactions as a related ConsensusNetwork object.
-	 * 
-	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding consensus network will get an additional prefix 'consensus_' at the end.
-	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
-	 * 
-	 * The calculated differential networks and the logger object are added are added to the project directly.
-	 * The logger object will first be cleaned.
-	 * 
-	 * @param p the project which stores the reference and condition-specific networks
-	 * @param runID the ID of the configuration that needs to be run
-	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
-	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
-	 * 
-	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
-	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
-	{
-		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, default_weight_cutoff, minOperator, progressListener);
-	}
-
-	/**
-	 * Calculate the differential network between the reference and a set of condition-specific networks.
-	 * Adds the consensus interactions as a related ConsensusNetwork object.
-	 * 
-	 * The name of the differential network will be 'all_conditions_against_reference_diff'.
-	 * The name of the corresponding consensus network will get an additional prefix 'consensus_' at the end.
-	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
-	 * 
-	 * The calculated differential networks and the logger object are added are added to the project directly.
-	 * The logger object will first be cleaned.
-	 * 
-	 * @param p the project which stores the reference and condition-specific networks
-	 * @param runID the ID of the configuration that needs to be run
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
-	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
-	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
-	 * 
-	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
-	 */
-	public void calculateOneDifferentialNetwork(Project p, int runID, double weightCutoff, int diff_ID, int consensus_ID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
-	{
-		String diff_name = diffnameprefix + "all_conditions_against_reference";
-		calculateOneDifferentialNetwork(p, runID, diff_name, diff_ID, consensus_ID, weightCutoff, minOperator, progressListener);
-	}
-
 	
 	/////// METHODS BETWEEN 1 REFERENCE NETWORK AND 1 CONDITION-SPECIFIC NETWORK  //////////////
 
-	
-	/**
-	 * Calculate all pairwise differential networks between the reference and each condition-specific network in the project.
-	 * Adds the consensus interactions as a related ConsensusNetwork object for each differential network.
-	 * 
-	 * The name of the differential network will be the name of the condition-specific network with prefix 'diff_'
-	 * The name of the corresponding consensus network will get an additional prefix 'consensus_'.
-	 * The weight cutoff will be 0.0, meaning that all edges will be included, however small their (positive) weight is.
-	 * 
-	 * All calculated differential networks and the logger object are added to the project directly.
-	 * The logger object will first be cleaned.
-	 * 
-	 * @param p the project which stores the reference and condition-specific networks
-	 * @param runID the ID of the configuration that needs to be run
-	 * @param diffNetwork whether or not to calculate differential networks
-	 * @param consensusNetwork whether or not to calculate consensus networks
-	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
-	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum. If null, default settings will resort to min
-	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
-	 * 
-	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
-	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
-	{
-		calculateAllPairwiseDifferentialNetworks(p, runID, default_weight_cutoff, diffNetwork, consensusNetwork, firstID, minOperator, progressListener);
-	}
 
 	/**
 	 * Calculate all pairwise differential networks and/or consensus networks between the reference and each condition-specific network in the project.
@@ -354,7 +300,7 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network (can be null)
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param consensusNetwork whether or not to calculate a consensus network
 	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
@@ -363,8 +309,13 @@ public class CalculateDiff
 	 * 
 	 * @throws IllegalArgumentException if any of the crucial fields in the project are null
 	 */
-	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, double weightCutoff, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
+	public void calculateAllPairwiseDifferentialNetworks(Project p, int runID, Double weightCutoff, boolean diffNetwork, boolean consensusNetwork, int firstID, Boolean minOperator, ProgressListener progressListener) throws IllegalArgumentException
 	{
+		if (weightCutoff == null)
+		{
+			weightCutoff = default_weight_cutoff;
+		}
+		
 		TreeEdgeOntology eo = p.getEdgeOntology();
 		Logger log = p.getLogger(runID);
 
@@ -418,7 +369,7 @@ public class CalculateDiff
 					diffTask = new ScheduledTask(progressListener, ticksPerTask);
 				}
 				
-				String diff_name = diffnameprefix + c.getName();
+				String diff_name = diffname_pairwise_prefix + c.getName();
 				log.log("Calculating the pairwise differential network between " + r.getName() + " and " + c.getName() + " - settings: weight cutoff = " + weightCutoff);
 				Set<ConditionNetwork> oneCs = new HashSet<ConditionNetwork>();
 				oneCs.add(c);
@@ -429,11 +380,11 @@ public class CalculateDiff
 				if (consensusNetwork)
 				{
 					// create a consensus name with consistent alphabetical ordering of the network names
-					String consensus_name = consensusnameprefix + r.getName() + "_" + c.getName();
+					String consensus_name = consensusname_pairwise_prefix + r.getName() + "_" + c.getName();
 					
 					if (c.getName().compareTo(r.getName()) < 0)
 					{
-						consensus_name = consensusnameprefix + c.getName() + "_" + r.getName();
+						consensus_name = consensusname_pairwise_prefix + c.getName() + "_" + r.getName();
 					}
 					
 					Set<Network> inputs = new HashSet<Network>();
@@ -479,10 +430,10 @@ public class CalculateDiff
 					log.log("Calculating the consensus network between " + n1.getName() + " and " + n2.getName() + " - settings: weight cutoff = " + weightCutoff + ", minOperator = " + minOperator);
 					
 					// create a consensus name with consistent alphabetical ordering of the network names
-					String consensus_name = consensusnameprefix + n1.getName() + "_" + n2.getName();
+					String consensus_name = consensusname_pairwise_prefix + n1.getName() + "_" + n2.getName();
 					if (n2.getName().compareTo(n1.getName()) < 0)
 					{
-						consensus_name = consensusnameprefix + n2.getName() + "_" + n1.getName();
+						consensus_name = consensusname_pairwise_prefix + n2.getName() + "_" + n1.getName();
 					}
 					
 					Set<Network> twoInputs = new HashSet<Network>();

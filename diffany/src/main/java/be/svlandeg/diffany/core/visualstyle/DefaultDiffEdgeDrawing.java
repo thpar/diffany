@@ -99,7 +99,7 @@ public class DefaultDiffEdgeDrawing extends TreeEdgeDrawing
 	@Override
 	public double getMaxWeight()
 	{
-		// TODO v2.1: is this reasonable?
+		// TODO v2.2: is this reasonable?
 		return max_weight;
 	}
 

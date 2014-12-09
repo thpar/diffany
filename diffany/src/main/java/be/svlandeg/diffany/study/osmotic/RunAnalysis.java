@@ -34,8 +34,8 @@ import be.svlandeg.diffany.study.osmotic.arabidopsis.PPIdata;
 import be.svlandeg.diffany.study.osmotic.arabidopsis.RegData;
 
 /**
- * This class provides the analysis pipeline and calls our procedures necessary
- * to perform the full analysis, from data input to result output.
+ * This class provides the analysis pipeline for the osmotic stress application on Arabidopsis. 
+ * The main method calls all procedures necessary to perform the full analysis, from data input to result output.
  * 
  * @author Sofie Van Landeghem
  */
@@ -72,12 +72,12 @@ public class RunAnalysis
 		String outputDir = inputLocation + "output";
 		String resultDir = inputLocation + "result";
 		
-		boolean performStep1FromSupplemental = true;
-		boolean performStep2ToNetwork = true;
+		boolean performStep1FromSupplemental = false;
+		boolean performStep2ToNetwork = false;
 		boolean performStep3InputNetworksToFile = false;
 
-		boolean performStep4InputNetworksFromFile = false;
-		boolean performStep5OneagainstAll = false;
+		boolean performStep4InputNetworksFromFile = true;
+		boolean performStep5OneagainstAll = true;
 		boolean performStep5AllPairwise = false;
 		boolean performStep6OutputNetworksToFile = false;
 
@@ -188,7 +188,7 @@ public class RunAnalysis
 			System.out.println("4. Reading networks from " + outputDir + " - " + new Date());
 			System.out.println("");
 
-			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders);
+			Set<InputNetwork> readNetworks = NetworkIO.readGenericInputNetworksFromSubdirs(new File(outputDir), writeHeaders, true);
 			for (InputNetwork net : readNetworks)
 			{
 				if (net instanceof ReferenceNetwork)
@@ -463,7 +463,7 @@ public class RunAnalysis
 		}
 		else
 		{
-			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, 11, -1, true, listener);
+			new CalculateDiff().calculateOneDifferentialNetwork(p, runID, weight_cutoff, null, null, 11, -1, true, listener);
 		}
 		RunOutput output = p.getOutput(runID);
 		return output;

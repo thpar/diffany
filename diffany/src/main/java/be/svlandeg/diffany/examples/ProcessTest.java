@@ -129,7 +129,7 @@ public class ProcessTest extends GenericExample
 		//ex.printAllNetworks(p, ID, true, false, false);
 		
 		/* Test for bug issue #233 */
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, 5, 3, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, null, null, 5, 3, true, null);
 		ex.printAllNetworks(p, ID, false, true, false);
 		
 		System.out.println("");

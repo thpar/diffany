@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 /**
  * This data object stores the fold changes, p-values and FDR rates per array ID, for a certain analysis (uniquely identified by name).
- * The data can also be indexed by locus IDs, in which case the boolean value 'arrayIDs' is set to false
+ * The data can also be indexed by locus IDs, in which case the boolean value 'arrayIDs' is set to false.
  * 
  * @author Sofie Van Landeghem
  */

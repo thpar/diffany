@@ -17,19 +17,29 @@ public class DiffanyOptions
 	
 	private Options options;
 	
-	//protected static String modeShort = "m";
 	protected static String logShort = "l";
 	
-	protected static String refShort = "ref";
-	protected static String conShort = "cond";
-	protected static String diffShort = "diff";
-	protected static String consensusShort = "consensus";
-
-	protected static String diffnameShort = "name";
-	protected static String cutoffShort = "conf";
+	protected static String cutoffShort = "c";
+	protected static String operatorShort = "oper";
+	protected static String modeShort = "m";
 	
-	protected static String diffID = "diffID";
-	protected static String consensusID = "consensusID";
+	protected static String headerShort = "h";
+	
+	protected static String inputShort = "i";
+	protected static String outputShort = "o";
+	
+	protected static String runDiff = "diff";
+	protected static String runCons = "cons";
+	protected static String nextID = "ID";
+	
+	protected static boolean defaultRunDiff = true;
+	protected static boolean defaultRunCons = true;
+	
+	protected static boolean defaultMinOperator = true;
+	protected static boolean defaultModePairwise = false;
+	
+	protected static boolean defaultReadHeader = true;
+	
 
 	/**
 	 * Constructor initializes the options available in Diffany
@@ -72,7 +82,7 @@ public class DiffanyOptions
 		boolean hasArgument = false;
 		Set<Option> allFlags = new HashSet<Option>();
 		
-		allFlags.add(new Option(logShort, "log", hasArgument, "display a log file after running the algorithm"));
+		allFlags.add(new Option(logShort, "log", hasArgument, "display a progress/log file during the run"));
 		
 		return allFlags;
 	}
@@ -84,56 +94,59 @@ public class DiffanyOptions
 	{
 		Set<Option> allParameters = new HashSet<Option>();
 		
-		//allParameters.add(new Option(modeShort, "mode", hasArgument, "the mode of the run: pairwise or 1-against-all"));
-		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("referenceDirectory");
+		OptionBuilder.withLongOpt("inputDir");
 		OptionBuilder.hasArgs(1);
 		OptionBuilder.isRequired();
-		OptionBuilder.withDescription("the input directory containing the reference network");
-		allParameters.add(OptionBuilder.create(refShort));
+		OptionBuilder.withDescription("the input directory containing the reference and condition-specific networks");
+		allParameters.add(OptionBuilder.create(inputShort));
 		
 		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("conditionsDirectory");
+		OptionBuilder.withLongOpt("outputDir");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
-		//OptionBuilder.withValueSeparator('|');
-		OptionBuilder.withDescription("the input directory containing the condition-specific network");
-		allParameters.add(OptionBuilder.create(conShort));
+		OptionBuilder.isRequired();
+		OptionBuilder.withDescription("the output directory which will contain the generated differential/consensus networks");
+		allParameters.add(OptionBuilder.create(outputShort));
 		
-		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("differentialDirectory");
+		String defaultRunDiffString = defaultRunDiff? "yes" : "no";
+		OptionBuilder.withLongOpt("differential");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
-		OptionBuilder.withDescription("the output directory which will contain the generated differential network");
-		allParameters.add(OptionBuilder.create(diffShort));
+		OptionBuilder.withDescription("whether or not to calculate differential networks: yes or no (default=" + defaultRunDiffString + ")");
+		allParameters.add(OptionBuilder.create(runDiff));
 		
-		OptionBuilder.withArgName("dir");
-		OptionBuilder.withLongOpt("consensusDirectory");
+		String defaultRunConsString = defaultRunCons? "yes" : "no"; ;
+		OptionBuilder.withLongOpt("consensus");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.isRequired(true);
-		OptionBuilder.withDescription("the output directory which will contain the generated consensus network");
-		allParameters.add(OptionBuilder.create(consensusShort));
-
-		OptionBuilder.withLongOpt("networkOutputName");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the name of the generated differential network");
-		allParameters.add(OptionBuilder.create(diffnameShort));
+		OptionBuilder.withDescription("whether or not to calculate consensus networks: yes or no (default=" + defaultRunConsString + ")");
+		allParameters.add(OptionBuilder.create(runCons));
 		
-		OptionBuilder.withLongOpt("diffID");
+		OptionBuilder.withLongOpt("outputID");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the generated differential network");
-		allParameters.add(OptionBuilder.create(diffID));
+		OptionBuilder.withDescription("the first ID that will be used for the generated networks");
+		allParameters.add(OptionBuilder.create(nextID));
 		
-		OptionBuilder.withLongOpt("consensusID");
+		OptionBuilder.withLongOpt("confidence");
 		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the ID of the generated consensus network");
-		allParameters.add(OptionBuilder.create(consensusID));
-		
-		OptionBuilder.withLongOpt("confidenceMin");
-		OptionBuilder.hasArgs(1);
-		OptionBuilder.withDescription("the minimum confidence threshold for differential and consensus edges");
+		OptionBuilder.withDescription("the minimum confidence threshold for output edges, as an integer or double (default=0.0)");
 		allParameters.add(OptionBuilder.create(cutoffShort));
+		
+		String defaultMinOperatorString = defaultMinOperator? "min" : "max";
+		OptionBuilder.withLongOpt("operator");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the operator used to create consensus edges: min or max (default=" + defaultMinOperatorString + ")");
+		allParameters.add(OptionBuilder.create(operatorShort));
+		
+		String defaultModeString = defaultModePairwise? "pairwise" : "all";
+		OptionBuilder.withLongOpt("mode");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("the mode of comparison: pairwise or all (default=" + defaultModeString + ")");
+		allParameters.add(OptionBuilder.create(modeShort));
+		
+		String defaultHeaderString = defaultReadHeader? "yes" : "no";
+		OptionBuilder.withLongOpt("skipHeader");
+		OptionBuilder.hasArgs(1);
+		OptionBuilder.withDescription("whether or not to skip the first line (header) in the network .txt files (default=" + defaultHeaderString + ")");
+		allParameters.add(OptionBuilder.create(headerShort));
 		
 		return allParameters;
 	}

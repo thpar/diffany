@@ -211,7 +211,7 @@ public class TestExamples extends TestGeneric
 		double weight_cutoff = 0.0;
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, 10, 20, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, weight_cutoff, null, null, 10, 20, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);
@@ -408,7 +408,7 @@ public class TestExamples extends TestGeneric
 		double cutoff = 0.0;
 		Project p = ex.getDefaultProject();
 		int ID = ex.getDefaultRunConfigurationID(p);
-		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, 10, 20, true, null);
+		new CalculateDiff().calculateOneDifferentialNetwork(p, ID, cutoff, null, null, 10, 20, true, null);
 
 		// Testing that there is exactly one differential network created
 		RunOutput output = p.getOutput(ID);

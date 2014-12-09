@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
+import be.svlandeg.diffany.core.progress.ProgressListener;
+import be.svlandeg.diffany.core.progress.StandardProgressListener;
+import be.svlandeg.diffany.core.project.LogEntry;
+import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
@@ -14,7 +19,7 @@ import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 public class OsmoticUseCase extends GenericExample{
 
 
-	private final String JAR_DIR = "/data/osmotic/";
+	private final String JAR_DIR = "/data/examples/osmotic_study/input/";
 	
 	public OsmoticUseCase() 
 	{
@@ -40,7 +45,7 @@ public class OsmoticUseCase extends GenericExample{
 	}
 
 	private ReferenceNetwork getTestReference(String jarDir) throws IOException{
-		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", true);
+		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference_network", true);
 	}
 	
 	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{
@@ -89,6 +94,30 @@ public class OsmoticUseCase extends GenericExample{
 	private void updateStatusMessage(String message){
 		if (this.taskMonitor != null){
 			this.taskMonitor.setStatusMessage(message);
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		OsmoticUseCase ex = new OsmoticUseCase();
+		double cutoff = 0.0;
+		
+		System.out.println("Defining network for Osmotic UseCase");
+		Project p = ex.getDefaultProject();
+		int ID = ex.getDefaultRunConfigurationID(p);
+		
+		ProgressListener listener = new StandardProgressListener(true);
+		
+		System.out.println("Calculating differential networks at cutoff " + cutoff);
+		new CalculateDiff().calculateAllPairwiseDifferentialNetworks(p, ID, cutoff, true, true, 30, true, listener);
+
+		System.out.println("");
+		ex.printAllNetworks(p, ID, true, false, false);
+		
+		Logger l = p.getLogger(ID);
+		for (LogEntry msg : l.getAllLogMessages())
+		{
+			System.out.println(msg);
 		}
 	}
 

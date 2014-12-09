@@ -2,6 +2,8 @@ package be.svlandeg.diffany.console;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -9,14 +11,12 @@ import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.io.NetworkIO;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.DifferentialNetwork;
-import be.svlandeg.diffany.core.networks.OutputNetworkPair;
+import be.svlandeg.diffany.core.networks.InputNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
 import be.svlandeg.diffany.core.networks.ReferenceNetwork;
 import be.svlandeg.diffany.core.progress.ProgressListener;
 import be.svlandeg.diffany.core.progress.StandardProgressListener;
 import be.svlandeg.diffany.core.project.RunOutput;
-import be.svlandeg.diffany.core.project.LogEntry;
-import be.svlandeg.diffany.core.project.Logger;
 import be.svlandeg.diffany.core.project.Project;
 import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 
@@ -39,72 +39,137 @@ public class RunProject
 	 */
 	public void runAnalysis(CommandLine cmd) throws IOException, IllegalArgumentException
 	{
+		// TODO v.3.0: check inappropriate argument values or silently ignore and use default (as now)?
+
 		CalculateDiff diffAlgo = new CalculateDiff();
-		ProgressListener listener = new StandardProgressListener(true);
-		
+		ProgressListener listener = null;
+
 		Project p = new Project("Diffany-Analysis", new DefaultEdgeOntology());
 
 		/** PARSE INPUT **/
-		boolean toLog = false;
-		boolean skipHeader = true;
+		boolean skipHeader = readBooleanValue(cmd, DiffanyOptions.headerShort, DiffanyOptions.defaultReadHeader, "yes", "no");
+		
 		if (cmd.hasOption(DiffanyOptions.logShort))
 		{
-			toLog = true;
+			listener = new StandardProgressListener(true);
 		}
 
-		String name = cmd.getOptionValue(DiffanyOptions.diffnameShort);
-		int diffID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.diffID));
-		int consensusID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.consensusID));
+		File inputDir = getRequiredDir(cmd, DiffanyOptions.inputShort);
+		ReferenceNetwork refNet = null;
+		Set<ConditionNetwork> conditionNets = new HashSet<ConditionNetwork>();
+		 
+		Set<InputNetwork> inputnetworks = NetworkIO.readGenericInputNetworksFromSubdirs(inputDir, skipHeader, false);
+		
+		if (inputnetworks == null || inputnetworks.size() < 2)
+		{
+			String msg = "Could not read all required input networks from " + inputDir;
+			throw new IllegalArgumentException(msg);
+		}
+		
+		for (InputNetwork net : inputnetworks)
+		{
+			if (net instanceof ReferenceNetwork)
+			{
+				if (refNet != null)
+				{
+					String msg = "Found more than 1 reference network at " + inputDir;
+					throw new IllegalArgumentException(msg);
+				}
+				refNet = (ReferenceNetwork) net;
+			}
+			else if (net instanceof ConditionNetwork)
+			{
+				conditionNets.add((ConditionNetwork) net);
+			}
+			else
+			{
+				String msg = "Found a strange input network: " + net;
+				throw new IllegalArgumentException(msg);
+			}
+		}
 
-		double cutoff = diffAlgo.default_weight_cutoff;
+		boolean runDiff = readBooleanValue(cmd, DiffanyOptions.runDiff, DiffanyOptions.defaultRunDiff, "yes", "no");
+		boolean runCons = readBooleanValue(cmd, DiffanyOptions.runCons, DiffanyOptions.defaultRunCons, "yes", "no");
+		
+		if (runDiff && refNet == null)
+		{
+			String msg = "Could not read the reference network at " + inputDir;
+			throw new IllegalArgumentException(msg);
+		}
+
+		int nextID = inferNextID(cmd, inputnetworks);
+
+		Double cutoff = null;
 		if (cmd.hasOption(DiffanyOptions.cutoffShort))
 		{
 			cutoff = Double.parseDouble(cmd.getOptionValue(DiffanyOptions.cutoffShort));
 		}
-		
-		File refDir = getRequiredDir(cmd, DiffanyOptions.refShort);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
 
-		File condDir = getRequiredDir(cmd, DiffanyOptions.conShort);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
+		boolean minOperator = readBooleanValue(cmd, DiffanyOptions.operatorShort, DiffanyOptions.defaultMinOperator, "min", "max");
+		boolean modePairwise = readBooleanValue(cmd, DiffanyOptions.modeShort, DiffanyOptions.defaultModePairwise, "pairwise", "all");
 
 		/** THE ACTUAL ALGORITHM **/
 		boolean cleanInput = true;
-		Integer runID = p.addRunConfiguration(refNet, condNet, cleanInput, listener);
-		Logger l = p.getLogger(runID);
-		
-		l.log("Calculating the pair-wise comparison between " + refNet.getName() + " and " + condNet.getName());
-		
-		// TODO v2.1: allow to change mode pairwise vs. differential
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, name, diffID, consensusID, cutoff, true, listener);
-		
-		// TODO v2.1: check number of differential networks generated
-		RunOutput output = p.getOutput(runID);
-		OutputNetworkPair pair = output.getOutputAsPairs().iterator().next();
-		DifferentialNetwork diffNet = pair.getDifferentialNetwork();
-		ConsensusNetwork consensusNet = pair.getConsensusNetwork();
+		Integer runID = p.addRunConfiguration(refNet, conditionNets, cleanInput, listener);
+
+		if (modePairwise)
+		{
+			diffAlgo.calculateAllPairwiseDifferentialNetworks(p, runID, cutoff, runDiff, runCons, nextID, minOperator, listener);
+		}
+		else
+		{
+			int diffID = -1;
+			if (runDiff)
+			{
+				diffID = nextID++;
+			}
+			int consensusID = -1;
+			if (runCons)
+			{
+				consensusID = nextID++;
+			}
+
+			// default names for the output networks will be generated
+			diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, null, null, diffID, consensusID, minOperator, listener);
+		}
 
 		/** WRITE NETWORK OUTPUT **/
+		RunOutput output = p.getOutput(runID);
 		boolean writeHeaders = true;
-		
-		File diffDir = getRequiredDir(cmd, DiffanyOptions.diffShort);
-		NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
-		l.log("Writing the differential network to " + diffDir);
+		File outputDir = getRequiredDir(cmd, DiffanyOptions.outputShort);
 
-		File consensusDir = getRequiredDir(cmd, DiffanyOptions.consensusShort);
-		NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
-		l.log("Writing the consensus network to " + consensusDir);
-		
-		l.log("Done !");
-
-		/** WRITE LOG OUTPUT **/
-		if (toLog)
+		for (DifferentialNetwork diffNet : output.getDifferentialNetworks())
 		{
-			for (LogEntry msg : l.getAllLogMessages())
+			File diffDir = new File(outputDir, "Differential_network_" + diffNet.getID());
+			NetworkIO.writeNetworkToDir(diffNet, diffDir, writeHeaders);
+		}
+
+		for (ConsensusNetwork consensusNet : output.getConsensusNetworks())
+		{
+			File consensusDir = new File(outputDir, "Consensus_network_" + consensusNet.getID());
+			NetworkIO.writeNetworkToDir(consensusNet, consensusDir, writeHeaders);
+		}
+	}
+
+	/**
+	 * Parse the required first ID for the output network from the optional arguments,
+	 * or determine it from the given input networks.
+	 */
+	private int inferNextID(CommandLine cmd, Set<InputNetwork> inputNetworks)
+	{
+		int nextID = -1;
+		if (cmd.hasOption(DiffanyOptions.nextID))
+		{
+			nextID = Integer.parseInt(cmd.getOptionValue(DiffanyOptions.nextID));
+		}
+		else
+		{
+			for (InputNetwork input : inputNetworks)
 			{
-				System.out.println(msg);
+				nextID = Math.max(nextID, input.getID() + 1);
 			}
 		}
+		return nextID;
 	}
 
 	/**
@@ -118,12 +183,38 @@ public class RunProject
 	 */
 	private File getRequiredDir(CommandLine cmd, String key) throws IllegalArgumentException
 	{
-		String refDir = cmd.getOptionValue(key);
-		if (refDir == null)
+		String inputDir = cmd.getOptionValue(key);
+		if (inputDir == null)
 		{
-			throw new IllegalArgumentException("Fatal error: please provide a valid " + DiffanyOptions.refShort + " directory pointer!");
+			throw new IllegalArgumentException("Fatal error: please provide a valid directory pointer for " + key);
 		}
-		return new File(refDir);
+		return new File(inputDir);
+	}
+	
+	/**
+	 * Retrieve a boolean value for a given key 
+	 * 
+	 * @param cmd the parsed command line arguments
+	 * @param key the key used to specify the boolean value
+	 * 
+	 * @return the value of the key, represented as a boolean
+	 */
+	private Boolean readBooleanValue(CommandLine cmd, String key, boolean defaultValue, String trueValue, String falseValue)
+	{
+		boolean result = defaultValue;
+		if (cmd.hasOption(key))
+		{
+			String value = cmd.getOptionValue(key);
+			if (value != null && value.trim().equals(trueValue))
+			{
+				result = true;
+			}
+			if (value != null && value.trim().equals(falseValue))
+			{
+				result = false;
+			}
+		}
+		return result;
 	}
 
 }

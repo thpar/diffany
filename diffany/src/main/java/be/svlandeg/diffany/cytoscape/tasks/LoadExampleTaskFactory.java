@@ -31,7 +31,12 @@ public class LoadExampleTaskFactory implements TaskFactory{
 		this.exampleProject = exampleProject;
 		this.runConfigurationID = runConfigurationID;
 	}
-
+	
+	/**
+	 * 
+	 * @param services the app {@link Services}
+	 * @param exampleProject {@link Project} to be used as example input.
+	 */
 	public LoadExampleTaskFactory(Services services, GenericExample example) {
 		this.services = services;
 		this.example = example;

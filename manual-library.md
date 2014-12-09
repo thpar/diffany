@@ -43,11 +43,12 @@ Parameters: String refLocation, String condLocation, String diffLocation, String
 
 		/** READ THE INPUT NETWORKS **/
 		boolean skipHeader = true;
+		boolean throwInvalidDirException = true;
 		File refDir = new File(refLocation);
-		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader);
+		ReferenceNetwork refNet = NetworkIO.readReferenceNetworkFromDir(refDir, skipHeader, throwInvalidDirException);
 
 		File condDir = new File(condLocation);
-		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader);
+		ConditionNetwork condNet = NetworkIO.readConditionNetworkFromDir(condDir, skipHeader, throwInvalidDirException);
 
 		/** DEFINE THE RUN PARAMETERS **/
 		double cutoff = 0.0;
@@ -56,7 +57,7 @@ Parameters: String refLocation, String condLocation, String diffLocation, String
 		
 		/** THE ACTUAL ALGORITHM **/
 		CalculateDiff diffAlgo = new CalculateDiff();
-		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, 342, 666, true, null);
+		diffAlgo.calculateOneDifferentialNetwork(p, runID, cutoff, null, null, 342, 666, true, null);
 
 		// In this case, there will be exactly one DifferentialNetwork
 		RunOutput output = p.getOutput(runID);

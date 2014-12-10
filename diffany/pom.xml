@@ -12,6 +12,15 @@
 
 			<name>${bundle.symbolicName}</name>
 	
+	<licenses>
+		<license>
+			<name>lgpl_v3</name>
+			<url>https://www.gnu.org/licenses/lgpl.html</url>
+			<distribution>repo</distribution>
+			<comments>Just testing</comments>
+		</license>
+	</licenses>
+	
 	<packaging>bundle</packaging>
 
 	<build>
@@ -66,6 +75,7 @@
 			</plugin>
 			
 			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -88,6 +98,7 @@
 					<shadedClassifierName>with-dependencies</shadedClassifierName>
             	</configuration>
 			</plugin>
+			 -->
 			<!-- Generates the OSGi metadata based on the osgi.bnd file. -->
 			<plugin>
 				<groupId>org.apache.felix</groupId>
@@ -124,6 +135,8 @@
     			</configuration>
     			<executions>
         			<execution>
+        				<id>first</id>
+        				<phase>generate-resources</phase>
             			<goals>
                 			<goal>update-project-license</goal>
             			</goals>

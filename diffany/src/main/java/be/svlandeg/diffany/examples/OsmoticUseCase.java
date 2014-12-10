@@ -45,7 +45,9 @@ public class OsmoticUseCase extends GenericExample{
 	}
 
 	private ReferenceNetwork getTestReference(String jarDir) throws IOException{
-		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference_network", true);
+		System.out.println("jar: " + jarDir);
+		System.out.println(jarDir+"Reference network");
+		return NetworkIO.readReferenceNetworkFromResource(jarDir+"Reference network", true);
 	}
 	
 	private Set<ConditionNetwork> getTestConditions(String jarDir) throws IOException{

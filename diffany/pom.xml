@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<properties>
-						<bundle.symbolicName>be.svlandeg.diffany</bundle.symbolicName>
+		<bundle.symbolicName>be.svlandeg.diffany</bundle.symbolicName>
 		<bundle.namespace>be.svlandeg.diffany</bundle.namespace>
 	</properties>
 
@@ -10,14 +10,12 @@
 	<groupId>be.svlandeg</groupId>
 	<artifactId>diffany</artifactId>
 
-			<name>${bundle.symbolicName}</name>
+	<name>${bundle.symbolicName}</name>
 	
 	<licenses>
 		<license>
-			<name>lgpl_v3</name>
-			<url>https://www.gnu.org/licenses/lgpl.html</url>
-			<distribution>repo</distribution>
-			<comments>Just testing</comments>
+			<name>Eclipse Public License - v 1.0</name>
+			<url>http://www.eclipse.org/org/documents/epl-v10.html</url>
 		</license>
 	</licenses>
 	
@@ -33,46 +31,7 @@
 		
 		
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<executions>
-					<execution>
-						<id>default-testCompile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<optimize>true</optimize>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-					<compilerArguments>
-						<Xmaxwarns>10000</Xmaxwarns>
-						<Xmaxerrs>10000</Xmaxerrs>
-					</compilerArguments>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.7.1</version>
-				<configuration>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-				</configuration>
-			</plugin>
+			
 			
 			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
 			<!-- 
@@ -122,21 +81,62 @@
 		
 		<pluginManagement>
 			<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<optimize>true</optimize>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+					<compilerArguments>
+						<Xmaxwarns>10000</Xmaxwarns>
+						<Xmaxerrs>10000</Xmaxerrs>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.7.1</version>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
 			<!--  Add licenses -->
 			<plugin>
 			    <groupId>org.codehaus.mojo</groupId>
     			<artifactId>license-maven-plugin</artifactId>
     			<version>1.7</version>
-    			<configuration>
-        			<projectName>Diffany</projectName>
-        			<organizationName>PSB/UGent</organizationName>
-        			<licenseName>lgpl_v3</licenseName>
-        			<inceptionYear>2014</inceptionYear>
-    			</configuration>
     			<executions>
         			<execution>
-        				<id>first</id>
         				<phase>generate-resources</phase>
+    					<configuration>
+        					<projectName>Diffany</projectName>
+        					<organizationName>PSB/UGent</organizationName>
+        					<licenseName>lgpl_v3</licenseName>
+        					<inceptionYear>2014</inceptionYear>
+        					<generateBundle>true</generateBundle>
+        					<verbose>true</verbose>
+    					</configuration>
             			<goals>
                 			<goal>update-project-license</goal>
             			</goals>

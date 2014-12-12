@@ -6,8 +6,7 @@
  - In the Cytoscape menu: Apps -> App Manager
  - In the App Manager: Install from File... 
  - Locate the jar file you downloaded above
- - If installed correctly, the "Currently Installed" tab of the App Manager should now display "be.svlandeg.diffany" as "Installed" and a new tab, called Diffany
- should appear in the control panel.
+ - If installed correctly, the "Currently Installed" tab of the App Manager should now display "be.svlandeg.diffany" as "Installed" and a new tab, called Diffany should appear in the control panel.
  
 [1]: http://cytoscape.org/
 [2]: http://bioinformatics.psb.ugent.be/supplementary_data/solan/diffany/
@@ -32,5 +31,4 @@ The Diffany algorithms should work on a plethora of networks, taking into accoun
  - **Equivalent nodes** should have the same name across the different networks in order to compare their edges.
  - A node label different from the node's name, can be defined in the **column "official_symbol"**.
  - Interaction types are defined by the default **column "interaction"**. When an interaction type not available in the default edge ontology is chosen, it will be transparently added to the ontology.
-However, if you want to exploit the existing edge ontology hierarchy, use any of these **built-in AF types**:  genetic\_interaction, positive\_genetic\_interaction, negative\_genetic\_interaction, synthetic\_lethality, regulation, positive\_regulation, catalysis, negative_regulation, inhibition.
- or **PR types**: ppi, colocalization, coexpression, protein\_dna\_binding, transcription, ptm, phosphorylation, dephosphorylation, glycosylation, deglycosylation, acetylation, deacetylation, hydroxylation, dehydroxylation, ubiquitination, deubiquitination, methylation, demethylation.
+However, if you want to exploit the existing edge ontology hierarchy, use any of these **built-in AF types**:  genetic_interaction, positive_genetic_interaction, negative_genetic_interaction, synthetic_lethality, regulation, positive_regulation, catalysis, negative_regulation, inhibition or **PR types**: ppi, colocalization, coexpression, protein_dna_binding, transcription, ptm, phosphorylation, dephosphorylation, glycosylation, deglycosylation, acetylation, deacetylation, hydroxylation, dehydroxylation, ubiquitination, deubiquitination, methylation, demethylation.

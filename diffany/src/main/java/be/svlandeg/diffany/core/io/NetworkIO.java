@@ -209,10 +209,10 @@ public class NetworkIO
 	 */
 	private static Network readInputNetworkFromResource(String dir, boolean skipHeader) throws IOException
 	{
-		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_edge_file);
-		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_node_file);
-		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_definition_file);
-		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + File.separator + default_conditions_file);
+		InputStream edgeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_edge_file);
+		InputStream nodeStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_node_file);
+		InputStream definitionStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_definition_file);
+		InputStream conditionsStream = NetworkIO.class.getResourceAsStream(dir + "/" + default_conditions_file);
 		Network inputNetwork = readInputNetworkFromStreams(edgeStream, nodeStream, definitionStream, conditionsStream, skipHeader);
 		edgeStream.close();
 		nodeStream.close();

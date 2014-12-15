@@ -111,9 +111,8 @@ public class CyNetworkBridge {
 		
 		cyNetwork.getRow(cyNetwork).set(CyNetwork.NAME,network.getName());
 		
-		CyTable nodeTable = cyNetwork.getDefaultNodeTable();
-		CyTable edgeTable = cyNetwork.getDefaultEdgeTable();
-
+		CyTable nodeTable = cyNetwork.getTable(CyNode.class, CyNetwork.LOCAL_ATTRS);
+		CyTable edgeTable = cyNetwork.getTable(CyEdge.class, CyNetwork.LOCAL_ATTRS);
 		
 		if (nodeTable.getColumn(SYMBOLIC_NAME)==null){
 			nodeTable.createColumn(SYMBOLIC_NAME, String.class, false);			

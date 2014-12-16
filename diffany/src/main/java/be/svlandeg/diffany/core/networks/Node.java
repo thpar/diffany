@@ -16,7 +16,7 @@ public class Node
 
 	protected String ID;
 	protected String name;
-	protected Map<String, String> attributes;
+	protected Map<String, Object> attributes;
 	
 	// TODO v2.2: record this information somewhere else
 	public static final String de_attribute = "differentially_expressed";
@@ -49,7 +49,7 @@ public class Node
 		}
 		this.ID = ID;
 		this.name = name;
-		attributes = new HashMap<String, String>();
+		attributes = new HashMap<String, Object>();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class Node
 	 * @param attributeName the name of the attribute
 	 * @return the value of the attribute
 	 */
-	public String getAttribute(String attributeName)
+	public Object getAttribute(String attributeName)
 	{
 		return attributes.get(attributeName);
 	}
@@ -104,7 +104,7 @@ public class Node
 	 * 
 	 * @throws IllegalArgumentException when either of the two input parameters is null
 	 */
-	public void setAttribute(String attributeName, String value)
+	public void setAttribute(String attributeName, Object value)
 	{
 		if (attributeName == null)
 		{

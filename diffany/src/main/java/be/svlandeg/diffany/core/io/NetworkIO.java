@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import javax.activation.UnsupportedDataTypeException;
 
+import be.svlandeg.diffany.core.networks.Attribute;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -90,7 +91,7 @@ public class NetworkIO
 		nodesFile.getParentFile().mkdirs();
 		BufferedWriter nodeWriter = new BufferedWriter(new FileWriter(nodesFile));
 
-		SortedSet<String> nodeAttributes = new TreeSet<String>();
+		SortedSet<Attribute> nodeAttributes = new TreeSet<Attribute>();
 		nodeAttributes.addAll(network.getAllNodeAttributes());
 
 		if (writeHeaders)
@@ -133,7 +134,7 @@ public class NetworkIO
 		defWriter.newLine();
 
 		String attributes = "";
-		for (String attribute : network.getAllNodeAttributes())
+		for (Attribute attribute : network.getAllNodeAttributes())
 		{
 			attributes += attribute + ";";
 		}
@@ -309,7 +310,12 @@ public class NetworkIO
 		String name = readNameFromMap(definitionMap);
 		String type = readTypeFromMap(definitionMap);
 		List<String> listedAttributes = readAttributesFromMap(definitionMap);
-		Set<String> attributes = new HashSet<String>(listedAttributes);
+		
+		//init node attributes. All attributes read from file will be of the type String
+		Set<Attribute> attributes = new HashSet<Attribute>();
+		for (String listedAtt : listedAttributes){
+			attributes.add(new Attribute(listedAtt, String.class));
+		}
 
 		Set<Node> nodes = readNodesFromStream(nodeStream, skipHeader, listedAttributes);
 		Set<Edge> edges = readEdgesFromStream(edgeStream, getMappedNodes(nodes), skipHeader);

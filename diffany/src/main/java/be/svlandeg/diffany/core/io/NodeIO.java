@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 
+import be.svlandeg.diffany.core.networks.Attribute;
 import be.svlandeg.diffany.core.networks.Node;
 
 /**
@@ -26,7 +27,7 @@ public class NodeIO
 	 * @return a string representation of all nodes in this network, ready for printing
 	 * @see NodeIO#writeToTab
 	 */
-	public static String writeNodesToTab(Set<Node> nodes, SortedSet<String> nodeAttributes)
+	public static String writeNodesToTab(Set<Node> nodes, SortedSet<Attribute> nodeAttributes)
 	{
 		String result = "";
 		for (Node n : nodes)
@@ -46,12 +47,12 @@ public class NodeIO
 	 * 
 	 * @return a string representation of this node, ready for printing
 	 */
-	public static String writeToTab(Node n, SortedSet<String> nodeAttributes)
+	public static String writeToTab(Node n, SortedSet<Attribute> nodeAttributes)
 	{
 		String result = n.getID() + '\t' + n.getDisplayName();
-		for (String att : nodeAttributes)
+		for (Attribute att : nodeAttributes)
 		{
-			result += '\t' + n.getAttribute(att).toString();
+			result += '\t' + n.getAttribute(att.getName()).toString();
 		}
 		return result;
 	}
@@ -61,10 +62,10 @@ public class NodeIO
 	 * @param nodeAttributes the node attributes defined for the network of which this node is a part of
 	 * @return a String containing the tab-delimited header for the node file
 	 */
-	public static CharSequence getHeader(SortedSet<String> nodeAttributes)
+	public static CharSequence getHeader(SortedSet<Attribute> nodeAttributes)
     {
 		String result = "ID" + '\t' + "official_symbol";
-		for (String attribute : nodeAttributes)
+		for (Attribute attribute : nodeAttributes)
 		{
 			result += "\t" + attribute;
 		}

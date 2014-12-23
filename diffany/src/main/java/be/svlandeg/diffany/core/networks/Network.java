@@ -352,8 +352,7 @@ public abstract class Network
 		}
 		for (Attribute nodeAttribute : nodeAttributes)
 		{
-			Object value = node.getAttribute(nodeAttribute.getName());
-			if (value == null)
+			if (!node.getAllAttributeNames().contains(nodeAttribute.getName()))
 			{
 				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
 				throw new IllegalArgumentException(errormsg);

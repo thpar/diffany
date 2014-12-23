@@ -113,6 +113,8 @@ public class Node
 		}
 		if (name == null)
 		{
+			//FIXME: is this checking the name and not the attribute value on purpose?
+			//Attributes SHOULD be allowed to be null though...
 			String errormsg = "The attribute value should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}

@@ -12,6 +12,7 @@ import java.util.Set;
 import be.svlandeg.diffany.core.algorithms.CalculateDiff;
 import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
+import be.svlandeg.diffany.core.networks.Attribute;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.ConsensusNetwork;
@@ -273,15 +274,15 @@ public class RunAnalysis
 			boolean selfInteractions, boolean neighbours, boolean includeUnknownReg, boolean includePhos, boolean includeKinase, 
 			boolean includePredictedPhos) throws IOException, URISyntaxException
 	{
-		Set<String> nodeAttributes = new HashSet<String>();
-		nodeAttributes.add(Node.de_attribute);
+		Set<Attribute> nodeAttributes = new HashSet<Attribute>();
+		nodeAttributes.add(new Attribute(Node.de_attribute, String.class));
 		if (includePhos)
 		{
-			nodeAttributes.add(Node.phos_attribute);
+			nodeAttributes.add(new Attribute(Node.phos_attribute, String.class));
 		}
 		if (includeKinase)
 		{
-			nodeAttributes.add(Node.kinase_attribute);
+			nodeAttributes.add(new Attribute(Node.kinase_attribute, String.class));
 		}
 
 		Set<InputNetwork> networks = new HashSet<InputNetwork>();

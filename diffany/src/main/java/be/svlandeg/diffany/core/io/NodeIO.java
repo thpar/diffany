@@ -52,7 +52,12 @@ public class NodeIO
 		String result = n.getID() + '\t' + n.getDisplayName();
 		for (Attribute att : nodeAttributes)
 		{
-			result += '\t' + n.getAttribute(att.getName()).toString();
+			Object value = n.getAttribute(att.getName());
+			String stringValue = new String();
+			if (value != null){
+				stringValue = value.toString();
+			}
+			result += '\t' + stringValue;
 		}
 		return result;
 	}

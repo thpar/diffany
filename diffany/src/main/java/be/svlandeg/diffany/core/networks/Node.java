@@ -85,7 +85,7 @@ public class Node
 	
 	
 	/**
-	 * Retrieve the value of a certain attribute, or null when it is not defined for this node.
+	 * Retrieve the value of a certain attribute (can be null if empty or not defined).
 	 * From the Network this Node belongs to, you can derive all required attribute names for this node.
 	 * 
 	 * @param attributeName the name of the attribute

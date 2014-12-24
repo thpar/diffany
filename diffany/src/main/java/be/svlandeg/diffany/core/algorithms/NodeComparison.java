@@ -77,7 +77,7 @@ public class NodeComparison
 
 			for (Node n : conNodes)
 			{
-				String deStatus = n.getAttribute(de_attribute);
+				String deStatus = (String) n.getAttribute(de_attribute);
 				if (deStatus != null && deStatus.equals(Node.upregulated))
 				{
 					countUp++;
@@ -105,7 +105,7 @@ public class NodeComparison
 		// for each (non-DE) attribute, keep searching until a non-null value is found (if ever)
 		for (String att_name : attributes)
 		{
-			String att_value = exampleNode.getAttribute(att_name);
+			Object att_value = exampleNode.getAttribute(att_name);
 
 			while (att_value == null && it != null && it.hasNext())
 			{

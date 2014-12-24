@@ -51,7 +51,7 @@ public class NodeIO
 		String result = n.getID() + '\t' + n.getDisplayName();
 		for (String att : nodeAttributes)
 		{
-			result += '\t' + n.getAttribute(att);
+			result += '\t' + n.getAttribute(att).toString();
 		}
 		return result;
 	}

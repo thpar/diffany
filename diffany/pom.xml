@@ -139,11 +139,17 @@
         				<id>headers</id>
             			<configuration>
             				<inceptionYear>2014</inceptionYear>
-            				<organizationName>PSB/UGent</organizationName>
+            				<organizationName>PSB/UGent - Sofie Van Landeghem and Thomas Van Parys</organizationName>
+            				<canUpdateCopyright>true</canUpdateCopyright>
             				<projectName>Diffany</projectName>
-            				<copyrightOwners>Sofie Van Landeghem, Thomas Van Parys</copyrightOwners>
             				<licenseName>lgpl_v3</licenseName>
+            				<verbose>true</verbose>
+            				<roots>
+                				<root>src/main/java</root>
+                				<root>src/test</root>
+              				</roots>
             			</configuration>
+            			<phase>process-sources</phase>
             			<goals>
               				<goal>update-file-header</goal>
             			</goals>
@@ -177,6 +183,9 @@
 										<goals>
 											<goal>
 												update-project-license
+											</goal>
+											<goal>
+												update-file-header
 											</goal>
 										</goals>
 									</pluginExecutionFilter>

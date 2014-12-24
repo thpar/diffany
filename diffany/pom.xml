@@ -126,7 +126,7 @@
         					<organizationName>PSB/UGent</organizationName>
         					<licenseName>lgpl_v3</licenseName>
         					<inceptionYear>2014</inceptionYear>
-        					<generateBundle>true</generateBundle>
+							<generateBundle>true</generateBundle>
         					<verbose>true</verbose>
         					<bundleLicensePath>META-INF/LICENSE.txt</bundleLicensePath>
     					</configuration>
@@ -213,33 +213,33 @@
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>presentation-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>model-impl</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>layout-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 
 		<!-- Logging -->

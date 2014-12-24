@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<properties>
-						<bundle.symbolicName>be.svlandeg.diffany</bundle.symbolicName>
+		<bundle.symbolicName>be.svlandeg.diffany</bundle.symbolicName>
 		<bundle.namespace>be.svlandeg.diffany</bundle.namespace>
 	</properties>
 
@@ -10,7 +10,14 @@
 	<groupId>be.svlandeg</groupId>
 	<artifactId>diffany</artifactId>
 
-			<name>${bundle.symbolicName}</name>
+	<name>${bundle.symbolicName}</name>
+	
+	<licenses>
+		<license>
+			<name>lgpl_v3</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+		</license>
+	</licenses>
 	
 	<packaging>bundle</packaging>
 
@@ -21,47 +28,11 @@
 			</resource>
 		</resources>
 		<!-- Cytoscape requires Java 1.6 -->
+		
+		
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<executions>
-					<execution>
-						<id>default-testCompile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<optimize>true</optimize>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-					<compilerArguments>
-						<Xmaxwarns>10000</Xmaxwarns>
-						<Xmaxerrs>10000</Xmaxerrs>
-					</compilerArguments>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.7.1</version>
-				<configuration>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-				</configuration>
-			</plugin>
+			
+			
 			<!-- Create a shaded jar with a manifest for running the project from the commandline. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -103,7 +74,122 @@
 					</instructions>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<optimize>true</optimize>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+					<compilerArguments>
+						<Xmaxwarns>10000</Xmaxwarns>
+						<Xmaxerrs>10000</Xmaxerrs>
+					</compilerArguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.7.1</version>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
+			<!--  Add licenses -->
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+    			<artifactId>license-maven-plugin</artifactId>
+    			<version>1.7</version>
+    			<executions>
+        			<execution>
+        				<id>license</id>
+    					<configuration>
+        					<projectName>Diffany</projectName>
+        					<organizationName>PSB/UGent</organizationName>
+        					<licenseName>lgpl_v3</licenseName>
+        					<inceptionYear>2014</inceptionYear>
+							<generateBundle>true</generateBundle>
+        					<verbose>true</verbose>
+        					<bundleLicensePath>META-INF/LICENSE.txt</bundleLicensePath>
+    					</configuration>
+            			<goals>
+                			<goal>update-project-license</goal>
+            			</goals>
+        			</execution>
+        			<execution>
+        				<id>headers</id>
+            			<configuration>
+            				<inceptionYear>2014</inceptionYear>
+            				<organizationName>PSB/UGent</organizationName>
+            				<projectName>Diffany</projectName>
+            				<copyrightOwners>Sofie Van Landeghem, Thomas Van Parys</copyrightOwners>
+            				<licenseName>lgpl_v3</licenseName>
+            			</configuration>
+            			<goals>
+              				<goal>update-file-header</goal>
+            			</goals>
+          			</execution>
+    			</executions>
+			</plugin>
 		</plugins>
+
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											license-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>
+												update-project-license
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<!-- Links to the Cytoscape Maven repositories. -->
@@ -142,33 +228,33 @@
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>presentation-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>model-impl</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>layout-api</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 
 		<!-- Logging -->

@@ -121,6 +121,7 @@
     			<version>1.7</version>
     			<executions>
         			<execution>
+        				<id>license</id>
     					<configuration>
         					<projectName>Diffany</projectName>
         					<organizationName>PSB/UGent</organizationName>
@@ -134,9 +135,23 @@
                 			<goal>update-project-license</goal>
             			</goals>
         			</execution>
+        			<execution>
+        				<id>headers</id>
+            			<configuration>
+            				<inceptionYear>2014</inceptionYear>
+            				<organizationName>PSB/UGent</organizationName>
+            				<projectName>Diffany</projectName>
+            				<copyrightOwners>Sofie Van Landeghem, Thomas Van Parys</copyrightOwners>
+            				<licenseName>lgpl_v3</licenseName>
+            			</configuration>
+            			<goals>
+              				<goal>update-file-header</goal>
+            			</goals>
+          			</execution>
     			</executions>
 			</plugin>
 		</plugins>
+
 
 		<pluginManagement>
 			<plugins>

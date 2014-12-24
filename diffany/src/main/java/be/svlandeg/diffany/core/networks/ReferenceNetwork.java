@@ -21,7 +21,7 @@ public class ReferenceNetwork extends InputNetwork
 	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * 
 	 */
-	public ReferenceNetwork(String name, int ID, Set<String> nodeAttributes)
+	public ReferenceNetwork(String name, int ID, Set<Attribute> nodeAttributes)
 	{
 		super(name, ID, nodeAttributes);
 	}

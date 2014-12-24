@@ -21,7 +21,7 @@ public class InputNetwork extends Network
 	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 * 
 	 */
-	public InputNetwork(String name, int ID, Set<String> nodeAttributes)
+	public InputNetwork(String name, int ID, Set<Attribute> nodeAttributes)
 	{
 		super(name, ID, nodeAttributes);
 	}
@@ -35,7 +35,7 @@ public class InputNetwork extends Network
 	 * @param nodes the nodes of this network
 	 * @param edges the edges of this network
 	 */
-	public InputNetwork(String networkName, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
+	public InputNetwork(String networkName, int ID, Set<Attribute> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
 	{
 		super(networkName, ID, nodeAttributes, nodes, edges);
 	}

@@ -22,7 +22,7 @@ public abstract class Network
 
 	protected Set<Node> nodes; // ensure this set is kept consistent with the edge set!
 	protected Set<Edge> edges;
-	protected Set<String> nodeAttributes;
+	protected Set<Attribute> nodeAttributes;
 
 	protected int ID;
 	protected String name;
@@ -38,7 +38,7 @@ public abstract class Network
 	 * @param nodes the nodes of this network (should all contain the correct attributes if there are any defined!)
 	 * @param edges the edges of this network
 	 */
-	public Network(String name, int ID, Set<String> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
+	public Network(String name, int ID, Set<Attribute> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
 	{
 		this.name = name;
 		this.ID = ID;
@@ -48,7 +48,7 @@ public abstract class Network
 		}
 		else
 		{
-			this.nodeAttributes = new HashSet<String>();
+			this.nodeAttributes = new HashSet<Attribute>();
 		}
 		setNodesAndEdges(nodes, edges);
 	}
@@ -60,7 +60,7 @@ public abstract class Network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
 	 * @param nodeAttributes the required node attribute names for this network - can be left empty or null
 	 */
-	public Network(String name, int ID, Set<String> nodeAttributes)
+	public Network(String name, int ID, Set<Attribute> nodeAttributes)
 	{
 		this(name, ID, nodeAttributes, new HashSet<Node>(), new HashSet<Edge>());
 	}
@@ -277,7 +277,7 @@ public abstract class Network
 	 * @return the set of all node attributes
 	 * @throws IllegalArgumentException when the current network already contains some nodes
 	 */
-	public Set<String> getAllNodeAttributes()
+	public Set<Attribute> getAllNodeAttributes()
 	{
 		return nodeAttributes;
 	}
@@ -288,7 +288,7 @@ public abstract class Network
 	 * @param nodeAttribute a new node attribute
 	 * @throws IllegalArgumentException when the current network already contains some nodes
 	 */
-	public void addNodeAttribute(String nodeAttribute)
+	public void addNodeAttribute(Attribute nodeAttribute)
 	{
 		if (nodes.size() > 0)
 		{
@@ -306,10 +306,10 @@ public abstract class Network
 	 */
 	protected void defineCommonAttributes(Set<Network> originalNetworks)
 	{
-		Map<String, Integer> countedAttributes = new HashMap<String, Integer>();
+		Map<Attribute, Integer> countedAttributes = new HashMap<Attribute, Integer>();
 		for (Network n : originalNetworks)
 		{
-			for (String att : n.getAllNodeAttributes())
+			for (Attribute att : n.getAllNodeAttributes())
 			{
 				if (!countedAttributes.containsKey(att))
 				{
@@ -318,7 +318,7 @@ public abstract class Network
 				countedAttributes.put(att, countedAttributes.get(att) + 1);
 			}
 		}
-		for (String att : countedAttributes.keySet())
+		for (Attribute att : countedAttributes.keySet())
 		{
 			int count = countedAttributes.get(att);
 			if (count == originalNetworks.size())
@@ -350,10 +350,9 @@ public abstract class Network
 		{
 			nodes.add(node);
 		}
-		for (String nodeAttribute : nodeAttributes)
+		for (Attribute nodeAttribute : nodeAttributes)
 		{
-			Object value = node.getAttribute(nodeAttribute);
-			if (value == null)
+			if (!node.getAllAttributeNames().contains(nodeAttribute.getName()))
 			{
 				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
 				throw new IllegalArgumentException(errormsg);

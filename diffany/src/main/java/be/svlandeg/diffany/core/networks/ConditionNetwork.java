@@ -25,7 +25,7 @@ public class ConditionNetwork extends InputNetwork
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 * 
 	 */
-	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Set<Condition> conditions) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<Attribute> nodeAttributes, Set<Condition> conditions) throws IllegalArgumentException
 	{
 		super(name, ID, nodeAttributes);
 		if (conditions == null || conditions.isEmpty())
@@ -46,7 +46,7 @@ public class ConditionNetwork extends InputNetwork
 	 * 
 	 * @throws IllegalArgumentException when the conditions are null or empty
 	 */
-	public ConditionNetwork(String name, int ID, Set<String> nodeAttributes, Condition condition) throws IllegalArgumentException
+	public ConditionNetwork(String name, int ID, Set<Attribute> nodeAttributes, Condition condition) throws IllegalArgumentException
 	{
 		super(name, ID, nodeAttributes);
 		if (condition == null)

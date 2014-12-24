@@ -23,6 +23,7 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
+import be.svlandeg.diffany.core.networks.Attribute;
 import be.svlandeg.diffany.core.networks.Condition;
 import be.svlandeg.diffany.core.networks.ConditionNetwork;
 import be.svlandeg.diffany.core.networks.Edge;
@@ -127,9 +128,9 @@ public class CyNetworkBridge {
 		}
 		
 		//add Network specific columns for all extra node attributes
-		for (String attr : network.getAllNodeAttributes()){
-			if (nodeTable.getColumn(attr)==null){
-				nodeTable.createColumn(attr, String.class, false);			
+		for (Attribute attr : network.getAllNodeAttributes()){
+			if (nodeTable.getColumn(attr.getName())==null){
+				nodeTable.createColumn(attr.getName(), attr.getType(), false);			
 			}
 		}
 		
@@ -138,8 +139,8 @@ public class CyNetworkBridge {
 			cyNetwork.getRow(cyNode).set(CyNetwork.NAME, node.getID());
 			cyNetwork.getRow(cyNode).set(SYMBOLIC_NAME, node.getDisplayName());
 			
-			for (String attr : network.getAllNodeAttributes()){
-				cyNetwork.getRow(cyNode).set(attr, node.getAttribute(attr));
+			for (Attribute attr : network.getAllNodeAttributes()){
+				cyNetwork.getRow(cyNode).set(attr.getName(), node.getAttribute(attr.getName()));
 			}
 		}
 		
@@ -246,13 +247,13 @@ public class CyNetworkBridge {
 		String netName = getName(cyNetwork, cyNetwork);
 		
 		//extract extra node columns
-		Set<String> nodeAttrs = new HashSet<String>();
+		Set<Attribute> nodeAttrs = new HashSet<Attribute>();
 		CyTable table = cyNetwork.getDefaultNodeTable();
 		Collection<CyColumn> cyCols = table.getColumns();
 		for (CyColumn cyCol : cyCols){
 			String colName = cyCol.getName();
 			if (!defaultNodeAttrs.contains(colName)){
-				nodeAttrs.add(colName);				
+				nodeAttrs.add(new Attribute(colName, cyCol.getType()));				
 			}
 		}
 		
@@ -282,8 +283,8 @@ public class CyNetworkBridge {
 			Node node = new Node(nodeID, symbolicName);
 			
 			//transfer node attributes
-			for (String attr : nodeAttrs){
-				node.setAttribute(attr, getAttribute(cyNetwork, cyNode, attr));
+			for (Attribute attr : nodeAttrs){
+				node.setAttribute(attr.getName(), getAttribute(cyNetwork, cyNode, attr.getName()));
 			}
 			
 			nodeMap.put(cyNode.getSUID(), node);	
@@ -360,13 +361,9 @@ public class CyNetworkBridge {
 	 * @param columnName name of the attribute column
 	 * @return value of the column for this specific {@link CyNode}
 	 */
-	private static String getAttribute(CyNetwork cyNetwork, CyNode cyNode, String columnName) {
-		String attr = cyNetwork.getRow(cyNode).get(columnName, String.class);
-		if (attr == null){
-			return new String();
-		} else {
-			return attr.toString();
-		}
+	private static Object getAttribute(CyNetwork cyNetwork, CyNode cyNode, String columnName) {
+		Object attr = cyNetwork.getRow(cyNode).get(columnName, Object.class);
+		return attr;
 		
 	}
 	

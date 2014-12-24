@@ -85,7 +85,7 @@ public class Node
 	
 	
 	/**
-	 * Retrieve the value of a certain attribute, or null when it is not defined for this node.
+	 * Retrieve the value of a certain attribute (can be null if empty or not defined).
 	 * From the Network this Node belongs to, you can derive all required attribute names for this node.
 	 * 
 	 * @param attributeName the name of the attribute
@@ -113,6 +113,8 @@ public class Node
 		}
 		if (name == null)
 		{
+			//FIXME: is this checking the name and not the attribute value on purpose?
+			//Attributes SHOULD be allowed to be null though...
 			String errormsg = "The attribute value should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}

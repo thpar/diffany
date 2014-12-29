@@ -31,7 +31,7 @@ import be.svlandeg.diffany.core.algorithms.NetworkCleaning;
 import be.svlandeg.diffany.core.io.NetworkIO;
 
 /**
- * Abstract class that represents a network: a collection of edges and nodes
+ * Abstract class that represents a network: a collection of edges and nodes.
  * All source and target nodes of the edges are present in the collection of nodes,
  * but not all nodes have to be connected with edges.
  * 
@@ -60,7 +60,8 @@ public abstract class Network
 	 * @param nodes the nodes of this network (should all contain the correct attributes if there are any defined!)
 	 * @param edges the edges of this network
 	 */
-	public Network(String name, int ID, Set<Attribute> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
+	public Network(String name, int ID, Set<Attribute> nodeAttributes,
+			Set<Node> nodes, Set<Edge> edges)
 	{
 		this.name = name;
 		this.ID = ID;
@@ -95,7 +96,7 @@ public abstract class Network
 	{
 		return name;
 	}
-	
+
 	/**
 	 * Return the ID of this network (which should be unique within one project)
 	 * @return the ID of this network
@@ -130,7 +131,6 @@ public abstract class Network
 		return edges;
 	}
 
-
 	/**
 	 * Get all directed edges in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between source-target or target-source, these will be excluded!
@@ -148,7 +148,8 @@ public abstract class Network
 			{
 				if (!e.isSymmetrical())
 				{
-					if (e.getSource().ID.equals(source.ID) && e.getTarget().ID.equals(target.ID))
+					if (e.getSource().ID.equals(source.ID)
+							&& e.getTarget().ID.equals(target.ID))
 					{
 						resultEdges.add(e);
 					}
@@ -170,10 +171,10 @@ public abstract class Network
 	{
 		String sourceID = source.ID;
 		String targetID = target.ID;
-		
+
 		return getAllEdges(sourceID, targetID);
 	}
-	
+
 	/**
 	 * Get all edges (both symmetric and assymetric) in this network between two specific nodes. 
 	 * In case there are symmetrical edges in this network between target-source, these will be added too.
@@ -191,12 +192,14 @@ public abstract class Network
 			{
 				String edgeSourceID = e.getSource().ID;
 				String edgeTargetID = e.getTarget().ID;
-				
-				if (edgeSourceID.equals(sourceID) && edgeTargetID.equals(targetID))
+
+				if (edgeSourceID.equals(sourceID)
+						&& edgeTargetID.equals(targetID))
 				{
 					resultEdges.add(e);
 				}
-				else if (e.isSymmetrical() && edgeSourceID.equals(targetID) && edgeTargetID.equals(sourceID))
+				else if (e.isSymmetrical() && edgeSourceID.equals(targetID)
+						&& edgeTargetID.equals(sourceID))
 				{
 					resultEdges.add(e);
 				}
@@ -214,7 +217,8 @@ public abstract class Network
 	 * @param symmetry the symmetrical state of the edges, defining the result set to either be directed or symmetrical
 	 * @return the set of edge definitions between these two nodes (can be empty, but not null)
 	 */
-	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target, boolean symmetry)
+	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target,
+			boolean symmetry)
 	{
 		Set<EdgeDefinition> resultEdgeDefinitions = new HashSet<EdgeDefinition>();
 		Set<Edge> resultEdges = getAllEdges(source, target);
@@ -228,8 +232,6 @@ public abstract class Network
 		return resultEdgeDefinitions;
 	}
 
-	
-	
 	/**
 	 * This method removes all unconnected nodes from the network - can not be reverted!
 	 */
@@ -237,7 +239,7 @@ public abstract class Network
 	{
 		setNodesAndEdges(edges);
 	}
-	
+
 	/**
 	 * Define a (new) set of edges for this network, overwriting previous data.
 	 * The node set will be (only) those appearing as source or target in the given edges.
@@ -292,7 +294,7 @@ public abstract class Network
 	{
 		edges.remove(edge);
 	}
-	
+
 	/**
 	 * Get all node attributes required in this network.
 	 * 
@@ -303,7 +305,7 @@ public abstract class Network
 	{
 		return nodeAttributes;
 	}
-	
+
 	/**
 	 * Add a new required node attribute to this network. This is only possible when the current network is empty (i.e. there are no nodes or edges).
 	 * 
@@ -319,7 +321,7 @@ public abstract class Network
 		}
 		nodeAttributes.add(nodeAttribute);
 	}
-	
+
 	/**
 	 * Define the node attributes by taking only those that are in common from a given set of networks.
 	 * This is used for instance at the creation of differential/consensus networks.
@@ -348,7 +350,7 @@ public abstract class Network
 				addNodeAttribute(att);
 			}
 		}
-		
+
 	}
 
 	/**
@@ -376,10 +378,12 @@ public abstract class Network
 		{
 			if (!node.getAllAttributeNames().contains(nodeAttribute.getName()))
 			{
-				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
+				String errormsg = "The node " + node.ID
+						+ " does not contain the required attribute "
+						+ nodeAttribute + "!";
 				throw new IllegalArgumentException(errormsg);
 			}
 		}
 	}
-	
+
 }

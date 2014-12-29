@@ -122,7 +122,7 @@ public class Node
 	 * Set the value of a certain attribute. If a value already existed for this attribute, it is overwritten.
 	 * 
 	 * @param attributeName the name of the attribute (should not be null!)
-	 * @param value the value of the attribute (should not be null!)
+	 * @param value the value of the attribute (can be null)
 	 * 
 	 * @throws IllegalArgumentException when either of the two input parameters is null
 	 */
@@ -131,13 +131,6 @@ public class Node
 		if (attributeName == null)
 		{
 			String errormsg = "The attribute name should not be null!";
-			throw new IllegalArgumentException(errormsg);
-		}
-		if (name == null)
-		{
-			//FIXME: is this checking the name and not the attribute value on purpose?
-			//Attributes SHOULD be allowed to be null though...
-			String errormsg = "The attribute value should not be null!";
 			throw new IllegalArgumentException(errormsg);
 		}
 		attributes.put(attributeName, value);

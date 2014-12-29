@@ -22,7 +22,6 @@ package be.svlandeg.diffany.core.networks;
  * #L%
  */
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,10 +34,10 @@ import java.util.Set;
  */
 public class Condition
 {
-	
+
 	protected String description;
 	protected Set<String> ontologies;
-	
+
 	/**
 	 * Create a new condition that can be linked to a network.
 	 * 
@@ -57,7 +56,7 @@ public class Condition
 		this.description = description;
 		setOntologyTerms(ontologies);
 	}
-	
+
 	/**
 	 * Create a new condition that can be linked to a network.
 	 * The set of ontology terms will be initialized to an empty set.
@@ -69,7 +68,7 @@ public class Condition
 	{
 		this(description, new HashSet<String>());
 	}
-	
+
 	/**
 	 * Cloning constructor
 	 * @param oldCondition the condition that needs cloning
@@ -78,8 +77,7 @@ public class Condition
 	{
 		this(new String(oldCondition.description), new HashSet<String>(oldCondition.ontologies));
 	}
-	
-	
+
 	/**
 	 * Return a free-text description of the condition
 	 * @return the description of the condition
@@ -88,7 +86,7 @@ public class Condition
 	{
 		return description;
 	}
-	
+
 	/**
 	 * Return the corresponding ontology terms for this condition
 	 * @return the ontology terms for this condition (may be empty but should not be null)
@@ -97,7 +95,7 @@ public class Condition
 	{
 		return ontologies;
 	}
-	
+
 	/**
 	 * Define the set of ontologies corresponding to this condition 
 	 * (overwrites all previously defined terms).
@@ -114,7 +112,7 @@ public class Condition
 		}
 		this.ontologies = ontologies;
 	}
-	
+
 	/**
 	 * Add a number of ontology terms to the set of previously defined terms.
 	 * @param ontology a new ontology term

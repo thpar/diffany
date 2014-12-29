@@ -60,8 +60,7 @@ public abstract class Network
 	 * @param nodes the nodes of this network (should all contain the correct attributes if there are any defined!)
 	 * @param edges the edges of this network
 	 */
-	public Network(String name, int ID, Set<Attribute> nodeAttributes,
-			Set<Node> nodes, Set<Edge> edges)
+	public Network(String name, int ID, Set<Attribute> nodeAttributes, Set<Node> nodes, Set<Edge> edges)
 	{
 		this.name = name;
 		this.ID = ID;
@@ -148,8 +147,7 @@ public abstract class Network
 			{
 				if (!e.isSymmetrical())
 				{
-					if (e.getSource().ID.equals(source.ID)
-							&& e.getTarget().ID.equals(target.ID))
+					if (e.getSource().ID.equals(source.ID) && e.getTarget().ID.equals(target.ID))
 					{
 						resultEdges.add(e);
 					}
@@ -193,13 +191,11 @@ public abstract class Network
 				String edgeSourceID = e.getSource().ID;
 				String edgeTargetID = e.getTarget().ID;
 
-				if (edgeSourceID.equals(sourceID)
-						&& edgeTargetID.equals(targetID))
+				if (edgeSourceID.equals(sourceID) && edgeTargetID.equals(targetID))
 				{
 					resultEdges.add(e);
 				}
-				else if (e.isSymmetrical() && edgeSourceID.equals(targetID)
-						&& edgeTargetID.equals(sourceID))
+				else if (e.isSymmetrical() && edgeSourceID.equals(targetID) && edgeTargetID.equals(sourceID))
 				{
 					resultEdges.add(e);
 				}
@@ -217,8 +213,7 @@ public abstract class Network
 	 * @param symmetry the symmetrical state of the edges, defining the result set to either be directed or symmetrical
 	 * @return the set of edge definitions between these two nodes (can be empty, but not null)
 	 */
-	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target,
-			boolean symmetry)
+	public Set<EdgeDefinition> getAllEdgeDefinitions(Node source, Node target, boolean symmetry)
 	{
 		Set<EdgeDefinition> resultEdgeDefinitions = new HashSet<EdgeDefinition>();
 		Set<Edge> resultEdges = getAllEdges(source, target);
@@ -378,9 +373,7 @@ public abstract class Network
 		{
 			if (!node.getAllAttributeNames().contains(nodeAttribute.getName()))
 			{
-				String errormsg = "The node " + node.ID
-						+ " does not contain the required attribute "
-						+ nodeAttribute + "!";
+				String errormsg = "The node " + node.ID + " does not contain the required attribute " + nodeAttribute + "!";
 				throw new IllegalArgumentException(errormsg);
 			}
 		}

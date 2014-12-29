@@ -345,7 +345,6 @@ public abstract class Network
 				addNodeAttribute(att);
 			}
 		}
-
 	}
 
 	/**

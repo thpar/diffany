@@ -40,8 +40,8 @@ public class DifferentialNetwork extends Network
 	
 	
 	/**
-	 * Create a new differential network, referring to exactly one static reference network
-	 * and 1 or more condition-specific networks
+	 * Create a new differential network, referring to exactly one static reference network and 1 or more condition-specific networks.
+	 * All network attributes that are common to all input networks will be transferred to this differential network.
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
@@ -51,8 +51,7 @@ public class DifferentialNetwork extends Network
 	 * @throws IllegalArgumentException when the list of condition-specific networks is null or empty,
 	 * or when the reference network is null
 	 */
-	public DifferentialNetwork(String name, int ID, 
-			ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks) 
+	public DifferentialNetwork(String name, int ID, ReferenceNetwork reference, Set<ConditionNetwork> conditionNetworks) 
 			throws IllegalArgumentException
 	{
 		super(name, ID, null);
@@ -76,7 +75,8 @@ public class DifferentialNetwork extends Network
 	}
 	
 	/**
-	 * Create a new differential network, referring to exactly one static reference network and one condition-specific network
+	 * Create a new differential network, referring to exactly one static reference network and one condition-specific network.
+	 * All network attributes that are common to both input networks will be transferred to this differential network.
 	 * 
 	 * @param name the name of this network
 	 * @param ID the unique identifier of this network (should be enforced to be unique within one project)
@@ -128,7 +128,7 @@ public class DifferentialNetwork extends Network
 		return conditionNetworks;
 	}
 
-	/* (non-Javadoc)
+	/* 
 	 * @see be.svlandeg.diffany.core.networks.Network#getStringRepresentation()
 	 */
 	@Override

@@ -140,7 +140,7 @@
             			<configuration>
             				<inceptionYear>2014</inceptionYear>
             				<organizationName>PSB/UGent - Sofie Van Landeghem and Thomas Van Parys</organizationName>
-            				<canUpdateCopyright>true</canUpdateCopyright>
+            				<canUpdateCopyright>false</canUpdateCopyright>
             				<projectName>Diffany</projectName>
             				<licenseName>lgpl_v3</licenseName>
             				<verbose>true</verbose>

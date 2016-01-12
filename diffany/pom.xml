@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<properties>
+		<bundle.name>Diffany</bundle.name>
 		<bundle.symbolicName>be.svlandeg.diffany</bundle.symbolicName>
 		<bundle.namespace>be.svlandeg.diffany</bundle.namespace>
 	</properties>
@@ -64,6 +65,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Bundle-Name>${bundle.name}</Bundle-Name>
 						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}.*</Export-Package> 

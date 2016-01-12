@@ -535,7 +535,7 @@ public class Model extends Observable implements NetworkAddedListener,
 	/**
 	 * Should nodes with degree zero be hidden? Hidden edges are not counted. 
 	 * 
-	 * @param hideUnconnectedNodes
+	 * @param hideUnconnectedNodes boolean whether or not to hide unconnected nodes
 	 */
 	public void setHideUnconnectedNodes(boolean hideUnconnectedNodes) {
 		if (this.hideUnconnectedNodes != hideUnconnectedNodes){

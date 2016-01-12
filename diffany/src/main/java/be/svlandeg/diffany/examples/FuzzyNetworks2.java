@@ -41,7 +41,7 @@ import be.svlandeg.diffany.core.semantics.DefaultEdgeOntology;
 import be.svlandeg.diffany.core.semantics.TreeEdgeOntology;
 
 /** 
- * This class provides examples to benchmark the fuzzy consensus & differential functionality.  
+ * This class provides examples to benchmark the fuzzy consensus and differential functionality.  
  * Specifically, we use the same interaction type for all edges, but with different weights and complex differences between various cutoffs.
  * 
  * @author Sofie Van Landeghem

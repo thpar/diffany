@@ -36,7 +36,7 @@ import javax.swing.table.AbstractTableModel;
 import be.svlandeg.diffany.cytoscape.CyProject;
 
 /**
- * Model that controls the content of the edge (interaction) filter {@link JTable}
+ * Model that controls the content of the edge (interaction) filter
  * 
  * @author Thomas Van Parys
  *

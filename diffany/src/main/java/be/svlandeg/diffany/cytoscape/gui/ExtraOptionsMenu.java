@@ -38,7 +38,7 @@ import be.svlandeg.diffany.cytoscape.Model.OverlapOperator;
 import be.svlandeg.diffany.cytoscape.actions.UpdateVisualStyleAction;
 
 /**
- * Menu to be placed under Apps > Diffany > Extra options
+ * Menu to be placed under Apps, Diffany, Extra options
  * 
  * @author Thomas Van Parys
  *

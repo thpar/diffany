@@ -57,7 +57,7 @@ public class LoadExampleTaskFactory implements TaskFactory{
 	/**
 	 * 
 	 * @param services the app {@link Services}
-	 * @param exampleProject {@link Project} to be used as example input.
+	 * @param example {@link Project} to be used as example input.
 	 */
 	public LoadExampleTaskFactory(Services services, GenericExample example) {
 		this.services = services;

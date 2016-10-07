@@ -104,7 +104,7 @@ public class CalculateDiff
 	 * @param ID the unique identifier of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
 	 * @param refRequired whether or not the presence of the edge in the reference network is required for it to be included in the consensus network.
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network 
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the differential or consensus network 
 	 * @param log the logger that records logging messages
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
@@ -163,7 +163,7 @@ public class CalculateDiff
 	 * @param diff_name the name to give to the differential network (can be null)
 	 * @param ID the unique identifier of the resulting network
 	 * @param supportingCutoff the minimal number of networks that need to agree on a certain edge
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the differential or consensus network
 	 * @param log the logger that records logging messages
 	 * @param task the task object that keeps track of the progress of this calculation (can be null)
 	 * 
@@ -217,7 +217,7 @@ public class CalculateDiff
 	 * @param consensus_name the name to give to the differential network (can be null, then a default name will be constructed)
 	 * @param diff_ID the unique identifier of the resulting differential network (or negative when it should not be calculated)
 	 * @param consensus_ID the unique identifier of the resulting consensus network (or negative when it should not be calculated)
-	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the consensus network (can be null, then a default value will be used)
+	 * @param weight_cutoff the minimal value of a resulting edge for it to be included in the differential or consensus network (can be null, then a default value will be used)
 	 * @param minOperator if true, the minimum of all matching edges is taken to calculate the consensus, otherwise the maximum (can be null, then 'min' will be used by default)
 	 * @param progressListener the listener that will be updated about the progress of this calculation (can be null)
 	 * 
@@ -322,7 +322,7 @@ public class CalculateDiff
 	 * 
 	 * @param p the project which stores the reference and condition-specific networks
 	 * @param runID the ID of the configuration that needs to be run
-	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the consensus network (can be null)
+	 * @param weightCutoff the minimal value of a resulting edge for it to be included in the differential or consensus network (can be null)
 	 * @param diffNetwork whether or not to calculate a differential network
 	 * @param consensusNetwork whether or not to calculate a consensus network
 	 * @param firstID the first ID that can be used for the output networks; subsequent IDs will be constructed by adding 1 each time
